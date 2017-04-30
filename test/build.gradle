@@ -1,9 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
-apply plugin: 'com.getkeepsafe.dexcount'
-
-group = parent.ext.packageName
-version = parent.ext.libraryVersion
 
 android {
     compileSdkVersion parent.ext.compileSdkVersion
@@ -15,19 +11,11 @@ android {
 
         consumerProguardFiles 'proguard-rules.pro'
 
-        versionCode 6
-        versionName parent.ext.libraryVersion
-
-//        renderscriptTargetApi 18
-//        renderscriptSupportModeEnabled true
+        versionCode 1
+        versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-
-    lintOptions {
-        abortOnError false
-    }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -46,19 +34,6 @@ android {
     }
 }
 
-dependencies {
-
-    testCompile 'junit:junit:4.12'
-
-    androidTestCompile project(':test')
-    androidTestCompile 'com.android.support.test:runner:0.5'
-
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-
-    compile parent.ext.appCompat
-    compile parent.ext.recyclerView
-}
-
 publishing {
     publications {
         aar(MavenPublication) {
@@ -68,12 +43,6 @@ publishing {
 
             // Tell maven to prepare the generated "*.aar" file for publishing
             artifact("$buildDir/outputs/aar/${project.getName()}-${version}.aar")
-
-            // Add sources too
-            artifact(sourcesJar) {
-                classifier = 'sources'
-                extension = 'jar'
-            }
 
             //The publication doesn't know about our dependencies, so we have to manually add them to the pom
             pom.withXml {
@@ -98,16 +67,38 @@ publishing {
     }
 }
 
-// Gradle task to generate sources after building a release aar
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from android.sourceSets.main.java.srcDirs
-}
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
 
-tasks.whenTaskAdded { task ->
-    if (task.name == 'assembleRelease') {
-        task.dependsOn 'sourcesJar'
+    compile parent.ext.appCompat
+    compile parent.ext.recyclerView
+
+    compile 'junit:junit:4.12'
+    compile 'org.hamcrest:hamcrest-library:1.3'
+    compile 'org.mockito:mockito-android:2.7.22'
+    compile 'com.android.support.test:runner:0.5'
+
+    compile('com.android.support.test.espresso:espresso-core:2.2.2') {
+        exclude group: 'com.android.support'
+        exclude module: 'support-annotations'
+        exclude module: 'support-v4'
+        exclude module: 'support-v13'
+        exclude module: 'recyclerview-v7'
+        exclude module: 'design'
+    }
+    compile('com.android.support.test.espresso:espresso-contrib:2.2.2') {
+        exclude group: 'com.android.support'
+        exclude module: 'support-annotations'
+        exclude module: 'support-v4'
+        exclude module: 'support-v13'
+        exclude module: 'recyclerview-v7'
+        exclude module: 'design'
+    }
+    compile('com.android.support.test.espresso:espresso-intents:2.2.2') {
+        exclude module: 'support-annotations'
+        exclude module: 'support-v4'
+        exclude module: 'support-v13'
+        exclude module: 'recyclerview-v7'
+        exclude module: 'design'
     }
 }
-
-
