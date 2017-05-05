@@ -1,5 +1,6 @@
 package com.tunjid.androidbootstrap.core.components;
 
+import android.app.ActivityManager;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -9,12 +10,15 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.util.List;
+
 /**
  * A class for binding a {@link Service}
  * <p>
  * Created by tj.dahunsi on 4/2/17.
  */
 
+@SuppressWarnings("WeakerAccess")
 public class ServiceConnection<T extends Service> implements android.content.ServiceConnection {
 
     private static final String TAG = "ServiceConnection";
@@ -64,20 +68,35 @@ public class ServiceConnection<T extends Service> implements android.content.Ser
         return boundService;
     }
 
-    private Class<T> getServiceClass() {
+    public Class<T> getServiceClass() {
         return serviceClass;
     }
 
-    public void unbindService() {
+    public boolean unbindService() {
         if (bindingContext != null) {
             try {
                 bindingContext.unbindService(this);
                 bindingContext = null;
+                return true;
             }
             catch (IllegalArgumentException e) {
                 Log.i(TAG, serviceClass.getName() + " was not bound");
+                return false;
             }
         }
+        return false;
+    }
+
+    public static boolean isServiceRunning(Class<? extends Service> serviceClass, Context context) {
+        final ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        final List<ActivityManager.RunningServiceInfo> services = activityManager.getRunningServices(Integer.MAX_VALUE);
+
+        for (ActivityManager.RunningServiceInfo runningServiceInfo : services) {
+            if (runningServiceInfo.service.getClassName().equals(serviceClass.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public abstract static class Binder<T extends Service> extends android.os.Binder {
