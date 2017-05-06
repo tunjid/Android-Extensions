@@ -125,7 +125,7 @@ public class BaseActivityTest {
         testIdler.till(new FragmentVisibleIdlingResource(testActivity, second.getStableTag(), true));
 
         // Pop second fragment off
-        testActivity.getSupportFragmentManager().popBackStack();
+        testActivity.onBackPressed();
 
         // Wait till the first fragment is visible again
         testIdler.till(new FragmentVisibleIdlingResource(testActivity, first.getStableTag(), true));
@@ -143,5 +143,33 @@ public class BaseActivityTest {
         TestFragment firstFoundByTag = (TestFragment) testActivity.getSupportFragmentManager().findFragmentByTag(first.getStableTag());
         assertTrue(firstFoundByTag.restoredFromBackStack());
         assertTrue(first.restoredFromBackStack());
+    }
+
+    @Test
+    public void testHandledBackPress() throws Exception {
+        final TestFragment first = TestFragment.newInstance("F");
+        final TestFragment second = TestFragment.newInstance("G", true);
+
+        assertTrue(testActivity.showFragment(first));
+
+        // Wait for the first fragment to be visible
+        testIdler.till(new FragmentVisibleIdlingResource(testActivity, first.getStableTag(), true));
+
+        assertTrue(testActivity.showFragment(second));
+
+        // Wait till second fragment shows
+        testIdler.till(new FragmentVisibleIdlingResource(testActivity, second.getStableTag(), true));
+
+        // Press back
+        testActivity.onBackPressed();
+
+        // Assert the second fragment is still visible
+        assertNotNull(testActivity.getSupportFragmentManager().findFragmentByTag(second.getStableTag()));
+
+        // Assert the first fragment is still available
+        assertNotNull(testActivity.getSupportFragmentManager().findFragmentByTag(first.getStableTag()));
+
+        // Assert first and the fragment retrieved with the tag are equal and the same
+        assertSame(first, testActivity.getSupportFragmentManager().findFragmentByTag(first.getStableTag()));
     }
 }

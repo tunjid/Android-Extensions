@@ -21,12 +21,19 @@ public class TestFragment extends BaseFragment {
 
     private static final String TAG = TestFragment.class.getSimpleName();
     private static final String STRING_ARG_KEY = "STRING_ARG_KEY";
+    private static final String BOOLEAN_ARG_KEY = "BOOLEAN_ARG_KEY";
 
     public static TestFragment newInstance(String stringArg) {
+        return newInstance(stringArg, false);
+    }
+
+    public static TestFragment newInstance(String stringArg, boolean handlesBackPress) {
         TestFragment testFragment = new TestFragment();
         Bundle args = new Bundle();
 
         args.putString(STRING_ARG_KEY, stringArg);
+        args.putBoolean(BOOLEAN_ARG_KEY, handlesBackPress);
+
         testFragment.setArguments(args);
 
         return testFragment;
@@ -53,5 +60,10 @@ public class TestFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return new TextView(inflater.getContext());
+    }
+
+    @Override
+    public boolean handledBackPress() {
+        return getArguments().getBoolean(BOOLEAN_ARG_KEY);
     }
 }

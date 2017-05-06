@@ -8,7 +8,7 @@ import android.support.v4.app.FragmentTransaction;
 /**
  * Base fragment
  */
-public abstract class BaseFragment extends Fragment {
+public abstract class BaseFragment extends Fragment implements BackPressInterceptor {
 
     private static final String VIEW_DESTROYED = "com.tunjid.androidbootstrap.core.abstractclasses.basefragment.view.destroyed";
 
@@ -52,5 +52,10 @@ public abstract class BaseFragment extends Fragment {
         if (args != null) {
             args.putBoolean(VIEW_DESTROYED, true);
         }
+    }
+
+    @Override
+    public boolean handledBackPress() {
+        return false;
     }
 }
