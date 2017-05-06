@@ -1,6 +1,5 @@
 package com.tunjid.androidbootstrap.core.abstractclasses;
 
-import android.support.test.espresso.Espresso;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -8,7 +7,7 @@ import com.tunjid.androidbootstrap.core.testclasses.TestActivity;
 import com.tunjid.androidbootstrap.core.testclasses.TestFragment;
 import com.tunjid.androidbootstrap.test.TestUtils;
 import com.tunjid.androidbootstrap.test.idlingresources.FragmentVisibleIdlingResource;
-import com.tunjid.androidbootstrap.test.idlingresources.IdleCallBack;
+import com.tunjid.androidbootstrap.test.resources.TestIdler;
 
 import org.junit.After;
 import org.junit.Before;
@@ -16,7 +15,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import java.util.concurrent.TimeUnit;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
@@ -32,6 +32,7 @@ public class BaseFragmentTest {
     private static final String TAG_B = "B";
 
     private TestActivity testActivity;
+    private TestIdler testIdler;
 
     @Rule
     public ActivityTestRule activityRule = new ActivityTestRule<>(TestActivity.class);
@@ -39,6 +40,7 @@ public class BaseFragmentTest {
     @Before
     public void setUp() {
         testActivity = (TestActivity) activityRule.getActivity();
+        testIdler = new TestIdler(5, TimeUnit.SECONDS);
     }
 
     @After
@@ -50,40 +52,24 @@ public class BaseFragmentTest {
     }
 
     @Test
-    public void testShowFragment() {
+    public void testShowFragment() throws Exception {
         final TestFragment fragmentA = TestFragment.newInstance(TAG_A);
         final TestFragment fragmentB = TestFragment.newInstance(TAG_B);
 
         assertTrue(testActivity.showFragment(fragmentA));
 
         FragmentVisibleIdlingResource resourceA = new FragmentVisibleIdlingResource(testActivity, fragmentA.getStableTag(), true);
-        Espresso.registerIdlingResources(resourceA);
+        testIdler.till(resourceA);
 
         // Wait till fargmentA is added to the activity before calling showFragment
-        getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
 
-                assertTrue(fragmentA.showFragment(fragmentB));
+        assertTrue(fragmentA.showFragment(fragmentB));
 
-                FragmentVisibleIdlingResource resourceB = new FragmentVisibleIdlingResource(testActivity, fragmentA.getStableTag(), true);
-                resourceB.setIdleCallBack(new IdleCallBack() {
-                    @Override
-                    public void onIdle() {
+        FragmentVisibleIdlingResource resourceB = new FragmentVisibleIdlingResource(testActivity, fragmentA.getStableTag(), true);
+        testIdler.till(resourceB);
 
-                        // Wait for fragmentB to be shown before checking
-                        // if it's in the fragmentManager
-                        getInstrumentation().runOnMainSync(new Runnable() {
-                            @Override
-                            public void run() {
-                                assertEquals(fragmentB, testActivity.getSupportFragmentManager().findFragmentByTag(fragmentB.getStableTag()));
-                            }
-                        });
-                    }
-                });
-
-                Espresso.registerIdlingResources(resourceB);
-            }
-        });
+        // Wait for fragmentB to be shown before checking
+        // if it's in the fragmentManager
+        assertEquals(fragmentB, testActivity.getSupportFragmentManager().findFragmentByTag(fragmentB.getStableTag()));
     }
 }

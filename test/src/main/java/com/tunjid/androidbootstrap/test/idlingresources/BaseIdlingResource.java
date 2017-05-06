@@ -48,7 +48,7 @@ public abstract class BaseIdlingResource implements IdlingResource, IdleCallBack
     }
 
     protected void executeOnIdle() {
-        resourceCallback.onTransitionToIdle();
+        if (Espresso.getIdlingResources().contains(this)) resourceCallback.onTransitionToIdle();
         if (idleCallBack != null && hasIdled) idleCallBack.onIdle();
     }
 

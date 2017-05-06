@@ -23,7 +23,7 @@ public class FragmentVisibleIdlingResource extends BaseFragmentIdlingResource {
         Fragment fragment = findFragmentByTag();
 
         // Wait until fragment manager has fragment
-        boolean isIdle = ((fragment != null) && fragment.isVisible());
+        boolean isIdle = fragment != null && fragment.isVisible();
 
         return super.handleIsIdle(isIdle);
     }
