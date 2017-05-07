@@ -1,6 +1,6 @@
 package com.tunjid.androidbootstrap.core.components;
 
-import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -36,13 +36,13 @@ public class FragmentStateManager {
     private final FragmentManager.FragmentLifecycleCallbacks fragmentLifecycleCallbacks =
             new FragmentManager.FragmentLifecycleCallbacks() {
                 @Override
-                public void onFragmentAttached(FragmentManager fm, Fragment f, Context context) {
+                public void onFragmentCreated(FragmentManager fm, Fragment f, Bundle savedInstanceState) {
                     fragmentTags.add(f.getTag());
 
                     int backstackEntryCount = fm.getBackStackEntryCount();
                     int numTrackedTags = fragmentTags.size();
 
-                    if (backstackEntryCount != numTrackedTags) {
+                    if (backstackEntryCount != numTrackedTags && savedInstanceState == null) {
                         List<String> backstackEntries = new ArrayList<>(backstackEntryCount);
                         for (int i = 0; i < backstackEntryCount; i++) {
                             backstackEntries.add(fm.getBackStackEntryAt(i).getName());
@@ -60,7 +60,7 @@ public class FragmentStateManager {
                 }
 
                 @Override
-                public void onFragmentDetached(FragmentManager fm, Fragment f) {
+                public void onFragmentDestroyed(FragmentManager fm, Fragment f) {
                     fragmentTags.remove(f.getTag());
                 }
             };

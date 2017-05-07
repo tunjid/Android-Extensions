@@ -14,6 +14,7 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseViewHolder, T exten
     protected T adapterListener;
 
     public BaseRecyclerViewAdapter(T adapterListener) {
+        this();
         this.adapterListener = adapterListener;
     }
 
