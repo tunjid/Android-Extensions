@@ -1,9 +1,8 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven-publish'
 apply plugin: 'com.getkeepsafe.dexcount'
-
-group = parent.ext.packageName
-version = parent.ext.libraryVersion
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion parent.ext.compileSdkVersion
@@ -59,11 +58,43 @@ dependencies {
     compile parent.ext.recyclerView
 }
 
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            packaging 'aar'
+            group parent.ext.groupId
+            artifactId project.getName()
+            version parent.ext.libraryVersion
+        }
+    }
+}
+
+bintray {
+    user = parent.ext.bintrayUser
+    key = parent.ext.bintrayApiKey
+    // jFrog plugin must be declared for this line to work
+    configurations = ['archives']
+    publications = ['libraryPublication']
+    // Package info for BinTray
+    pkg {
+        repo = 'maven'
+        name = 'android-bootstrap'
+        userOrg = user
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/tunjid/android-bootstrap.git'
+        version {
+            name = '0.1'
+            desc = 'An Android library to bootstrap an Android application.'
+            vcsTag = '0.1'
+        }
+    }
+}
+
 publishing {
     publications {
-        aar(MavenPublication) {
+        libraryPublication(MavenPublication) {
             version = parent.ext.libraryVersion
-            groupId parent.ext.packageName
+            groupId parent.ext.groupId
             artifactId project.getName()
 
             // Tell maven to prepare the generated "*.aar" file for publishing
@@ -91,11 +122,11 @@ publishing {
             }
         }
     }
-    repositories {
-        maven {
-            url parent.ext.artifactoryUrl
-        }
-    }
+//    repositories {
+//        maven {
+//            url parent.ext.artifactoryUrl
+//        }
+//    }
 }
 
 // Gradle task to generate sources after building a release aar
