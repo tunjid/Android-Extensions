@@ -5,9 +5,10 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.android.tools.build:gradle:2.3.1'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
         classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.1'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
     }
     project.ext {
         buildToolsVersion = "25.0.2"
@@ -27,13 +28,24 @@ buildscript {
         supportAnnotations = 'com.android.support:support-annotations:' + supportLibVersion
 
         // Artifactory publishing params
-        def Properties props = new Properties()
-        props.load(new FileInputStream(file("libraryVersion.properties")))
+        def Properties libProps = new Properties()
+        def Properties bintrayProps = new Properties()
 
-        packageName = props['packageName']
-        libraryVersion = props['libraryVersion']
-        artifactoryUrl = props['artifactoryContextUrl']
+        libProps.load(new FileInputStream(file("libraryVersion.properties")))
+        bintrayProps.load(new FileInputStream(file("bintray.properties")))
+
+        groupId = libProps['groupId']
+        libraryVersion = libProps['libraryVersion']
+        artifactoryUrl = libProps['artifactoryUrl']
+
+        bintrayUser = bintrayProps['user']
+        bintrayApiKey = bintrayProps['apiKey']
     }
+}
+
+// Plugin used to upload authenticated files to BinTray through Gradle
+plugins {
+    id "com.jfrog.bintray" version "1.7.3"
 }
 
 allprojects {

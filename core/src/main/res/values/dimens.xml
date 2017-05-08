@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="navigation_drawer_width">240dp</dimen>
+
+    <!-- Standard Margins -->
+    <dimen name="octdecuple_margin">288dp</dimen>
+    <dimen name="septdecuple_margin">272dp</dimen>
+    <dimen name="sexdecuple_margin">256dp</dimen>
+    <dimen name="quintdecuple_margin">240dp</dimen>
+    <dimen name="quadecuple_margin">224dp</dimen>
+    <dimen name="tredecuple_margin">208dp</dimen>
+    <dimen name="duodecuple_margin">192dp</dimen>
+    <dimen name="decuple_margin">160dp</dimen>
+    <dimen name="nonuple_margin">144dp</dimen>
+    <dimen name="octuple_margin">128dp</dimen>
+    <dimen name="septuple_margin">112dp</dimen>
+    <dimen name="sextuple_margin">96dp</dimen>
+    <dimen name="quintuple_margin">80dp</dimen>
+    <dimen name="quadruple_margin">64dp</dimen>
+    <dimen name="triple_and_half_margin">56dp</dimen>
+    <dimen name="triple_margin">48dp</dimen>
+    <dimen name="double_and_half_margin">40dp</dimen>
+    <dimen name="double_margin">32dp</dimen>
+    <dimen name="single_and_half_margin">24dp</dimen>
+    <dimen name="single_margin">16dp</dimen>
+    <dimen name="half_margin_and_then_some">10dp</dimen>
+    <dimen name="half_margin">8dp</dimen>
+    <dimen name="third_margin">6dp</dimen>
+    <dimen name="quarter_margin">4dp</dimen>
+    <dimen name="eigth_margin">2dp</dimen>
+    <dimen name="sixteenth_margin">1dp</dimen>
+
+    <!-- Text sizes -->
+    <dimen name="tiny_text">14sp</dimen>
+    <dimen name="small_text">16sp</dimen>
+    <dimen name="regular_text">20sp</dimen>
+    <dimen name="medium_text">24sp</dimen>
+    <dimen name="large_text">34sp</dimen>
+    <dimen name="extra_large_text">45sp</dimen>
+</resources>
