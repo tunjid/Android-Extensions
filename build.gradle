@@ -36,6 +36,7 @@ buildscript {
 
         groupId = libProps['groupId']
         libraryVersion = libProps['libraryVersion']
+        artifactoryUrl = libProps['artifactoryUrl']
 
         bintrayUser = bintrayProps['user']
         bintrayApiKey = bintrayProps['apiKey']
