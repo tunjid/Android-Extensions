@@ -1,0 +1,61 @@
+package com.tunjid.androidbootstrap.fragments;
+
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.tunjid.androidbootstrap.R;
+import com.tunjid.androidbootstrap.adapters.RouteAdapter;
+import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Fragment used to test the environment switcher.
+ * <p>
+ * Created by tj.dahunsi on 5/6/16.
+ */
+public class RouteFragment extends BaseFragment
+        implements RouteAdapter.RouteAdapterListener {
+
+    private List<String> routes = new ArrayList<>();
+
+    public static RouteFragment newInstance() {
+        RouteFragment fragment = new RouteFragment();
+        fragment.setArguments(new Bundle());
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
+        routes.add(ImageListFragment.class.getSimpleName());
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_route, container, false);
+
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(new RouteAdapter(routes, this));
+
+        return rootView;
+    }
+
+    @Override
+    public void onItemClicked(String item) {
+        if (item.equals(ImageListFragment.class.getSimpleName())) {
+            showFragment(ImageListFragment.newInstance());
+        }
+    }
+}

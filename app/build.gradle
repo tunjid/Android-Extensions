@@ -1,17 +1,36 @@
 apply plugin: 'com.android.application'
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+    }
+}
+
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion parent.ext.compileSdkVersion
+    buildToolsVersion parent.ext.buildToolsVersion
+
     defaultConfig {
-        applicationId "com.tunjid.androidbootstrap"
-        minSdkVersion 14
-        targetSdkVersion 25
+        minSdkVersion parent.ext.minSdkVersion
+        targetSdkVersion parent.ext.targetSdkVersion
+
+        applicationId "com.tunjid.sandoidbootstrap.sample"
+
         versionCode 1
         versionName "1.0"
+
+        vectorDrawables.useSupportLibrary = true
+
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -20,10 +39,24 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile 'com.android.support:appcompat-v7:25.3.1'
+
     testCompile 'junit:junit:4.12'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Android support libraries
+    compile parent.ext.design
+    compile parent.ext.appCompat
+    compile parent.ext.recyclerView
+    compile 'com.android.support.constraint:constraint-layout:1.0.1'
+
+    // other dependencies
+    compile 'com.squareup.picasso:picasso:2.5.2'
+
+    testCompile parent.ext.design
+    testCompile parent.ext.supportAnnotations
+
+    androidTestCompile parent.ext.design
+    androidTestCompile parent.ext.supportAnnotations
+
+    compile project(':core')
 }
