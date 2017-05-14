@@ -37,6 +37,7 @@ public class RouteFragment extends BaseFragment
         setHasOptionsMenu(true);
 
         routes.add(ImageListFragment.class.getSimpleName());
+        routes.add(BleScanFragment.class.getSimpleName());
     }
 
     @Nullable
@@ -56,6 +57,9 @@ public class RouteFragment extends BaseFragment
     public void onItemClicked(String item) {
         if (item.equals(ImageListFragment.class.getSimpleName())) {
             showFragment(ImageListFragment.newInstance());
+        }
+        else if (item.equals(BleScanFragment.class.getSimpleName())) {
+            showFragment(BleScanFragment.newInstance());
         }
     }
 }
