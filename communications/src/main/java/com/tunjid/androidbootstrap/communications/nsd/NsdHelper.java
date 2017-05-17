@@ -122,13 +122,13 @@ public class NsdHelper {
         }
     }
 
-    protected static PrintWriter createPrintWriter(Socket socket) throws IOException {
+    public static PrintWriter createPrintWriter(Socket socket) throws IOException {
         return new PrintWriter(
                 new BufferedWriter(
                         new OutputStreamWriter(socket.getOutputStream())), true);
     }
 
-    protected static BufferedReader createBufferedReader(Socket socket) throws IOException {
+    public static BufferedReader createBufferedReader(Socket socket) throws IOException {
         return new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
 
