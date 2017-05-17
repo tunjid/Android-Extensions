@@ -38,6 +38,7 @@ public class RouteFragment extends BaseFragment
 
         routes.add(ImageListFragment.class.getSimpleName());
         routes.add(BleScanFragment.class.getSimpleName());
+        routes.add(NsdScanFragment.class.getSimpleName());
     }
 
     @Nullable
@@ -60,6 +61,9 @@ public class RouteFragment extends BaseFragment
         }
         else if (item.equals(BleScanFragment.class.getSimpleName())) {
             showFragment(BleScanFragment.newInstance());
+        }
+        else if (item.equals(NsdScanFragment.class.getSimpleName())) {
+            showFragment(NsdScanFragment.newInstance());
         }
     }
 }
