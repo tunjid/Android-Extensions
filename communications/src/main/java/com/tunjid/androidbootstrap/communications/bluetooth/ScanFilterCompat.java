@@ -70,6 +70,10 @@ public final class ScanFilterCompat implements Parcelable {
         mManufacturerDataMask = manufacturerDataMask;
     }
 
+    public static Builder getBuilder() {
+        return new Builder();
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -422,6 +426,10 @@ public final class ScanFilterCompat implements Parcelable {
         private int mManufacturerId = -1;
         private byte[] mManufacturerData;
         private byte[] mManufacturerDataMask;
+
+        private Builder() {
+
+        }
 
         /**
          * Set filter on device name.

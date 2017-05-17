@@ -51,6 +51,7 @@ dependencies {
     androidTestCompile 'com.android.support.test:runner:0.5'
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile parent.ext.supportV4
     compile parent.ext.supportAnnotations
 }
 

@@ -95,7 +95,7 @@ public class BleScanFragment extends BaseFragment
             BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
 
             scanner = BLEScanner.getBuilder(bluetoothAdapter)
-                    .addFilter(new ScanFilterCompat.Builder()
+                    .addFilter(ScanFilterCompat.getBuilder()
                             .setServiceUuid(new ParcelUuid(UUID.fromString(CUSTOM_SERVICE_UUID)))
                             .build())
                     .withCallBack(this).build();
