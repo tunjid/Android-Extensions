@@ -59,4 +59,5 @@ dependencies {
     androidTestCompile parent.ext.supportAnnotations
 
     compile project(':core')
+    compile project(':communications')
 }
