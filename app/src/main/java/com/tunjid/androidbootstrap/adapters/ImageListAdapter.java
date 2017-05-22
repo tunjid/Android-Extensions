@@ -1,18 +1,19 @@
 package com.tunjid.androidbootstrap.adapters;
 
 import android.content.Context;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseRecyclerViewAdapter;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseViewHolder;
+import com.tunjid.androidbootstrap.model.Doggo;
 
 import java.util.List;
 
@@ -23,63 +24,67 @@ import java.util.List;
  */
 public class ImageListAdapter extends BaseRecyclerViewAdapter<ImageListAdapter.ImageViewHolder, ImageListAdapter.ImageListAdapterListener> {
 
-    private List<Integer> imageResources;
+    private List<Doggo> doggos;
 
-    public ImageListAdapter(List<Integer> imageResources, ImageListAdapterListener listener) {
+    public ImageListAdapter(List<Doggo> doggos, ImageListAdapterListener listener) {
         super(listener);
         setHasStableIds(true);
-        this.imageResources = imageResources;
+        this.doggos = doggos;
     }
 
     @Override
     public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
-        View itemView = LayoutInflater.from(context).inflate(R.layout.viewholder_image, parent, false);
+        View itemView = LayoutInflater.from(context).inflate(R.layout.viewholder_image_list, parent, false);
 
         return new ImageViewHolder(itemView, adapterListener);
     }
 
     @Override
     public void onBindViewHolder(ImageViewHolder holder, int recyclerViewPosition) {
-        final int item = imageResources.get(recyclerViewPosition);
+        final Doggo item = doggos.get(recyclerViewPosition);
         holder.bind(item);
     }
 
     @Override
     public int getItemCount() {
-        return imageResources.size();
+        return doggos.size();
     }
 
     @Override
     public long getItemId(int position) {
-        return imageResources.get(position);
+        return doggos.get(position).hashCode();
     }
 
 
     public interface ImageListAdapterListener extends BaseRecyclerViewAdapter.AdapterListener {
-        void onItemClicked(@DrawableRes int imageResource);
+        void onDoggoClicked(Doggo doggo);
     }
 
     public static class ImageViewHolder extends BaseViewHolder<ImageListAdapterListener>
             implements View.OnClickListener {
 
-        public int imageResource;
-        public ImageView imageView;
+        public Doggo doggo;
+        public final TextView textView;
+        public final ImageView imageView;
 
         public ImageViewHolder(View itemView, @Nullable ImageListAdapterListener adapterListener) {
             super(itemView, adapterListener);
 
-            imageView = (ImageView) itemView.findViewById(R.id.image);
+            textView = (TextView) itemView.findViewById(R.id.doggo_name);
+            imageView = (ImageView) itemView.findViewById(R.id.doggo_image);
             itemView.setOnClickListener(this);
         }
 
-        public void bind(int imageResource) {
-            this.imageResource = imageResource;
+        public void bind(Doggo doggo) {
+            this.doggo = doggo;
 
-            ViewCompat.setTransitionName(imageView, imageResource + "-" + imageView.getId());
+            ViewCompat.setTransitionName(imageView, doggo.hashCode() + "-" + imageView.getId());
+
+            textView.setText(doggo.getName());
 
             Picasso.with(imageView.getContext())
-                    .load(imageResource)
+                    .load(doggo.getImageRes())
                     .fit()
                     .centerCrop()
                     .into(imageView);
@@ -87,7 +92,7 @@ public class ImageListAdapter extends BaseRecyclerViewAdapter<ImageListAdapter.I
 
         @Override
         public void onClick(View v) {
-            if (adapterListener != null) adapterListener.onItemClicked(imageResource);
+            if (adapterListener != null) adapterListener.onDoggoClicked(doggo);
         }
     }
 }

@@ -7,4 +7,12 @@
     <string name="menu_scan">Scan</string>
     <string name="menu_stop">Stop</string>
     <string name="menu_refresh">Refresh</string>
+
+    <!-- Directions -->
+    <string name="reset">reset</string>
+    <string name="left">Left</string>
+    <string name="right">Right</string>
+    <string name="top">Top</string>
+    <string name="bottom">Bottom</string>
+    <string name="no_ble">BLE is not supported</string>
 </resources>

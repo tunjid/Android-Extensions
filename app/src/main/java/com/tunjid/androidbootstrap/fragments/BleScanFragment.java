@@ -27,10 +27,10 @@ import android.widget.Toast;
 
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.ScanAdapter;
+import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.communications.bluetooth.BLEScanner;
 import com.tunjid.androidbootstrap.communications.bluetooth.ScanFilterCompat;
 import com.tunjid.androidbootstrap.communications.bluetooth.ScanResultCompat;
-import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,7 @@ import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
 
-public class BleScanFragment extends BaseFragment
+public class BleScanFragment extends AppBaseFragment
         implements
         BLEScanner.BleScanCallback,
         ScanAdapter.ScanAdapterListener {
@@ -51,6 +51,7 @@ public class BleScanFragment extends BaseFragment
     public static final String CUSTOM_SERVICE_UUID = "195AE58A-437A-489B-B0CD-B7C9C394BAE4";
 
     private boolean isScanning;
+    private boolean hasBle;
 
     private RecyclerView recyclerView;
 
@@ -94,6 +95,13 @@ public class BleScanFragment extends BaseFragment
             BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
             BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
 
+            if (bluetoothAdapter == null) {
+                Snackbar.make(recyclerView, R.string.no_ble, Snackbar.LENGTH_SHORT).show();
+                getActivity().onBackPressed();
+                return;
+            }
+
+            hasBle = true;
             scanner = BLEScanner.getBuilder(bluetoothAdapter)
                     .addFilter(ScanFilterCompat.getBuilder()
                             .setServiceUuid(new ParcelUuid(UUID.fromString(CUSTOM_SERVICE_UUID)))
@@ -154,6 +162,8 @@ public class BleScanFragment extends BaseFragment
     public void onResume() {
         super.onResume();
 
+        if (!hasBle) return;
+
         // Ensures BT is enabled on the device.  If BT is not currently enabled,
         // fire an intent to display a dialog asking the user to grant permission to enable it.
         if (!scanner.isEnabled()) {
@@ -213,6 +223,8 @@ public class BleScanFragment extends BaseFragment
 
     // Used to menu_ble_scan for BLE devices
     private void scanLeDevice(boolean enable) {
+        if(!hasBle) return;
+
         isScanning = enable;
 
         if (enable) scanner.startScan();

@@ -17,10 +17,10 @@ import android.view.ViewGroup;
 
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.NsdAdapter;
+import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.communications.nsd.DiscoveryListener;
 import com.tunjid.androidbootstrap.communications.nsd.NsdHelper;
 import com.tunjid.androidbootstrap.communications.nsd.ResolveListener;
-import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,7 @@ import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
 /**
  * A {@link Fragment} listing supported NSD servers
  */
-public class NsdScanFragment extends BaseFragment
+public class NsdScanFragment extends AppBaseFragment
         implements
         NsdAdapter.ServiceClickedListener {
 
