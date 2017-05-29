@@ -53,6 +53,7 @@ dependencies {
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
+    compile parent.ext.design
     compile parent.ext.appCompat
     compile parent.ext.recyclerView
 }

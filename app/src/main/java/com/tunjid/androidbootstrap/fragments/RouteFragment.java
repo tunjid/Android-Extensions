@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.RouteAdapter;
-import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment;
+import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
  * <p>
  * Created by tj.dahunsi on 5/6/16.
  */
-public class RouteFragment extends BaseFragment
+public class RouteFragment extends AppBaseFragment
         implements RouteAdapter.RouteAdapterListener {
 
     private List<String> routes = new ArrayList<>();
@@ -37,6 +37,10 @@ public class RouteFragment extends BaseFragment
         setHasOptionsMenu(true);
 
         routes.add(ImageListFragment.class.getSimpleName());
+        routes.add(BleScanFragment.class.getSimpleName());
+        routes.add(NsdScanFragment.class.getSimpleName());
+        routes.add(HidingViewFragment.class.getSimpleName());
+        routes.add(SpanbuilderFragment.class.getSimpleName());
     }
 
     @Nullable
@@ -56,6 +60,18 @@ public class RouteFragment extends BaseFragment
     public void onItemClicked(String item) {
         if (item.equals(ImageListFragment.class.getSimpleName())) {
             showFragment(ImageListFragment.newInstance());
+        }
+        else if (item.equals(BleScanFragment.class.getSimpleName())) {
+            showFragment(BleScanFragment.newInstance());
+        }
+        else if (item.equals(NsdScanFragment.class.getSimpleName())) {
+            showFragment(NsdScanFragment.newInstance());
+        }
+        else if (item.equals(HidingViewFragment.class.getSimpleName())) {
+            showFragment(HidingViewFragment.newInstance());
+        }
+        else if (item.equals(SpanbuilderFragment.class.getSimpleName())) {
+            showFragment(SpanbuilderFragment.newInstance());
         }
     }
 }

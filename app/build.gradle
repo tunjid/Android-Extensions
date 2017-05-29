@@ -47,10 +47,11 @@ dependencies {
     compile parent.ext.design
     compile parent.ext.appCompat
     compile parent.ext.recyclerView
-    compile 'com.android.support.constraint:constraint-layout:1.0.1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
     // other dependencies
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'jp.wasabeef:picasso-transformations:2.1.2'
 
     testCompile parent.ext.design
     testCompile parent.ext.supportAnnotations
@@ -59,4 +60,5 @@ dependencies {
     androidTestCompile parent.ext.supportAnnotations
 
     compile project(':core')
+    compile project(':communications')
 }
