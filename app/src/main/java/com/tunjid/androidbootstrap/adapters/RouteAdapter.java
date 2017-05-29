@@ -68,7 +68,7 @@ public class RouteAdapter extends BaseRecyclerViewAdapter<RouteAdapter.RouteItem
         RouteItemViewHolder(View itemView) {
             super(itemView);
 
-            textView = (TextView) itemView.findViewById(R.id.text);
+            textView = itemView.findViewById(R.id.text);
 
             itemView.setOnClickListener(this);
             textView.setOnClickListener(this);

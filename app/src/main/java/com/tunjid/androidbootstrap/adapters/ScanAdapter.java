@@ -64,8 +64,8 @@ public class ScanAdapter extends BaseRecyclerViewAdapter<ScanAdapter.ViewHolder,
         ViewHolder(View itemView, ScanAdapterListener scanAdapterListener) {
             super(itemView, scanAdapterListener);
 
-            deviceAddress = (TextView) itemView.findViewById(R.id.device_address);
-            deviceName = (TextView) itemView.findViewById(R.id.device_name);
+            deviceAddress = itemView.findViewById(R.id.device_address);
+            deviceName = itemView.findViewById(R.id.device_name);
             itemView.setOnClickListener(this);
         }
 

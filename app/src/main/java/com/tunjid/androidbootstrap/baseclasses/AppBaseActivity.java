@@ -13,7 +13,7 @@ import com.tunjid.androidbootstrap.core.view.ViewHider;
  * Created by tj.dahunsi on 5/20/17.
  */
 
-public class AppBaseActivity extends BaseActivity {
+public abstract class AppBaseActivity extends BaseActivity {
 
     private ViewHider toolbarHider;
     protected Toolbar toolbar;
@@ -21,7 +21,7 @@ public class AppBaseActivity extends BaseActivity {
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
         super.setContentView(layoutResID);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         toolbarHider = new ViewHider(toolbar, ViewHider.TOP);
         setSupportActionBar(toolbar);
     }

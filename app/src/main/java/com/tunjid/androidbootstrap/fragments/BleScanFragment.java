@@ -76,7 +76,7 @@ public class BleScanFragment extends AppBaseFragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_ble_scan, container, false);
 
-        recyclerView = (RecyclerView) rootView.findViewById(R.id.list);
+        recyclerView = rootView.findViewById(R.id.list);
         recyclerView.setAdapter(new ScanAdapter(this, bleDevices));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
@@ -223,7 +223,7 @@ public class BleScanFragment extends AppBaseFragment
 
     // Used to menu_ble_scan for BLE devices
     private void scanLeDevice(boolean enable) {
-        if(!hasBle) return;
+        if (!hasBle) return;
 
         isScanning = enable;
 

@@ -90,9 +90,9 @@ public class NsdScanFragment extends AppBaseFragment
         setHasOptionsMenu(true);
 
         nsdHelper = NsdHelper.getBuilder(getContext())
-        .setDiscoveryListener(discoveryListener)
-        .setResolveListener(getResolveListener())
-        .build();
+                .setDiscoveryListener(discoveryListener)
+                .setResolveListener(getResolveListener())
+                .build();
     }
 
     @Override
@@ -101,7 +101,7 @@ public class NsdScanFragment extends AppBaseFragment
 
         View rootView = inflater.inflate(R.layout.fragment_nsd_scan, container, false);
 
-        recyclerView = (RecyclerView) rootView.findViewById(R.id.list);
+        recyclerView = rootView.findViewById(R.id.list);
 
         recyclerView.setAdapter(new NsdAdapter(this, services));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

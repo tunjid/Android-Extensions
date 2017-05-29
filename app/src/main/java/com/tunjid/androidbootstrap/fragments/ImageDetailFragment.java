@@ -65,7 +65,7 @@ public class ImageDetailFragment extends AppBaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_image_detail, container, false);
-        ImageView blurredBackground = (ImageView) rootView.findViewById(R.id.blurred_background);
+        ImageView blurredBackground = rootView.findViewById(R.id.blurred_background);
 
         Doggo doggo = getArguments().getParcelable(ARG_DOGGO);
 

@@ -12,7 +12,7 @@ import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment;
  * Created by tj.dahunsi on 5/20/17.
  */
 
-public class AppBaseFragment extends BaseFragment {
+public abstract class AppBaseFragment extends BaseFragment {
 
     protected void toogleToolbar(boolean show) {
         ((AppBaseActivity) getActivity()).toogleToolbar(show);
