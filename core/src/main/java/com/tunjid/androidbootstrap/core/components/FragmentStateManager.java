@@ -116,6 +116,20 @@ public class FragmentStateManager {
      * Attempts to show the fragment provided, if the fragment does not already exist in the
      * {@link FragmentManager} under the specified tag.
      *
+     * @param transaction         The fragment transaction to show the supplied fragment with.
+     * @param fragmentTagProvider A fragmentTagProvider provider specifying the
+     *                            fragment and tag
+     * @return true if the a fragment provided will be shown, false if the fragment instance already
+     * exists and will be restored instead.
+     */
+    public final boolean showFragment(FragmentTransaction transaction, FragmentTagProvider fragmentTagProvider) {
+        return showFragment(transaction, fragmentTagProvider.getFragment(), fragmentTagProvider.getStableTag());
+    }
+
+    /**
+     * Attempts to show the fragment provided, if the fragment does not already exist in the
+     * {@link FragmentManager} under the specified tag.
+     *
      * @param fragment    The fragment to show.
      * @param transaction The fragment transaction to show the supplied fragment with.
      * @param tag         the value to supply to this fragment for it's backstack entry name and tag
@@ -141,5 +155,15 @@ public class FragmentStateManager {
                     .commit();
         }
         return fragmentShown;
+    }
+
+    /**
+     * An interface to provide unique tags for {@link Fragment Fragments}
+     */
+
+    public interface FragmentTagProvider {
+        String getStableTag();
+
+        Fragment getFragment();
     }
 }

@@ -74,6 +74,6 @@ public abstract class BaseActivity extends AppCompatActivity {
                 ? providedTransaction
                 : getSupportFragmentManager().beginTransaction();
 
-        return fragmentStateManager.showFragment(transaction, fragment, fragment.getStableTag());
+        return fragmentStateManager.showFragment(transaction, fragment);
     }
 }

@@ -7,16 +7,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 
+import com.tunjid.androidbootstrap.core.components.FragmentStateManager;
+
 /**
  * Base fragment
  */
-public abstract class BaseFragment extends Fragment implements BackPressInterceptor {
+public abstract class BaseFragment extends Fragment
+        implements
+        BackPressInterceptor,
+        FragmentStateManager.FragmentTagProvider {
 
     private static final String VIEW_DESTROYED = "com.tunjid.androidbootstrap.core.abstractclasses.basefragment.view.destroyed";
-
-    public String getStableTag() {
-        return getClass().getSimpleName();
-    }
 
     public boolean showFragment(BaseFragment fragment) {
         return ((BaseActivity) getActivity()).showFragment(fragment);
@@ -69,5 +70,15 @@ public abstract class BaseFragment extends Fragment implements BackPressIntercep
     @Override
     public boolean handledBackPress() {
         return false;
+    }
+
+    @Override
+    public String getStableTag() {
+        return getClass().getSimpleName();
+    }
+
+    @Override
+    public Fragment getFragment() {
+        return this;
     }
 }
