@@ -3,9 +3,10 @@ package com.tunjid.androidbootstrap.core.view;
 
 import android.graphics.Point;
 import android.support.annotation.IntDef;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPropertyAnimatorCompat;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.view.View;
-import android.view.ViewPropertyAnimator;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.Interpolator;
@@ -23,11 +24,11 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  */
 public class ViewHider {
 
-    private static final long DURATION = 200L;
     private static final Interpolator FAST_OUT_SLOW_IN_INTERPOLATOR = new FastOutSlowInInterpolator();
 
     private boolean isVisible = true;
     private final @HideDirection int direction;
+    private final long duration;
     private final View view;
 
     @Retention(SOURCE)
@@ -42,7 +43,13 @@ public class ViewHider {
     public static final int BOTTOM = 3;
 
     public ViewHider(View view, @HideDirection int direction) {
+        this(view, direction, 200L);
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    public ViewHider(View view, @HideDirection int direction, long duration) {
         this.view = view;
+        this.duration = duration;
         this.direction = direction;
     }
 
@@ -75,8 +82,8 @@ public class ViewHider {
             }
 
             float displacement = visible ? 0 : getDistanceOffscreen();
-            ViewPropertyAnimator animator = view.animate()
-                    .setDuration(DURATION)
+            ViewPropertyAnimatorCompat animator = ViewCompat.animate(view)
+                    .setDuration(duration)
                     .setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR);
 
             if (view.getVisibility() == VISIBLE) {

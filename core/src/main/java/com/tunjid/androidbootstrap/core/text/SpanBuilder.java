@@ -1,4 +1,4 @@
-package com.tunjid.androidbootstrap.text;
+package com.tunjid.androidbootstrap.core.text;
 
 import android.content.Context;
 import android.graphics.Typeface;

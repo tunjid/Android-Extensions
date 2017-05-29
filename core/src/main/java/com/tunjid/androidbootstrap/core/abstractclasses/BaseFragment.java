@@ -1,8 +1,10 @@
 package com.tunjid.androidbootstrap.core.abstractclasses;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 
 /**
@@ -28,6 +30,16 @@ public abstract class BaseFragment extends Fragment implements BackPressIntercep
         Bundle args = getArguments();
         return args != null && args.containsKey(VIEW_DESTROYED)
                 && args.getBoolean(VIEW_DESTROYED);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        FragmentActivity activity = getActivity();
+        if (activity != null && !(activity instanceof BaseActivity)) {
+            throw new IllegalStateException("This fragment may only be used with a "
+                    + BaseActivity.class.getName());
+        }
     }
 
     /**

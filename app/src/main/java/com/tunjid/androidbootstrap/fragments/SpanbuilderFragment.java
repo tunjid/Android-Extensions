@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
-import com.tunjid.androidbootstrap.text.SpanBuilder;
+import com.tunjid.androidbootstrap.core.text.SpanBuilder;
 
 /**
  * Fragment showing a static list of images
