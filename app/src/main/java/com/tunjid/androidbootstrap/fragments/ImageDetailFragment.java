@@ -61,6 +61,11 @@ public class ImageDetailFragment extends AppBaseFragment {
         return fragment;
     }
 
+    @Override
+    public String getStableTag() {
+        return super.getStableTag() + "-" + getArguments().getParcelable(ARG_DOGGO);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

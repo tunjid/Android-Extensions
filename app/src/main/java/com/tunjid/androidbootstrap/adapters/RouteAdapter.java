@@ -1,6 +1,14 @@
 package com.tunjid.androidbootstrap.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
+import android.support.transition.AutoTransition;
+import android.support.transition.TransitionManager;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.widget.TextViewCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +17,7 @@ import android.widget.TextView;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseRecyclerViewAdapter;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseViewHolder;
+import com.tunjid.androidbootstrap.model.Route;
 
 import java.util.List;
 
@@ -19,12 +28,12 @@ import java.util.List;
  */
 public class RouteAdapter extends BaseRecyclerViewAdapter<RouteAdapter.RouteItemViewHolder, RouteAdapter.RouteAdapterListener> {
 
-    private List<String> socialItems;
+    private List<Route> routes;
 
-    public RouteAdapter(List<String> routes, RouteAdapterListener listener) {
+    public RouteAdapter(List<Route> routes, RouteAdapterListener listener) {
         super(listener);
         setHasStableIds(true);
-        this.socialItems = routes;
+        this.routes = routes;
     }
 
     @Override
@@ -32,59 +41,99 @@ public class RouteAdapter extends BaseRecyclerViewAdapter<RouteAdapter.RouteItem
 
         Context context = parent.getContext();
         View itemView = LayoutInflater.from(context).
-                inflate(R.layout.viewholder_text, parent, false);
+                inflate(R.layout.viewholder_route, parent, false);
 
-        return new RouteItemViewHolder(itemView);
+        return new RouteItemViewHolder(itemView, adapterListener);
     }
 
     @Override
     public void onBindViewHolder(RouteItemViewHolder holder, int recyclerViewPosition) {
-        final String item = socialItems.get(recyclerViewPosition);
-        holder.bind(item, adapterListener);
+        holder.bind(routes.get(recyclerViewPosition));
     }
 
     @Override
     public int getItemCount() {
-        return socialItems.size();
+        return routes.size();
     }
 
     @Override
     public long getItemId(int position) {
-        return socialItems.get(position).hashCode();
+        return routes.get(position).hashCode();
     }
 
 
     public interface RouteAdapterListener extends BaseRecyclerViewAdapter.AdapterListener {
-        void onItemClicked(String item);
+        void onItemClicked(Route route);
     }
 
     static class RouteItemViewHolder extends BaseViewHolder<RouteAdapterListener>
             implements View.OnClickListener {
 
-        String item;
+        Route route;
 
-        TextView textView;
+        TextView routeDestination;
+        TextView routeDescription;
 
-        RouteItemViewHolder(View itemView) {
-            super(itemView);
+        RouteItemViewHolder(View itemView, RouteAdapterListener listener) {
+            super(itemView, listener);
 
-            textView = itemView.findViewById(R.id.text);
+            routeDestination = itemView.findViewById(R.id.destination);
+            routeDescription = itemView.findViewById(R.id.description);
 
             itemView.setOnClickListener(this);
-            textView.setOnClickListener(this);
+            routeDescription.setOnClickListener(this);
+
+            setIcons(true, routeDestination);
         }
 
-        void bind(String item, RouteAdapterListener socialAdapterListener) {
+        void bind(Route route) {
+            this.route = route;
 
-            this.item = item;
-            adapterListener = socialAdapterListener;
-
-            textView.setText(item);
+            routeDestination.setText(route.getDestination());
+            routeDescription.setText(route.getDescription());
         }
 
         @Override
         public void onClick(View v) {
-            adapterListener.onItemClicked(item);
+            switch (v.getId()) {
+                case R.id.description:
+                    adapterListener.onItemClicked(route);
+                    break;
+                default:
+                    changeVisibility(routeDestination, routeDescription);
+                    break;
+            }
+        }
+
+        @SuppressLint("ResourceAsColor")
+        private void setIcons(boolean isDown, TextView... textViews) {
+            int resVal = isDown ? R.drawable.anim_vect_down_to_right_arrow : R.drawable.anim_vect_right_to_down_arrow;
+
+            for (TextView textView : textViews) {
+                Drawable icon = AnimatedVectorDrawableCompat.create(itemView.getContext(), resVal);
+                if (icon != null) {
+                    icon = DrawableCompat.wrap(icon.mutate());
+                    DrawableCompat.setTint(icon, R.color.dark_grey);
+                    DrawableCompat.setTintMode(icon, PorterDuff.Mode.SRC_IN);
+                    TextViewCompat.setCompoundDrawablesRelativeWithIntrinsicBounds(textView, null, null, icon, null);
+                }
+            }
+        }
+
+        private void changeVisibility(TextView clicked, View... changing) {
+            TransitionManager.beginDelayedTransition((ViewGroup) itemView.getParent(), new AutoTransition());
+
+            boolean visible = changing[0].getVisibility() == View.VISIBLE;
+
+            setIcons(visible, clicked);
+
+            AnimatedVectorDrawableCompat animatedDrawable = (AnimatedVectorDrawableCompat)
+                    TextViewCompat.getCompoundDrawablesRelative(clicked)[2];
+
+            animatedDrawable.start();
+
+            int visibility = visible ? View.GONE : View.VISIBLE;
+            for (View view : changing) view.setVisibility(visibility);
         }
     }
 }

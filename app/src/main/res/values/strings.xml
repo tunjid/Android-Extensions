@@ -3,6 +3,13 @@
     <string name="unknown_device">Unknown device</string>
     <string name="ble_not_supported">BLE is not supported</string>
 
+    <!-- Route Descriptions -->
+    <string name="route_image_list">A list of doggos demonstrating delegation of shared element transitions to the calling fragment.</string>
+    <string name="route_ble_scan">A fragment demonstrating the use of the BLEScanner from the Communications module.</string>
+    <string name="route_nsd_scan">A fragment demonstrating the use of the NsdHelper from the Communications module.</string>
+    <string name="route_hiding_view">A fragment demonstrating the ViewHider, useful for implementing the "quick return" pattern</string>
+    <string name="route_span_builder">A fragment demonstrating the SpanBuilder</string>
+
     <!-- Menu items -->
     <string name="menu_scan">Scan</string>
     <string name="menu_stop">Stop</string>
