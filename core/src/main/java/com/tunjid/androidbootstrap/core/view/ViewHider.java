@@ -63,8 +63,6 @@ public class ViewHider {
 
     private void toggle(final boolean visible) {
         if (this.isVisible != visible) {
-
-            this.isVisible = visible;
             final ViewTreeObserver observer = view.getViewTreeObserver();
 
             // View hasn't been laid out yet and has it's observer attached
@@ -81,6 +79,7 @@ public class ViewHider {
                 return;
             }
 
+            this.isVisible = visible;
             float displacement = visible ? 0 : getDistanceOffscreen();
             ViewPropertyAnimatorCompat animator = ViewCompat.animate(view)
                     .setDuration(duration)
