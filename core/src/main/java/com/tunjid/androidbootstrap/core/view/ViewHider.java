@@ -63,14 +63,15 @@ public class ViewHider {
 
     private void toggle(final boolean visible) {
         if (this.isVisible != visible) {
-            final ViewTreeObserver observer = view.getViewTreeObserver();
+            final ViewTreeObserver original = view.getViewTreeObserver();
 
             // View hasn't been laid out yet and has it's observer attached
-            if (view.getHeight() == 0 && observer.isAlive()) {
-                observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            if (view.getHeight() == 0 && original.isAlive()) {
+                original.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                     @Override
                     public boolean onPreDraw() {
-                        if (observer.isAlive()) observer.removeOnPreDrawListener(this);
+                        ViewTreeObserver current = view.getViewTreeObserver();
+                        if (current.isAlive()) current.removeOnPreDrawListener(this);
                         // toggle as soon as the view is visible
                         toggle(visible);
                         return true;
