@@ -46,9 +46,10 @@ public class FragmentStateManager {
 
                     int totalBackStackCount = fm.getBackStackEntryCount();
                     int numTrackedTags = fragmentTags.size();
-                    int trackedBackStackCount = 0;
 
+                    Set<String> uniqueBackstackEntries = new HashSet<>();
                     List<String> backstackEntries = new ArrayList<>(totalBackStackCount);
+
                     for (int i = 0; i < totalBackStackCount; i++) {
                         FragmentManager.BackStackEntry entry = fm.getBackStackEntryAt(i);
                         String entryName = entry.getName();
@@ -63,11 +64,12 @@ public class FragmentStateManager {
                             continue;
                         }
 
-                        ++trackedBackStackCount;
+                        uniqueBackstackEntries.add(entryName);
                         backstackEntries.add(entryName);
                     }
 
-                    if (trackedBackStackCount != numTrackedTags && savedInstanceState == null) {
+                    // Maje sure every fragment shown managed by us is added to the backstack
+                    if (uniqueBackstackEntries.size() != numTrackedTags && savedInstanceState == null) {
                         throw new IllegalStateException(MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK
                                 + "\n Fragment Attached: " + f.toString()
                                 + "\n Fragment Tag: " + f.getTag()
