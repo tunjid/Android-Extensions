@@ -6,13 +6,13 @@ buildscript {
         maven { url "https://maven.google.com" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-alpha3'
+        classpath 'com.android.tools.build:gradle:3.0.0-alpha4'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.1'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
     }
     project.ext {
-        buildToolsVersion = "26.0.0-rc2"
+        buildToolsVersion = "26.0.0"
         compileSdkVersion = "android-O"
         targetSdkVersion = 23
         minSdkVersion = 16
