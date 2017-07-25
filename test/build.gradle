@@ -25,12 +25,15 @@ android {
     }
 
     libraryVariants.all { variant ->
-        variant.outputs.each { output ->
-            def outputFile = output.outputFile
-            if (outputFile != null && outputFile.name.endsWith('.aar')) {
-                def fileName = "${project.getName()}-${parent.ext.libraryVersion}.aar"
-                output.outputFile = new File(outputFile.parent, fileName)
-            }
+//        variant.outputs.each { output ->
+//            def outputFile = output.outputFile
+//            if (outputFile != null && outputFile.name.endsWith('.aar')) {
+//                def fileName = "${project.getName()}-${parent.ext.libraryVersion}.aar"
+//                output.outputFile = new File(outputFile.parent, fileName)
+//            }
+//        }
+        variant.outputs.all {
+            outputFileName = "${project.getName()}-${parent.ext.libraryVersion}.aar"
         }
     }
 }

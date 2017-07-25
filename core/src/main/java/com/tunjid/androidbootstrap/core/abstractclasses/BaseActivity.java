@@ -2,6 +2,7 @@ package com.tunjid.androidbootstrap.core.abstractclasses;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.tunjid.androidbootstrap.core.R;
 import com.tunjid.androidbootstrap.core.components.FragmentStateManager;
 
 /**
@@ -30,12 +30,14 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void setContentView(@LayoutRes int layoutResID) {
         super.setContentView(layoutResID);
 
+        @IdRes int mainContainerId = fragmentStateManager.getIdResource();
         // Check if this activity has a main fragment container viewgroup
-        View mainFragmentContainer = findViewById(R.id.main_fragment_container);
+        View mainFragmentContainer = findViewById(mainContainerId);
 
         if (mainFragmentContainer == null || !(mainFragmentContainer instanceof ViewGroup)) {
-            throw new IllegalArgumentException("This activity must include a ViewGroup " +
-                    "with id 'main_fragment_container' for dynamically added fragments");
+            throw new IllegalArgumentException("This activity must include a ViewGroup with id '" +
+                    getResources().getResourceName(mainContainerId) +
+                    "' for dynamically added fragments");
         }
     }
 
@@ -74,6 +76,6 @@ public abstract class BaseActivity extends AppCompatActivity {
                 ? providedTransaction
                 : getSupportFragmentManager().beginTransaction();
 
-        return fragmentStateManager.showFragment(transaction, fragment, fragment.getStableTag());
+        return fragmentStateManager.showFragment(transaction, fragment);
     }
 }

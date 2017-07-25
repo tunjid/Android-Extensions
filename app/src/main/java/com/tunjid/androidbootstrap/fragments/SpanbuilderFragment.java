@@ -32,7 +32,7 @@ public class SpanbuilderFragment extends AppBaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_spanbuilder, container, false);
 
-        TextView textView = (TextView) rootView.findViewById(R.id.text);
+        TextView textView = rootView.findViewById(R.id.text);
         Context context = textView.getContext();
 
         CharSequence text = new SpanBuilder(context, "This is a regular span")

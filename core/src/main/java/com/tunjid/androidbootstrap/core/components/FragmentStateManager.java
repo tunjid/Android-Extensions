@@ -1,6 +1,7 @@
 package com.tunjid.androidbootstrap.core.components;
 
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -24,6 +25,7 @@ public class FragmentStateManager {
 
     static final String MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK = "A fragment cannot be added to a FragmentManager managed by FragmentStateManager without adding it to the backstack";
 
+    private final @IdRes int idResource;
     final FragmentManager fragmentManager;
     final Set<String> fragmentTags;
 
@@ -37,22 +39,42 @@ public class FragmentStateManager {
             new FragmentManager.FragmentLifecycleCallbacks() {
                 @Override
                 public void onFragmentCreated(FragmentManager fm, Fragment f, Bundle savedInstanceState) {
+                    // Not a fragment managed by this FragmentStateManager
+                    if (f.getId() != idResource) return;
+
                     fragmentTags.add(f.getTag());
 
-                    int backstackEntryCount = fm.getBackStackEntryCount();
+                    int totalBackStackCount = fm.getBackStackEntryCount();
                     int numTrackedTags = fragmentTags.size();
 
-                    if (backstackEntryCount != numTrackedTags && savedInstanceState == null) {
-                        List<String> backstackEntries = new ArrayList<>(backstackEntryCount);
-                        for (int i = 0; i < backstackEntryCount; i++) {
-                            backstackEntries.add(fm.getBackStackEntryAt(i).getName());
+                    Set<String> uniqueBackstackEntries = new HashSet<>();
+                    List<String> backstackEntries = new ArrayList<>(totalBackStackCount);
+
+                    for (int i = 0; i < totalBackStackCount; i++) {
+                        FragmentManager.BackStackEntry entry = fm.getBackStackEntryAt(i);
+                        String entryName = entry.getName();
+                        Fragment shownFragment = fragmentManager.findFragmentByTag(entryName);
+
+                        if (shownFragment == null) {
+                            throw new IllegalStateException("Fragment backstack entry name does " +
+                                    "not match a tag in the fragment manager");
+                        }
+                        if (shownFragment.getId() != idResource) {
+                            // Not a fragment managed by us, continue
+                            continue;
                         }
 
+                        uniqueBackstackEntries.add(entryName);
+                        backstackEntries.add(entryName);
+                    }
+
+                    // Maje sure every fragment shown managed by us is added to the backstack
+                    if (uniqueBackstackEntries.size() != numTrackedTags && savedInstanceState == null) {
                         throw new IllegalStateException(MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK
                                 + "\n Fragment Attached: " + f.toString()
                                 + "\n Fragment Tag: " + f.getTag()
                                 + "\n Number of Tracked Fragments: " + numTrackedTags
-                                + "\n Backstack Entry Count: " + backstackEntryCount
+                                + "\n Backstack Entry Count: " + totalBackStackCount
                                 + "\n Tracked Fragments: " + fragmentTags
                                 + "\n Back Stack Entries: " + backstackEntries
                         );
@@ -61,6 +83,9 @@ public class FragmentStateManager {
 
                 @Override
                 public void onFragmentDestroyed(FragmentManager fm, Fragment f) {
+                    // Not a fragment managed by this FragmentStateManager
+                    if (f.getId() != idResource) return;
+
                     fragmentTags.remove(f.getTag());
                 }
             };
@@ -88,7 +113,13 @@ public class FragmentStateManager {
             };
 
     public FragmentStateManager(FragmentManager fragmentManager) {
+        this(fragmentManager, R.id.main_fragment_container);
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    public FragmentStateManager(FragmentManager fragmentManager, @IdRes int idResource) {
         this.fragmentManager = fragmentManager;
+        this.idResource = idResource;
         fragmentTags = new HashSet<>();
 
         int backStackCount = fragmentManager.getBackStackEntryCount();
@@ -110,6 +141,25 @@ public class FragmentStateManager {
         return currentFragmentTag == null
                 ? null
                 : fragmentManager.findFragmentByTag(currentFragmentTag);
+    }
+
+    @IdRes
+    public int getIdResource() {
+        return idResource;
+    }
+
+    /**
+     * Attempts to show the fragment provided, if the fragment does not already exist in the
+     * {@link FragmentManager} under the specified tag.
+     *
+     * @param transaction         The fragment transaction to show the supplied fragment with.
+     * @param fragmentTagProvider A fragmentTagProvider provider specifying the
+     *                            fragment and tag
+     * @return true if the a fragment provided will be shown, false if the fragment instance already
+     * exists and will be restored instead.
+     */
+    public final boolean showFragment(FragmentTransaction transaction, FragmentTagProvider fragmentTagProvider) {
+        return showFragment(transaction, fragmentTagProvider.getFragment(), fragmentTagProvider.getStableTag());
     }
 
     /**
@@ -137,9 +187,19 @@ public class FragmentStateManager {
                     : fragment;
 
             transaction.addToBackStack(tag)
-                    .replace(R.id.main_fragment_container, fragmentToShow, tag)
+                    .replace(idResource, fragmentToShow, tag)
                     .commit();
         }
         return fragmentShown;
+    }
+
+    /**
+     * An interface to provide unique tags for {@link Fragment Fragments}
+     */
+
+    public interface FragmentTagProvider {
+        String getStableTag();
+
+        Fragment getFragment();
     }
 }

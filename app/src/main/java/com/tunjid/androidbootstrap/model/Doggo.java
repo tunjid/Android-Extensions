@@ -64,6 +64,11 @@ public class Doggo implements Parcelable {
         return imageRes;
     }
 
+    @Override
+    public String toString() {
+        return getName() + "-" + hashCode();
+    }
+
     private Doggo(Parcel in) {
         imageRes = in.readInt();
         name = in.readString();

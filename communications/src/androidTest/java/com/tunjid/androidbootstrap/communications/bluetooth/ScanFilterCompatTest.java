@@ -29,7 +29,7 @@ public class ScanFilterCompatTest {
 
     @Before
     public void setUp() throws Exception {
-        compatBuilder = new ScanFilterCompat.Builder();
+        compatBuilder = ScanFilterCompat.getBuilder();
         builder = new ScanFilter.Builder();
     }
 

@@ -71,8 +71,8 @@ public class ImageListAdapter extends BaseRecyclerViewAdapter<ImageListAdapter.I
         public ImageViewHolder(View itemView, @Nullable ImageListAdapterListener adapterListener) {
             super(itemView, adapterListener);
 
-            textView = (TextView) itemView.findViewById(R.id.doggo_name);
-            imageView = (ImageView) itemView.findViewById(R.id.doggo_image);
+            textView = itemView.findViewById(R.id.doggo_name);
+            imageView = itemView.findViewById(R.id.doggo_image);
             itemView.setOnClickListener(this);
         }
 
