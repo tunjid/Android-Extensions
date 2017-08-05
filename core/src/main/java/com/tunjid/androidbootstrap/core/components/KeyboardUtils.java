@@ -60,7 +60,7 @@ public final class KeyboardUtils {
             View decorView = viewProvider.getDecorView();
             View contentView = viewProvider.getContentView();
 
-            if (decorView == null) return;
+            if (decorView == null || contentView == null) return;
 
             // Rect will have values of the visible area left
             Rect rect = new Rect();
@@ -68,19 +68,20 @@ public final class KeyboardUtils {
             decorView.getWindowVisibleDisplayFrame(rect);
 
             // Get Screen height and calculate the difference between the visble and hidden areas
-            int height = decorView.getContext().getResources().getDisplayMetrics().heightPixels;
+            int height = contentView.getHeight();
             int diff = height - rect.bottom;
 
             // If the useable screen height differs from the total screen height, assume the
             // virtual keyboard is visible.
-            if (diff != 0 && contentView != null) {
-                // Check if the padding was not previously set on the contentView, if not, add it
-                if (contentView.getPaddingBottom() != diff) contentView.setPadding(0, 0, 0, diff);
-            }
-            else if (contentView != null) {
+
+            // Check if the padding was not previously set on the contentView, if not, add it
+
+            int padding = contentView.getPaddingBottom();
+
+            if (diff != 0 && padding != diff) contentView.setPadding(0, 0, 0, diff);
+
                 // Reset padding
-                if (contentView.getPaddingBottom() != 0) contentView.setPadding(0, 0, 0, 0);
-            }
+            else if (padding != 0) contentView.setPadding(0, 0, 0, 0);
         }
     };
 
