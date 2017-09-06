@@ -33,7 +33,9 @@ buildscript {
         Properties bintrayProps = new Properties()
 
         libProps.load(new FileInputStream(file("libraryVersion.properties")))
-        bintrayProps.load(new FileInputStream(file("bintray.properties")))
+
+        def bintrayFile = file("bintray.properties")
+        if (bintrayFile.exists()) bintrayProps.load(new FileInputStream(bintrayFile))
 
         groupId = libProps['groupId']
         libraryVersion = libProps['libraryVersion']
