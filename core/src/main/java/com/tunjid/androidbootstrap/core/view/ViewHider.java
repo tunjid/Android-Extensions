@@ -5,6 +5,7 @@ import android.graphics.Point;
 import android.support.annotation.IntDef;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorCompat;
+import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -14,7 +15,6 @@ import android.view.animation.Interpolator;
 import java.lang.annotation.Retention;
 
 import static android.content.Context.WINDOW_SERVICE;
-import static android.view.View.VISIBLE;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 /**
@@ -84,12 +84,26 @@ public class ViewHider {
             float displacement = visible ? 0 : getDistanceOffscreen();
             ViewPropertyAnimatorCompat animator = ViewCompat.animate(view)
                     .setDuration(duration)
-                    .setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR);
+                    .setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR)
+                    .setListener(new ViewPropertyAnimatorListener() {
+                        @Override
+                        public void onAnimationStart(View view) {
+                            if (visible) view.setVisibility(View.VISIBLE);
+                        }
 
-            if (view.getVisibility() == VISIBLE) {
-                if (direction == LEFT || direction == RIGHT) animator.translationX(displacement);
-                else animator.translationY(displacement);
-            }
+                        @Override
+                        public void onAnimationEnd(View view) {
+                            if (!visible) view.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(View view) {
+
+                        }
+                    });
+
+            if (direction == LEFT || direction == RIGHT) animator.translationX(displacement);
+            else animator.translationY(displacement);
 
             animator.start();
         }
