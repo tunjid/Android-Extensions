@@ -22,7 +22,7 @@ public abstract class AppBaseActivity extends BaseActivity {
     public void setContentView(@LayoutRes int layoutResID) {
         super.setContentView(layoutResID);
         toolbar = findViewById(R.id.toolbar);
-        toolbarHider = new ViewHider(toolbar, ViewHider.TOP);
+        toolbarHider =  ViewHider.of(toolbar).setDirection(ViewHider.TOP).build();
         setSupportActionBar(toolbar);
     }
 

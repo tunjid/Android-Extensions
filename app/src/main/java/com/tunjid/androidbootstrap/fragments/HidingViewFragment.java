@@ -47,10 +47,10 @@ public class HidingViewFragment extends AppBaseFragment
         bottomButton.setOnClickListener(this);
         rootView.findViewById(R.id.reset).setOnClickListener(this);
 
-        leftHider = new ViewHider(leftButton, ViewHider.LEFT);
-        topHider = new ViewHider(topButton, ViewHider.TOP);
-        rightHider = new ViewHider(rightButton, ViewHider.RIGHT);
-        bottomHider = new ViewHider(bottomButton, ViewHider.BOTTOM);
+        leftHider = ViewHider.of(leftButton).setDirection(ViewHider.LEFT).build();
+        topHider = ViewHider.of(topButton).setDirection(ViewHider.TOP).build();
+        rightHider = ViewHider.of(rightButton).setDirection(ViewHider.RIGHT).build();
+        bottomHider = ViewHider.of(bottomButton).setDirection(ViewHider.BOTTOM).build();
 
         return rootView;
     }
