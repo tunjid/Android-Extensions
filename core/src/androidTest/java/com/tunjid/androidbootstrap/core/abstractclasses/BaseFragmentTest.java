@@ -61,7 +61,7 @@ public class BaseFragmentTest {
         FragmentVisibleIdlingResource resourceA = new FragmentVisibleIdlingResource(testActivity, fragmentA.getStableTag(), true);
         testIdler.till(resourceA);
 
-        // Wait till fargmentA is added to the activity before calling showFragment
+        // Wait till fragmentA is added to the activity before calling showFragment
 
         assertTrue(fragmentA.showFragment(fragmentB));
 

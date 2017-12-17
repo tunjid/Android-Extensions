@@ -24,7 +24,9 @@ public class TestIdler {
     public void till(TestIdler.TestCondition condition) throws TimeoutException {
         long end = System.currentTimeMillis() + timeUnit.toMillis(timeOut);
         for (; ; ) {
-            if (condition.satified()) break;
+            if (condition.satisfied()) {
+                break;
+            }
             else if (System.currentTimeMillis() > end) {
                 throw new TimeoutException("TestIdler for TestCondition " + condition + " timed out");
             }
@@ -32,15 +34,10 @@ public class TestIdler {
     }
 
     public void till(final IdlingResource idlingResource) throws TimeoutException {
-        till(new TestCondition() {
-            @Override
-            public boolean satified() {
-                return idlingResource.isIdleNow();
-            }
-        });
+        till(idlingResource::isIdleNow);
     }
 
     public interface TestCondition {
-        boolean satified();
+        boolean satisfied();
     }
 }

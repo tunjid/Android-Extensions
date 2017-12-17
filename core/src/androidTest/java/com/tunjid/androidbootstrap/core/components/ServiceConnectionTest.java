@@ -49,7 +49,7 @@ public class ServiceConnectionTest {
         testIdler = new TestIdler(DEFAULT_TIME_OUT, TimeUnit.SECONDS);
         bindCondition = new TestIdler.TestCondition() {
             @Override
-            public boolean satified() {
+            public boolean satisfied() {
                 return connection.isBound();
             }
         };

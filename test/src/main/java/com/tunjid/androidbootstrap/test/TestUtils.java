@@ -1,22 +1,20 @@
 package com.tunjid.androidbootstrap.test;
 
-import android.support.test.espresso.Espresso;
+import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.IdlingResource;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Aggregation of utility test functions
- * <p>
- * Created by Shemanigans on 4/29/17.
  */
 
 public class TestUtils {
 
     public static void unregisterAllIdlingResources() {
-        List<IdlingResource> idlingResources = Espresso.getIdlingResources();
+        Collection<IdlingResource> idlingResources = IdlingRegistry.getInstance().getResources();
         for (IdlingResource resource : idlingResources) {
-            Espresso.unregisterIdlingResources(resource);
+            IdlingRegistry.getInstance().unregister(resource);
         }
     }
 }

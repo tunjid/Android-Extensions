@@ -56,7 +56,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     androidTestCompile project(':test')
-    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test:runner:1.0.1'
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile parent.ext.supportV4

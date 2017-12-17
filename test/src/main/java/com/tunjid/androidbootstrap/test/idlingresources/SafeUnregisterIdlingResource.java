@@ -1,19 +1,18 @@
 package com.tunjid.androidbootstrap.test.idlingresources;
 
-import android.support.test.espresso.Espresso;
+import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.IdlingResource;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * IdlingResource used to safely unregister other idling resources.
- * <p>
- * Created by tj.dahunsi on 4/29/17.
  */
 public class SafeUnregisterIdlingResource extends BaseIdlingResource {
 
     private BaseIdlingResource resourceToUnregister;
 
+    @SuppressWarnings("WeakerAccess")
     public SafeUnregisterIdlingResource(BaseIdlingResource resourceToUnregister) {
         // Never attempt to unregister itself
         super(false);
@@ -29,11 +28,11 @@ public class SafeUnregisterIdlingResource extends BaseIdlingResource {
     public boolean isIdleNow() {
         if (hasIdled) return true;
 
-        List<IdlingResource> idlingResourceList = Espresso.getIdlingResources();
+        Collection<IdlingResource> idlingResourceList = IdlingRegistry.getInstance().getResources();
         boolean hasIdleDependent = resourceToUnregister.hasIdled;
 
         if (hasIdleDependent) {
-            Espresso.unregisterIdlingResources(resourceToUnregister);
+            IdlingRegistry.getInstance().unregister(resourceToUnregister);
             executeOnIdle();
         }
 
