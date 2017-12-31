@@ -24,6 +24,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         fragmentStateManager = new FragmentStateManager(getSupportFragmentManager());
+        fragmentStateManager.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
@@ -51,6 +52,12 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         if (fragmentManager.getBackStackEntryCount() > 1) fragmentManager.popBackStack();
         else finish();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        fragmentStateManager.onSaveInstanceState(outState);
     }
 
     /**

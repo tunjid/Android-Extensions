@@ -1,6 +1,6 @@
 package com.tunjid.androidbootstrap.test.idlingresources;
 
-import android.support.test.espresso.Espresso;
+import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.IdlingResource;
 import android.util.Log;
 
@@ -16,16 +16,19 @@ public abstract class BaseIdlingResource implements IdlingResource, IdleCallBack
     /**
      * Whether or not this resource is done idling.
      */
+    @SuppressWarnings("WeakerAccess")
     protected boolean hasIdled;
 
     /**
      * The callback to notify Espresso when this resource transitions to idle.
      */
+    @SuppressWarnings("WeakerAccess")
     protected ResourceCallback resourceCallback;
 
     /**
      * A callback used when this resource is idled.
      */
+    @SuppressWarnings("WeakerAccess")
     public IdleCallBack idleCallBack;
 
     /**
@@ -33,6 +36,7 @@ public abstract class BaseIdlingResource implements IdlingResource, IdleCallBack
      *
      * @param unregisterSelf Whether or not this idling resource should unregister itself when it is done.
      */
+    @SuppressWarnings("WeakerAccess")
     public BaseIdlingResource(boolean unregisterSelf) {
         if (unregisterSelf) {
             setIdleCallBack(this);
@@ -43,23 +47,32 @@ public abstract class BaseIdlingResource implements IdlingResource, IdleCallBack
         this.idleCallBack = idleCallBack;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public void safelyUnregisterSelf() {
-        Espresso.registerIdlingResources(new SafeUnregisterIdlingResource(this));
+        getIdlingRegistry().register(new SafeUnregisterIdlingResource(this));
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected void executeOnIdle() {
-        if (Espresso.getIdlingResources().contains(this)) resourceCallback.onTransitionToIdle();
+        if (getIdlingRegistry().getResources().contains(this)) resourceCallback.onTransitionToIdle();
         if (idleCallBack != null && hasIdled) idleCallBack.onIdle();
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected boolean setIdled(boolean isIdle) {
         hasIdled = isIdle;
         return hasIdled;
     }
 
+    @SuppressWarnings("WeakerAccess")
+    protected IdlingRegistry getIdlingRegistry() {
+        return IdlingRegistry.getInstance();
+    }
+
     /**
      * Handles the idle state of the idling resource.
      */
+    @SuppressWarnings("WeakerAccess")
     protected boolean handleIsIdle(boolean isIdle) {
         if (isIdle) executeOnIdle();
 

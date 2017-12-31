@@ -26,8 +26,6 @@ import static junit.framework.Assert.assertTrue;
 
 /**
  * Tests methods in {@link BaseActivity}.
- * <p>
- * Created by tj.dahunsi on 4/29/17.
  */
 @RunWith(AndroidJUnit4.class)
 public class BaseActivityTest {

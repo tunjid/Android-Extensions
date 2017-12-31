@@ -23,6 +23,7 @@ import java.util.Set;
 
 public class FragmentStateManager {
 
+    private static final String CURRENT_FRAGMENT_KEY = "com.tunjid.androidbootstrap.core.components.FragmentStateManager.currentFragmentTag";
     static final String MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK = "A fragment cannot be added to a FragmentManager managed by FragmentStateManager without adding it to the backstack";
 
     private final @IdRes int idResource;
@@ -191,6 +192,14 @@ public class FragmentStateManager {
                     .commit();
         }
         return fragmentShown;
+    }
+
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(CURRENT_FRAGMENT_KEY, currentFragmentTag);
+    }
+
+    public void onRestoreInstanceState(Bundle savedState) {
+        if (savedState != null) currentFragmentTag = savedState.getString(CURRENT_FRAGMENT_KEY);
     }
 
     /**

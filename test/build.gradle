@@ -24,6 +24,11 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     libraryVariants.all { variant ->
 //        variant.outputs.each { output ->
 //            def outputFile = output.outputFile
@@ -47,9 +52,9 @@ dependencies {
     compile 'junit:junit:4.12'
     compile 'org.hamcrest:hamcrest-library:1.3'
     compile 'org.mockito:mockito-android:2.7.22'
-    compile 'com.android.support.test:runner:0.5'
+    compile 'com.android.support.test:runner:1.0.1'
 
-    compile('com.android.support.test.espresso:espresso-core:2.2.2') {
+    compile('com.android.support.test.espresso:espresso-core:3.0.1') {
         exclude group: 'com.android.support'
         exclude module: 'support-annotations'
         exclude module: 'support-v4'
@@ -57,7 +62,7 @@ dependencies {
         exclude module: 'recyclerview-v7'
         exclude module: 'design'
     }
-    compile('com.android.support.test.espresso:espresso-contrib:2.2.2') {
+    compile('com.android.support.test.espresso:espresso-contrib:3.0.1') {
         exclude group: 'com.android.support'
         exclude module: 'support-annotations'
         exclude module: 'support-v4'
@@ -65,7 +70,7 @@ dependencies {
         exclude module: 'recyclerview-v7'
         exclude module: 'design'
     }
-    compile('com.android.support.test.espresso:espresso-intents:2.2.2') {
+    compile('com.android.support.test.espresso:espresso-intents:3.0.1') {
         exclude module: 'support-annotations'
         exclude module: 'support-v4'
         exclude module: 'support-v13'
