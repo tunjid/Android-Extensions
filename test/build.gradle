@@ -93,9 +93,9 @@ bintray {
         licenses = ['MIT']
         vcsUrl = 'https://github.com/tunjid/android-bootstrap.git'
         version {
-            name = '0.1'
+            name = '2.0.0'
             desc = 'An Android library with components for Android unit, integration and UI tests.'
-            vcsTag = '0.1'
+            vcsTag = '2.0.0'
         }
     }
 }
