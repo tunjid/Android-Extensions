@@ -33,6 +33,11 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     libraryVariants.all { variant ->
 //        variant.outputs.each { output ->
 //            def outputFile = output.outputFile
@@ -51,7 +56,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     androidTestCompile project(':test')
-    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test:runner:1.0.1'
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile parent.ext.supportV4
@@ -72,9 +77,9 @@ bintray {
         licenses = ['MIT']
         vcsUrl = 'https://github.com/tunjid/android-bootstrap.git'
         version {
-            name = '0.1'
+            name = '2.0.0'
             desc = 'An Android library to bootstrap an Android application.'
-            vcsTag = '0.1'
+            vcsTag = '2.0.0'
         }
     }
 }

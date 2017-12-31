@@ -22,7 +22,6 @@ import com.squareup.picasso.Transformation;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.ImageListAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
-import com.tunjid.androidbootstrap.core.components.KeyboardUtils;
 import com.tunjid.androidbootstrap.model.Doggo;
 
 import java.util.Arrays;
@@ -39,7 +38,6 @@ import jp.wasabeef.picasso.transformations.ColorFilterTransformation;
 public class ImageDetailFragment extends AppBaseFragment {
 
     public static final String ARG_DOGGO = "doggo";
-    private final KeyboardUtils keyboardUtils = new KeyboardUtils(this);
 
     public static ImageDetailFragment newInstance(Doggo doggo) {
         ImageDetailFragment fragment = new ImageDetailFragment();
@@ -104,14 +102,12 @@ public class ImageDetailFragment extends AppBaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        keyboardUtils.initialize();
         toogleToolbar(false);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        keyboardUtils.stop();
 
         toogleToolbar(true);
     }

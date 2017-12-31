@@ -1,10 +1,13 @@
 package com.tunjid.androidbootstrap.core.view;
 
 
+import android.animation.ObjectAnimator;
 import android.graphics.Point;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorCompat;
+import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -12,9 +15,10 @@ import android.view.WindowManager;
 import android.view.animation.Interpolator;
 
 import java.lang.annotation.Retention;
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.content.Context.WINDOW_SERVICE;
-import static android.view.View.VISIBLE;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 /**
@@ -25,11 +29,6 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
 public class ViewHider {
 
     private static final Interpolator FAST_OUT_SLOW_IN_INTERPOLATOR = new FastOutSlowInInterpolator();
-
-    private boolean isVisible = true;
-    private final @HideDirection int direction;
-    private final long duration;
-    private final View view;
 
     @Retention(SOURCE)
     @IntDef({LEFT, TOP, RIGHT, BOTTOM})
@@ -42,15 +41,26 @@ public class ViewHider {
     public static final int RIGHT = 2;
     public static final int BOTTOM = 3;
 
-    public ViewHider(View view, @HideDirection int direction) {
-        this(view, direction, 200L);
-    }
+    private boolean isVisible = true;
+    private final @HideDirection int direction;
+    private final long duration;
 
-    @SuppressWarnings("WeakerAccess")
-    public ViewHider(View view, @HideDirection int direction, long duration) {
+    private final View view;
+    private final Listener listener;
+
+    private final Runnable startRunnable;
+    private final Runnable endRunnable;
+
+    public static Builder of(View view) {return new Builder(view);}
+
+    private ViewHider(View view, Listener listener, @HideDirection int direction, long duration) {
         this.view = view;
+        this.listener = listener;
         this.duration = duration;
         this.direction = direction;
+
+        startRunnable = () -> {if (isVisible) view.setVisibility(View.VISIBLE);};
+        endRunnable = () -> {if (!isVisible) view.setVisibility(View.GONE);};
     }
 
     public void show() {
@@ -82,14 +92,14 @@ public class ViewHider {
 
             this.isVisible = visible;
             float displacement = visible ? 0 : getDistanceOffscreen();
+
             ViewPropertyAnimatorCompat animator = ViewCompat.animate(view)
                     .setDuration(duration)
-                    .setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR);
+                    .setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR)
+                    .setListener(listener);
 
-            if (view.getVisibility() == VISIBLE) {
-                if (direction == LEFT || direction == RIGHT) animator.translationX(displacement);
-                else animator.translationY(displacement);
-            }
+            if (direction == LEFT || direction == RIGHT) animator.translationX(displacement);
+            else animator.translationY(displacement);
 
             animator.start();
         }
@@ -117,5 +127,68 @@ public class ViewHider {
             default:
                 throw new IllegalArgumentException("Invalid direction");
         }
+    }
+
+    public static class Builder {
+
+        @HideDirection
+        private int direction = BOTTOM;
+        private long duration = 200L;
+        private final View view;
+        private final Listener listener = new Listener();
+
+        Builder(@NonNull View view) {this.view = view;}
+
+        public Builder setDirection(@HideDirection int direction) {
+            this.direction = direction;
+            return this;
+        }
+
+        @SuppressWarnings("unused")
+        public Builder setDuration(long duration) {
+            this.duration = duration;
+            return this;
+        }
+
+        @SuppressWarnings("unused")
+        public Builder addStartRunnable(@NonNull Runnable runnable) {
+            listener.startRunnables.add(runnable);
+            return this;
+        }
+
+        @SuppressWarnings("unused")
+        public Builder addEndRunnable(@NonNull Runnable runnable) {
+            listener.endRunnables.add(runnable);
+            return this;
+        }
+
+        public ViewHider build() {
+            ViewHider viewHider = new ViewHider(view, listener, direction, duration);
+            listener.startRunnables.add(0, viewHider.startRunnable);
+            listener.endRunnables.add(0, viewHider.endRunnable);
+
+            return viewHider;
+        }
+    }
+
+    private static class Listener implements ViewPropertyAnimatorListener {
+
+        private final List<Runnable> startRunnables = new ArrayList<>();
+        private final List<Runnable> endRunnables = new ArrayList<>();
+
+        Listener() {}
+
+        @Override
+        public void onAnimationStart(View view) {
+            if (!startRunnables.isEmpty()) for (Runnable runnable : startRunnables) runnable.run();
+        }
+
+        @Override
+        public void onAnimationEnd(View view) {
+            if (!endRunnables.isEmpty()) for (Runnable runnable : endRunnables) runnable.run();
+        }
+
+        @Override
+        public void onAnimationCancel(View view) {}
     }
 }
