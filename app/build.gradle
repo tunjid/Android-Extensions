@@ -17,7 +17,7 @@ android {
         minSdkVersion parent.ext.minSdkVersion
         targetSdkVersion parent.ext.targetSdkVersion
 
-        applicationId "com.tunjid.sandoidbootstrap.sample"
+        applicationId "com.tunjid.andoidbootstrap.sample"
 
         versionCode 1
         versionName "1.0"
@@ -45,26 +45,26 @@ android {
 
 dependencies {
 
-    testCompile 'junit:junit:4.12'
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.12'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Android support libraries
-    compile parent.ext.design
-    compile parent.ext.appCompat
-    compile parent.ext.cardView
-    compile parent.ext.recyclerView
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation parent.ext.design
+    implementation parent.ext.appCompat
+    implementation parent.ext.cardView
+    implementation parent.ext.recyclerView
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 
     // other dependencies
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'jp.wasabeef:picasso-transformations:2.1.2'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'jp.wasabeef:picasso-transformations:2.1.2'
 
-    testCompile parent.ext.design
-    testCompile parent.ext.supportAnnotations
+    testImplementation parent.ext.design
+    testImplementation parent.ext.supportAnnotations
 
-    androidTestCompile parent.ext.design
-    androidTestCompile parent.ext.supportAnnotations
+    androidTestImplementation parent.ext.design
+    androidTestImplementation parent.ext.supportAnnotations
 
-    compile project(':core')
-    compile project(':communications')
+    implementation project(':core')
+    implementation project(':communications')
 }

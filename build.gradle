@@ -3,21 +3,21 @@
 buildscript {
     repositories {
         jcenter()
-        maven { url "https://maven.google.com" }
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
-        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.1'
+        classpath 'com.android.tools.build:gradle:3.1.0'
+        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.2'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
     }
     project.ext {
-        buildToolsVersion = "26.0.2"
+        buildToolsVersion = "27.0.3"
         compileSdkVersion = 27
         targetSdkVersion = 27
         minSdkVersion = 16
 
         // Common depndencies
-        def supportLibVersion = '27.0.2'
+        def supportLibVersion = '27.1.1'
 
         design = 'com.android.support:design:' + supportLibVersion
         palette = 'com.android.support:palette-v7:' + supportLibVersion

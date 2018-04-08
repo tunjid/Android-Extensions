@@ -53,14 +53,14 @@ android {
 }
 
 dependencies {
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 
-    androidTestCompile project(':test')
-    androidTestCompile 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation project(':test')
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
 
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile parent.ext.supportV4
-    compile parent.ext.supportAnnotations
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation parent.ext.supportV4
+    implementation parent.ext.supportAnnotations
 }
 
 bintray {
@@ -77,9 +77,9 @@ bintray {
         licenses = ['MIT']
         vcsUrl = 'https://github.com/tunjid/android-bootstrap.git'
         version {
-            name = '2.0.0'
+            name = '2.0.1'
             desc = 'An Android library to bootstrap an Android application.'
-            vcsTag = '2.0.0'
+            vcsTag = '2.0.1'
         }
     }
 }
