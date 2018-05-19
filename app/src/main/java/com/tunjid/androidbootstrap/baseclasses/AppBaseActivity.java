@@ -26,7 +26,7 @@ public abstract class AppBaseActivity extends BaseActivity {
         setSupportActionBar(toolbar);
     }
 
-    public void toogleToolbar(boolean show) {
+    public void toggleToolbar(boolean show) {
         if (show) toolbarHider.show();
         else toolbarHider.hide();
     }

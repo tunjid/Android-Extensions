@@ -3,6 +3,7 @@ package com.tunjid.androidbootstrap.fragments;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
@@ -18,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.ImageListAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
@@ -61,15 +61,17 @@ public class ImageDetailFragment extends AppBaseFragment {
 
     @Override
     public String getStableTag() {
+        assert getArguments() != null;
         return super.getStableTag() + "-" + getArguments().getParcelable(ARG_DOGGO);
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_image_detail, container, false);
         ImageView blurredBackground = rootView.findViewById(R.id.blurred_background);
 
+        assert getArguments() != null;
         Doggo doggo = getArguments().getParcelable(ARG_DOGGO);
 
         if (doggo != null) {
@@ -77,10 +79,8 @@ public class ImageDetailFragment extends AppBaseFragment {
                     .load(doggo.getImageRes())
                     .fit()
                     .centerCrop()
-                    .transform(Arrays.asList(new Transformation[]{
-                            new BlurTransformation(inflater.getContext(), 20),
-                            new ColorFilterTransformation(Color.parseColor("#C8000000"))
-                    }))
+                    .transform(Arrays.asList(new BlurTransformation(inflater.getContext(), 20),
+                            new ColorFilterTransformation(Color.parseColor("#C8000000"))))
                     .into(blurredBackground);
         }
 
@@ -100,16 +100,16 @@ public class ImageDetailFragment extends AppBaseFragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        toogleToolbar(false);
+        toggleToolbar(false);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
 
-        toogleToolbar(true);
+        toggleToolbar(true);
     }
 
     static Transition getTransition() {

@@ -1,6 +1,7 @@
 package com.tunjid.androidbootstrap.adapters;
 
 import android.net.nsd.NsdServiceInfo;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,14 +30,15 @@ public class NsdAdapter extends BaseRecyclerViewAdapter<NsdAdapter.NSDViewHolder
         this.infoList = list;
     }
 
+    @NonNull
     @Override
-    public NSDViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public NSDViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_nsd_list, parent, false);
         return new NSDViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(NSDViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull NSDViewHolder holder, int position) {
         holder.bind(infoList.get(position), adapterListener);
     }
 

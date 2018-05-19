@@ -2,6 +2,7 @@ package com.tunjid.androidbootstrap.fragments;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
@@ -52,7 +53,7 @@ public class ImageListFragment extends AppBaseFragment
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_route, container, false);
 
         recyclerView = rootView.findViewById(R.id.recycler_view);
@@ -73,13 +74,14 @@ public class ImageListFragment extends AppBaseFragment
     @SuppressLint("CommitTransaction")
     public FragmentTransaction provideFragmentTransaction(BaseFragment fragmentTo) {
         if (fragmentTo.getStableTag().contains(ImageDetailFragment.class.getSimpleName())) {
+            assert fragmentTo.getArguments() != null;
             Doggo doggo = fragmentTo.getArguments().getParcelable(ImageDetailFragment.ARG_DOGGO);
             if (doggo == null) return null;
 
             ImageListAdapter.ImageViewHolder holder = (ImageListAdapter.ImageViewHolder)
                     recyclerView.findViewHolderForItemId(doggo.hashCode());
 
-            return getActivity()
+            return requireActivity()
                     .getSupportFragmentManager()
                     .beginTransaction()
                     .addSharedElement(holder.imageView, holder.doggo.hashCode() + "-" + holder.imageView.getId());

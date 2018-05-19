@@ -3,6 +3,7 @@ package com.tunjid.androidbootstrap.fragments;
 
 import android.net.nsd.NsdServiceInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
@@ -74,12 +75,7 @@ public class NsdScanFragment extends AppBaseFragment
                 if (!services.contains(service)) services.add(service);
 
                 // Runs on a diifferent thread, post here
-                if (recyclerView != null) recyclerView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        recyclerView.getAdapter().notifyDataSetChanged();
-                    }
-                });
+                if (recyclerView != null) recyclerView.post(() -> recyclerView.getAdapter().notifyDataSetChanged());
             }
         };
     }
@@ -96,7 +92,7 @@ public class NsdScanFragment extends AppBaseFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_nsd_scan, container, false);
@@ -105,7 +101,7 @@ public class NsdScanFragment extends AppBaseFragment
 
         recyclerView.setAdapter(new NsdAdapter(this, services));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), VERTICAL));
+        recyclerView.addItemDecoration(new DividerItemDecoration(requireActivity(), VERTICAL));
 
         return rootView;
     }
@@ -176,17 +172,14 @@ public class NsdScanFragment extends AppBaseFragment
         if (enable) nsdHelper.discoverServices();
         else nsdHelper.stopServiceDiscovery();
 
-        getActivity().invalidateOptionsMenu();
+        requireActivity().invalidateOptionsMenu();
 
         // Stops  after a pre-defined scan period.
         if (enable) {
-            recyclerView.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    isScanning = false;
-                    nsdHelper.stopServiceDiscovery();
-                    if (getActivity() != null) getActivity().invalidateOptionsMenu();
-                }
+            recyclerView.postDelayed(() -> {
+                isScanning = false;
+                nsdHelper.stopServiceDiscovery();
+                if (getActivity() != null) getActivity().invalidateOptionsMenu();
             }, SCAN_PERIOD);
         }
     }

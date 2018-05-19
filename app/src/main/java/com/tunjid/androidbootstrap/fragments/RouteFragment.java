@@ -1,6 +1,7 @@
 package com.tunjid.androidbootstrap.fragments;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.LinearLayoutManager;
@@ -42,7 +43,7 @@ public class RouteFragment extends AppBaseFragment
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_route, container, false);
 
         routes.clear();
@@ -80,6 +81,6 @@ public class RouteFragment extends AppBaseFragment
     }
 
     private CharSequence formatRoute(@StringRes int stringRes) {
-        return new SpanBuilder(getContext(), getString(stringRes)).italic().underline().color(R.color.colorPrimary).build();
+        return new SpanBuilder(requireContext(), getString(stringRes)).italic().underline().color(R.color.colorPrimary).build();
     }
 }

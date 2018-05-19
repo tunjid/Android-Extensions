@@ -14,15 +14,15 @@ import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment;
 
 public abstract class AppBaseFragment extends BaseFragment {
 
-    protected void toogleToolbar(boolean show) {
-        ((AppBaseActivity) getActivity()).toogleToolbar(show);
+    protected void toggleToolbar(boolean show) {
+        ((AppBaseActivity) requireActivity()).toggleToolbar(show);
     }
 
     @Nullable
     @Override
     @SuppressLint("CommitTransaction")
     public FragmentTransaction provideFragmentTransaction(BaseFragment fragmentTo) {
-        return getActivity().getSupportFragmentManager()
+        return requireActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out,
                         android.R.anim.fade_in, android.R.anim.fade_out);
