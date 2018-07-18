@@ -16,12 +16,10 @@ android {
     defaultConfig {
         minSdkVersion parent.ext.minSdkVersion
         targetSdkVersion parent.ext.targetSdkVersion
-
         applicationId "com.tunjid.andoidbootstrap.sample"
-
         versionCode 1
         versionName "1.0"
-
+        multiDexEnabled true  //add this line
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -53,7 +51,8 @@ dependencies {
     implementation parent.ext.appCompat
     implementation parent.ext.cardView
     implementation parent.ext.recyclerView
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
 
     // other dependencies
     implementation 'com.squareup.picasso:picasso:2.5.2'

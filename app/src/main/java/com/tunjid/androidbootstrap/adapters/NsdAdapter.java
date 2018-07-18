@@ -71,7 +71,7 @@ public class NsdAdapter extends BaseRecyclerViewAdapter<NsdAdapter.NSDViewHolder
 
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append(info.getServiceName()).append("\n")
-                    .append(info.getHost().getHostAddress());
+                    .append(info.getHost() != null ? info.getHost().getHostAddress() : "");
 
             boolean isSelf = adapterListener.isSelf(info);
 
