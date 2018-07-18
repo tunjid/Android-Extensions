@@ -1,6 +1,7 @@
 package com.tunjid.androidbootstrap.adapters;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.view.LayoutInflater;
@@ -32,8 +33,9 @@ public class ImageListAdapter extends BaseRecyclerViewAdapter<ImageListAdapter.I
         this.doggos = doggos;
     }
 
+    @NonNull
     @Override
-    public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         View itemView = LayoutInflater.from(context).inflate(R.layout.viewholder_image_list, parent, false);
 
@@ -41,7 +43,7 @@ public class ImageListAdapter extends BaseRecyclerViewAdapter<ImageListAdapter.I
     }
 
     @Override
-    public void onBindViewHolder(ImageViewHolder holder, int recyclerViewPosition) {
+    public void onBindViewHolder(@NonNull ImageViewHolder holder, int recyclerViewPosition) {
         final Doggo item = doggos.get(recyclerViewPosition);
         holder.bind(item);
     }

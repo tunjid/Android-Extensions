@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.transition.AutoTransition;
 import android.support.transition.TransitionManager;
@@ -36,8 +37,9 @@ public class RouteAdapter extends BaseRecyclerViewAdapter<RouteAdapter.RouteItem
         this.routes = routes;
     }
 
+    @NonNull
     @Override
-    public RouteItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RouteItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         Context context = parent.getContext();
         View itemView = LayoutInflater.from(context).
@@ -47,7 +49,7 @@ public class RouteAdapter extends BaseRecyclerViewAdapter<RouteAdapter.RouteItem
     }
 
     @Override
-    public void onBindViewHolder(RouteItemViewHolder holder, int recyclerViewPosition) {
+    public void onBindViewHolder(@NonNull RouteItemViewHolder holder, int recyclerViewPosition) {
         holder.bind(routes.get(recyclerViewPosition));
     }
 

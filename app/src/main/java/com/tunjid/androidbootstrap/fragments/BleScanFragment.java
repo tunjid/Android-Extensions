@@ -73,13 +73,13 @@ public class BleScanFragment extends AppBaseFragment
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_ble_scan, container, false);
 
         recyclerView = rootView.findViewById(R.id.list);
         recyclerView.setAdapter(new ScanAdapter(this, bleDevices));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        recyclerView.addItemDecoration(new DividerItemDecoration(requireActivity(), DividerItemDecoration.VERTICAL));
 
         return rootView;
     }
@@ -88,16 +88,18 @@ public class BleScanFragment extends AppBaseFragment
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Activity activity = getActivity();
+        Activity activity = requireActivity();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
                 && activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+            if (bluetoothManager == null) return;
+
             BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
 
             if (bluetoothAdapter == null) {
                 Snackbar.make(recyclerView, R.string.no_ble, Snackbar.LENGTH_SHORT).show();
-                getActivity().onBackPressed();
+                activity.onBackPressed();
                 return;
             }
 
@@ -171,7 +173,7 @@ public class BleScanFragment extends AppBaseFragment
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
 
-        boolean noPermit = SDK_INT >= M && ActivityCompat.checkSelfPermission(getActivity(),
+        boolean noPermit = SDK_INT >= M && ActivityCompat.checkSelfPermission(requireActivity(),
                 ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
 
         if (noPermit) requestPermissions(new String[]{ACCESS_COARSE_LOCATION}, REQUEST_ENABLE_BT);
@@ -196,7 +198,7 @@ public class BleScanFragment extends AppBaseFragment
 
         // User chose not to enable Bluetooth.
         if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
-            getActivity().onBackPressed();
+            requireActivity().onBackPressed();
         }
     }
 
@@ -230,17 +232,14 @@ public class BleScanFragment extends AppBaseFragment
         if (enable) scanner.startScan();
         else scanner.stopScan();
 
-        getActivity().invalidateOptionsMenu();
+        requireActivity().invalidateOptionsMenu();
 
         // Stops  after a pre-defined menu_ble_scan period.
         if (enable) {
-            recyclerView.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    isScanning = false;
-                    scanner.stopScan();
-                    if (getActivity() != null) getActivity().invalidateOptionsMenu();
-                }
+            recyclerView.postDelayed(() -> {
+                isScanning = false;
+                scanner.stopScan();
+                if (getActivity() != null) getActivity().invalidateOptionsMenu();
             }, SCAN_PERIOD);
         }
     }

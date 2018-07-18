@@ -2,6 +2,7 @@ package com.tunjid.androidbootstrap.adapters;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +29,9 @@ public class ScanAdapter extends BaseRecyclerViewAdapter<ScanAdapter.ViewHolder,
         this.scanResults = scanResults;
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
         View itemView = LayoutInflater.from(context).inflate(R.layout.viewholder_scan, viewGroup, false);
 
@@ -37,7 +39,7 @@ public class ScanAdapter extends BaseRecyclerViewAdapter<ScanAdapter.ViewHolder,
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, final int position) {
+    public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int position) {
         viewHolder.bind(scanResults.get(position));
     }
 
