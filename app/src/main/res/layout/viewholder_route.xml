@@ -3,8 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="@dimen/single_margin"
+    android:layout_marginTop="@dimen/half_margin"
     android:layout_marginRight="@dimen/single_margin"
-    android:layout_marginTop="@dimen/single_margin">
+    android:layout_marginBottom="@dimen/half_margin">
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"

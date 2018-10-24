@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
-import com.tunjid.androidbootstrap.core.R;
+import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseActivity;
 import com.tunjid.androidbootstrap.core.view.ViewHider;
 import com.tunjid.androidbootstrap.fragments.RouteFragment;
@@ -24,12 +24,15 @@ import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.State;
 import com.tunjid.androidbootstrap.view.util.ViewUtil;
 
 
+import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
 import static androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener;
 
 public class MainActivity extends BaseActivity {
+
     private static final int LEFT_INSET = 0;
     private static final int RIGHT_INSET = 2;
     public static final int TOP_INSET = 1;
+
     public static int topInset;
     private int bottomInset;
 
@@ -43,7 +46,7 @@ public class MainActivity extends BaseActivity {
 
     private View topInsetView;
     private View bottomInsetView;
-    public Toolbar toolbar;
+    private Toolbar toolbar;
     private ConstraintLayout constraintLayout;
 
     final FragmentManager.FragmentLifecycleCallbacks fragmentViewCreatedCallback = new FragmentManager.FragmentLifecycleCallbacks() {
@@ -67,19 +70,18 @@ public class MainActivity extends BaseActivity {
         super.setContentView(layoutResID);
         ConstraintLayout fab = findViewById(R.id.extend_fab_container);
 
-        this.toolbar = findViewById(R.id.toolbar);
-        this.topInsetView = findViewById(R.id.top_inset);
-        this.bottomInsetView = findViewById(R.id.bottom_inset);
-        this.constraintLayout = findViewById(R.id.constraint_layout);
+        toolbar = findViewById(R.id.toolbar);
+        topInsetView = findViewById(R.id.top_inset);
+        bottomInsetView = findViewById(R.id.bottom_inset);
+        constraintLayout = findViewById(R.id.constraint_layout);
 
-        this.fabExtensionAnimator = new FabExtensionAnimator(fab);
-        this.toolbarHider = ViewHider.of(this.toolbar).setDirection(ViewHider.TOP).build();
-        this.fabHider = ViewHider.of(fab).setDirection(ViewHider.BOTTOM).build();
-        this.fabExtensionAnimator.setExtended(true);
+        fabExtensionAnimator = new FabExtensionAnimator(fab);
+        toolbarHider = ViewHider.of(this.toolbar).setDirection(ViewHider.TOP).build();
+        fabHider = ViewHider.of(fab).setDirection(ViewHider.BOTTOM).build();
+        fabExtensionAnimator.setExtended(true);
 
         setSupportActionBar(this.toolbar);
-        getWindow().getDecorView().setSystemUiVisibility(1792);
-
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         setOnApplyWindowInsetsListener(this.constraintLayout, (view, insets) -> consumeSystemInsets(insets));
     }
 

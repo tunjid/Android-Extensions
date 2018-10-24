@@ -106,10 +106,10 @@ public class FabExtensionAnimator {
         int buttonId = this.button.getId();
         int containerId = this.container.getId();
         ConstraintSet set = new ConstraintSet();
-        set.connect(buttonId, 3, containerId, 3);
-        set.connect(buttonId, 7, containerId, 7);
-        set.connect(buttonId, 6, containerId, 6);
-        set.connect(buttonId, 4, containerId, 4);
+        set.connect(buttonId, ConstraintSet.LEFT, containerId, ConstraintSet.LEFT);
+        set.connect(buttonId, ConstraintSet.TOP, containerId, ConstraintSet.TOP);
+        set.connect(buttonId, ConstraintSet.RIGHT, containerId, ConstraintSet.RIGHT);
+        set.connect(buttonId, ConstraintSet.BOTTOM, containerId, ConstraintSet.BOTTOM);
         return set;
     }
 

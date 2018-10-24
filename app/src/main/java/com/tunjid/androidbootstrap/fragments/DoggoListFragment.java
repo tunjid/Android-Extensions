@@ -1,0 +1,131 @@
+package com.tunjid.androidbootstrap.fragments;
+
+import android.annotation.SuppressLint;
+import android.os.Bundle;
+import android.transition.Fade;
+import android.transition.TransitionSet;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnLayoutChangeListener;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import com.tunjid.androidbootstrap.R;
+import com.tunjid.androidbootstrap.adapters.ImageListAdapter;
+import com.tunjid.androidbootstrap.adapters.ImageListAdapter.ImageListAdapterListener;
+import com.tunjid.androidbootstrap.adapters.ImageListAdapter.ImageViewHolder;
+import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
+import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment;
+import com.tunjid.androidbootstrap.model.Doggo;
+
+import java.util.List;
+import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.SharedElementCallback;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.LayoutManager;
+
+public class DoggoListFragment extends AppBaseFragment
+        implements ImageListAdapterListener {
+
+    private RecyclerView recyclerView;
+
+    public static DoggoListFragment newInstance() {
+        DoggoListFragment fragment = new DoggoListFragment();
+        fragment.setArguments(new Bundle());
+        return fragment;
+    }
+
+    @Nullable
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_route, container, false);
+        this.recyclerView = rootView.findViewById(R.id.recycler_view);
+        this.recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        this.recyclerView.setAdapter(new ImageListAdapter(Doggo.doggos, this));
+        postponeEnterTransition();
+        return rootView;
+    }
+
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        scrollToPosition();
+    }
+
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.recyclerView = null;
+    }
+
+    public void onDoggoClicked(Doggo doggo) {
+        Doggo.setTransitionDoggo(doggo);
+        showFragment(DoggoPagerFragment.newInstance());
+    }
+
+    private void scrollToPosition() {
+        recyclerView.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+               recyclerView.removeOnLayoutChangeListener(this);
+                Doggo last = Doggo.getTransitionDoggo();
+                if (last == null) return;
+
+                int index = Doggo.doggos.indexOf(last);
+                if (index < 0) return;
+
+                LayoutManager layoutManager = recyclerView.getLayoutManager();
+                View viewAtPosition = layoutManager.findViewByPosition(index);
+                if (viewAtPosition == null || layoutManager.isViewPartiallyVisible(viewAtPosition, false, true)) {
+                    layoutManager.scrollToPosition(index);
+                }
+            }
+        });
+    }
+
+    @SuppressLint({"CommitTransaction"})
+    @Nullable
+    public FragmentTransaction provideFragmentTransaction(BaseFragment fragmentTo) {
+         if (!fragmentTo.getStableTag().contains(DoggoPagerFragment.class.getSimpleName())) {
+            return null;
+        }
+        else {
+            Doggo doggo = Doggo.getTransitionDoggo();
+            ImageView imageView = getTransitionImage();
+            if (doggo == null || imageView == null) return null;
+
+            setExitTransition(new TransitionSet()
+                    .setDuration(375)
+                    .setStartDelay(25)
+                    .setInterpolator(new FastOutSlowInInterpolator())
+                    .addTransition(new Fade().addTarget(R.id.doggo_image)));
+
+            setExitSharedElementCallback(new SharedElementCallback() {
+                public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+                    ImageView deferred = getTransitionImage();
+                    if (deferred != null) sharedElements.put(names.get(0), deferred);
+                }
+            });
+
+            FragmentTransaction beginTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(doggo.hashCode());
+            stringBuilder.append("-");
+            stringBuilder.append(imageView.getId());
+            return beginTransaction.addSharedElement(imageView, stringBuilder.toString());
+        }
+    }
+
+    @Nullable
+    private ImageView getTransitionImage() {
+        Doggo doggo = Doggo.getTransitionDoggo();
+        if (doggo == null) return null;
+
+        ImageViewHolder holder = (ImageViewHolder) this.recyclerView.findViewHolderForItemId( doggo.hashCode());
+        if (holder == null) return null;
+
+        return holder.thumbnail;
+    }
+}

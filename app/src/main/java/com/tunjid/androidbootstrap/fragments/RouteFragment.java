@@ -47,7 +47,7 @@ public class RouteFragment extends AppBaseFragment
         View rootView = inflater.inflate(R.layout.fragment_route, container, false);
 
         routes.clear();
-        routes.add(new Route(ImageListFragment.class.getSimpleName(), formatRoute(R.string.route_image_list)));
+        routes.add(new Route(DoggoListFragment.class.getSimpleName(), formatRoute(R.string.route_image_list)));
         routes.add(new Route(BleScanFragment.class.getSimpleName(), formatRoute(R.string.route_ble_scan)));
         routes.add(new Route(NsdScanFragment.class.getSimpleName(), formatRoute(R.string.route_nsd_scan)));
         routes.add(new Route(HidingViewFragment.class.getSimpleName(), formatRoute(R.string.route_hiding_view)));
@@ -63,8 +63,8 @@ public class RouteFragment extends AppBaseFragment
 
     @Override
     public void onItemClicked(Route route) {
-        if (route.getDestination().equals(ImageListFragment.class.getSimpleName())) {
-            showFragment(ImageListFragment.newInstance());
+        if (route.getDestination().equals(DoggoListFragment.class.getSimpleName())) {
+            showFragment(DoggoListFragment.newInstance());
         }
         else if (route.getDestination().equals(BleScanFragment.class.getSimpleName())) {
             showFragment(BleScanFragment.newInstance());

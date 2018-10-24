@@ -61,6 +61,8 @@ public class ImageListAdapter extends BaseRecyclerViewAdapter<ImageListAdapter.I
 
     public interface ImageListAdapterListener extends BaseRecyclerViewAdapter.AdapterListener {
         void onDoggoClicked(Doggo doggo);
+
+        default void onDoggoImageLoaded() { }
     }
 
     public static class ImageViewHolder extends BaseViewHolder<ImageListAdapterListener>
@@ -68,28 +70,28 @@ public class ImageListAdapter extends BaseRecyclerViewAdapter<ImageListAdapter.I
 
         public Doggo doggo;
         public final TextView textView;
-        public final ImageView imageView;
+        public final ImageView thumbnail;
 
         public ImageViewHolder(View itemView, @Nullable ImageListAdapterListener adapterListener) {
             super(itemView, adapterListener);
 
             textView = itemView.findViewById(R.id.doggo_name);
-            imageView = itemView.findViewById(R.id.doggo_image);
+            thumbnail = itemView.findViewById(R.id.doggo_image);
             itemView.setOnClickListener(this);
         }
 
         public void bind(Doggo doggo) {
             this.doggo = doggo;
 
-            ViewCompat.setTransitionName(imageView, doggo.hashCode() + "-" + imageView.getId());
+            ViewCompat.setTransitionName(thumbnail, doggo.hashCode() + "-" + thumbnail.getId());
 
             textView.setText(doggo.getName());
 
-            Picasso.with(imageView.getContext())
+            Picasso.with(thumbnail.getContext())
                     .load(doggo.getImageRes())
                     .fit()
                     .centerCrop()
-                    .into(imageView);
+                    .into(thumbnail);
         }
 
         @Override
