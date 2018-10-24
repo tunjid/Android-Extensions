@@ -69,32 +69,10 @@ public class ImageDetailFragment extends AppBaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_image_detail, container, false);
-        ImageView blurredBackground = rootView.findViewById(R.id.blurred_background);
 
         assert getArguments() != null;
         Doggo doggo = getArguments().getParcelable(ARG_DOGGO);
-
-        if (doggo != null) {
-            Picasso.with(inflater.getContext())
-                    .load(doggo.getImageRes())
-                    .fit()
-                    .centerCrop()
-                    .transform(Arrays.asList(new BlurTransformation(inflater.getContext(), 20),
-                            new ColorFilterTransformation(Color.parseColor("#C8000000"))))
-                    .into(blurredBackground);
-        }
-
-        ImageListAdapter.ImageViewHolder holder = new ImageListAdapter.ImageViewHolder(rootView, null);
-        holder.textView.setVisibility(View.GONE);
-
-        ConstraintSet constraintSet = new ConstraintSet();
-        constraintSet.clone((ConstraintLayout) rootView);
-
-        constraintSet.centerHorizontally(holder.itemView.getId(), blurredBackground.getId());
-        constraintSet.centerVertically(holder.itemView.getId(), blurredBackground.getId());
-        constraintSet.applyTo((ConstraintLayout) rootView);
-
-        holder.bind(doggo);
+        new ImageListAdapter.ImageViewHolder(rootView, null).bind(doggo);
 
         return rootView;
     }
