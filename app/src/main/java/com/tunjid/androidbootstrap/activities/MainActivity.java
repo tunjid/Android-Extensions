@@ -24,7 +24,6 @@ import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.State;
 import com.tunjid.androidbootstrap.view.util.ViewUtil;
 
 
-import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
 import static androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener;
 
 public class MainActivity extends BaseActivity {
@@ -75,13 +74,14 @@ public class MainActivity extends BaseActivity {
         bottomInsetView = findViewById(R.id.bottom_inset);
         constraintLayout = findViewById(R.id.constraint_layout);
 
-        fabExtensionAnimator = new FabExtensionAnimator(fab);
+        topInsetView.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
         toolbarHider = ViewHider.of(this.toolbar).setDirection(ViewHider.TOP).build();
         fabHider = ViewHider.of(fab).setDirection(ViewHider.BOTTOM).build();
+        fabExtensionAnimator = new FabExtensionAnimator(fab);
         fabExtensionAnimator.setExtended(true);
 
         setSupportActionBar(this.toolbar);
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         setOnApplyWindowInsetsListener(this.constraintLayout, (view, insets) -> consumeSystemInsets(insets));
     }
 
@@ -127,7 +127,7 @@ public class MainActivity extends BaseActivity {
         boolean[] insetState = ((AppBaseFragment) fragment).insetState();
         ViewUtil.getLayoutParams(this.toolbar).topMargin = insetState[TOP_INSET] ? topInset : 0;
 
-        this.topInsetView.setVisibility(insetState[LEFT_INSET] ? View.GONE : View.VISIBLE);
+        this.topInsetView.setVisibility(insetState[TOP_INSET] ? View.GONE : View.VISIBLE);
         this.constraintLayout.setPadding(insetState[LEFT_INSET] ? this.leftInset : 0, 0, insetState[RIGHT_INSET] ? this.rightInset : 0, 0);
     }
 }

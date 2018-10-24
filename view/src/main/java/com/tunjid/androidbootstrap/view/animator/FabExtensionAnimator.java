@@ -14,6 +14,7 @@ import androidx.constraintlayout.widget.ConstraintSet;
 
 import com.google.android.material.button.MaterialButton;
 import com.tunjid.androidbootstrap.view.R;
+import com.tunjid.androidbootstrap.view.util.ViewUtil;
 
 import java.util.Objects;
 
@@ -60,7 +61,7 @@ public class FabExtensionAnimator {
     public void setExtended(boolean extended) { setExtended(extended, false); }
 
     private boolean isExtended() {
-        return button.getLayoutParams().height != this.button.getResources().getDimensionPixelSize(R.dimen.fab_size);
+        return ViewUtil.getLayoutParams(button).height != this.button.getResources().getDimensionPixelSize(R.dimen.fab_size);
     }
 
     private void animateChange(State state, boolean isSame) {
@@ -72,14 +73,15 @@ public class FabExtensionAnimator {
     }
 
     private void setExtended(boolean extended, boolean force) {
-        if (this.isAnimating || (extended && isExtended() && !force)) return;
+        if (isAnimating || (extended && isExtended() && !force)) return;
 
         ConstraintSet set = extended ? expanded() : collapsed();
         TransitionManager.beginDelayedTransition(this.container, new AutoTransition().addListener(listener).setDuration(150));
+
         if (extended) this.button.setText(this.state.getText());
         else this.button.setText("");
-        set.applyTo(this.container);
 
+        set.applyTo(container);
     }
 
     private void twitch() {
@@ -91,7 +93,7 @@ public class FabExtensionAnimator {
     private ConstraintSet expanded() {
         ConstraintSet set = fabSet();
         set.constrainHeight(this.button.getId(), ConstraintSet.WRAP_CONTENT);
-        set.constrainWidth(this.button.getId(), -ConstraintSet.WRAP_CONTENT);
+        set.constrainWidth(this.button.getId(), ConstraintSet.WRAP_CONTENT);
         return set;
     }
 
