@@ -1,4 +1,4 @@
-package com.tunjid.androidbootstrap.core.abstractclasses;
+package com.tunjid.androidbootstrap.view.recyclerview;
 
 import androidx.recyclerview.widget.RecyclerView;
 

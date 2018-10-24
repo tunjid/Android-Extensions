@@ -10,8 +10,8 @@ import android.widget.TextView;
 
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.communications.bluetooth.ScanResultCompat;
-import com.tunjid.androidbootstrap.core.abstractclasses.BaseRecyclerViewAdapter;
-import com.tunjid.androidbootstrap.core.abstractclasses.BaseViewHolder;
+import com.tunjid.androidbootstrap.view.recyclerview.BaseRecyclerViewAdapter;
+import com.tunjid.androidbootstrap.view.recyclerview.BaseViewHolder;
 
 import java.util.List;
 

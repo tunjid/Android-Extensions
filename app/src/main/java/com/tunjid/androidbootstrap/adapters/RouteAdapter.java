@@ -4,21 +4,24 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+
 import androidx.annotation.NonNull;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import androidx.transition.AutoTransition;
 import androidx.transition.TransitionManager;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.TextViewCompat;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.tunjid.androidbootstrap.R;
-import com.tunjid.androidbootstrap.core.abstractclasses.BaseRecyclerViewAdapter;
-import com.tunjid.androidbootstrap.core.abstractclasses.BaseViewHolder;
+
 import com.tunjid.androidbootstrap.model.Route;
+import com.tunjid.androidbootstrap.view.recyclerview.BaseRecyclerViewAdapter;
+import com.tunjid.androidbootstrap.view.recyclerview.BaseViewHolder;
 
 import java.util.List;
 

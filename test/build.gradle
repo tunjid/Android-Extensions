@@ -46,6 +46,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    implementation parent.ext.material
     implementation parent.ext.appCompat
     implementation parent.ext.recyclerView
 

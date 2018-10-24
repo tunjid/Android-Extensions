@@ -47,10 +47,11 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Android support libraries
-    implementation parent.ext.design
+    implementation parent.ext.material
     implementation parent.ext.appCompat
     implementation parent.ext.cardView
     implementation parent.ext.recyclerView
+
     implementation 'androidx.multidex:multidex:2.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha2'
 
@@ -58,12 +59,13 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'jp.wasabeef:picasso-transformations:2.1.2'
 
-    testImplementation parent.ext.design
+    testImplementation parent.ext.material
     testImplementation parent.ext.supportAnnotations
 
-    androidTestImplementation parent.ext.design
+    androidTestImplementation parent.ext.material
     androidTestImplementation parent.ext.supportAnnotations
 
+    implementation project(':view')
     implementation project(':core')
     implementation project(':communications')
 }
