@@ -14,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.android.material.button.MaterialButton;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseActivity;
@@ -67,7 +68,7 @@ public class MainActivity extends BaseActivity {
 
     public void setContentView(@LayoutRes int layoutResID) {
         super.setContentView(layoutResID);
-        ConstraintLayout fab = findViewById(R.id.extend_fab_container);
+        MaterialButton fab = findViewById(R.id.fab);
 
         toolbar = findViewById(R.id.toolbar);
         topInsetView = findViewById(R.id.top_inset);

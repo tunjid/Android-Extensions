@@ -21,11 +21,6 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
 
-/**
- * Adapter for displaying links to various parts of the app
- * <p>
- * Created by tj.dahunsi on 5/6/16.
- */
 public class ImageListAdapter extends BaseRecyclerViewAdapter<ImageListAdapter.ImageViewHolder, ImageListAdapter.ImageListAdapterListener> {
 
     private List<Doggo> doggos;

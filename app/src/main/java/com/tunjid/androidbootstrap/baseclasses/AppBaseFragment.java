@@ -40,7 +40,7 @@ public abstract class AppBaseFragment extends BaseFragment {
     }
 
     public State getFabState() {
-        return FabExtensionAnimator.newState("", getDrawable(requireContext(), R.drawable.ic_circle_24dp));
+        return FabExtensionAnimator.newState(getText(R.string.app_name), getDrawable(requireContext(), R.drawable.ic_circle_24dp));
     }
 
     private MainActivity getHostingActivity() {return (MainActivity) requireActivity(); }
