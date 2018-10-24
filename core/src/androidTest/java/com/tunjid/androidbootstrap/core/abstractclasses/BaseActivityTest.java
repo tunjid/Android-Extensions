@@ -1,7 +1,7 @@
 package com.tunjid.androidbootstrap.core.abstractclasses;
 
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.rule.ActivityTestRule;
+import androidx.test.runner.AndroidJUnit4;
 
 import com.tunjid.androidbootstrap.core.testclasses.TestActivity;
 import com.tunjid.androidbootstrap.core.testclasses.TestFragment;

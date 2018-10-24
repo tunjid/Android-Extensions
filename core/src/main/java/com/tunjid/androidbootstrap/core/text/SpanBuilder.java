@@ -2,8 +2,8 @@ package com.tunjid.androidbootstrap.core.text;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.support.annotation.ColorRes;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.ColorRes;
+import androidx.core.content.ContextCompat;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;

@@ -1,8 +1,8 @@
 package com.tunjid.androidbootstrap.baseclasses;
 
 import android.annotation.SuppressLint;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentTransaction;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment;
 

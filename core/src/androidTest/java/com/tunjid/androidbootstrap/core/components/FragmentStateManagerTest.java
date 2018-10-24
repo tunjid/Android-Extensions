@@ -1,9 +1,9 @@
 package com.tunjid.androidbootstrap.core.components;
 
-import android.support.test.annotation.UiThreadTest;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
-import android.support.v4.app.FragmentManager;
+import androidx.test.annotation.UiThreadTest;
+import androidx.test.rule.ActivityTestRule;
+import androidx.test.runner.AndroidJUnit4;
+import androidx.fragment.app.FragmentManager;
 
 import com.tunjid.androidbootstrap.core.R;
 import com.tunjid.androidbootstrap.core.testclasses.TestActivity;

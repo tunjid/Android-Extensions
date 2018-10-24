@@ -19,7 +19,7 @@ android {
 //        renderscriptTargetApi 18
 //        renderscriptSupportModeEnabled true
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     lintOptions {
@@ -56,7 +56,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 
     androidTestImplementation project(':test')
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'androidx.test:runner:1.1.0-beta02'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation parent.ext.supportV4
