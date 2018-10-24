@@ -46,8 +46,7 @@ public class DoggoFragment extends AppBaseFragment
 
     public void togglePersistentUi() { /* Nothing, delegate to parent fragment */ }
 
-    public void onDoggoClicked(Doggo doggo) { }
-
+    @SuppressWarnings("ConstantConditions")
     public void onDoggoImageLoaded() {
         getParentFragment().startPostponedEnterTransition();
     }
