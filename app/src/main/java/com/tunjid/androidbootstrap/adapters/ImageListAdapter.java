@@ -71,6 +71,7 @@ public class ImageListAdapter extends BaseRecyclerViewAdapter<ImageListAdapter.I
     public static class ImageViewHolder extends BaseViewHolder<ImageListAdapterListener>
             implements View.OnClickListener {
 
+        private static final int FULL_SIZE_DELAY = 100;
         private static int THUMBNAIL_SIZE = 250;
 
         private Doggo doggo;
@@ -105,9 +106,8 @@ public class ImageListAdapter extends BaseRecyclerViewAdapter<ImageListAdapter.I
 
         private void onThumbnailLoaded() {
             adapterListener.onDoggoImageLoaded();
-            if (fullSize != null) fullSize.postDelayed(() -> getCreator(doggo)
-                    .fit()
-                    .into(fullSize, onSuccess(() -> fullSize.setVisibility(View.VISIBLE))), 100);
+            if (fullSize != null) fullSize.postDelayed(() -> getCreator(doggo).fit()
+                    .into(fullSize, onSuccess(() -> fullSize.setVisibility(View.VISIBLE))), FULL_SIZE_DELAY);
         }
 
         private Callback onSuccess(Runnable runnable) {
