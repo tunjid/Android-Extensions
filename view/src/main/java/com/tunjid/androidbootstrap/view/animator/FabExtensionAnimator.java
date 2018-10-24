@@ -17,7 +17,7 @@ import com.tunjid.androidbootstrap.view.R;
 
 import java.util.Objects;
 
-public class FabIconAnimator {
+public class FabExtensionAnimator {
 
     private static final int DURATION = 200;
     private static final float TWITCH_END = 20.0f;
@@ -43,7 +43,7 @@ public class FabIconAnimator {
         public void onTransitionResume(Transition transition) {}
     };
 
-    public FabIconAnimator(ConstraintLayout container) {
+    public FabExtensionAnimator(ConstraintLayout container) {
         this.container = container;
         this.button = (MaterialButton) container.getChildAt(0);
         this.fabSize = container.getResources().getDimensionPixelSize(R.dimen.fab_size);
