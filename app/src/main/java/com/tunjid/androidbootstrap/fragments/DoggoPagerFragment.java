@@ -85,7 +85,7 @@ public class DoggoPagerFragment extends AppBaseFragment {
     public boolean showsFab() { return true; }
 
     public State getFabState() {
-        return newState(Doggo.getTransitionDoggo().getName(), ContextCompat.getDrawable(requireContext(), R.drawable.ic_doggo_24dp));
+        return newState(Doggo.getTransitionDoggo().getName(), ContextCompat.getDrawable(requireContext(), R.drawable.ic_circle_24dp));
     }
 
     public static Transition getTransition() {

@@ -152,9 +152,9 @@ public class ViewPagerIndicatorAnimator {
             ViewTreeObserver observer = guide.getViewTreeObserver();
             if (observer.isAlive()) observer.removeOnGlobalLayoutListener(this);
 
+            guideLineWidth = guide.getWidth();
             int initialIndex = viewPager.getCurrentItem() + 1;
             indicator.setTranslationX(getTranslation(false, initialIndex, 0.0f));
-            guideLineWidth = guide.getWidth();
         }
 
         private float getTranslation(boolean toTheRight, int originalPosition, float fraction) {
