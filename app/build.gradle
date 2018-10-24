@@ -51,9 +51,9 @@ dependencies {
     implementation parent.ext.appCompat
     implementation parent.ext.cardView
     implementation parent.ext.recyclerView
+    implementation parent.ext.constraintLayout
 
     implementation 'androidx.multidex:multidex:2.0.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha2'
 
     // other dependencies
     implementation 'com.squareup.picasso:picasso:2.5.2'

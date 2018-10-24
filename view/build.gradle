@@ -1,13 +1,10 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
-
-
-
+    compileSdkVersion parent.ext.compileSdkVersion
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 28
+        minSdkVersion parent.ext.minSdkVersion
+        targetSdkVersion parent.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
 
@@ -31,6 +28,7 @@ dependencies {
     implementation parent.ext.appCompat
     implementation parent.ext.appCompat
     implementation parent.ext.recyclerView
+    implementation parent.ext.constraintLayout
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.0-alpha3'
