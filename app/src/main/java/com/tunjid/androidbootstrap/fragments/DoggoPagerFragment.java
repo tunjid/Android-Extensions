@@ -72,8 +72,8 @@ public class DoggoPagerFragment extends AppBaseFragment {
                 .build();
 
         indicatorAnimator.addIndicatorWatcher((indicator, position, fraction, totalTranslation) -> {
-            double radians = Math.PI * 2 * fraction;
-            float sine = (float) Math.sin(radians);
+            double radians = Math.PI * fraction;
+            float sine = (float) -Math.sin(radians);
             float cosine = (float) Math.cos(radians);
             float maxScale = Math.max(Math.abs(cosine), 0.4F);
 
