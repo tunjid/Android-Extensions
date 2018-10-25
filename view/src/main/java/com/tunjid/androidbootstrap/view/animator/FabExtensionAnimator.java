@@ -31,7 +31,8 @@ public class FabExtensionAnimator {
     private static final int EXTENSION_DURATION = 150;
     private static final String ROTATION_Y_PROPERTY = "rotationY";
 
-    private final int fabSize;
+    private final int collapsedFabSize;
+    private final int extendedFabHeight;
     private boolean isAnimating;
 
     private GlyphState glyphState;
@@ -51,7 +52,8 @@ public class FabExtensionAnimator {
 
     public FabExtensionAnimator(MaterialButton button) {
         this.button = button;
-        this.fabSize = button.getResources().getDimensionPixelSize(R.dimen.fab_size);
+        this.collapsedFabSize = button.getResources().getDimensionPixelSize(R.dimen.collapsed_fab_size);
+        this.extendedFabHeight = button.getResources().getDimensionPixelSize(R.dimen.extended_fab_height);
         button.setBackground(getDrawable());
     }
 
@@ -68,7 +70,7 @@ public class FabExtensionAnimator {
     @SuppressWarnings("WeakerAccess")
     public boolean isExtended() {
         ViewGroup.MarginLayoutParams params = ViewUtil.getLayoutParams(button);
-        return !(params.height == params.width && params.width == fabSize);
+        return !(params.height == params.width && params.width == collapsedFabSize);
     }
 
     private void animateChange(GlyphState glyphState, boolean isSame) {
@@ -82,12 +84,14 @@ public class FabExtensionAnimator {
     private void setExtended(boolean extended, boolean force) {
         if (isAnimating || (extended && isExtended() && !force)) return;
 
-        int width = extended ? ViewGroup.LayoutParams.WRAP_CONTENT : fabSize;
+        int width = extended ? ViewGroup.LayoutParams.WRAP_CONTENT : collapsedFabSize;
+        int height = extended ? extendedFabHeight : collapsedFabSize;
+
         ViewGroup.LayoutParams params = ViewUtil.getLayoutParams(button);
         ViewGroup group = (ViewGroup) button.getParent();
 
         params.width = width;
-        params.height = fabSize;
+        params.height = height;
 
         TransitionManager.beginDelayedTransition(group, new AutoTransition()
                 .setDuration(EXTENSION_DURATION)
@@ -115,7 +119,7 @@ public class FabExtensionAnimator {
 
     @SuppressLint("RestrictedApi")
     private Drawable getDrawable() {
-        int cornerRadius = fabSize;
+        int cornerRadius = collapsedFabSize;
         int strokeWidth = button.getStrokeWidth();
         ColorStateList rippleColor = button.getRippleColor();
         ColorStateList strokeColor = button.getStrokeColor();
