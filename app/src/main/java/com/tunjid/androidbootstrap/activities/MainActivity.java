@@ -34,7 +34,6 @@ public class MainActivity extends BaseActivity {
     public static final int TOP_INSET = 1;
 
     public static int topInset;
-    private int bottomInset;
 
     private boolean insetsApplied;
     private int leftInset;
@@ -47,13 +46,13 @@ public class MainActivity extends BaseActivity {
     private View topInsetView;
     private View bottomInsetView;
     private Toolbar toolbar;
+    private MaterialButton fab;
     private ConstraintLayout constraintLayout;
 
     final FragmentManager.FragmentLifecycleCallbacks fragmentViewCreatedCallback = new FragmentManager.FragmentLifecycleCallbacks() {
         @Override
         public void onFragmentViewCreated(@NonNull FragmentManager fm, @NonNull androidx.fragment.app.Fragment f, @NonNull View v, @Nullable Bundle savedInstanceState) {
-            if (isNotInMainFragmentContainer(v)) return;
-            adjustInsetForFragment(f);
+            if (isInMainFragmentContainer(v)) adjustInsetForFragment(f);
         }
     };
 
@@ -68,8 +67,8 @@ public class MainActivity extends BaseActivity {
 
     public void setContentView(@LayoutRes int layoutResID) {
         super.setContentView(layoutResID);
-        MaterialButton fab = findViewById(R.id.fab);
 
+        fab = findViewById(R.id.fab);
         toolbar = findViewById(R.id.toolbar);
         topInsetView = findViewById(R.id.top_inset);
         bottomInsetView = findViewById(R.id.bottom_inset);
@@ -100,9 +99,13 @@ public class MainActivity extends BaseActivity {
         if (this.fabExtensionAnimator != null) this.fabExtensionAnimator.update(state);
     }
 
-    private boolean isNotInMainFragmentContainer(View view) {
+    public void setFabClickListener(View.OnClickListener onClickListener) {
+        fab.setOnClickListener(onClickListener);
+    }
+
+    private boolean isInMainFragmentContainer(View view) {
         View parent = (View) view.getParent();
-        return parent == null || parent.getId() != R.id.main_fragment_container;
+        return parent != null && parent.getId() == R.id.main_fragment_container;
     }
 
     private WindowInsetsCompat consumeSystemInsets(WindowInsetsCompat insets) {
@@ -111,10 +114,10 @@ public class MainActivity extends BaseActivity {
         topInset = insets.getSystemWindowInsetTop();
         this.leftInset = insets.getSystemWindowInsetLeft();
         this.rightInset = insets.getSystemWindowInsetRight();
-        this.bottomInset = insets.getSystemWindowInsetBottom();
+        int bottomInset = insets.getSystemWindowInsetBottom();
 
         ViewUtil.getLayoutParams(this.topInsetView).height = topInset;
-        ViewUtil.getLayoutParams(this.bottomInsetView).height = this.bottomInset;
+        ViewUtil.getLayoutParams(this.bottomInsetView).height = bottomInset;
 
         adjustInsetForFragment(getCurrentFragment());
 

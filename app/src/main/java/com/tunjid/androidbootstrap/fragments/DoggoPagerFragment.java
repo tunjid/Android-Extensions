@@ -1,7 +1,6 @@
 package com.tunjid.androidbootstrap.fragments;
 
 import android.content.res.Resources;
-import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.transition.ChangeBounds;
 import android.transition.ChangeImageTransform;
@@ -13,15 +12,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.snackbar.Snackbar;
+import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.DoggoPagerAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
-import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.model.Doggo;
 import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.State;
 import com.tunjid.androidbootstrap.view.animator.ViewPagerIndicatorAnimator;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -85,25 +86,26 @@ public class DoggoPagerFragment extends AppBaseFragment {
     public boolean showsFab() { return true; }
 
     public State getFabState() {
-        return newState(Doggo.getTransitionDoggo().getName(), ContextCompat.getDrawable(requireContext(), R.drawable.ic_circle_24dp));
+        return newState(getDogName(), ContextCompat.getDrawable(requireContext(), R.drawable.ic_hug_24dp));
     }
 
-    public static Transition getTransition() {
-        TransitionSet result = null;
-        if (VERSION.SDK_INT >= 21) {
-            result = new TransitionSet();
-            result.setOrdering(TransitionSet.ORDERING_TOGETHER)
-                    .addTransition(new ChangeBounds())
-                    .addTransition(new ChangeTransform())
-                    .addTransition(new ChangeImageTransform());
-        }
-        return result;
+    @Override
+    protected View.OnClickListener getFabClickListener() {
+        return view -> Snackbar.make(view, getString(R.string.hugged_doggo, getDogName()), Snackbar.LENGTH_SHORT).show();
+    }
+
+    private String getDogName() {
+        Doggo doggo = Doggo.getTransitionDoggo();
+        return doggo == null ? "" : doggo.getName();
     }
 
     private void prepareSharedElementTransition() {
         Transition baseTransition = new Fade();
-        Transition baseSharedTransition = getTransition();
-//        baseTransition.excludeTarget(2131230815, true);
+        Transition baseSharedTransition = new TransitionSet()
+                .setOrdering(TransitionSet.ORDERING_TOGETHER)
+                .addTransition(new ChangeBounds())
+                .addTransition(new ChangeTransform())
+                .addTransition(new ChangeImageTransform());
 
         setEnterTransition(baseTransition);
         setExitTransition(baseTransition);
@@ -112,7 +114,7 @@ public class DoggoPagerFragment extends AppBaseFragment {
 
         setEnterSharedElementCallback(new SharedElementCallback() {
             public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
-                Fragment currentFragment = (Fragment) viewPager.getAdapter().instantiateItem(viewPager, Doggo.getTransitionIndex());
+                Fragment currentFragment = (Fragment) Objects.requireNonNull(viewPager.getAdapter()).instantiateItem(viewPager, Doggo.getTransitionIndex());
                 View view = currentFragment.getView();
                 if (view == null) return;
 

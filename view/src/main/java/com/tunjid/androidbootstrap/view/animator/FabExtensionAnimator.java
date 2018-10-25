@@ -75,7 +75,7 @@ public class FabExtensionAnimator {
         this.button.setText(state.getText());
         this.button.setIcon(state.getIcon());
         setExtended(extended, !isSame);
-        if (!extended) twitch();
+        if (!extended) onPreExtend();
     }
 
     private void setExtended(boolean extended, boolean force) {
@@ -97,7 +97,8 @@ public class FabExtensionAnimator {
         else this.button.setText("");
     }
 
-    private void twitch() {
+    @SuppressWarnings("WeakerAccess")
+    public void onPreExtend() {
         AnimatorSet set = new AnimatorSet();
         set.play(animateProperty(TWITCH_END, TWITCH_START)).after(animateProperty(TWITCH_START, TWITCH_END));
         set.start();
