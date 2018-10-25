@@ -11,6 +11,7 @@ import android.transition.TransitionSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.tunjid.androidbootstrap.R;
@@ -49,17 +50,19 @@ public class DoggoPagerFragment extends AppBaseFragment {
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_doggo_pager, container, false);
-        this.viewPager = root.findViewById(R.id.view_pager);
-        this.viewPager.setAdapter(new DoggoPagerAdapter(Doggo.doggos, getChildFragmentManager()));
-        this.viewPager.setCurrentItem(Doggo.getTransitionIndex());
-        this.viewPager.addOnPageChangeListener(new SimpleOnPageChangeListener() {
+        Resources resources = getResources();
+        int indicatorSize = resources.getDimensionPixelSize(R.dimen.single_and_half_margin);
+
+        viewPager = root.findViewById(R.id.view_pager);
+        viewPager.setAdapter(new DoggoPagerAdapter(Doggo.doggos, getChildFragmentManager()));
+        viewPager.setCurrentItem(Doggo.getTransitionIndex());
+        viewPager.addOnPageChangeListener(new SimpleOnPageChangeListener() {
             public void onPageSelected(int position) { onDoggoSwiped(position); }
         });
 
-        Resources resources = getResources();
-        ViewPagerIndicatorAnimator.builder()
-                .setIndicatorWidth(resources.getDimensionPixelSize(R.dimen.single_and_half_margin))
-                .setIndicatorHeight(resources.getDimensionPixelSize(R.dimen.single_and_half_margin))
+        ViewPagerIndicatorAnimator indicatorAnimator = ViewPagerIndicatorAnimator.builder()
+                .setIndicatorWidth(indicatorSize)
+                .setIndicatorHeight(indicatorSize)
                 .setIndicatorPadding(resources.getDimensionPixelSize(R.dimen.half_margin))
                 .setInActiveDrawable(R.drawable.ic_circle_24dp)
                 .setActiveDrawable(R.drawable.ic_doggo_24dp)
@@ -68,8 +71,19 @@ public class DoggoPagerFragment extends AppBaseFragment {
                 .setViewPager(viewPager)
                 .build();
 
-        prepareSharedElementTransition();
+        indicatorAnimator.addIndicatorWatcher((indicator, position, fraction, totalTranslation) -> {
+            double radians = Math.PI * 2 * fraction;
+            float sine = (float) Math.sin(radians);
+            float cosine = (float) Math.cos(radians);
+            float maxScale = Math.max(Math.abs(cosine), 0.4F);
 
+            ImageView currentIndicator = indicatorAnimator.getIndicatorAt(position);
+            currentIndicator.setScaleX(maxScale);
+            currentIndicator.setScaleY(maxScale);
+            indicator.setTranslationY(indicatorSize * sine);
+        });
+
+        prepareSharedElementTransition();
         if (savedInstanceState == null) postponeEnterTransition();
         return root;
     }

@@ -7,6 +7,9 @@ import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,12 +22,14 @@ import androidx.viewpager.widget.ViewPager.OnAdapterChangeListener;
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 
 import static androidx.core.content.ContextCompat.getDrawable;
+import static java.util.Objects.requireNonNull;
 
 public class ViewPagerIndicatorAnimator {
 
     private static final int MIN_INDICATORS_TO_SHOW = 2;
     private static final int MIN_VIEWS_IN_LAYOUT = 3;
 
+    private int[] chainIds;
     private int indicatorCount;
     private int guideLineWidth;
 
@@ -40,7 +45,9 @@ public class ViewPagerIndicatorAnimator {
     private final ImageView indicator;
     private final View guide;
 
-    private Implementation implementation;
+    private Animator animator;
+
+    private final List<IndicatorWatcher> watchers;
 
     private ViewPagerIndicatorAnimator(int indicatorWidth, int indicatorHeight, int indicatorPadding,
                                        @DrawableRes int activeDrawable, @DrawableRes int inActiveDrawable, @DrawableRes int backgroundDrawable,
@@ -53,8 +60,11 @@ public class ViewPagerIndicatorAnimator {
         this.container = container;
         this.viewPager = viewPager;
         this.guide = guide;
+
         this.indicator = buildIndicator();
-        this.implementation = new Implementation();
+        this.animator = new Animator();
+        this.watchers = new ArrayList<>();
+
         PagerAdapter adapter = viewPager.getAdapter();
 
         if (adapter != null) buildIndicators(adapter);
@@ -66,6 +76,28 @@ public class ViewPagerIndicatorAnimator {
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    @SuppressWarnings("unused")
+    public ImageView getIndicator() {
+        return indicator;
+    }
+
+    @SuppressWarnings("unused")
+    public ImageView getIndicatorAt(int index) {
+        return index < 0 || chainIds == null || index > chainIds.length - 1
+                ? indicator
+                : container.<ImageView>findViewById(chainIds[index]);
+    }
+
+    @SuppressWarnings("unused")
+    public void addIndicatorWatcher(IndicatorWatcher watcher) {
+        if (!watchers.contains(watcher)) watchers.add(watcher);
+    }
+
+    @SuppressWarnings("unused")
+    public void removeIndicatorWatcher(IndicatorWatcher watcher) {
+        watchers.remove(watcher);
     }
 
     private ImageView buildIndicator() {
@@ -93,8 +125,8 @@ public class ViewPagerIndicatorAnimator {
             return;
         }
         this.indicator.setVisibility(View.VISIBLE);
-        int[] chainIds = new int[pageCount];
         this.indicatorCount = 0;
+        chainIds = new int[pageCount];
         while (this.indicatorCount < pageCount) {
             ImageView imageView = buildIndicator();
             chainIds[this.indicatorCount] = imageView.getId();
@@ -117,16 +149,16 @@ public class ViewPagerIndicatorAnimator {
 
         ViewTreeObserver observer = this.guide.getViewTreeObserver();
         if (observer.isAlive()) {
-            observer.addOnGlobalLayoutListener(this.implementation);
+            observer.addOnGlobalLayoutListener(this.animator);
             guide.invalidate();
         }
     }
 
-    public class Implementation extends DataSetObserver implements OnPageChangeListener, OnAdapterChangeListener, OnGlobalLayoutListener {
+    private class Animator extends DataSetObserver implements OnPageChangeListener, OnAdapterChangeListener, OnGlobalLayoutListener {
 
         private float lastPositionOffset;
 
-        private Implementation() {
+        private Animator() {
             PagerAdapter adapter = viewPager.getAdapter();
             if (adapter != null) adapter.registerDataSetObserver(this);
 
@@ -144,7 +176,7 @@ public class ViewPagerIndicatorAnimator {
             float currentPositionOffset = ((float) position) + fraction;
             boolean toTheRight = currentPositionOffset > lastPositionOffset;
 
-            indicator.setTranslationX(getTranslation(toTheRight, toTheRight ? position : position + 1, fraction));
+            onMoved(toTheRight, toTheRight ? position : position + 1, fraction);
             lastPositionOffset = currentPositionOffset;
         }
 
@@ -153,25 +185,30 @@ public class ViewPagerIndicatorAnimator {
             if (observer.isAlive()) observer.removeOnGlobalLayoutListener(this);
 
             guideLineWidth = guide.getWidth();
-            int initialIndex = viewPager.getCurrentItem() + 1;
-            indicator.setTranslationX(getTranslation(false, initialIndex, 0.0f));
+            onMoved(false, viewPager.getCurrentItem() + 1, 0.0f);
         }
 
         private float getTranslation(boolean toTheRight, int originalPosition, float fraction) {
             if (!toTheRight) fraction = 1.0f - fraction;
 
-            float chunkWidth = ((float) guideLineWidth) / ((float) viewPager.getAdapter().getCount());
+            float chunkWidth = ((float) guideLineWidth) / requireNonNull(viewPager.getAdapter()).getCount();
             float currentChunk = ((float) originalPosition) * chunkWidth;
             float diff = chunkWidth * fraction;
 
             return toTheRight ? currentChunk + diff : currentChunk - diff;
         }
 
-        public void onPageSelected(int position) {
+        private void onMoved(boolean toTheRight, int position, float fraction) {
+            float translation = getTranslation(toTheRight, position, fraction);
+            indicator.setTranslationX(translation);
+            for (int i = watchers.size() - 1; i >= 0; i--) {
+                watchers.get(i).onIndicatorMoved(indicator, position, fraction, translation);
+            }
         }
 
-        public void onPageScrollStateChanged(int state) {
-        }
+        public void onPageSelected(int position) { }
+
+        public void onPageScrollStateChanged(int state) { }
     }
 
     public static class Builder {
@@ -231,10 +268,22 @@ public class ViewPagerIndicatorAnimator {
         }
 
         public ViewPagerIndicatorAnimator build() {
+            if (container == null) throw new NullPointerException("ConstraintLayout is null");
+            else if (viewPager == null) throw new NullPointerException("ViewPager is null");
+            else if (guideLine == null) throw new NullPointerException("Guideline is null");
+
+            if (!container.equals(guideLine.getParent()))
+                throw new IllegalArgumentException("Guideline must be child of ConstraintLayout");
+
             return new ViewPagerIndicatorAnimator(
                     indicatorWidth, indicatorHeight, indicatorPadding,
                     activeDrawable, inActiveDrawable, backgroundDrawable,
                     container, viewPager, guideLine);
         }
+    }
+
+    @FunctionalInterface
+    public interface IndicatorWatcher {
+        void onIndicatorMoved(ImageView indicator, int position, float fraction, float totalTranslation);
     }
 }
