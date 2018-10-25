@@ -12,7 +12,6 @@ import android.transition.AutoTransition;
 import android.transition.Transition;
 import android.transition.Transition.TransitionListener;
 import android.transition.TransitionManager;
-import android.util.Log;
 import android.view.ViewGroup;
 
 import com.google.android.material.button.MaterialButton;
@@ -81,9 +80,7 @@ public class FabExtensionAnimator {
     }
 
     private void setExtended(boolean extended, boolean force) {
-        boolean skip = isAnimating || (extended && isExtended() && !force);
-        Log.i("TEST", "SKIPPING: " + skip);
-        if (skip) return;
+        if (isAnimating || (extended && isExtended() && !force)) return;
 
         int width = extended ? ViewGroup.LayoutParams.WRAP_CONTENT : fabSize;
         ViewGroup.LayoutParams params = ViewUtil.getLayoutParams(button);
@@ -99,6 +96,9 @@ public class FabExtensionAnimator {
 
         if (extended) this.button.setText(this.glyphState.getText());
         else this.button.setText("");
+
+        button.requestLayout();
+        button.invalidate();
     }
 
     @SuppressWarnings("WeakerAccess")

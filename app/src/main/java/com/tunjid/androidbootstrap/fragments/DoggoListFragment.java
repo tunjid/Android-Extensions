@@ -52,7 +52,7 @@ public class DoggoListFragment extends AppBaseFragment
         recyclerView.setAdapter(new ImageListAdapter(Doggo.doggos, this));
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                if (Math.abs(dy) > 4) setFabExtended(dy > 0);
+                if (Math.abs(dy) > 4) setFabExtended(dy < 0);
             }
         });
         postponeEnterTransition();
