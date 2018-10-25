@@ -7,7 +7,7 @@ import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.activities.MainActivity;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment;
 import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator;
-import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.State;
+import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.GlyphState;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentTransaction;
@@ -43,13 +43,17 @@ public abstract class AppBaseFragment extends BaseFragment {
         hostingActivity.setFabClickListener(getFabClickListener());
     }
 
-    public State getFabState() {
+    protected void setFabExtended(boolean extended) {
+        getHostingActivity().setFabExtended(extended);
+    }
+
+    protected boolean isFabExtended() { return getHostingActivity().isFabExtended(); }
+
+    protected GlyphState getFabState() {
         return FabExtensionAnimator.newState(getText(R.string.app_name), getDrawable(requireContext(), R.drawable.ic_circle_24dp));
     }
 
-    protected View.OnClickListener getFabClickListener() {
-        return view -> {};
-    }
+    protected View.OnClickListener getFabClickListener() { return view -> {}; }
 
     private MainActivity getHostingActivity() {return (MainActivity) requireActivity(); }
 

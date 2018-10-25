@@ -16,6 +16,7 @@
     <string name="menu_refresh">Refresh</string>
 
     <!-- Doggo -->
+    <string name="collapse_prompt">Tap to collapse</string>
     <string name="hugged_doggo">Hugged %1$s!</string>
 
     <!-- Directions -->

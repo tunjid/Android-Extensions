@@ -21,7 +21,7 @@ import com.tunjid.androidbootstrap.core.abstractclasses.BaseActivity;
 import com.tunjid.androidbootstrap.core.view.ViewHider;
 import com.tunjid.androidbootstrap.fragments.RouteFragment;
 import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator;
-import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.State;
+import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.GlyphState;
 import com.tunjid.androidbootstrap.view.util.ViewUtil;
 
 
@@ -95,12 +95,20 @@ public class MainActivity extends BaseActivity {
         else this.fabHider.hide();
     }
 
-    public void updateFab(State state) {
-        if (this.fabExtensionAnimator != null) this.fabExtensionAnimator.update(state);
+    public void setFabExtended(boolean extended) {
+        fabExtensionAnimator.setExtended(extended);
+    }
+
+    public void updateFab(GlyphState glyphState) {
+        if (this.fabExtensionAnimator != null) this.fabExtensionAnimator.updateGlyphs(glyphState);
     }
 
     public void setFabClickListener(View.OnClickListener onClickListener) {
         fab.setOnClickListener(onClickListener);
+    }
+
+    public boolean isFabExtended() {
+        return fabExtensionAnimator.isExtended();
     }
 
     private boolean isInMainFragmentContainer(View view) {

@@ -17,6 +17,7 @@ import com.tunjid.androidbootstrap.adapters.ImageListAdapter.ImageViewHolder;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment;
 import com.tunjid.androidbootstrap.model.Doggo;
+import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator;
 import com.tunjid.androidbootstrap.view.util.ViewUtil;
 
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.SharedElementCallback;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -45,9 +47,14 @@ public class DoggoListFragment extends AppBaseFragment
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_route, container, false);
-        this.recyclerView = rootView.findViewById(R.id.recycler_view);
-        this.recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        this.recyclerView.setAdapter(new ImageListAdapter(Doggo.doggos, this));
+        recyclerView = rootView.findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        recyclerView.setAdapter(new ImageListAdapter(Doggo.doggos, this));
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if (Math.abs(dy) > 4) setFabExtended(dy > 0);
+            }
+        });
         postponeEnterTransition();
         return rootView;
     }
@@ -60,6 +67,19 @@ public class DoggoListFragment extends AppBaseFragment
     public void onDestroyView() {
         super.onDestroyView();
         this.recyclerView = null;
+    }
+
+    @Override
+    public boolean showsFab() { return true; }
+
+    @Override
+    protected FabExtensionAnimator.GlyphState getFabState() {
+        return FabExtensionAnimator.newState(getText(R.string.collapse_prompt), ContextCompat.getDrawable(requireContext(), R.drawable.ic_paw_24dp));
+    }
+
+    @Override
+    protected View.OnClickListener getFabClickListener() {
+        return view -> setFabExtended(!isFabExtended());
     }
 
     public void onDoggoClicked(Doggo doggo) {

@@ -12,6 +12,7 @@ import android.transition.AutoTransition;
 import android.transition.Transition;
 import android.transition.Transition.TransitionListener;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import com.google.android.material.button.MaterialButton;
@@ -34,7 +35,7 @@ public class FabExtensionAnimator {
     private final int fabSize;
     private boolean isAnimating;
 
-    private State state;
+    private GlyphState glyphState;
     private final MaterialButton button;
 
     private final TransitionListener listener = new TransitionListener() {
@@ -55,31 +56,34 @@ public class FabExtensionAnimator {
         button.setBackground(getDrawable());
     }
 
-    public static State newState(CharSequence text, Drawable icon) { return new SimpleState(text, icon);}
+    public static GlyphState newState(CharSequence text, Drawable icon) { return new SimpleGlyphState(text, icon);}
 
-    public void update(@NonNull State state) {
-        boolean isSame = state.equals(this.state);
-        this.state = state;
-        animateChange(state, isSame);
+    public void updateGlyphs(@NonNull GlyphState glyphState) {
+        boolean isSame = glyphState.equals(this.glyphState);
+        this.glyphState = glyphState;
+        animateChange(glyphState, isSame);
     }
 
     public void setExtended(boolean extended) { setExtended(extended, false); }
 
-    private boolean isExtended() {
+    @SuppressWarnings("WeakerAccess")
+    public boolean isExtended() {
         ViewGroup.MarginLayoutParams params = ViewUtil.getLayoutParams(button);
         return !(params.height == params.width && params.width == fabSize);
     }
 
-    private void animateChange(State state, boolean isSame) {
+    private void animateChange(GlyphState glyphState, boolean isSame) {
         boolean extended = isExtended();
-        this.button.setText(state.getText());
-        this.button.setIcon(state.getIcon());
+        this.button.setText(glyphState.getText());
+        this.button.setIcon(glyphState.getIcon());
         setExtended(extended, !isSame);
         if (!extended) onPreExtend();
     }
 
     private void setExtended(boolean extended, boolean force) {
-        if (isAnimating || (extended && isExtended() && !force)) return;
+        boolean skip = isAnimating || (extended && isExtended() && !force);
+        Log.i("TEST", "SKIPPING: " + skip);
+        if (skip) return;
 
         int width = extended ? ViewGroup.LayoutParams.WRAP_CONTENT : fabSize;
         ViewGroup.LayoutParams params = ViewUtil.getLayoutParams(button);
@@ -93,7 +97,7 @@ public class FabExtensionAnimator {
                 .addListener(listener)
                 .addTarget(button));
 
-        if (extended) this.button.setText(this.state.getText());
+        if (extended) this.button.setText(this.glyphState.getText());
         else this.button.setText("");
     }
 
@@ -133,19 +137,19 @@ public class FabExtensionAnimator {
         return new RippleDrawable(RippleUtils.convertToRippleDrawableColor(rippleColor), layerDrawable, maskDrawable);
     }
 
-    public static abstract class State {
+    public static abstract class GlyphState {
 
         public abstract Drawable getIcon();
 
         public abstract CharSequence getText();
     }
 
-    private static class SimpleState extends State {
+    private static class SimpleGlyphState extends GlyphState {
 
         public Drawable icon;
         public CharSequence text;
 
-        private SimpleState(CharSequence text, Drawable icon) {
+        private SimpleGlyphState(CharSequence text, Drawable icon) {
             this.text = text;
             this.icon = icon;
         }
@@ -158,7 +162,7 @@ public class FabExtensionAnimator {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            SimpleState that = (SimpleState) o;
+            SimpleGlyphState that = (SimpleGlyphState) o;
             return Objects.equals(icon, that.icon) &&
                     Objects.equals(text, that.text);
         }

@@ -18,7 +18,7 @@ import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.DoggoPagerAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.model.Doggo;
-import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.State;
+import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.GlyphState;
 import com.tunjid.androidbootstrap.view.animator.ViewPagerIndicatorAnimator;
 
 import java.util.List;
@@ -99,7 +99,7 @@ public class DoggoPagerFragment extends AppBaseFragment {
 
     public boolean showsFab() { return true; }
 
-    public State getFabState() {
+    public GlyphState getFabState() {
         return newState(getDogName(), ContextCompat.getDrawable(requireContext(), R.drawable.ic_hug_24dp));
     }
 
