@@ -7,6 +7,8 @@ import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ImageView;
 
+import com.tunjid.androidbootstrap.view.util.ViewUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,9 +126,11 @@ public class ViewPagerIndicatorAnimator {
             this.indicator.setVisibility(View.GONE);
             return;
         }
+
+        chainIds = new int[pageCount];
+
         this.indicator.setVisibility(View.VISIBLE);
         this.indicatorCount = 0;
-        chainIds = new int[pageCount];
         while (this.indicatorCount < pageCount) {
             ImageView imageView = buildIndicator();
             chainIds[this.indicatorCount] = imageView.getId();
@@ -137,7 +141,7 @@ public class ViewPagerIndicatorAnimator {
         int guideId = this.guide.getId();
         int indicatorId = this.indicator.getId();
 
-        this.guide.getLayoutParams().width = pageCount * (this.indicatorWidth + (this.indicatorPadding * 2));
+        ViewUtil.getLayoutParams(guide).width = pageCount * (this.indicatorWidth + (this.indicatorPadding * 2));
 
         ConstraintSet set = new ConstraintSet();
         set.clone(container);
@@ -147,9 +151,9 @@ public class ViewPagerIndicatorAnimator {
         set.connect(chainIds[pageCount - 1], ConstraintSet.RIGHT, guideId, ConstraintSet.RIGHT);
         set.applyTo(container);
 
-        ViewTreeObserver observer = this.guide.getViewTreeObserver();
+        ViewTreeObserver observer = guide.getViewTreeObserver();
         if (observer.isAlive()) {
-            observer.addOnGlobalLayoutListener(this.animator);
+            observer.addOnGlobalLayoutListener(animator);
             guide.invalidate();
         }
     }
