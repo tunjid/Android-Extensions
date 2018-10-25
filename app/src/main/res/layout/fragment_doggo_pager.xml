@@ -27,7 +27,7 @@
     <View
         android:id="@+id/guide"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="1px"
         android:layout_marginBottom="@dimen/double_margin"
         app:layout_constraintBottom_toTopOf="@+id/spacer"
         app:layout_constraintLeft_toLeftOf="parent"

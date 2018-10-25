@@ -16,19 +16,24 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <FrameLayout
+        android:id="@+id/main_fragment_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/bottom_inset"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/top_inset">
 
-        <FrameLayout
-            android:id="@+id/main_fragment_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        app:layout_constraintTop_toBottomOf="@+id/top_inset" />
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinator_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_inset"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/fab"

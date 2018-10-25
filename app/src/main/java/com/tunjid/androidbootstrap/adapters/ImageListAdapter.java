@@ -60,7 +60,7 @@ public class ImageListAdapter extends BaseRecyclerViewAdapter<ImageListAdapter.I
     public interface ImageListAdapterListener extends BaseRecyclerViewAdapter.AdapterListener {
         default void onDoggoClicked(Doggo doggo) { }
 
-        default void onDoggoImageLoaded() { }
+        default void onDoggoImageLoaded(Doggo doggo) { }
     }
 
     public static class ImageViewHolder extends BaseViewHolder<ImageListAdapterListener>
@@ -100,7 +100,7 @@ public class ImageListAdapter extends BaseRecyclerViewAdapter<ImageListAdapter.I
         }
 
         private void onThumbnailLoaded() {
-            adapterListener.onDoggoImageLoaded();
+            adapterListener.onDoggoImageLoaded(doggo);
             if (fullSize != null) fullSize.postDelayed(() -> getCreator(doggo).fit()
                     .into(fullSize, onSuccess(() -> fullSize.setVisibility(View.VISIBLE))), FULL_SIZE_DELAY);
         }

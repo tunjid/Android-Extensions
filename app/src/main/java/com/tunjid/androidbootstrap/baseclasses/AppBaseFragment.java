@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentTransaction;
 
 import static androidx.core.content.ContextCompat.getDrawable;
+import static com.tunjid.androidbootstrap.activities.MainActivity.ANIMATTION_DURATION;
 
 public abstract class AppBaseFragment extends BaseFragment {
 
@@ -21,7 +22,8 @@ public abstract class AppBaseFragment extends BaseFragment {
 
     public void onResume() {
         super.onResume();
-        if (getView() != null) togglePersistentUi();
+        View view = getView();
+        if (view != null) view.postDelayed(this::togglePersistentUi, ANIMATTION_DURATION);
     }
 
     public void toggleFab(boolean show) { getHostingActivity().toggleFab(show); }

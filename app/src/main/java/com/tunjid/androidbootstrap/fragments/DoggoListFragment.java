@@ -87,6 +87,11 @@ public class DoggoListFragment extends AppBaseFragment
         showFragment(DoggoPagerFragment.newInstance());
     }
 
+    @Override
+    public void onDoggoImageLoaded(Doggo doggo) {
+        if (doggo.equals(Doggo.getTransitionDoggo())) startPostponedEnterTransition();
+    }
+
     private void scrollToPosition() {
         recyclerView.addOnLayoutChangeListener(new OnLayoutChangeListener() {
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
@@ -103,7 +108,7 @@ public class DoggoListFragment extends AppBaseFragment
                 View viewAtPosition = layoutManager.findViewByPosition(index);
                 boolean shouldScroll = viewAtPosition == null || layoutManager.isViewPartiallyVisible(viewAtPosition, false, true);
 
-                if (shouldScroll) layoutManager.scrollToPosition(index);
+                if (shouldScroll) recyclerView.post(() -> layoutManager.scrollToPosition(index));
             }
         });
     }
@@ -133,6 +138,7 @@ public class DoggoListFragment extends AppBaseFragment
         return requireActivity()
                 .getSupportFragmentManager()
                 .beginTransaction()
+                .setReorderingAllowed(true)
                 .addSharedElement(imageView, ViewUtil.transitionName(doggo, imageView));
     }
 

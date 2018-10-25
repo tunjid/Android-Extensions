@@ -1,22 +1,13 @@
 package com.tunjid.androidbootstrap.activities;
 
 import android.os.Bundle;
+import android.transition.AutoTransition;
+import android.transition.TransitionManager;
 import android.view.View;
 
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
-import androidx.core.content.ContextCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-
 import com.google.android.material.button.MaterialButton;
-import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.R;
+import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseActivity;
 import com.tunjid.androidbootstrap.core.view.ViewHider;
 import com.tunjid.androidbootstrap.fragments.RouteFragment;
@@ -24,10 +15,23 @@ import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator;
 import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.GlyphState;
 import com.tunjid.androidbootstrap.view.util.ViewUtil;
 
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import static androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener;
 
 public class MainActivity extends BaseActivity {
+
+    public static final int ANIMATTION_DURATION = 200;
 
     private static final int LEFT_INSET = 0;
     private static final int RIGHT_INSET = 2;
@@ -75,7 +79,7 @@ public class MainActivity extends BaseActivity {
         constraintLayout = findViewById(R.id.constraint_layout);
 
         topInsetView.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
-        toolbarHider = ViewHider.of(this.toolbar).setDirection(ViewHider.TOP).build();
+        toolbarHider = ViewHider.of(toolbar).setDirection(ViewHider.TOP).build();
         fabHider = ViewHider.of(fab).setDirection(ViewHider.BOTTOM).build();
         fabExtensionAnimator = new FabExtensionAnimator(fab);
         fabExtensionAnimator.setExtended(true);
@@ -139,7 +143,13 @@ public class MainActivity extends BaseActivity {
         boolean[] insetState = ((AppBaseFragment) fragment).insetState();
         ViewUtil.getLayoutParams(this.toolbar).topMargin = insetState[TOP_INSET] ? topInset : 0;
 
-        this.topInsetView.setVisibility(insetState[TOP_INSET] ? View.GONE : View.VISIBLE);
-        this.constraintLayout.setPadding(insetState[LEFT_INSET] ? this.leftInset : 0, 0, insetState[RIGHT_INSET] ? this.rightInset : 0, 0);
+        TransitionManager.beginDelayedTransition(constraintLayout, new AutoTransition()
+                .excludeChildren(RecyclerView.class, true)
+                .excludeChildren(ViewPager.class, true)
+                .setDuration(ANIMATTION_DURATION)
+        );
+
+        topInsetView.setVisibility(insetState[TOP_INSET] ? View.GONE : View.VISIBLE);
+        constraintLayout.setPadding(insetState[LEFT_INSET] ? this.leftInset : 0, 0, insetState[RIGHT_INSET] ? this.rightInset : 0, 0);
     }
 }
