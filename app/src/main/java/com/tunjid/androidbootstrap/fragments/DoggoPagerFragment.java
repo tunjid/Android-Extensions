@@ -23,6 +23,7 @@ import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.model.Doggo;
 import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.GlyphState;
 import com.tunjid.androidbootstrap.view.animator.ViewPagerIndicatorAnimator;
+import com.tunjid.androidbootstrap.view.util.InsetFlags;
 
 import java.util.List;
 import java.util.Map;
@@ -99,7 +100,7 @@ public class DoggoPagerFragment extends AppBaseFragment {
         togglePersistentUi();
     }
 
-    public boolean[] insetState() { return NONE; }
+    public InsetFlags insetFlags() { return InsetFlags.NONE; }
 
     public boolean showsToolBar() { return false; }
 

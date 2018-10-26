@@ -8,29 +8,27 @@ import com.tunjid.androidbootstrap.activities.MainActivity;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment;
 import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator;
 import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.GlyphState;
+import com.tunjid.androidbootstrap.view.util.InsetFlags;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentTransaction;
 
 import static androidx.core.content.ContextCompat.getDrawable;
-import static com.tunjid.androidbootstrap.activities.MainActivity.ANIMATTION_DURATION;
+import static com.tunjid.androidbootstrap.activities.MainActivity.ANIMATION_DURATION;
 
 public abstract class AppBaseFragment extends BaseFragment {
-
-    private static final boolean[] DEFAULT = new boolean[]{true, false, true, false};
-    protected static final boolean[] NONE = new boolean[]{false, true, false, false};
 
     public void onResume() {
         super.onResume();
         View view = getView();
-        if (view != null) view.postDelayed(this::togglePersistentUi, ANIMATTION_DURATION);
+        if (view != null) view.postDelayed(this::togglePersistentUi, ANIMATION_DURATION);
     }
 
     public void toggleFab(boolean show) { getHostingActivity().toggleFab(show); }
 
     public void toggleToolbar(boolean show) { getHostingActivity().toggleToolbar(show); }
 
-    public boolean[] insetState() { return DEFAULT; }
+    public InsetFlags insetFlags() { return InsetFlags.ALL; }
 
     public boolean showsFab() { return false; }
 

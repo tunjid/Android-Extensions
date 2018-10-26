@@ -13,6 +13,7 @@ import com.tunjid.androidbootstrap.core.view.ViewHider;
 import com.tunjid.androidbootstrap.fragments.RouteFragment;
 import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator;
 import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.GlyphState;
+import com.tunjid.androidbootstrap.view.util.InsetFlags;
 import com.tunjid.androidbootstrap.view.util.ViewUtil;
 
 import androidx.annotation.LayoutRes;
@@ -31,11 +32,7 @@ import static androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener;
 
 public class MainActivity extends BaseActivity {
 
-    public static final int ANIMATTION_DURATION = 200;
-
-    private static final int LEFT_INSET = 0;
-    private static final int RIGHT_INSET = 2;
-    public static final int TOP_INSET = 1;
+    public static final int ANIMATION_DURATION = 200;
 
     public static int topInset;
 
@@ -78,7 +75,6 @@ public class MainActivity extends BaseActivity {
         bottomInsetView = findViewById(R.id.bottom_inset);
         constraintLayout = findViewById(R.id.constraint_layout);
 
-        topInsetView.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
         toolbarHider = ViewHider.of(toolbar).setDirection(ViewHider.TOP).build();
         fabHider = ViewHider.of(fab).setDirection(ViewHider.BOTTOM).build();
         fabExtensionAnimator = new FabExtensionAnimator(fab);
@@ -124,8 +120,8 @@ public class MainActivity extends BaseActivity {
         if (this.insetsApplied) return insets;
 
         topInset = insets.getSystemWindowInsetTop();
-        this.leftInset = insets.getSystemWindowInsetLeft();
-        this.rightInset = insets.getSystemWindowInsetRight();
+        leftInset = insets.getSystemWindowInsetLeft();
+        rightInset = insets.getSystemWindowInsetRight();
         int bottomInset = insets.getSystemWindowInsetBottom();
 
         ViewUtil.getLayoutParams(this.topInsetView).height = topInset;
@@ -140,16 +136,15 @@ public class MainActivity extends BaseActivity {
     private void adjustInsetForFragment(Fragment fragment) {
         if (!(fragment instanceof AppBaseFragment)) {return;}
 
-        boolean[] insetState = ((AppBaseFragment) fragment).insetState();
-        ViewUtil.getLayoutParams(this.toolbar).topMargin = insetState[TOP_INSET] ? topInset : 0;
-
+        InsetFlags insetFlags = ((AppBaseFragment) fragment).insetFlags();
+        ViewUtil.getLayoutParams(toolbar).topMargin = insetFlags.hasTopInset() ? 0 : topInset;
         TransitionManager.beginDelayedTransition(constraintLayout, new AutoTransition()
                 .excludeChildren(RecyclerView.class, true)
                 .excludeChildren(ViewPager.class, true)
-                .setDuration(ANIMATTION_DURATION)
+                .setDuration(ANIMATION_DURATION)
         );
 
-        topInsetView.setVisibility(insetState[TOP_INSET] ? View.GONE : View.VISIBLE);
-        constraintLayout.setPadding(insetState[LEFT_INSET] ? this.leftInset : 0, 0, insetState[RIGHT_INSET] ? this.rightInset : 0, 0);
+        topInsetView.setVisibility(insetFlags.hasTopInset() ? View.VISIBLE : View.GONE);
+        constraintLayout.setPadding(insetFlags.hasLeftInset() ? this.leftInset : 0, 0, insetFlags.hasRightInset() ? this.rightInset : 0, 0);
     }
 }
