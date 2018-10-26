@@ -4,14 +4,20 @@ apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion parent.ext.compileSdkVersion
+    buildToolsVersion parent.ext.buildToolsVersion
     defaultConfig {
         minSdkVersion parent.ext.minSdkVersion
         targetSdkVersion parent.ext.targetSdkVersion
-        versionCode 1
+
+        consumerProguardFiles 'proguard-rules.pro'
+
+        versionCode 6
         versionName parent.ext.libraryVersion
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
+    lintOptions {
+        abortOnError false
     }
 
     buildTypes {
@@ -21,6 +27,16 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    libraryVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${project.getName()}-${parent.ext.libraryVersion}.aar"
+        }
+    }
 }
 
 dependencies {
@@ -33,8 +49,30 @@ dependencies {
     implementation parent.ext.constraintLayout
 
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.1.0-alpha3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha3'
+    androidTestImplementation 'androidx.test:runner:1.1.0-beta02'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-beta02'
+}
+
+bintray {
+    user = parent.ext.bintrayUser
+    key = parent.ext.bintrayApiKey
+
+    // jFrog plugin must be declared for this line to work
+    configurations = ['archives']
+    publications = ['lib']
+    // Package info for BinTray
+    pkg {
+        repo = 'maven'
+        name = 'android-bootstrap'
+        userOrg = user
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/tunjid/android-bootstrap.git'
+        version {
+            name = '3.0.0'
+            desc = 'An Android library to bootstrap an Android application.'
+            vcsTag = '3.0.0'
+        }
+    }
 }
 
 publishing {
@@ -58,8 +96,8 @@ publishing {
                 def dependenciesNode = asNode().appendNode('dependencies')
 
                 //Iterate over the compile dependencies (we don't want the test ones), adding a <dependency> node for each
-                configurations.compile.allDependencies.each {
-                    if (it.group != null && it.name != null) {
+                configurations.implementation.allDependencies.each {
+                    if (it.group != null && it.name != null && it.name != 'unspecified') {
                         def dependencyNode = dependenciesNode.appendNode('dependency')
                         dependencyNode.appendNode('groupId', it.group)
                         dependencyNode.appendNode('artifactId', it.name)

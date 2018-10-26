@@ -6,7 +6,6 @@ apply plugin: 'maven-publish'
 android {
     compileSdkVersion parent.ext.compileSdkVersion
     buildToolsVersion parent.ext.buildToolsVersion
-
     defaultConfig {
         minSdkVersion parent.ext.minSdkVersion
         targetSdkVersion parent.ext.targetSdkVersion
@@ -15,47 +14,7 @@ android {
 
         versionCode 6
         versionName parent.ext.libraryVersion
-
-//        renderscriptTargetApi 18
-//        renderscriptSupportModeEnabled true
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    dependencies {
-        implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-        implementation parent.ext.appCompat
-        implementation parent.ext.recyclerView
-
-        implementation 'junit:junit:4.12'
-        implementation 'org.hamcrest:hamcrest-library:1.3'
-        implementation 'org.mockito:mockito-android:2.7.22'
-        implementation 'com.android.support.test:runner:1.0.2'
-
-        implementation('com.android.support.test.espresso:espresso-core:3.0.1') {
-            exclude group: 'com.android.support'
-            exclude module: 'support-annotations'
-            exclude module: 'support-v4'
-            exclude module: 'support-v13'
-            exclude module: 'recyclerview-v7'
-            exclude module: 'design'
-        }
-        implementation('com.android.support.test.espresso:espresso-contrib:3.0.1') {
-            exclude group: 'com.android.support'
-            exclude module: 'support-annotations'
-            exclude module: 'support-v4'
-            exclude module: 'support-v13'
-            exclude module: 'recyclerview-v7'
-            exclude module: 'design'
-        }
-        implementation('com.android.support.test.espresso:espresso-intents:3.0.1') {
-            exclude module: 'support-annotations'
-            exclude module: 'support-v4'
-            exclude module: 'support-v13'
-            exclude module: 'recyclerview-v7'
-            exclude module: 'design'
-        }
     }
 
     lintOptions {
@@ -94,6 +53,7 @@ dependencies {
 bintray {
     user = parent.ext.bintrayUser
     key = parent.ext.bintrayApiKey
+
     // jFrog plugin must be declared for this line to work
     configurations = ['archives']
     publications = ['lib']
@@ -105,9 +65,9 @@ bintray {
         licenses = ['MIT']
         vcsUrl = 'https://github.com/tunjid/android-bootstrap.git'
         version {
-            name = parent.ext.libraryVersion
+            name = '3.0.0'
             desc = 'An Android library to bootstrap an Android application.'
-            vcsTag = parent.ext.libraryVersion
+            vcsTag = '3.0.0'
         }
     }
 }
@@ -133,8 +93,8 @@ publishing {
                 def dependenciesNode = asNode().appendNode('dependencies')
 
                 //Iterate over the compile dependencies (we don't want the test ones), adding a <dependency> node for each
-                configurations.compile.allDependencies.each {
-                    if (it.group != null && it.name != null) {
+                configurations.implementation.allDependencies.each {
+                    if (it.group != null && it.name != null && it.name != 'unspecified') {
                         def dependencyNode = dependenciesNode.appendNode('dependency')
                         dependencyNode.appendNode('groupId', it.group)
                         dependencyNode.appendNode('artifactId', it.name)
