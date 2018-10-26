@@ -17,7 +17,7 @@
 
     <!-- Doggo -->
     <string name="collapse_prompt">Tap to collapse</string>
-    <string name="hugged_doggo">H U G G E D %1$s!</string>
+    <string name="hugged_doggo">H U G G E D  %1$s!</string>
 
     <!-- Directions -->
     <string name="reset">reset</string>
