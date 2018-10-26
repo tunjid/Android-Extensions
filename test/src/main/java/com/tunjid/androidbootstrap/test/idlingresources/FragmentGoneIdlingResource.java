@@ -1,7 +1,7 @@
 package com.tunjid.androidbootstrap.test.idlingresources;
 
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Idling resource that idles until a fragment has disappeared.

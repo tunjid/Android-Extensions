@@ -1,6 +1,6 @@
-package com.tunjid.androidbootstrap.core.abstractclasses;
+package com.tunjid.androidbootstrap.view.recyclerview;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Base {@link RecyclerView.Adapter}

@@ -2,30 +2,27 @@
 
 buildscript {
     repositories {
-        jcenter()
         google()
+        jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.3'
+        classpath 'com.android.tools.build:gradle:3.2.1'
         classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.2'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
     }
     project.ext {
-        buildToolsVersion = "27.0.3"
-        compileSdkVersion = 27
-        targetSdkVersion = 27
-        minSdkVersion = 16
+        buildToolsVersion = "28.0.3"
+        compileSdkVersion = 28
+        targetSdkVersion = 28
+        minSdkVersion = 21
 
-        // Common depndencies
-        def supportLibVersion = '27.1.1'
-
-        design = 'com.android.support:design:' + supportLibVersion
-        palette = 'com.android.support:palette-v7:' + supportLibVersion
-        cardView = 'com.android.support:cardview-v7:' + supportLibVersion
-        supportV4 = 'com.android.support:support-v4:' + supportLibVersion
-        appCompat = 'com.android.support:appcompat-v7:' + supportLibVersion
-        recyclerView = 'com.android.support:recyclerview-v7:' + supportLibVersion
-        supportAnnotations = 'com.android.support:support-annotations:' + supportLibVersion
+        material = 'com.google.android.material:material:1.0.0'
+        palette = 'androidx.palette:palette:1.0.0'
+        cardView = 'androidx.cardview:cardview:1.0.0'
+        appCompat = 'androidx.appcompat:appcompat:1.0.0'
+        recyclerView = 'androidx.recyclerview:recyclerview:1.0.0'
+        supportAnnotations = 'androidx.annotation:annotation:1.0.0'
+        constraintLayout = 'androidx.constraintlayout:constraintlayout:1.1.3'
 
         // Artifactory publishing params
         Properties libProps = new Properties()
@@ -47,13 +44,13 @@ buildscript {
 
 // Plugin used to upload authenticated files to BinTray through Gradle
 plugins {
-    id "com.jfrog.bintray" version "1.7.3"
+    id "com.jfrog.bintray" version "1.8.4"
 }
 
 allprojects {
     repositories {
+        google()
         jcenter()
-        maven { url "https://maven.google.com" }
     }
 }
 

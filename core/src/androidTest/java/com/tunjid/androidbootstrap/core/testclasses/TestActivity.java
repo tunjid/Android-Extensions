@@ -1,7 +1,7 @@
 package com.tunjid.androidbootstrap.core.testclasses;
 
 import android.os.Bundle;
-import android.support.annotation.IdRes;
+import androidx.annotation.IdRes;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;

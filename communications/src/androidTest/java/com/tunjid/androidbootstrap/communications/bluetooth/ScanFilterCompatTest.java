@@ -4,7 +4,7 @@ import android.annotation.TargetApi;
 import android.bluetooth.le.ScanFilter;
 import android.os.Build;
 import android.os.ParcelUuid;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 
 import org.junit.After;
 import org.junit.Before;

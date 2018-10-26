@@ -1,7 +1,7 @@
 package com.tunjid.androidbootstrap.test.idlingresources;
 
 /**
- * A callback that invokes when an {@link android.support.test.espresso.IdlingResource} is idle.
+ * A callback that invokes when an {@link androidx.test.espresso.IdlingResource} is idle.
  *
  * Created by tj.dahunsi on 4/29/17.
  */

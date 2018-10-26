@@ -3,7 +3,7 @@ package com.tunjid.androidbootstrap.core.components;
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 
 import com.tunjid.androidbootstrap.core.testclasses.TestService;
 import com.tunjid.androidbootstrap.test.resources.TestIdler;
@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
 
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static androidx.test.InstrumentationRegistry.getInstrumentation;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;

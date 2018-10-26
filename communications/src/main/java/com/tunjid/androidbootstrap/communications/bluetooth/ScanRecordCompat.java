@@ -3,8 +3,8 @@
 package com.tunjid.androidbootstrap.communications.bluetooth;
 
 import android.os.ParcelUuid;
-import android.support.annotation.Nullable;
-import android.support.v4.util.ArrayMap;
+import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 import android.util.Log;
 import android.util.SparseArray;
 
