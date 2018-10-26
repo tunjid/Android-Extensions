@@ -51,9 +51,10 @@ public class ViewPagerIndicatorAnimator {
 
     private final List<IndicatorWatcher> watchers;
 
-    private ViewPagerIndicatorAnimator(int indicatorWidth, int indicatorHeight, int indicatorPadding,
-                                       @DrawableRes int activeDrawable, @DrawableRes int inActiveDrawable, @DrawableRes int backgroundDrawable,
-                                       ConstraintLayout container, ViewPager viewPager, View guide) {
+    @SuppressWarnings("WeakerAccess")
+    protected ViewPagerIndicatorAnimator(int indicatorWidth, int indicatorHeight, int indicatorPadding,
+                                         @DrawableRes int activeDrawable, @DrawableRes int inActiveDrawable, @DrawableRes int backgroundDrawable,
+                                         ConstraintLayout container, ViewPager viewPager, View guide) {
 
         this.indicatorWidth = indicatorWidth;
         this.indicatorHeight = indicatorHeight;
@@ -76,23 +77,18 @@ public class ViewPagerIndicatorAnimator {
         if (activeDrawable != 0) this.indicator.setImageResource(activeDrawable);
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
+    public static Builder<ViewPagerIndicatorAnimator> builder() { return new SimpleBuilder(); }
 
-    @SuppressWarnings("unused")
     public ImageView getIndicator() {
         return indicator;
     }
 
-    @SuppressWarnings("unused")
     public ImageView getIndicatorAt(int index) {
         return index < 0 || chainIds == null || index > chainIds.length - 1
                 ? indicator
                 : container.<ImageView>findViewById(chainIds[index]);
     }
 
-    @SuppressWarnings("unused")
     public void addIndicatorWatcher(IndicatorWatcher watcher) {
         if (!watchers.contains(watcher)) watchers.add(watcher);
     }
@@ -127,10 +123,10 @@ public class ViewPagerIndicatorAnimator {
         }
 
         chainIds = new int[pageCount];
+        indicatorCount = 0;
+        indicator.setVisibility(View.VISIBLE);
 
-        this.indicator.setVisibility(View.VISIBLE);
-        this.indicatorCount = 0;
-        while (this.indicatorCount < pageCount) {
+        while (indicatorCount < pageCount) {
             ImageView imageView = buildIndicator();
             chainIds[this.indicatorCount] = imageView.getId();
             imageView.setImageResource(this.inActiveDrawable);
@@ -215,66 +211,74 @@ public class ViewPagerIndicatorAnimator {
         public void onPageScrollStateChanged(int state) { }
     }
 
-    public static class Builder {
-        private int activeDrawable;
-        private int backgroundDrawable;
-        private int inActiveDrawable;
-        private int indicatorHeight;
-        private int indicatorPadding;
-        private int indicatorWidth;
-        private ConstraintLayout container;
-        private ViewPager viewPager;
-        private View guideLine;
+    public static abstract class Builder<T extends ViewPagerIndicatorAnimator> {
 
-        public Builder setIndicatorWidth(int indicatorWidth) {
+        int indicatorWidth;
+        int indicatorHeight;
+        int indicatorPadding;
+        int activeDrawable;
+        int inActiveDrawable;
+        int backgroundDrawable;
+
+        ConstraintLayout container;
+        ViewPager viewPager;
+        View guideLine;
+
+        public Builder<T> setIndicatorWidth(int indicatorWidth) {
             this.indicatorWidth = indicatorWidth;
             return this;
         }
 
-        public Builder setIndicatorHeight(int indicatorHeight) {
+        public Builder<T> setIndicatorHeight(int indicatorHeight) {
             this.indicatorHeight = indicatorHeight;
             return this;
         }
 
-        public Builder setIndicatorPadding(int indicatorPadding) {
+        public Builder<T> setIndicatorPadding(int indicatorPadding) {
             this.indicatorPadding = indicatorPadding;
             return this;
         }
 
-        public Builder setActiveDrawable(int activeDrawable) {
+        public Builder<T> setActiveDrawable(int activeDrawable) {
             this.activeDrawable = activeDrawable;
             return this;
         }
 
-        public Builder setInActiveDrawable(int inActiveDrawable) {
+        public Builder<T> setInActiveDrawable(int inActiveDrawable) {
             this.inActiveDrawable = inActiveDrawable;
             return this;
         }
 
-        public Builder setBackgroundDrawable(int backgroundDrawable) {
+        public Builder<T> setBackgroundDrawable(int backgroundDrawable) {
             this.backgroundDrawable = backgroundDrawable;
             return this;
         }
 
-        public Builder setContainer(ConstraintLayout container) {
+        public Builder<T> setContainer(ConstraintLayout container) {
             this.container = container;
             return this;
         }
 
-        public Builder setViewPager(ViewPager viewPager) {
+        public Builder<T> setViewPager(ViewPager viewPager) {
             this.viewPager = viewPager;
             return this;
         }
 
-        public Builder setGuideLine(View guideLine) {
+        public Builder<T> setGuideLine(View guideLine) {
             this.guideLine = guideLine;
             return this;
         }
 
+        public abstract T build();
+    }
+
+    private static class SimpleBuilder extends Builder<ViewPagerIndicatorAnimator> {
+        @Override
         public ViewPagerIndicatorAnimator build() {
-            if (container == null) throw new NullPointerException("ConstraintLayout is null");
+            if (this.container == null)
+                throw new NullPointerException("ConstraintLayout is null");
             else if (viewPager == null) throw new NullPointerException("ViewPager is null");
-            else if (guideLine == null) throw new NullPointerException("Guideline is null");
+            else if (guideLine == null) throw new NullPointerException("Guide is null");
 
             if (!container.equals(guideLine.getParent()))
                 throw new IllegalArgumentException("Guideline must be child of ConstraintLayout");
