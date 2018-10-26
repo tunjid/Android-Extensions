@@ -1,6 +1,7 @@
 package com.tunjid.androidbootstrap.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.transition.Fade;
 import android.transition.TransitionSet;
@@ -26,12 +27,15 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.SharedElementCallback;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
+
+import static androidx.core.content.ContextCompat.getDrawable;
+import static java.util.Objects.requireNonNull;
 
 public class DoggoListFragment extends AppBaseFragment
         implements ImageListAdapterListener {
@@ -46,10 +50,13 @@ public class DoggoListFragment extends AppBaseFragment
 
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_route, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_doggo_list, container, false);
+
         recyclerView = rootView.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         recyclerView.setAdapter(new ImageListAdapter(Doggo.doggos, this));
+        recyclerView.addItemDecoration(getDivider(DividerItemDecoration.HORIZONTAL));
+        recyclerView.addItemDecoration(getDivider(DividerItemDecoration.VERTICAL));
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 if (Math.abs(dy) > 4) setFabExtended(dy < 0);
@@ -74,7 +81,7 @@ public class DoggoListFragment extends AppBaseFragment
 
     @Override
     protected FabExtensionAnimator.GlyphState getFabState() {
-        return FabExtensionAnimator.newState(getText(R.string.collapse_prompt), ContextCompat.getDrawable(requireContext(), R.drawable.ic_paw_24dp));
+        return FabExtensionAnimator.newState(getText(R.string.collapse_prompt), getDrawable(requireContext(), R.drawable.ic_paw_24dp));
     }
 
     @Override
@@ -90,6 +97,13 @@ public class DoggoListFragment extends AppBaseFragment
     @Override
     public void onDoggoImageLoaded(Doggo doggo) {
         if (doggo.equals(Doggo.getTransitionDoggo())) startPostponedEnterTransition();
+    }
+
+    private RecyclerView.ItemDecoration getDivider(int orientation) {
+        Context context = requireContext();
+        DividerItemDecoration decoration = new DividerItemDecoration(context, orientation);
+        decoration.setDrawable(requireNonNull(getDrawable(context, R.drawable.bg_divider)));
+        return decoration;
     }
 
     private void scrollToPosition() {
@@ -126,7 +140,7 @@ public class DoggoListFragment extends AppBaseFragment
                 .setDuration(375)
                 .setStartDelay(25)
                 .setInterpolator(new FastOutSlowInInterpolator())
-                .addTransition(new Fade().addTarget(R.id.doggo_image)));
+                .addTransition(new Fade().addTarget(R.id.item_container)));
 
         setExitSharedElementCallback(new SharedElementCallback() {
             public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
