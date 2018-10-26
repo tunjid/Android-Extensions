@@ -1,5 +1,6 @@
 package com.tunjid.androidbootstrap.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,20 +22,25 @@ import com.tunjid.androidbootstrap.model.Route;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Fragment used to test the environment switcher.
- * <p>
- * Created by tj.dahunsi on 5/6/16.
- */
 public class RouteFragment extends AppBaseFragment
         implements RouteAdapter.RouteAdapterListener {
 
-    private List<Route> routes = new ArrayList<>();
+    private final List<Route> routes = new ArrayList<>();
 
     public static RouteFragment newInstance() {
         RouteFragment fragment = new RouteFragment();
         fragment.setArguments(new Bundle());
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        routes.add(new Route(DoggoListFragment.class.getSimpleName(), formatRoute(R.string.route_image_list)));
+        routes.add(new Route(HidingViewFragment.class.getSimpleName(), formatRoute(R.string.route_hiding_view)));
+        routes.add(new Route(SpanbuilderFragment.class.getSimpleName(), formatRoute(R.string.route_span_builder)));
+        routes.add(new Route(BleScanFragment.class.getSimpleName(), formatRoute(R.string.route_ble_scan)));
+        routes.add(new Route(NsdScanFragment.class.getSimpleName(), formatRoute(R.string.route_nsd_scan)));
     }
 
     @Override
@@ -47,14 +53,6 @@ public class RouteFragment extends AppBaseFragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_route, container, false);
-
-        routes.clear();
-        routes.add(new Route(DoggoListFragment.class.getSimpleName(), formatRoute(R.string.route_image_list)));
-        routes.add(new Route(HidingViewFragment.class.getSimpleName(), formatRoute(R.string.route_hiding_view)));
-        routes.add(new Route(SpanbuilderFragment.class.getSimpleName(), formatRoute(R.string.route_span_builder)));
-        routes.add(new Route(BleScanFragment.class.getSimpleName(), formatRoute(R.string.route_ble_scan)));
-        routes.add(new Route(NsdScanFragment.class.getSimpleName(), formatRoute(R.string.route_nsd_scan)));
-
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
