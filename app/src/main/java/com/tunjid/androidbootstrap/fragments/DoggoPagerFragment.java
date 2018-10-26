@@ -1,6 +1,9 @@
 package com.tunjid.androidbootstrap.fragments;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.transition.ChangeBounds;
 import android.transition.ChangeImageTransform;
@@ -37,6 +40,8 @@ import androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener;
 import static com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.newState;
 
 public class DoggoPagerFragment extends AppBaseFragment {
+
+    private static final int BACKGROUND_TINT_DURATION = 1200;
 
     private ViewPager viewPager;
 
@@ -83,6 +88,7 @@ public class DoggoPagerFragment extends AppBaseFragment {
             indicator.setTranslationY(indicatorSize * sine);
         });
 
+        animateBackground(root);
         prepareSharedElementTransition();
         if (savedInstanceState == null) postponeEnterTransition();
         return root;
@@ -136,4 +142,19 @@ public class DoggoPagerFragment extends AppBaseFragment {
             }
         });
     }
+
+    private void animateBackground(View view) {
+        final int endColor = ContextCompat.getColor(requireContext(), R.color.black);
+        final int startColor = Color.TRANSPARENT;
+
+        ValueAnimator animator = ValueAnimator.ofObject(new ArgbEvaluator(), startColor, endColor);
+        animator.setDuration(BACKGROUND_TINT_DURATION);
+        animator.addUpdateListener(animation -> {
+            Integer color = (Integer) animation.getAnimatedValue();
+            if (color == null) return;
+            view.setBackgroundColor(color);
+        });
+        animator.start();
+    }
+
 }
