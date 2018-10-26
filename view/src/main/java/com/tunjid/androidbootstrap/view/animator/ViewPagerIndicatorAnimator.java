@@ -109,7 +109,6 @@ public class ViewPagerIndicatorAnimator {
         LayoutParams params = new LayoutParams(indicatorWidth, indicatorHeight);
         params.rightMargin = params.leftMargin = indicatorPadding;
         params.bottomToBottom = guide.getId();
-
         container.addView(result, params);
         return result;
     }
@@ -150,6 +149,7 @@ public class ViewPagerIndicatorAnimator {
         set.connect(chainIds[0], ConstraintSet.LEFT, guideId, ConstraintSet.LEFT);
         set.connect(chainIds[pageCount - 1], ConstraintSet.RIGHT, guideId, ConstraintSet.RIGHT);
         set.applyTo(container);
+        container.bringChildToFront(indicator);
 
         ViewTreeObserver observer = guide.getViewTreeObserver();
         if (observer.isAlive()) {
