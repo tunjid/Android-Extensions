@@ -2,16 +2,25 @@ package com.tunjid.androidbootstrap.core.text;
 
 import android.content.Context;
 import android.graphics.Typeface;
+
+import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.SpannedString;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
+import android.view.View;
+import android.widget.TextView;
 
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -29,18 +38,20 @@ import java.util.regex.Pattern;
 public class SpanBuilder {
 
     private static final Pattern FORMAT_SEQUENCE = Pattern.compile("%([0-9]+\\$|<?)([^a-zA-z%]*)([[a-zA-Z%]&&[^tT]]|[tT][a-zA-Z])");
-    private static final String COCATENATOR = "%1$s%2$s";
+    private static final String CONCATENATE_FORMATTER = "%1$s%2$s";
     private static final String BRACKETS = "(%1$s)";
     private static final String NEW_LINE = "\n";
     private static final String SPACE = " ";
 
-    private Context context;
-    private CharSequence content = "";
+    private CharSequence content;
 
-    public SpanBuilder(Context context, CharSequence content) {
-        this.context = context.getApplicationContext();
-        this.content = content;
-    }
+    public static SpanBuilder of() { return new SpanBuilder(); }
+
+    public static SpanBuilder of(CharSequence content) { return new SpanBuilder(content); }
+
+    private SpanBuilder() { this.content = ""; }
+
+    private SpanBuilder(CharSequence content) { this.content = content; }
 
     public SpanBuilder bold() {
         this.content = bold(content);
@@ -62,48 +73,59 @@ public class SpanBuilder {
         return this;
     }
 
-    public SpanBuilder color(@ColorRes int color) {
-        this.content = color(context, color, content);
+    public SpanBuilder color(@ColorInt int color) {
+        this.content = color(color, content);
         return this;
     }
 
-    public SpanBuilder prependNumber(Number number) {
-        content = format(COCATENATOR, String.valueOf(number), content);
+    public SpanBuilder color(Context context, @ColorRes int color) {
+        this.content = color(ContextCompat.getColor(context, color), content);
         return this;
     }
 
-    public SpanBuilder appendNumber(Number number) {
-        content = format(COCATENATOR, content, String.valueOf(number));
+    public SpanBuilder click(TextView textView, Runnable clickAction) {
+        this.content = click(textView, clickAction, content);
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
         return this;
     }
 
-    public SpanBuilder prependCharsequence(CharSequence sequence) {
-        content = format(COCATENATOR, sequence, content);
+    public SpanBuilder prepend(Number number) {
+        content = format(CONCATENATE_FORMATTER, String.valueOf(number), content);
         return this;
     }
 
-    public SpanBuilder appendCharsequence(CharSequence sequence) {
-        content = format(COCATENATOR, content, sequence);
+    public SpanBuilder append(Number number) {
+        content = format(CONCATENATE_FORMATTER, content, String.valueOf(number));
+        return this;
+    }
+
+    public SpanBuilder prepend(CharSequence sequence) {
+        content = format(CONCATENATE_FORMATTER, sequence, content);
+        return this;
+    }
+
+    public SpanBuilder append(CharSequence sequence) {
+        content = format(CONCATENATE_FORMATTER, content, sequence);
         return this;
     }
 
     public SpanBuilder prependNewLine() {
-        content = format(COCATENATOR, NEW_LINE, content);
+        content = format(CONCATENATE_FORMATTER, NEW_LINE, content);
         return this;
     }
 
     public SpanBuilder appendNewLine() {
-        content = format(COCATENATOR, content, NEW_LINE);
+        content = format(CONCATENATE_FORMATTER, content, NEW_LINE);
         return this;
     }
 
     public SpanBuilder prependSpace() {
-        content = format(COCATENATOR, SPACE, content);
+        content = format(CONCATENATE_FORMATTER, SPACE, content);
         return this;
     }
 
     public SpanBuilder appendSpace() {
-        content = format(COCATENATOR, content, SPACE);
+        content = format(CONCATENATE_FORMATTER, content, SPACE);
         return this;
     }
 
@@ -178,9 +200,8 @@ public class SpanBuilder {
      * Returns a CharSequence that applies a foreground color to the
      * concatenation of the specified CharSequence objects.
      */
-    private static CharSequence color(Context context, @ColorRes int color, CharSequence... content) {
-        int resolvedColor = ContextCompat.getColor(context, color);
-        return apply(content, new ForegroundColorSpan(resolvedColor));
+    private static CharSequence color(@ColorInt int color, CharSequence... content) {
+        return apply(content, new ForegroundColorSpan(color));
     }
 
     private static CharSequence underline(CharSequence... content) {
@@ -189,6 +210,17 @@ public class SpanBuilder {
 
     private static CharSequence resize(float relativeSize, CharSequence... content) {
         return apply(content, new RelativeSizeSpan(relativeSize));
+    }
+
+    private static CharSequence click(TextView textView, Runnable clickAction, CharSequence... content) {
+        return apply(content, new ClickableSpan() {
+            public void onClick(@NonNull View widget) { clickAction.run(); }
+
+            public void updateDrawState(@NonNull TextPaint paint) {
+                paint.setColor(textView.getCurrentTextColor());
+                paint.setUnderlineText(false);
+            }
+        });
     }
 
 //    private static CharSequence drawable(Context context, @DrawableRes int drawable, CharSequence... content) {
@@ -351,7 +383,7 @@ public class SpanBuilder {
 
     //    public SpanBuilder prependCenteredDrawable(@DrawableRes int drawableResource) {
 //        CharSequence dummyString = "  ";
-//        prependCharsequence(dummyString);
+//        prepend(dummyString);
 //
 //        SpannableString result = new SpannableString(content);
 //

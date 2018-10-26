@@ -1,11 +1,13 @@
 package com.tunjid.androidbootstrap.fragments;
 
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,10 +50,10 @@ public class RouteFragment extends AppBaseFragment
 
         routes.clear();
         routes.add(new Route(DoggoListFragment.class.getSimpleName(), formatRoute(R.string.route_image_list)));
-        routes.add(new Route(BleScanFragment.class.getSimpleName(), formatRoute(R.string.route_ble_scan)));
-        routes.add(new Route(NsdScanFragment.class.getSimpleName(), formatRoute(R.string.route_nsd_scan)));
         routes.add(new Route(HidingViewFragment.class.getSimpleName(), formatRoute(R.string.route_hiding_view)));
         routes.add(new Route(SpanbuilderFragment.class.getSimpleName(), formatRoute(R.string.route_span_builder)));
+        routes.add(new Route(BleScanFragment.class.getSimpleName(), formatRoute(R.string.route_ble_scan)));
+        routes.add(new Route(NsdScanFragment.class.getSimpleName(), formatRoute(R.string.route_nsd_scan)));
 
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
 
@@ -81,6 +83,6 @@ public class RouteFragment extends AppBaseFragment
     }
 
     private CharSequence formatRoute(@StringRes int stringRes) {
-        return new SpanBuilder(requireContext(), getString(stringRes)).italic().underline().color(R.color.colorPrimary).build();
+        return SpanBuilder.of(getString(stringRes)).italic().underline().color(requireContext(), R.color.colorPrimary).build();
     }
 }

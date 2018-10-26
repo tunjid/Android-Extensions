@@ -2,13 +2,16 @@ package com.tunjid.androidbootstrap.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.core.text.SpanBuilder;
@@ -36,46 +39,53 @@ public class SpanbuilderFragment extends AppBaseFragment {
         TextView textView = rootView.findViewById(R.id.text);
         Context context = textView.getContext();
 
-        CharSequence text = new SpanBuilder(context, "This is a regular span")
+        CharSequence text = SpanBuilder.of("This is a regular span")
                 .prependSpace()
-                .prependCharsequence(".")
-                .prependNumber(1)
+                .prepend(".")
+                .prepend(1)
                 .appendNewLine()
-                .appendNumber(2)
-                .appendCharsequence(".")
+                .append(2)
+                .append(".")
                 .appendSpace()
-                .appendCharsequence(new SpanBuilder(context, "This is a colored span")
-                        .color(R.color.colorPrimaryDark)
+                .append(SpanBuilder.of("This is a colored span")
+                        .color(context, R.color.colorPrimaryDark)
                         .build())
                 .appendNewLine()
-                .appendNumber(3)
-                .appendCharsequence(".")
+                .append(3)
+                .append(".")
                 .appendSpace()
-                .appendCharsequence(new SpanBuilder(context, "This is an italicized span")
+                .append(SpanBuilder.of("This is an italicized span")
                         .italic()
                         .build())
                 .appendNewLine()
-                .appendNumber(4)
-                .appendCharsequence(".")
+                .append(4)
+                .append(".")
                 .appendSpace()
-                .appendCharsequence(new SpanBuilder(context, "This is an undelined span")
+                .append(SpanBuilder.of("This is an underlined span")
                         .underline()
                         .build())
                 .appendNewLine()
-                .appendNumber(5)
-                .appendCharsequence(".")
+                .append(5)
+                .append(".")
                 .appendSpace()
-                .appendCharsequence(new SpanBuilder(context, "This is a bold span")
+                .append(SpanBuilder.of("This is a bold span")
                         .bold()
                         .build())
                 .appendNewLine()
-                .appendNumber(6)
-                .appendCharsequence(".")
+                .append(6)
+                .append(".")
                 .appendSpace()
-                .appendCharsequence(new SpanBuilder(context, "This is a resized span")
+                .append(SpanBuilder.of("This is a resized span")
                         .resize(1.2F)
                         .build())
-                .prependNewLine()
+                .appendNewLine()
+                .append(7)
+                .append(".")
+                .appendSpace()
+                .append(SpanBuilder.of("This is a clickable span")
+                        .click(textView, () -> Snackbar.make(textView, "Clicked text!", Snackbar.LENGTH_SHORT).show())
+                        .build())
+                .appendNewLine()
                 .build();
 
         textView.setText(text);
