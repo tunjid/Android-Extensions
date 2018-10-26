@@ -19,7 +19,7 @@ android {
 //        renderscriptTargetApi 18
 //        renderscriptSupportModeEnabled true
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     lintOptions {
@@ -39,13 +39,6 @@ android {
     }
 
     libraryVariants.all { variant ->
-//        variant.outputs.each { output ->
-//            def outputFile = output.outputFile
-//            if (outputFile != null && outputFile.name.endsWith('.aar')) {
-//                def fileName = "${project.getName()}-${parent.ext.libraryVersion}.aar"
-//                output.outputFile = new File(outputFile.parent, fileName)
-//            }
-//        }
         variant.outputs.all {
             outputFileName = "${project.getName()}-${parent.ext.libraryVersion}.aar"
         }
@@ -53,14 +46,14 @@ android {
 }
 
 dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation parent.ext.appCompat
+    implementation parent.ext.supportAnnotations
+
     testImplementation 'junit:junit:4.12'
 
     androidTestImplementation project(':test')
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation parent.ext.supportV4
-    implementation parent.ext.supportAnnotations
+    androidTestImplementation 'androidx.test:runner:1.1.0-beta02'
 }
 
 bintray {
@@ -77,9 +70,9 @@ bintray {
         licenses = ['MIT']
         vcsUrl = 'https://github.com/tunjid/android-bootstrap.git'
         version {
-            name = '2.0.1'
+            name = parent.ext.libraryVersion
             desc = 'An Android library to bootstrap an Android application.'
-            vcsTag = '2.0.1'
+            vcsTag = parent.ext.libraryVersion
         }
     }
 }

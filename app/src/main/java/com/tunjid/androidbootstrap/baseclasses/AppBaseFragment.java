@@ -1,22 +1,61 @@
 package com.tunjid.androidbootstrap.baseclasses;
 
 import android.annotation.SuppressLint;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentTransaction;
+import android.view.View;
 
+import com.tunjid.androidbootstrap.R;
+import com.tunjid.androidbootstrap.activities.MainActivity;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment;
+import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator;
+import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.GlyphState;
+import com.tunjid.androidbootstrap.view.util.InsetFlags;
 
-/**
- * Bass fragment for sample app
- * <p>
- * Created by tj.dahunsi on 5/20/17.
- */
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentTransaction;
+
+import static androidx.core.content.ContextCompat.getDrawable;
+import static com.tunjid.androidbootstrap.activities.MainActivity.ANIMATION_DURATION;
 
 public abstract class AppBaseFragment extends BaseFragment {
 
-    protected void toggleToolbar(boolean show) {
-        ((AppBaseActivity) requireActivity()).toggleToolbar(show);
+    public void onResume() {
+        super.onResume();
+        View view = getView();
+        if (view != null) view.postDelayed(this::togglePersistentUi, ANIMATION_DURATION);
     }
+
+    public void toggleFab(boolean show) { getHostingActivity().toggleFab(show); }
+
+    public void toggleToolbar(boolean show) { getHostingActivity().toggleToolbar(show); }
+
+    public InsetFlags insetFlags() { return InsetFlags.ALL; }
+
+    public boolean showsFab() { return false; }
+
+    public boolean showsToolBar() { return true; }
+
+    public void togglePersistentUi() {
+        toggleFab(showsFab());
+        toggleToolbar(showsToolBar());
+
+        MainActivity hostingActivity = getHostingActivity();
+        hostingActivity.updateFab(getFabState());
+        hostingActivity.setFabClickListener(getFabClickListener());
+    }
+
+    protected void setFabExtended(boolean extended) {
+        getHostingActivity().setFabExtended(extended);
+    }
+
+    protected boolean isFabExtended() { return getHostingActivity().isFabExtended(); }
+
+    protected GlyphState getFabState() {
+        return FabExtensionAnimator.newState(getText(R.string.app_name), getDrawable(requireContext(), R.drawable.ic_circle_24dp));
+    }
+
+    protected View.OnClickListener getFabClickListener() { return view -> {}; }
+
+    private MainActivity getHostingActivity() {return (MainActivity) requireActivity(); }
 
     @Nullable
     @Override

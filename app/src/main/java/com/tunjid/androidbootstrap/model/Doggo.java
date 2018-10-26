@@ -2,11 +2,16 @@ package com.tunjid.androidbootstrap.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.DrawableRes;
+
+import com.tunjid.androidbootstrap.R;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicReference;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
 
 /**
  * Model class for G O O D  B O Y E S  A N D  G I R L E S  B R O N T
@@ -16,8 +21,11 @@ import java.util.Random;
 
 public class Doggo implements Parcelable {
 
-    private @DrawableRes int imageRes;
+    private @DrawableRes
+    int imageRes;
     private String name;
+
+    private static AtomicReference<Doggo> transitionDoggo = new AtomicReference<>();
 
     private static final List<String> DOGGO_NOUNS = Arrays.asList(
             "F R E N",
@@ -33,6 +41,32 @@ public class Doggo implements Parcelable {
             "H E C K I N",
             "B A M B O O Z L E"
     );
+
+    public static final List<Doggo> doggos = Arrays.asList(
+            new Doggo(R.drawable.doggo1),
+            new Doggo(R.drawable.doggo2),
+            new Doggo(R.drawable.doggo3),
+            new Doggo(R.drawable.doggo4),
+            new Doggo(R.drawable.doggo5),
+            new Doggo(R.drawable.doggo6),
+            new Doggo(R.drawable.doggo7),
+            new Doggo(R.drawable.doggo8),
+            new Doggo(R.drawable.doggo9)
+    );
+
+    @Nullable
+    public static Doggo getTransitionDoggo() {
+        return transitionDoggo.get();
+    }
+
+    public static void setTransitionDoggo(Doggo doggo) {
+        transitionDoggo.set(doggo);
+    }
+
+    public static int getTransitionIndex() {
+        Doggo doggo = transitionDoggo.get();
+        return doggo == null ? 0 : doggos.indexOf(doggo);
+    }
 
     public Doggo(@DrawableRes int imageRes) {
         this.imageRes = imageRes;

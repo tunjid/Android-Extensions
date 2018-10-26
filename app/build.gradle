@@ -22,7 +22,7 @@ android {
         multiDexEnabled true  //add this line
         vectorDrawables.useSupportLibrary = true
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         debug {
@@ -47,23 +47,25 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Android support libraries
-    implementation parent.ext.design
+    implementation parent.ext.material
     implementation parent.ext.appCompat
     implementation parent.ext.cardView
     implementation parent.ext.recyclerView
-    implementation 'com.android.support:multidex:1.0.3'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation parent.ext.constraintLayout
+
+    implementation 'androidx.multidex:multidex:2.0.0'
 
     // other dependencies
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'jp.wasabeef:picasso-transformations:2.1.2'
 
-    testImplementation parent.ext.design
+    testImplementation parent.ext.material
     testImplementation parent.ext.supportAnnotations
 
-    androidTestImplementation parent.ext.design
+    androidTestImplementation parent.ext.material
     androidTestImplementation parent.ext.supportAnnotations
 
+    implementation project(':view')
     implementation project(':core')
     implementation project(':communications')
 }

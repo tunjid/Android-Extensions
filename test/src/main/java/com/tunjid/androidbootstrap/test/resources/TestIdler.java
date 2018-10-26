@@ -1,6 +1,6 @@
 package com.tunjid.androidbootstrap.test.resources;
 
-import android.support.test.espresso.IdlingResource;
+import androidx.test.espresso.IdlingResource;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;

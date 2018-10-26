@@ -1,16 +1,16 @@
 package com.tunjid.androidbootstrap.adapters;
 
 import android.net.nsd.NsdServiceInfo;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.tunjid.androidbootstrap.R;
-import com.tunjid.androidbootstrap.core.abstractclasses.BaseRecyclerViewAdapter;
-import com.tunjid.androidbootstrap.core.abstractclasses.BaseViewHolder;
+import com.tunjid.androidbootstrap.view.recyclerview.BaseRecyclerViewAdapter;
+import com.tunjid.androidbootstrap.view.recyclerview.BaseViewHolder;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package com.tunjid.androidbootstrap.baseclasses;
 
-import android.support.annotation.LayoutRes;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.LayoutRes;
+import androidx.appcompat.widget.Toolbar;
 
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseActivity;

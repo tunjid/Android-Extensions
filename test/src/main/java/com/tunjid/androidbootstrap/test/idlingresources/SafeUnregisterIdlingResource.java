@@ -1,7 +1,7 @@
 package com.tunjid.androidbootstrap.test.idlingresources;
 
-import android.support.test.espresso.IdlingRegistry;
-import android.support.test.espresso.IdlingResource;
+import androidx.test.espresso.IdlingRegistry;
+import androidx.test.espresso.IdlingResource;
 
 import java.util.Collection;
 
