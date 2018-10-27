@@ -5,7 +5,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseActivity;
-import com.tunjid.androidbootstrap.core.view.ViewHider;
+import com.tunjid.androidbootstrap.view.animator.ViewHider;
 
 /**
  * Base Activty for the app sample

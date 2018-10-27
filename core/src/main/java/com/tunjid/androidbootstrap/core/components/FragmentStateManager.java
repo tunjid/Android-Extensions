@@ -84,11 +84,12 @@ public class FragmentStateManager {
 
         @Override
         public void onFragmentViewCreated(@NonNull FragmentManager fm, @NonNull Fragment f, @NonNull View v, @Nullable Bundle savedInstanceState) {
-            if (f.getTag() == null)
-                throw new IllegalArgumentException("Fragment instance "
-                        + f.getClass().getName()
-                        + " with no tag cannot be added to the back stack with " +
-                        "a FragmentStateManager");
+            // Not a fragment managed by this FragmentStateManager
+            if (f.getId() != idResource) return;
+            if (f.getTag() == null) throw new IllegalArgumentException("Fragment instance "
+                    + f.getClass().getName()
+                    + " with no tag cannot be added to the back stack with " +
+                    "a FragmentStateManager");
 
             currentFragmentTag = f.getTag();
         }

@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
-import com.tunjid.androidbootstrap.core.view.ViewHider;
+import com.tunjid.androidbootstrap.view.animator.ViewHider;
 
 /**
  * Fragment showing a static list of images

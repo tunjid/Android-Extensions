@@ -86,7 +86,7 @@ public class ViewPagerIndicatorAnimator {
     public ImageView getIndicatorAt(int index) {
         return index < 0 || chainIds == null || index > chainIds.length - 1
                 ? indicator
-                : container.<ImageView>findViewById(chainIds[index]);
+                : container.findViewById(chainIds[index]);
     }
 
     public void addIndicatorWatcher(IndicatorWatcher watcher) {

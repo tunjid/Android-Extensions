@@ -1,7 +1,5 @@
 package com.tunjid.androidbootstrap.adapters;
 
-import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -12,8 +10,8 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.model.Doggo;
-import com.tunjid.androidbootstrap.view.recyclerview.BaseRecyclerViewAdapter;
-import com.tunjid.androidbootstrap.view.recyclerview.BaseViewHolder;
+import com.tunjid.androidbootstrap.view.recyclerview.InteractiveAdapter;
+import com.tunjid.androidbootstrap.view.recyclerview.InteractiveViewHolder;
 import com.tunjid.androidbootstrap.view.util.ViewUtil;
 
 import java.util.List;
@@ -21,7 +19,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
 
-public class ImageListAdapter extends BaseRecyclerViewAdapter<ImageListAdapter.ImageViewHolder, ImageListAdapter.ImageListAdapterListener> {
+public class ImageListAdapter extends InteractiveAdapter<ImageListAdapter.ImageViewHolder, ImageListAdapter.ImageListAdapterListener> {
 
     private List<Doggo> doggos;
 
@@ -34,10 +32,7 @@ public class ImageListAdapter extends BaseRecyclerViewAdapter<ImageListAdapter.I
     @NonNull
     @Override
     public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        View itemView = LayoutInflater.from(context).inflate(R.layout.viewholder_image_list, parent, false);
-
-        return new ImageViewHolder(itemView, adapterListener);
+        return new ImageViewHolder(getItemView(R.layout.viewholder_image_list, parent), adapterListener);
     }
 
     @Override
@@ -57,13 +52,13 @@ public class ImageListAdapter extends BaseRecyclerViewAdapter<ImageListAdapter.I
     }
 
 
-    public interface ImageListAdapterListener extends BaseRecyclerViewAdapter.AdapterListener {
+    public interface ImageListAdapterListener extends InteractiveAdapter.AdapterListener {
         default void onDoggoClicked(Doggo doggo) { }
 
         default void onDoggoImageLoaded(Doggo doggo) { }
     }
 
-    public static class ImageViewHolder extends BaseViewHolder<ImageListAdapterListener>
+    public static class ImageViewHolder extends InteractiveViewHolder<ImageListAdapterListener>
             implements View.OnClickListener {
 
         private static final int FULL_SIZE_DELAY = 100;

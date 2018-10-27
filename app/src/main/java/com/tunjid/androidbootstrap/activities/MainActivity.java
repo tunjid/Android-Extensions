@@ -9,7 +9,7 @@ import com.google.android.material.button.MaterialButton;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseActivity;
-import com.tunjid.androidbootstrap.core.view.ViewHider;
+import com.tunjid.androidbootstrap.view.animator.ViewHider;
 import com.tunjid.androidbootstrap.fragments.RouteFragment;
 import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator;
 import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.GlyphState;

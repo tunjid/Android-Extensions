@@ -1,6 +1,7 @@
 package com.tunjid.androidbootstrap.core.components;
 
 import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -24,14 +25,12 @@ public class ServiceConnection<T extends Service> implements android.content.Ser
     private static final String TAG = "ServiceConnection";
 
     private Context bindingContext;
+
     private T boundService;
     private final Class<T> serviceClass;
-    @Nullable
-    private final BindCallback<T> bindCallback;
+    @Nullable private final BindCallback<T> bindCallback;
 
-    public ServiceConnection(Class<T> serviceClass) {
-        this(serviceClass, null);
-    }
+    public ServiceConnection(Class<T> serviceClass) { this(serviceClass, null); }
 
     public ServiceConnection(Class<T> serviceClass, @Nullable BindCallback<T> bindCallback) {
         this.serviceClass = serviceClass;
@@ -89,20 +88,21 @@ public class ServiceConnection<T extends Service> implements android.content.Ser
 
     public static boolean isServiceRunning(Class<? extends Service> serviceClass, Context context) {
         final ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        final List<ActivityManager.RunningServiceInfo> services = activityManager.getRunningServices(Integer.MAX_VALUE);
+        final List<RunningServiceInfo> services = activityManager.getRunningServices(Integer.MAX_VALUE);
 
-        for (ActivityManager.RunningServiceInfo runningServiceInfo : services) {
-            if (runningServiceInfo.service.getClassName().equals(serviceClass.getName())) {
-                return true;
-            }
-        }
+        for (RunningServiceInfo info : services) if (isEquals(serviceClass, info)) return true;
         return false;
+    }
+
+    private static boolean isEquals(Class<? extends Service> serviceClass, RunningServiceInfo runningServiceInfo) {
+        return runningServiceInfo.service.getClassName().equals(serviceClass.getName());
     }
 
     public abstract static class Binder<T extends Service> extends android.os.Binder {
         public abstract T getService();
     }
 
+    @FunctionalInterface
     public interface BindCallback<T extends Service> {
         void onServiceBound(T service);
     }
