@@ -1,36 +1,32 @@
 package com.tunjid.androidbootstrap.adapters;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-
-import androidx.annotation.NonNull;
-import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
-import androidx.transition.AutoTransition;
-import androidx.transition.TransitionManager;
-import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.core.widget.TextViewCompat;
-
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.tunjid.androidbootstrap.R;
-
 import com.tunjid.androidbootstrap.model.Route;
-import com.tunjid.androidbootstrap.view.recyclerview.BaseRecyclerViewAdapter;
-import com.tunjid.androidbootstrap.view.recyclerview.BaseViewHolder;
+import com.tunjid.androidbootstrap.view.recyclerview.InteractiveAdapter;
+import com.tunjid.androidbootstrap.view.recyclerview.InteractiveViewHolder;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.widget.TextViewCompat;
+import androidx.transition.AutoTransition;
+import androidx.transition.TransitionManager;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 /**
  * Adapter for displaying links to various parts of the app
  * <p>
  * Created by tj.dahunsi on 5/6/16.
  */
-public class RouteAdapter extends BaseRecyclerViewAdapter<RouteAdapter.RouteItemViewHolder, RouteAdapter.RouteAdapterListener> {
+public class RouteAdapter extends InteractiveAdapter<RouteAdapter.RouteItemViewHolder, RouteAdapter.RouteAdapterListener> {
 
     private List<Route> routes;
 
@@ -43,12 +39,7 @@ public class RouteAdapter extends BaseRecyclerViewAdapter<RouteAdapter.RouteItem
     @NonNull
     @Override
     public RouteItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-        Context context = parent.getContext();
-        View itemView = LayoutInflater.from(context).
-                inflate(R.layout.viewholder_route, parent, false);
-
-        return new RouteItemViewHolder(itemView, adapterListener);
+        return new RouteItemViewHolder(getItemView(R.layout.viewholder_route, parent), adapterListener);
     }
 
     @Override
@@ -67,11 +58,11 @@ public class RouteAdapter extends BaseRecyclerViewAdapter<RouteAdapter.RouteItem
     }
 
 
-    public interface RouteAdapterListener extends BaseRecyclerViewAdapter.AdapterListener {
+    public interface RouteAdapterListener extends InteractiveAdapter.AdapterListener {
         void onItemClicked(Route route);
     }
 
-    static class RouteItemViewHolder extends BaseViewHolder<RouteAdapterListener>
+    static class RouteItemViewHolder extends InteractiveViewHolder<RouteAdapterListener>
             implements View.OnClickListener {
 
         Route route;

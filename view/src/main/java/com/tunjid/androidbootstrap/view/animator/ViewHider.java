@@ -1,4 +1,4 @@
-package com.tunjid.androidbootstrap.core.view;
+package com.tunjid.androidbootstrap.view.animator;
 
 
 import android.graphics.Point;

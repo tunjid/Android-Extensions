@@ -52,8 +52,8 @@ public class FabExtensionAnimator {
 
     public FabExtensionAnimator(MaterialButton button) {
         this.button = button;
-        this.collapsedFabSize = button.getResources().getDimensionPixelSize(R.dimen.collapsed_fab_size);
-        this.extendedFabHeight = button.getResources().getDimensionPixelSize(R.dimen.extended_fab_height);
+        collapsedFabSize = button.getResources().getDimensionPixelSize(R.dimen.collapsed_fab_size);
+        extendedFabHeight = button.getResources().getDimensionPixelSize(R.dimen.extended_fab_height);
         button.setBackground(getDrawable());
     }
 
@@ -70,7 +70,7 @@ public class FabExtensionAnimator {
     @SuppressWarnings("WeakerAccess")
     public boolean isExtended() {
         ViewGroup.MarginLayoutParams params = ViewUtil.getLayoutParams(button);
-        return !(params.height == params.width && params.width == collapsedFabSize);
+        return !(params.height == params.width && params.width == getCollapsedFabSize());
     }
 
     private void animateChange(GlyphState glyphState, boolean isSame) {
@@ -84,8 +84,9 @@ public class FabExtensionAnimator {
     private void setExtended(boolean extended, boolean force) {
         if (isAnimating || (extended && isExtended() && !force)) return;
 
+        int collapsedFabSize = getCollapsedFabSize();
         int width = extended ? ViewGroup.LayoutParams.WRAP_CONTENT : collapsedFabSize;
-        int height = extended ? extendedFabHeight : collapsedFabSize;
+        int height = extended ? getExpandedFabHeight() : collapsedFabSize;
 
         ViewGroup.LayoutParams params = ViewUtil.getLayoutParams(button);
         ViewGroup group = (ViewGroup) button.getParent();
@@ -112,6 +113,12 @@ public class FabExtensionAnimator {
         set.start();
     }
 
+    @SuppressWarnings("WeakerAccess")
+    protected int getCollapsedFabSize() { return collapsedFabSize;}
+
+    @SuppressWarnings("WeakerAccess")
+    protected int getExpandedFabHeight() { return extendedFabHeight;}
+
     @NonNull
     private ObjectAnimator animateProperty(float start, float end) {
         return ObjectAnimator.ofFloat(button, ROTATION_Y_PROPERTY, start, end).setDuration(TWITCH_DURATION);
@@ -119,7 +126,7 @@ public class FabExtensionAnimator {
 
     @SuppressLint("RestrictedApi")
     private Drawable getDrawable() {
-        int cornerRadius = collapsedFabSize;
+        int cornerRadius = getCollapsedFabSize();
         int strokeWidth = button.getStrokeWidth();
         ColorStateList rippleColor = button.getRippleColor();
         ColorStateList strokeColor = button.getStrokeColor();
