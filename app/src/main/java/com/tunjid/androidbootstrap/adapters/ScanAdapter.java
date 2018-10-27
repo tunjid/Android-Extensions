@@ -1,24 +1,23 @@
 package com.tunjid.androidbootstrap.adapters;
 
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
-import androidx.annotation.NonNull;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.communications.bluetooth.ScanResultCompat;
-import com.tunjid.androidbootstrap.view.recyclerview.BaseRecyclerViewAdapter;
-import com.tunjid.androidbootstrap.view.recyclerview.BaseViewHolder;
+import com.tunjid.androidbootstrap.view.recyclerview.InteractiveAdapter;
+import com.tunjid.androidbootstrap.view.recyclerview.InteractiveViewHolder;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 /**
  * Adapter for BLE devices found while sacnning
  */
-public class ScanAdapter extends BaseRecyclerViewAdapter<ScanAdapter.ViewHolder, ScanAdapter.ScanAdapterListener> {
+public class ScanAdapter extends InteractiveAdapter<ScanAdapter.ViewHolder, ScanAdapter.ScanAdapterListener> {
 
     private static final int BLE_DEVICE = 1;
 
@@ -32,10 +31,7 @@ public class ScanAdapter extends BaseRecyclerViewAdapter<ScanAdapter.ViewHolder,
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
-        Context context = viewGroup.getContext();
-        View itemView = LayoutInflater.from(context).inflate(R.layout.viewholder_scan, viewGroup, false);
-
-        return new ViewHolder(itemView, adapterListener);
+        return new ViewHolder(getItemView(R.layout.viewholder_scan, viewGroup), adapterListener);
     }
 
     @Override
@@ -54,7 +50,7 @@ public class ScanAdapter extends BaseRecyclerViewAdapter<ScanAdapter.ViewHolder,
     }
 
     // ViewHolder for actual content
-    static class ViewHolder extends BaseViewHolder<ScanAdapterListener>
+    static class ViewHolder extends InteractiveViewHolder<ScanAdapterListener>
             implements
             View.OnClickListener {
 
@@ -89,7 +85,7 @@ public class ScanAdapter extends BaseRecyclerViewAdapter<ScanAdapter.ViewHolder,
         }
     }
 
-    public interface ScanAdapterListener extends BaseRecyclerViewAdapter.AdapterListener {
+    public interface ScanAdapterListener extends InteractiveAdapter.AdapterListener {
         void onBluetoothDeviceClicked(BluetoothDevice bluetoothDevice);
     }
 }

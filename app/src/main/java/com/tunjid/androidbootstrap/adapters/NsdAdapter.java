@@ -1,18 +1,18 @@
 package com.tunjid.androidbootstrap.adapters;
 
 import android.net.nsd.NsdServiceInfo;
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.tunjid.androidbootstrap.R;
-import com.tunjid.androidbootstrap.view.recyclerview.BaseRecyclerViewAdapter;
-import com.tunjid.androidbootstrap.view.recyclerview.BaseViewHolder;
+import com.tunjid.androidbootstrap.view.recyclerview.InteractiveAdapter;
+import com.tunjid.androidbootstrap.view.recyclerview.InteractiveViewHolder;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 /**
  * Adapter for showing open NSD services
@@ -20,7 +20,7 @@ import java.util.List;
  * Created by tj.dahunsi on 2/4/17.
  */
 
-public class NsdAdapter extends BaseRecyclerViewAdapter<NsdAdapter.NSDViewHolder,
+public class NsdAdapter extends InteractiveAdapter<NsdAdapter.NSDViewHolder,
         NsdAdapter.ServiceClickedListener> {
 
     private List<NsdServiceInfo> infoList;
@@ -33,8 +33,7 @@ public class NsdAdapter extends BaseRecyclerViewAdapter<NsdAdapter.NSDViewHolder
     @NonNull
     @Override
     public NSDViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_nsd_list, parent, false);
-        return new NSDViewHolder(view);
+        return new NSDViewHolder(getItemView(R.layout.viewholder_nsd_list, parent));
     }
 
     @Override
@@ -47,13 +46,13 @@ public class NsdAdapter extends BaseRecyclerViewAdapter<NsdAdapter.NSDViewHolder
         return infoList.size();
     }
 
-    public interface ServiceClickedListener extends BaseRecyclerViewAdapter.AdapterListener {
+    public interface ServiceClickedListener extends InteractiveAdapter.AdapterListener {
         void onServiceClicked(NsdServiceInfo serviceInfo);
 
         boolean isSelf(NsdServiceInfo serviceInfo);
     }
 
-    static class NSDViewHolder extends BaseViewHolder<ServiceClickedListener>
+    static class NSDViewHolder extends InteractiveViewHolder<ServiceClickedListener>
             implements View.OnClickListener {
 
         NsdServiceInfo serviceInfo;

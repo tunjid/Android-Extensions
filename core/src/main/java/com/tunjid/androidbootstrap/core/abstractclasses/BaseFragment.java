@@ -20,7 +20,7 @@ public abstract class BaseFragment extends Fragment
     private static final String VIEW_DESTROYED = "com.tunjid.androidbootstrap.core.abstractclasses.basefragment.view.destroyed";
 
     public boolean showFragment(BaseFragment fragment) {
-        return ((BaseActivity) getActivity()).showFragment(fragment);
+        return ((BaseActivity) requireActivity()).showFragment(fragment);
     }
 
     /**
