@@ -38,4 +38,5 @@ Read more about the communications module, classes and components [here](https:/
 
 ## Test
 Warning, here be dragons, I haven't updated this in a bit; move fast, break things and all that.
-I mean, yeah I could test more, but thank Heavens for QA, amirite? 🙃 But you can read more about the testing module and classes [here](https://github.com/tunjid/android-bootstrap/blob/master/test/README.md).
+I mean, yeah I could test more, but thank Heavens for QA, amirite? 🙃
+You can read more about the testing module and classes [here](https://github.com/tunjid/android-bootstrap/blob/master/test/README.md).
