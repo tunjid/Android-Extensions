@@ -4,7 +4,6 @@
     android:id="@+id/input_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
     android:paddingLeft="@dimen/single_margin"
     android:paddingTop="@dimen/half_margin"
     android:paddingRight="@dimen/single_margin"
