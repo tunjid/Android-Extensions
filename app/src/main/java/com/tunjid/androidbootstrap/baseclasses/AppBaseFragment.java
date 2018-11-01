@@ -1,6 +1,12 @@
 package com.tunjid.androidbootstrap.baseclasses;
 
 import android.annotation.SuppressLint;
+import android.transition.ChangeBounds;
+import android.transition.ChangeImageTransform;
+import android.transition.ChangeTransform;
+import android.transition.Fade;
+import android.transition.Transition;
+import android.transition.TransitionSet;
 import android.view.View;
 
 import com.tunjid.androidbootstrap.R;
@@ -54,6 +60,16 @@ public abstract class AppBaseFragment extends BaseFragment {
     }
 
     protected View.OnClickListener getFabClickListener() { return view -> {}; }
+
+    protected Transition baseTransition() {return new Fade();}
+
+    protected Transition baseSharedTransition() {
+        return new TransitionSet()
+                .setOrdering(TransitionSet.ORDERING_TOGETHER)
+                .addTransition(new ChangeBounds())
+                .addTransition(new ChangeTransform())
+                .addTransition(new ChangeImageTransform());
+    }
 
     private MainActivity getHostingActivity() {return (MainActivity) requireActivity(); }
 

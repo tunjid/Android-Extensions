@@ -2,28 +2,25 @@ package com.tunjid.androidbootstrap.fragments;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.transition.ChangeBounds;
-import android.transition.ChangeImageTransform;
-import android.transition.ChangeTransform;
-import android.transition.Fade;
 import android.transition.Transition;
-import android.transition.TransitionSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.DoggoPagerAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
+import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment;
 import com.tunjid.androidbootstrap.model.Doggo;
 import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.GlyphState;
 import com.tunjid.androidbootstrap.view.animator.ViewPagerIndicatorAnimator;
 import com.tunjid.androidbootstrap.view.util.InsetFlags;
+import com.tunjid.androidbootstrap.view.util.ViewUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -35,6 +32,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.SharedElementCallback;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener;
 
@@ -112,21 +110,44 @@ public class DoggoPagerFragment extends AppBaseFragment {
 
     @Override
     protected View.OnClickListener getFabClickListener() {
-        return view -> Snackbar.make(view, getString(R.string.hugged_doggo, getDogName()), Snackbar.LENGTH_SHORT).show();
+        return view -> showFragment(AdoptDoggoFragment.newInstance(Doggo.getTransitionDoggo()));
+    }
+
+    @Nullable
+    @SuppressLint({"CommitTransaction"})
+    public FragmentTransaction provideFragmentTransaction(BaseFragment to) {
+        if (!to.getStableTag().contains(AdoptDoggoFragment.class.getSimpleName())) return null;
+
+        View root = getView();
+        if (root == null) return null;
+
+        Doggo doggo = Doggo.getTransitionDoggo();
+        if (doggo == null) return null;
+
+        View childRoot = root.findViewWithTag(doggo);
+        if (childRoot == null) return null;
+
+        ImageView imageView = childRoot.findViewById(R.id.doggo_image);
+        if (imageView == null) return null;
+
+        return requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .addSharedElement(imageView, ViewUtil.transitionName(doggo, imageView));
     }
 
     private String getDogName() {
         Doggo doggo = Doggo.getTransitionDoggo();
-        return doggo == null ? "" : doggo.getName();
+        if (doggo == null) return "";
+
+        String name = doggo.getName().replace(" ", "");
+        return getString(R.string.adopt_doggo, name);
     }
 
     private void prepareSharedElementTransition() {
-        Transition baseTransition = new Fade();
-        Transition baseSharedTransition = new TransitionSet()
-                .setOrdering(TransitionSet.ORDERING_TOGETHER)
-                .addTransition(new ChangeBounds())
-                .addTransition(new ChangeTransform())
-                .addTransition(new ChangeImageTransform());
+        Transition baseTransition = baseTransition();
+        Transition baseSharedTransition = baseSharedTransition();
 
         setEnterTransition(baseTransition);
         setExitTransition(baseTransition);

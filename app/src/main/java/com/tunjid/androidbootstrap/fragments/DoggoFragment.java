@@ -36,7 +36,11 @@ public class DoggoFragment extends AppBaseFragment
     @SuppressWarnings("ConstantConditions")
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_image_detail, container, false);
-        new ImageViewHolder(rootView, this).bind(getArguments().getParcelable(ARG_DOGGO));
+        Doggo doggo = getArguments().getParcelable(ARG_DOGGO);
+
+        rootView.setTag(doggo);
+        new ImageViewHolder(rootView, this).bind(doggo);
+
         return rootView;
     }
 

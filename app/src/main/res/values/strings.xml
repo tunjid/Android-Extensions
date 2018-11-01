@@ -4,7 +4,7 @@
     <string name="ble_not_supported">BLE is not supported</string>
 
     <!-- Route Descriptions -->
-    <string name="route_image_list">A list of doggos demonstrating delegation of shared element transitions to the calling fragment.</string>
+    <string name="route_image_list">A list of hints demonstrating delegation of shared element transitions to the calling fragment.</string>
     <string name="route_ble_scan">A fragment demonstrating the use of the BLEScanner from the Communications module.</string>
     <string name="route_nsd_scan">A fragment demonstrating the use of the NsdHelper from the Communications module.</string>
     <string name="route_hiding_view">A fragment demonstrating the ViewHider, useful for implementing the "quick return" pattern</string>
@@ -17,6 +17,7 @@
 
     <!-- Doggo -->
     <string name="collapse_prompt">Tap to collapse</string>
+    <string name="adopt_doggo">Adopt  %1$s</string>
     <string name="hugged_doggo">H U G G E D  %1$s!</string>
 
     <!-- Directions -->

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="adoption_items">
+        <item>First name</item>
+        <item>Last name</item>
+        <item>Address</item>
+    </array>
+</resources>
