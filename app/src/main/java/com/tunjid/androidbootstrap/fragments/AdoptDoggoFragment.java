@@ -5,6 +5,7 @@ import android.transition.Transition;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.ImageListAdapter.ImageListAdapterListener;
@@ -52,7 +53,11 @@ public class AdoptDoggoFragment extends AppBaseFragment
         recyclerView.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
         recyclerView.setAdapter(new InputAdapter(Arrays.asList(getResources().getStringArray(R.array.adoption_items))));
 
-        new ImageViewHolder(root, this).bind(getArguments().getParcelable(ARG_DOGGO));
+        ImageViewHolder viewHolder = new ImageViewHolder(root, this);
+        viewHolder.bind(getArguments().getParcelable(ARG_DOGGO));
+
+        tintView(R.color.black_50, viewHolder.thumbnail, this::setColorFilter);
+        tintView(R.color.black_50, viewHolder.fullSize, this::setColorFilter);
 
         return root;
     }
@@ -73,5 +78,9 @@ public class AdoptDoggoFragment extends AppBaseFragment
         setExitTransition(baseTransition);
         setSharedElementEnterTransition(baseSharedTransition);
         setSharedElementReturnTransition(baseSharedTransition);
+    }
+
+    private void setColorFilter(int color, ImageView imageView) {
+        imageView.setColorFilter(color);
     }
 }

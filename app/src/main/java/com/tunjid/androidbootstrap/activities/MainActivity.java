@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import static androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener;
+import static com.tunjid.androidbootstrap.view.util.ViewUtil.getLayoutParams;
 
 public class MainActivity extends BaseActivity {
 
@@ -39,6 +40,7 @@ public class MainActivity extends BaseActivity {
     private boolean insetsApplied;
     private int leftInset;
     private int rightInset;
+    private int bottomInset;
 
     private ViewHider fabHider;
     private ViewHider toolbarHider;
@@ -46,6 +48,8 @@ public class MainActivity extends BaseActivity {
 
     private View topInsetView;
     private View bottomInsetView;
+    private View keyboardPadding;
+
     private Toolbar toolbar;
     private MaterialButton fab;
     private ConstraintLayout constraintLayout;
@@ -53,7 +57,9 @@ public class MainActivity extends BaseActivity {
     final FragmentManager.FragmentLifecycleCallbacks fragmentViewCreatedCallback = new FragmentManager.FragmentLifecycleCallbacks() {
         @Override
         public void onFragmentViewCreated(@NonNull FragmentManager fm, @NonNull androidx.fragment.app.Fragment f, @NonNull View v, @Nullable Bundle savedInstanceState) {
-            if (isInMainFragmentContainer(v)) adjustInsetForFragment(f);
+            if (isNotInMainFragmentContainer(v)) return;
+            adjustInsetForFragment(f);
+            setOnApplyWindowInsetsListener(v, (view, insets) -> consumeFragmentInsets(insets));
         }
     };
 
@@ -73,6 +79,7 @@ public class MainActivity extends BaseActivity {
         toolbar = findViewById(R.id.toolbar);
         topInsetView = findViewById(R.id.top_inset);
         bottomInsetView = findViewById(R.id.bottom_inset);
+        keyboardPadding = findViewById(R.id.keyboard_padding);
         constraintLayout = findViewById(R.id.constraint_layout);
 
         toolbarHider = ViewHider.of(toolbar).setDirection(ViewHider.TOP).build();
@@ -111,9 +118,9 @@ public class MainActivity extends BaseActivity {
         return fabExtensionAnimator.isExtended();
     }
 
-    private boolean isInMainFragmentContainer(View view) {
+    private boolean isNotInMainFragmentContainer(View view) {
         View parent = (View) view.getParent();
-        return parent != null && parent.getId() == R.id.main_fragment_container;
+        return parent == null || parent.getId() != R.id.main_fragment_container;
     }
 
     private WindowInsetsCompat consumeSystemInsets(WindowInsetsCompat insets) {
@@ -122,7 +129,7 @@ public class MainActivity extends BaseActivity {
         topInset = insets.getSystemWindowInsetTop();
         leftInset = insets.getSystemWindowInsetLeft();
         rightInset = insets.getSystemWindowInsetRight();
-        int bottomInset = insets.getSystemWindowInsetBottom();
+        bottomInset = insets.getSystemWindowInsetBottom();
 
         ViewUtil.getLayoutParams(this.topInsetView).height = topInset;
         ViewUtil.getLayoutParams(this.bottomInsetView).height = bottomInset;
@@ -130,6 +137,11 @@ public class MainActivity extends BaseActivity {
         adjustInsetForFragment(getCurrentFragment());
 
         this.insetsApplied = true;
+        return insets;
+    }
+
+    private WindowInsetsCompat consumeFragmentInsets(WindowInsetsCompat insets) {
+        getLayoutParams(keyboardPadding).height = insets.getSystemWindowInsetBottom() - bottomInset;
         return insets;
     }
 

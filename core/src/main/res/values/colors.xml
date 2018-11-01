@@ -3,6 +3,7 @@
     <!-- Utility colors -->
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="black_50">#80000000</color>
     <color name="transparent">#00000000</color>
     <color name="dark_grey">#616161</color>
 </resources>

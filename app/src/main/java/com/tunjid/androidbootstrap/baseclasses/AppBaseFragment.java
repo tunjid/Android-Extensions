@@ -1,6 +1,9 @@
 package com.tunjid.androidbootstrap.baseclasses;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.transition.ChangeBounds;
 import android.transition.ChangeImageTransform;
 import android.transition.ChangeTransform;
@@ -11,18 +14,23 @@ import android.view.View;
 
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.activities.MainActivity;
+import com.tunjid.androidbootstrap.communications.nsd.NsdHelper;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment;
 import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator;
 import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.GlyphState;
 import com.tunjid.androidbootstrap.view.util.InsetFlags;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
 
 import static androidx.core.content.ContextCompat.getDrawable;
 import static com.tunjid.androidbootstrap.activities.MainActivity.ANIMATION_DURATION;
 
 public abstract class AppBaseFragment extends BaseFragment {
+
+    private static final int BACKGROUND_TINT_DURATION = 1200;
 
     public void onResume() {
         super.onResume();
@@ -69,6 +77,20 @@ public abstract class AppBaseFragment extends BaseFragment {
                 .addTransition(new ChangeBounds())
                 .addTransition(new ChangeTransform())
                 .addTransition(new ChangeImageTransform());
+    }
+
+    protected <T extends View> void tintView(@ColorRes int colorRes, T view, NsdHelper.BiConsumer<Integer, T> biConsumer) {
+        final int endColor = ContextCompat.getColor(requireContext(), colorRes);
+        final int startColor = Color.TRANSPARENT;
+
+        ValueAnimator animator = ValueAnimator.ofObject(new ArgbEvaluator(), startColor, endColor);
+        animator.setDuration(BACKGROUND_TINT_DURATION);
+        animator.addUpdateListener(animation -> {
+            Integer color = (Integer) animation.getAnimatedValue();
+            if (color == null) return;
+            biConsumer.accept(color, view);
+        });
+        animator.start();
     }
 
     private MainActivity getHostingActivity() {return (MainActivity) requireActivity(); }

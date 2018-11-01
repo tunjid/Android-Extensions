@@ -66,7 +66,7 @@ public class ImageListAdapter extends InteractiveAdapter<ImageListAdapter.ImageV
 
         private Doggo doggo;
         private final TextView textView;
-        private final ImageView fullSize;
+        public final ImageView fullSize;
         public final ImageView thumbnail;
 
         public ImageViewHolder(View itemView, ImageListAdapterListener adapterListener) {
