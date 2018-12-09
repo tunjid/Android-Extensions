@@ -27,6 +27,7 @@
     <dimen name="double_margin">32dp</dimen>
     <dimen name="single_and_half_margin">24dp</dimen>
     <dimen name="single_margin">16dp</dimen>
+    <dimen name="three_quarter_margin">12dp</dimen>
     <dimen name="half_margin_and_then_some">10dp</dimen>
     <dimen name="half_margin">8dp</dimen>
     <dimen name="third_margin">6dp</dimen>
