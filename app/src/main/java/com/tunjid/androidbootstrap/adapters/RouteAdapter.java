@@ -9,8 +9,8 @@ import android.widget.TextView;
 
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.model.Route;
-import com.tunjid.androidbootstrap.view.recyclerview.InteractiveAdapter;
-import com.tunjid.androidbootstrap.view.recyclerview.InteractiveViewHolder;
+import com.tunjid.androidbootstrap.recyclerview.InteractiveAdapter;
+import com.tunjid.androidbootstrap.recyclerview.InteractiveViewHolder;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.tunjid.androidbootstrap.view.animator;
+package com.tunjid.androidbootstrap.material.animator;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;

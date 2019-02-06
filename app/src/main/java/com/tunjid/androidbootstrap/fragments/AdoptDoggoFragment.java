@@ -14,7 +14,7 @@ import com.tunjid.androidbootstrap.adapters.ImageListAdapter.ImageViewHolder;
 import com.tunjid.androidbootstrap.adapters.InputAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.model.Doggo;
-import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator;
+import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator;
 import com.tunjid.androidbootstrap.view.util.InsetFlags;
 
 import java.util.Arrays;

@@ -16,14 +16,15 @@ import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.activities.MainActivity;
 import com.tunjid.androidbootstrap.communications.nsd.NsdHelper;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment;
-import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator;
-import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.GlyphState;
+import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator;
+import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator.GlyphState;
 import com.tunjid.androidbootstrap.view.util.InsetFlags;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
+import io.reactivex.disposables.CompositeDisposable;
 
 import static androidx.core.content.ContextCompat.getDrawable;
 import static com.tunjid.androidbootstrap.activities.MainActivity.ANIMATION_DURATION;
@@ -32,10 +33,18 @@ public abstract class AppBaseFragment extends BaseFragment {
 
     private static final int BACKGROUND_TINT_DURATION = 1200;
 
+    protected CompositeDisposable disposables = new CompositeDisposable();
+
     public void onResume() {
         super.onResume();
         View view = getView();
         if (view != null) view.postDelayed(this::togglePersistentUi, ANIMATION_DURATION);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        disposables.clear();
     }
 
     public void toggleFab(boolean show) { getHostingActivity().toggleFab(show); }

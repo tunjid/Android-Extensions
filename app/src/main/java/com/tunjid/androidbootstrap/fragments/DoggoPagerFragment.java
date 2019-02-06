@@ -14,8 +14,8 @@ import com.tunjid.androidbootstrap.adapters.DoggoPagerAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment;
 import com.tunjid.androidbootstrap.model.Doggo;
-import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.GlyphState;
-import com.tunjid.androidbootstrap.view.animator.ViewPagerIndicatorAnimator;
+import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator.GlyphState;
+import com.tunjid.androidbootstrap.constraintlayout.animator.ViewPagerIndicatorAnimator;
 import com.tunjid.androidbootstrap.view.util.InsetFlags;
 import com.tunjid.androidbootstrap.view.util.ViewUtil;
 
@@ -33,7 +33,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener;
 
-import static com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.newState;
+import static com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator.newState;
 
 public class DoggoPagerFragment extends AppBaseFragment {
 

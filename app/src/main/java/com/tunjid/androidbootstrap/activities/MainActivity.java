@@ -11,8 +11,8 @@ import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseActivity;
 import com.tunjid.androidbootstrap.view.animator.ViewHider;
 import com.tunjid.androidbootstrap.fragments.RouteFragment;
-import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator;
-import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator.GlyphState;
+import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator;
+import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator.GlyphState;
 import com.tunjid.androidbootstrap.view.util.InsetFlags;
 import com.tunjid.androidbootstrap.view.util.ViewUtil;
 
