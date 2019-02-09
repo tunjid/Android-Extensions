@@ -2,19 +2,17 @@ package com.tunjid.androidbootstrap.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.core.text.SpanBuilder;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Fragment showing a static list of images
@@ -83,7 +81,7 @@ public class SpanbuilderFragment extends AppBaseFragment {
                 .append(".")
                 .appendSpace()
                 .append(SpanBuilder.of("This is a clickable span")
-                        .click(textView, () -> Snackbar.make(textView, "Clicked text!", Snackbar.LENGTH_SHORT).show())
+                        .click(textView, () -> showSnackbar(snackBar -> snackBar.setText("Clicked text!")))
                         .build())
                 .appendNewLine()
                 .build();

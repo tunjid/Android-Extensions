@@ -12,14 +12,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.tunjid.androidbootstrap.R;
-import com.tunjid.androidbootstrap.adapters.ImageListAdapter;
-import com.tunjid.androidbootstrap.adapters.ImageListAdapter.ImageListAdapterListener;
-import com.tunjid.androidbootstrap.adapters.ImageListAdapter.ImageViewHolder;
+import com.tunjid.androidbootstrap.adapters.DoggoAdapter;
+import com.tunjid.androidbootstrap.adapters.DoggoAdapter.ImageListAdapterListener;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment;
+import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator;
 import com.tunjid.androidbootstrap.model.Doggo;
-import com.tunjid.androidbootstrap.view.animator.FabExtensionAnimator;
+import com.tunjid.androidbootstrap.recyclerview.ScrollManager;
 import com.tunjid.androidbootstrap.view.util.ViewUtil;
+import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder;
 
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,6 @@ import androidx.core.app.SharedElementCallback;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
@@ -40,7 +40,7 @@ import static java.util.Objects.requireNonNull;
 public class DoggoListFragment extends AppBaseFragment
         implements ImageListAdapterListener {
 
-    private RecyclerView recyclerView;
+    private ScrollManager scrollManager;
 
     public static DoggoListFragment newInstance() {
         DoggoListFragment fragment = new DoggoListFragment();
@@ -52,16 +52,14 @@ public class DoggoListFragment extends AppBaseFragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_doggo_list, container, false);
 
-        recyclerView = rootView.findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        recyclerView.setAdapter(new ImageListAdapter(Doggo.doggos, this));
-        recyclerView.addItemDecoration(getDivider(DividerItemDecoration.HORIZONTAL));
-        recyclerView.addItemDecoration(getDivider(DividerItemDecoration.VERTICAL));
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                if (Math.abs(dy) > 4) setFabExtended(dy < 0);
-            }
-        });
+        scrollManager = ScrollManager.withRecyclerView(rootView.findViewById(R.id.recycler_view))
+                .withAdapter(new DoggoAdapter<>(Doggo.doggos, R.layout.viewholder_doggo_list, DoggoViewHolder::new, this))
+                .addScrollListener((dx, dy) -> { if (Math.abs(dy) > 4) setFabExtended(dy < 0); })
+                .addDecoration(getDivider(DividerItemDecoration.HORIZONTAL))
+                .addDecoration(getDivider(DividerItemDecoration.VERTICAL))
+                .withGridLayoutManager(2)
+                .build();
+
         postponeEnterTransition();
         return rootView;
     }
@@ -73,7 +71,7 @@ public class DoggoListFragment extends AppBaseFragment
 
     public void onDestroyView() {
         super.onDestroyView();
-        this.recyclerView = null;
+        this.scrollManager = null;
     }
 
     @Override
@@ -107,6 +105,7 @@ public class DoggoListFragment extends AppBaseFragment
     }
 
     private void scrollToPosition() {
+        RecyclerView recyclerView = scrollManager.getRecyclerView();
         recyclerView.addOnLayoutChangeListener(new OnLayoutChangeListener() {
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 recyclerView.removeOnLayoutChangeListener(this);
@@ -161,7 +160,7 @@ public class DoggoListFragment extends AppBaseFragment
         Doggo doggo = Doggo.getTransitionDoggo();
         if (doggo == null) return null;
 
-        ImageViewHolder holder = (ImageViewHolder) this.recyclerView.findViewHolderForItemId(doggo.hashCode());
+        DoggoViewHolder holder = (DoggoViewHolder) scrollManager.findViewHolderForItemId(doggo.hashCode());
         if (holder == null) return null;
 
         return holder.thumbnail;

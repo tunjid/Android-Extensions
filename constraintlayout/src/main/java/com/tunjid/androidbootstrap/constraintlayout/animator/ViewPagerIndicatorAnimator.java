@@ -1,4 +1,4 @@
-package com.tunjid.androidbootstrap.view.animator;
+package com.tunjid.androidbootstrap.constraintlayout.animator;
 
 import android.content.Context;
 import android.database.DataSetObserver;
@@ -18,12 +18,12 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.OnAdapterChangeListener;
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 
-import static androidx.core.content.ContextCompat.getDrawable;
 import static java.util.Objects.requireNonNull;
 
 public class ViewPagerIndicatorAnimator {
@@ -73,7 +73,8 @@ public class ViewPagerIndicatorAnimator {
         if (adapter != null) buildIndicators(adapter);
         Context context = viewPager.getContext();
 
-        if (backgroundDrawable != 0) guide.setBackground(getDrawable(context, backgroundDrawable));
+        if (backgroundDrawable != 0)
+            guide.setBackground(ContextCompat.getDrawable(context, backgroundDrawable));
         if (activeDrawable != 0) this.indicator.setImageResource(activeDrawable);
     }
 

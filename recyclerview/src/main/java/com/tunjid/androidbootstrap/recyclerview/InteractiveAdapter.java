@@ -1,4 +1,4 @@
-package com.tunjid.androidbootstrap.view.recyclerview;
+package com.tunjid.androidbootstrap.recyclerview;
 
 import android.view.View;
 import android.view.ViewGroup;

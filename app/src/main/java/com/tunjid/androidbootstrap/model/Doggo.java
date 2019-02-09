@@ -68,7 +68,7 @@ public class Doggo implements Parcelable {
         return doggo == null ? 0 : doggos.indexOf(doggo);
     }
 
-    public Doggo(@DrawableRes int imageRes) {
+    private Doggo(@DrawableRes int imageRes) {
         this.imageRes = imageRes;
         name = DOGGO_ADJECTIVES.get(new Random().nextInt(DOGGO_ADJECTIVES.size()))
                 + "  " + DOGGO_NOUNS.get(new Random().nextInt(DOGGO_NOUNS.size()));

@@ -1,18 +1,15 @@
 package com.tunjid.androidbootstrap.adapters;
 
 import android.net.nsd.NsdServiceInfo;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.tunjid.androidbootstrap.R;
-import com.tunjid.androidbootstrap.view.recyclerview.InteractiveAdapter;
-import com.tunjid.androidbootstrap.view.recyclerview.InteractiveViewHolder;
+import com.tunjid.androidbootstrap.recyclerview.InteractiveAdapter;
+import com.tunjid.androidbootstrap.viewholders.NSDViewHolder;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 
 /**
  * Adapter for showing open NSD services
@@ -20,7 +17,7 @@ import androidx.core.content.ContextCompat;
  * Created by tj.dahunsi on 2/4/17.
  */
 
-public class NsdAdapter extends InteractiveAdapter<NsdAdapter.NSDViewHolder,
+public class NsdAdapter extends InteractiveAdapter<NSDViewHolder,
         NsdAdapter.ServiceClickedListener> {
 
     private List<NsdServiceInfo> infoList;
@@ -52,41 +49,4 @@ public class NsdAdapter extends InteractiveAdapter<NsdAdapter.NSDViewHolder,
         boolean isSelf(NsdServiceInfo serviceInfo);
     }
 
-    static class NSDViewHolder extends InteractiveViewHolder<ServiceClickedListener>
-            implements View.OnClickListener {
-
-        NsdServiceInfo serviceInfo;
-        TextView textView;
-
-        NSDViewHolder(View itemView) {
-            super(itemView);
-            textView = (TextView) itemView;
-            itemView.setOnClickListener(this);
-        }
-
-        void bind(NsdServiceInfo info, ServiceClickedListener listener) {
-            serviceInfo = info;
-            adapterListener = listener;
-
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(info.getServiceName()).append("\n")
-                    .append(info.getHost() != null ? info.getHost().getHostAddress() : "");
-
-            boolean isSelf = adapterListener.isSelf(info);
-
-            if (isSelf) stringBuilder.append(" (SELF)");
-
-            int color = ContextCompat.getColor(itemView.getContext(), isSelf
-                    ? R.color.dark_grey
-                    : R.color.colorPrimary);
-
-            textView.setTextColor(color);
-            textView.setText(stringBuilder.toString());
-        }
-
-        @Override
-        public void onClick(View v) {
-            adapterListener.onServiceClicked(serviceInfo);
-        }
-    }
 }
