@@ -1,5 +1,4 @@
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/tile_text"
     android:layout_width="match_parent"
@@ -9,5 +8,5 @@
     android:background="@drawable/bg_rounded_rec"
     android:gravity="center"
     android:padding="@dimen/single_margin"
-    android:textSize="@dimen/extra_large_text"
+    android:textSize="@dimen/large_text"
     tools:test="8" />

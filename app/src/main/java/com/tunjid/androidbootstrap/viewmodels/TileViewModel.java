@@ -2,6 +2,7 @@ package com.tunjid.androidbootstrap.viewmodels;
 
 import android.app.Application;
 
+import com.tunjid.androidbootstrap.functions.collections.Lists;
 import com.tunjid.androidbootstrap.model.Tile;
 import com.tunjid.androidbootstrap.recyclerview.Diff;
 
@@ -59,8 +60,7 @@ public class TileViewModel extends AndroidViewModel {
                 .map(newTiles -> Diff.calculate(tiles, newTiles, (__, ___) -> newTiles))
                 .observeOn(mainThread())
                 .subscribe(diff -> {
-                    tiles.clear();
-                    tiles.addAll(diff.cumulative);
+                    Lists.replace(tiles, diff.cumulative);
                     processor.onNext(diff.result);
                 }, processor::onError));
     }
