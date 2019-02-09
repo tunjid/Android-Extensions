@@ -5,7 +5,7 @@ import android.content.Context;
 import android.util.Pair;
 
 import com.tunjid.androidbootstrap.R;
-import com.tunjid.androidbootstrap.functions.TransformingSequentialList;
+import com.tunjid.androidbootstrap.functions.collections.Lists;
 import com.tunjid.androidbootstrap.model.Doggo;
 import com.tunjid.androidbootstrap.recyclerview.Diff;
 import com.tunjid.androidbootstrap.recyclerview.Differentiable;
@@ -51,7 +51,7 @@ public class DoggoRankViewModel extends AndroidViewModel {
 
     public void onActionStarted(Pair<Long, Integer> doggoIdActionPair) {
         long id = doggoIdActionPair.first;
-        int currentIndex = TransformingSequentialList.transform(doggos, Doggo::hashCode).indexOf((int) id);
+        int currentIndex = Lists.transform(doggos, Doggo::hashCode).indexOf((int) id);
         doggoIdPositionPair = new Pair<>(id, currentIndex);
     }
 
@@ -76,7 +76,7 @@ public class DoggoRankViewModel extends AndroidViewModel {
         if (action == ACTION_STATE_IDLE || startId != endId) return "";
 
         boolean isRemoving = action == ACTION_STATE_SWIPE;
-        List<Integer> ids = TransformingSequentialList.transform(isRemoving ? Doggo.doggos : doggos, Doggo::hashCode);
+        List<Integer> ids = Lists.transform(isRemoving ? Doggo.doggos : doggos, Doggo::hashCode);
         int endPosition = ids.indexOf((int) endId);
 
         if (endPosition < 0) return "";

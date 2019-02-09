@@ -1,31 +1,22 @@
-package com.tunjid.androidbootstrap.functions;
+package com.tunjid.androidbootstrap.functions.collections;
+
+import com.tunjid.androidbootstrap.functions.Function;
 
 import java.util.AbstractSequentialList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public final class TransformingSequentialList<F, T> extends AbstractSequentialList<T> {
+final class TransformingSequentialList<F, T> extends AbstractSequentialList<T> {
 
     private final List<F> fromList;
 
     private final Function<? super T, ? extends F> toFunction;
     private final Function<? super F, ? extends T> fromFunction;
 
-    public static <F, T> List<T> transform(List<F> fromList,
-                                           Function<? super F, ? extends T> fromFunction) {
-        return transform(fromList, fromFunction, null);
-    }
-
-    public static <F, T> List<T> transform(List<F> fromList,
-                                           Function<? super F, ? extends T> fromFunction,
-                                           Function<? super T, ? extends F> toFunction) {
-        return new TransformingSequentialList<>(fromList, fromFunction, toFunction);
-    }
-
-    private TransformingSequentialList(List<F> fromList,
-                                       Function<? super F, ? extends T> fromFunction,
-                                       Function<? super T, ? extends F> toFunction) {
+    TransformingSequentialList(List<F> fromList,
+                               Function<? super F, ? extends T> fromFunction,
+                               Function<? super T, ? extends F> toFunction) {
         this.fromList = fromList;
         this.toFunction = toFunction;
         this.fromFunction = fromFunction;

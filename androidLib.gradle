@@ -32,7 +32,7 @@ android {
 
     libraryVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "${project.getName()}-${parent.ext.libraryVersion}.aar"
+            outputFileName = "${project.getName()}-${parent.ext.androidLibraryVersion}.aar"
         }
     }
 }
@@ -62,7 +62,7 @@ bintray {
 publishing {
     publications {
         lib(MavenPublication) {
-            version = parent.ext.libraryVersion
+            version = parent.ext.androidLibraryVersion
             groupId parent.ext.groupId
             artifactId project.getName()
 

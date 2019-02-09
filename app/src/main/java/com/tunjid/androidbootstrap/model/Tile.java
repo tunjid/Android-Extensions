@@ -5,6 +5,7 @@ import android.graphics.Color;
 import com.tunjid.androidbootstrap.recyclerview.Differentiable;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 
 public class Tile implements Differentiable {
 
@@ -57,6 +58,12 @@ public class Tile implements Differentiable {
     @Override
     public Object getChangePayload(Differentiable other) {
         return other;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return getId();
     }
 
     private static int randomIndex() {
