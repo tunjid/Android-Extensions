@@ -5,6 +5,7 @@ import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 
 import com.tunjid.androidbootstrap.communications.nsd.NsdHelper;
+import com.tunjid.androidbootstrap.functions.collections.Lists;
 import com.tunjid.androidbootstrap.recyclerview.Diff;
 import com.tunjid.androidbootstrap.recyclerview.Differentiable;
 
@@ -67,8 +68,7 @@ public class NsdViewModel extends AndroidViewModel {
                 .concatWith(processor.take(SCAN_PERIOD, TimeUnit.SECONDS, Schedulers.io()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(mainThread()).map(diff -> {
-                    services.clear();
-                    services.addAll(diff.cumulative);
+                    Lists.replace(services, diff.cumulative);
                     return diff.result;
                 });
     }
@@ -89,20 +89,22 @@ public class NsdViewModel extends AndroidViewModel {
         nsdHelper.resolveService(service);
     }
 
+    private void onServiceResolutionFailed(NsdServiceInfo service, int errorCode) {
+        if (errorCode == NsdManager.FAILURE_ALREADY_ACTIVE) nsdHelper.resolveService(service);
+    }
+
     private void onServiceResolved(NsdServiceInfo service) {
-        if (!services.contains(service) && !processor.hasComplete()) processor.onNext(Diff.calculate(
+        if (!processor.hasComplete()) processor.onNext(Diff.calculate(
                 services,
                 Collections.singletonList(service),
                 this::addServices,
                 info -> Differentiable.fromCharSequence(info::getServiceName)));
     }
 
-    private void onServiceResolutionFailed(NsdServiceInfo service, int errorCode) {
-        if (errorCode == NsdManager.FAILURE_ALREADY_ACTIVE) nsdHelper.resolveService(service);
-    }
-
     private List<NsdServiceInfo> addServices(List<NsdServiceInfo> currentServices, List<NsdServiceInfo> foundServices) {
-        currentServices.addAll(foundServices);
+        List<NsdServiceInfo> union = Lists.union(currentServices, foundServices, NsdServiceInfo::getServiceName);
+        Lists.replace(currentServices, union);
+        Collections.sort(currentServices, (a, b) -> a.getServiceName().compareTo(b.getServiceName()));
         return currentServices;
     }
 }

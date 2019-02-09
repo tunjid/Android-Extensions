@@ -9,6 +9,8 @@ import android.os.ParcelUuid;
 import com.tunjid.androidbootstrap.communications.bluetooth.BLEScanner;
 import com.tunjid.androidbootstrap.communications.bluetooth.ScanFilterCompat;
 import com.tunjid.androidbootstrap.communications.bluetooth.ScanResultCompat;
+import com.tunjid.androidbootstrap.functions.Function;
+import com.tunjid.androidbootstrap.functions.collections.Lists;
 import com.tunjid.androidbootstrap.recyclerview.Diff;
 import com.tunjid.androidbootstrap.recyclerview.Differentiable;
 
@@ -90,8 +92,7 @@ public class BleViewModel extends AndroidViewModel {
                 .concatWith(processor.take(SCAN_PERIOD, TimeUnit.SECONDS, Schedulers.io()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(mainThread()).map(diff -> {
-                    scanResults.clear();
-                    scanResults.addAll(diff.cumulative);
+                    Lists.replace(scanResults, diff.cumulative);
                     return diff.result;
                 });
     }
@@ -110,16 +111,18 @@ public class BleViewModel extends AndroidViewModel {
 
 
     private void onDeviceFound(ScanResultCompat scanResult) {
-        if (!scanResults.contains(scanResult) && !processor.hasComplete())
-            processor.onNext(Diff.calculate(
-                    scanResults,
-                    Collections.singletonList(scanResult),
-                    this::addServices,
-                    result -> Differentiable.fromCharSequence(result.getDevice()::getAddress)));
+        if (!processor.hasComplete()) processor.onNext(Diff.calculate(
+                scanResults,
+                Collections.singletonList(scanResult),
+                this::addServices,
+                result -> Differentiable.fromCharSequence(result.getDevice()::getAddress)));
     }
 
     private List<ScanResultCompat> addServices(List<ScanResultCompat> currentServices, List<ScanResultCompat> foundServices) {
-        currentServices.addAll(foundServices);
+        Function<ScanResultCompat, String> equalityMapper = result -> result.getDevice().getAddress();
+        List<ScanResultCompat> union = Lists.union(currentServices, foundServices, equalityMapper);
+        Lists.replace(currentServices, union);
+        Collections.sort(currentServices, (a, b) -> equalityMapper.apply(a).compareTo(equalityMapper.apply(b)));
         return currentServices;
     }
 }
