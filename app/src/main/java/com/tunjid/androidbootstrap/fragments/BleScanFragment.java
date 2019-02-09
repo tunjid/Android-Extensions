@@ -19,6 +19,7 @@ import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.ScanAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.recyclerview.ScrollManager;
+import com.tunjid.androidbootstrap.viewholders.ScanViewHolder;
 import com.tunjid.androidbootstrap.viewmodels.BleViewModel;
 
 import androidx.annotation.NonNull;
@@ -39,7 +40,7 @@ public class BleScanFragment extends AppBaseFragment
 
     private boolean isScanning;
 
-    private ScrollManager scrollManager;
+    private ScrollManager<PlaceHolder.State, ScanViewHolder> scrollManager;
     private BleViewModel viewModel;
 
     public static BleScanFragment newInstance() {
@@ -63,7 +64,8 @@ public class BleScanFragment extends AppBaseFragment
         PlaceHolder placeHolder = new PlaceHolder(root.findViewById(R.id.placeholder_container));
         placeHolder.bind(new PlaceHolder.State(R.string.no_ble_devices, R.drawable.ic_bluetooth_24dp));
 
-        scrollManager = ScrollManager.withRecyclerView(root.findViewById(R.id.list))
+        scrollManager = ScrollManager.<PlaceHolder.State, ScanViewHolder>
+                withRecyclerView(root.findViewById(R.id.list))
                 .addDecoration(new DividerItemDecoration(requireActivity(), DividerItemDecoration.VERTICAL))
                 .withAdapter(new ScanAdapter(this, viewModel.getScanResults()))
                 .withPlaceholder(placeHolder)

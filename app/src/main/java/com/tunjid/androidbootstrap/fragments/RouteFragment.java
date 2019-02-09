@@ -6,11 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.tunjid.androidbootstrap.PlaceHolder;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.RouteAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.model.Route;
 import com.tunjid.androidbootstrap.recyclerview.ScrollManager;
+import com.tunjid.androidbootstrap.viewholders.RouteItemViewHolder;
 import com.tunjid.androidbootstrap.viewmodels.RouteViewModel;
 
 import androidx.annotation.NonNull;
@@ -46,7 +48,8 @@ public class RouteFragment extends AppBaseFragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_route, container, false);
 
-        ScrollManager.withRecyclerView(rootView.findViewById(R.id.recycler_view))
+        ScrollManager.<PlaceHolder.State, RouteItemViewHolder>
+                withRecyclerView(rootView.findViewById(R.id.recycler_view))
                 .withLinearLayoutManager()
                 .withAdapter(new RouteAdapter(viewModel.getRoutes(), this))
                 .build();
@@ -70,6 +73,7 @@ public class RouteFragment extends AppBaseFragment
             showFragment(TileFragment.newInstance());
         } else if (route.getDestination().equals(DoggoRankFragment.class.getSimpleName())) {
             showFragment(DoggoRankFragment.newInstance());
-        }    }
+        }
+    }
 
 }

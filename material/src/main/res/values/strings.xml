@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Material</string>
+    <string name="bottom_transient_bar_behavior">com.tunjid.androidbootstrap.material.behavior.BottomTransientBarBehavior</string>
 </resources>

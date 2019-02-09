@@ -11,6 +11,7 @@ import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.tunjid.androidbootstrap.PlaceHolder;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter;
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter.ImageListAdapterListener;
@@ -40,7 +41,7 @@ import static java.util.Objects.requireNonNull;
 public class DoggoListFragment extends AppBaseFragment
         implements ImageListAdapterListener {
 
-    private ScrollManager scrollManager;
+    private ScrollManager<PlaceHolder.State, DoggoViewHolder> scrollManager;
 
     public static DoggoListFragment newInstance() {
         DoggoListFragment fragment = new DoggoListFragment();
@@ -52,7 +53,8 @@ public class DoggoListFragment extends AppBaseFragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_doggo_list, container, false);
 
-        scrollManager = ScrollManager.withRecyclerView(rootView.findViewById(R.id.recycler_view))
+        scrollManager = ScrollManager.<PlaceHolder.State, DoggoViewHolder>
+                withRecyclerView(rootView.findViewById(R.id.recycler_view))
                 .withAdapter(new DoggoAdapter<>(Doggo.doggos, R.layout.viewholder_doggo_list, DoggoViewHolder::new, this))
                 .addScrollListener((dx, dy) -> { if (Math.abs(dy) > 4) setFabExtended(dy < 0); })
                 .addDecoration(getDivider(DividerItemDecoration.HORIZONTAL))

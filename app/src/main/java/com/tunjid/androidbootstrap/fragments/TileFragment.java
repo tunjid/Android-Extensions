@@ -6,11 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.tunjid.androidbootstrap.PlaceHolder;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.TileAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
-import com.tunjid.androidbootstrap.recyclerview.ScrollManager;
 import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator;
+import com.tunjid.androidbootstrap.recyclerview.ScrollManager;
+import com.tunjid.androidbootstrap.viewholders.TileViewHolder;
 import com.tunjid.androidbootstrap.viewmodels.TileViewModel;
 
 import androidx.annotation.NonNull;
@@ -22,7 +24,7 @@ import static androidx.core.content.ContextCompat.getDrawable;
 public class TileFragment extends AppBaseFragment {
 
     private TileViewModel viewModel;
-    private ScrollManager scrollManager;
+    private ScrollManager<PlaceHolder.State, TileViewHolder> scrollManager;
 
     public static TileFragment newInstance() {
         TileFragment fragment = new TileFragment();
@@ -47,7 +49,8 @@ public class TileFragment extends AppBaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_route, container, false);
-        scrollManager = ScrollManager.withRecyclerView(root.findViewById(R.id.recycler_view))
+        scrollManager = ScrollManager.<PlaceHolder.State, TileViewHolder>
+                withRecyclerView(root.findViewById(R.id.recycler_view))
                 .withGridLayoutManager(4)
                 .withAdapter(new TileAdapter(viewModel.getTiles(), tile -> {}))
                 .build();

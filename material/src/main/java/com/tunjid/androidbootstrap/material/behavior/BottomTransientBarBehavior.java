@@ -1,4 +1,4 @@
-package com.tunjid.androidbootstrap.view.behavior;
+package com.tunjid.androidbootstrap.material.behavior;
 
 import android.content.Context;
 

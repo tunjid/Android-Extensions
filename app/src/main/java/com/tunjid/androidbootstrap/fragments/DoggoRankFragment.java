@@ -29,7 +29,7 @@ public class DoggoRankFragment extends AppBaseFragment
         implements DoggoAdapter.ImageListAdapterListener {
 
     private DoggoRankViewModel viewModel;
-    private ScrollManager<PlaceHolder.State, DoggoViewHolder> scrollManager;
+    private ScrollManager<PlaceHolder.State, DoggoRankViewHolder> scrollManager;
 
     public static DoggoRankFragment newInstance() {
         DoggoRankFragment fragment = new DoggoRankFragment();
@@ -50,7 +50,7 @@ public class DoggoRankFragment extends AppBaseFragment
         View root = inflater.inflate(R.layout.fragment_simple_list, container, false);
         PlaceHolder placeHolder = new PlaceHolder(root.findViewById(R.id.placeholder_container));
 
-        scrollManager = ScrollManager.<PlaceHolder.State, DoggoViewHolder>
+        scrollManager = ScrollManager.<PlaceHolder.State, DoggoRankViewHolder>
                 withRecyclerView(root.findViewById(R.id.recycler_view))
                 .withAdapter(new DoggoAdapter<>(viewModel.getDoggos(), R.layout.viewholder_doggo_rank, DoggoRankViewHolder::new, this))
                 .addScrollListener((dx, dy) -> { if (Math.abs(dy) > 4) setFabExtended(dy < 0); })
