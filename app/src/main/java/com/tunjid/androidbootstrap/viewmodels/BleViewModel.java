@@ -83,7 +83,7 @@ public class BleViewModel extends AndroidViewModel {
         scanner.startScan();
 
         // Clear list first, then start scanning.
-        return Flowable.fromCallable(() -> Differentiable.diff(scanResults,
+        return Flowable.fromCallable(() -> Diff.calculate(scanResults,
                 Collections.emptyList(),
                 (__, ___) -> Collections.emptyList(),
                 result -> Differentiable.fromCharSequence(result.getDevice()::getAddress)))
@@ -111,7 +111,7 @@ public class BleViewModel extends AndroidViewModel {
 
     private void onDeviceFound(ScanResultCompat scanResult) {
         if (!scanResults.contains(scanResult) && !processor.hasComplete())
-            processor.onNext(Differentiable.diff(
+            processor.onNext(Diff.calculate(
                     scanResults,
                     Collections.singletonList(scanResult),
                     this::addServices,

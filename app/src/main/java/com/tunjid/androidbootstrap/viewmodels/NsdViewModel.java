@@ -60,7 +60,7 @@ public class NsdViewModel extends AndroidViewModel {
         nsdHelper.discoverServices();
 
         // Clear list first, then start scanning.
-        return Flowable.fromCallable(() -> Differentiable.diff(services,
+        return Flowable.fromCallable(() -> Diff.calculate(services,
                 Collections.emptyList(),
                 (__, ___) -> Collections.emptyList(),
                 info -> Differentiable.fromCharSequence(info::getServiceName)))
@@ -90,7 +90,7 @@ public class NsdViewModel extends AndroidViewModel {
     }
 
     private void onServiceResolved(NsdServiceInfo service) {
-        if (!services.contains(service) && !processor.hasComplete()) processor.onNext(Differentiable.diff(
+        if (!services.contains(service) && !processor.hasComplete()) processor.onNext(Diff.calculate(
                 services,
                 Collections.singletonList(service),
                 this::addServices,

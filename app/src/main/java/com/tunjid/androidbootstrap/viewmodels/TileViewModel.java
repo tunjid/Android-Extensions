@@ -3,7 +3,7 @@ package com.tunjid.androidbootstrap.viewmodels;
 import android.app.Application;
 
 import com.tunjid.androidbootstrap.model.Tile;
-import com.tunjid.androidbootstrap.recyclerview.Differentiable;
+import com.tunjid.androidbootstrap.recyclerview.Diff;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,7 +56,7 @@ public class TileViewModel extends AndroidViewModel {
     private void dance() {
         disposables.add(Flowable.interval(2, TimeUnit.SECONDS, Schedulers.io())
                 .map(__ -> makeNewTiles())
-                .map(newTiles -> Differentiable.diff(tiles, newTiles, (__, ___) -> newTiles))
+                .map(newTiles -> Diff.calculate(tiles, newTiles, (__, ___) -> newTiles))
                 .observeOn(mainThread())
                 .subscribe(diff -> {
                     tiles.clear();

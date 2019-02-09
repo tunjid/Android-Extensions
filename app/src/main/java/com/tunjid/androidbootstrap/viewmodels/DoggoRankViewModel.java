@@ -7,6 +7,7 @@ import android.util.Pair;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.functions.TransformingSequentialList;
 import com.tunjid.androidbootstrap.model.Doggo;
+import com.tunjid.androidbootstrap.recyclerview.Diff;
 import com.tunjid.androidbootstrap.recyclerview.Differentiable;
 
 import java.util.ArrayList;
@@ -90,7 +91,7 @@ public class DoggoRankViewModel extends AndroidViewModel {
     }
 
     public void resetList() {
-        disposables.add(Single.fromCallable(() -> Differentiable.diff(
+        disposables.add(Single.fromCallable(() -> Diff.calculate(
                 doggos,
                 Doggo.doggos,
                 (destination, additions) -> additions,
