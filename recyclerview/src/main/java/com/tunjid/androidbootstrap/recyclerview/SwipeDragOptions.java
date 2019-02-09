@@ -1,36 +1,41 @@
 package com.tunjid.androidbootstrap.recyclerview;
 
+import android.view.View;
+
 import com.tunjid.androidbootstrap.functions.BiConsumer;
-import com.tunjid.androidbootstrap.functions.Consumer;
 import com.tunjid.androidbootstrap.functions.Function;
 import com.tunjid.androidbootstrap.functions.Supplier;
 
-import java.util.List;
-
 import androidx.recyclerview.widget.RecyclerView;
 
-class SwipeDragOptions {
+class SwipeDragOptions<VH extends RecyclerView.ViewHolder> {
 
-    Supplier<List> listSupplier;
     Supplier<Boolean> itemViewSwipeSupplier;
     Supplier<Boolean> longPressDragSupplier;
 
-    Consumer<RecyclerView.ViewHolder> swipeDragEndConsumerConsumer;
-    BiConsumer<RecyclerView.ViewHolder, Integer> swipeDragStartConsumerConsumer;
+    BiConsumer<VH, VH> dragConsumer;
+    BiConsumer<VH, Integer> swipeConsumer;
+    BiConsumer<VH, Integer> swipeDragStartConsumer;
+    BiConsumer<VH, Integer> swipeDragEndConsumer;
 
-    Function<RecyclerView.ViewHolder, Integer> movementFlagsSupplier;
+    Function<VH, Integer> movementFlagFunction;
+    Function<VH, View> dragHandleFunction;
 
-    SwipeDragOptions(Consumer<RecyclerView.ViewHolder> swipeDragEndConsumerConsumer,
-                     BiConsumer<RecyclerView.ViewHolder, Integer> swipeDragStartConsumerConsumer,
-                     Supplier<Boolean> itemViewSwipeSupplier,
+    SwipeDragOptions(Supplier<Boolean> itemViewSwipeSupplier,
                      Supplier<Boolean> longPressDragSupplier,
-                     Function<RecyclerView.ViewHolder, Integer> movementFlagsSupplier,
-                     Supplier<List> listSupplier) {
-        this.swipeDragEndConsumerConsumer = swipeDragEndConsumerConsumer;
-        this.swipeDragStartConsumerConsumer = swipeDragStartConsumerConsumer;
+                     BiConsumer<VH, VH> dragConsumer,
+                     BiConsumer<VH, Integer> swipeConsumer,
+                     BiConsumer<VH, Integer> swipeDragStartConsumer,
+                     BiConsumer<VH, Integer> swipeDragEndConsumer,
+                     Function<VH, Integer> movementFlagFunction,
+                     Function<VH, View> dragHandleFunction) {
         this.itemViewSwipeSupplier = itemViewSwipeSupplier;
         this.longPressDragSupplier = longPressDragSupplier;
-        this.movementFlagsSupplier = movementFlagsSupplier;
-        this.listSupplier = listSupplier;
+        this.dragConsumer = dragConsumer;
+        this.swipeConsumer = swipeConsumer;
+        this.swipeDragStartConsumer = swipeDragStartConsumer;
+        this.swipeDragEndConsumer = swipeDragEndConsumer;
+        this.movementFlagFunction = movementFlagFunction;
+        this.dragHandleFunction = dragHandleFunction;
     }
 }

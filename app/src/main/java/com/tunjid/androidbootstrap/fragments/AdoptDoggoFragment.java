@@ -7,15 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.tunjid.androidbootstrap.R;
-import com.tunjid.androidbootstrap.adapters.ImageListAdapter.ImageListAdapterListener;
-import com.tunjid.androidbootstrap.adapters.ImageListAdapter.ImageViewHolder;
+import com.tunjid.androidbootstrap.adapters.DoggoAdapter.ImageListAdapterListener;
 import com.tunjid.androidbootstrap.adapters.InputAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
-import com.tunjid.androidbootstrap.model.Doggo;
 import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator;
+import com.tunjid.androidbootstrap.model.Doggo;
 import com.tunjid.androidbootstrap.view.util.InsetFlags;
+import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder;
 
 import java.util.Arrays;
 
@@ -63,7 +62,7 @@ public class AdoptDoggoFragment extends AppBaseFragment
         recyclerView.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
         recyclerView.setAdapter(new InputAdapter(Arrays.asList(getResources().getStringArray(R.array.adoption_items))));
 
-        ImageViewHolder viewHolder = new ImageViewHolder(root, this);
+        DoggoViewHolder viewHolder = new DoggoViewHolder(root, this);
         viewHolder.bind(doggo);
 
         tintView(R.color.black_50, viewHolder.thumbnail, this::setColorFilter);
@@ -83,7 +82,7 @@ public class AdoptDoggoFragment extends AppBaseFragment
     }
 
     @Override protected View.OnClickListener getFabClickListener() {
-        return view -> Snackbar.make(view, getString(R.string.adopted_doggo, doggo.getName()), Snackbar.LENGTH_SHORT).show();
+        return view -> showSnackbar(snackBar -> snackBar.setText(getString(R.string.adopted_doggo, doggo.getName())));
     }
 
     private void setColorFilter(int color, ImageView imageView) { imageView.setColorFilter(color); }

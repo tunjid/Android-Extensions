@@ -12,10 +12,12 @@ import android.transition.Transition;
 import android.transition.TransitionSet;
 import android.view.View;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.activities.MainActivity;
 import com.tunjid.androidbootstrap.communications.nsd.NsdHelper;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment;
+import com.tunjid.androidbootstrap.functions.Consumer;
 import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator;
 import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator.GlyphState;
 import com.tunjid.androidbootstrap.view.util.InsetFlags;
@@ -77,6 +79,8 @@ public abstract class AppBaseFragment extends BaseFragment {
     }
 
     protected View.OnClickListener getFabClickListener() { return view -> {}; }
+
+    protected void showSnackbar(Consumer<Snackbar> consumer) { getHostingActivity().showSnackBar(consumer); }
 
     protected Transition baseTransition() {return new Fade();}
 

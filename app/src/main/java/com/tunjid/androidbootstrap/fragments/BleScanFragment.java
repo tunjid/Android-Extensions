@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.tunjid.androidbootstrap.PlaceHolder;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.ScanAdapter;
@@ -164,7 +163,7 @@ public class BleScanFragment extends AppBaseFragment
 
     @Override
     public void onBluetoothDeviceClicked(final BluetoothDevice bluetoothDevice) {
-        Snackbar.make(scrollManager.getRecyclerView(), bluetoothDevice.getAddress(), Snackbar.LENGTH_SHORT).show();
+        showSnackbar(snackBar -> snackBar.setText(bluetoothDevice.getAddress()));
     }
 
     private void scanDevices(boolean enable) {

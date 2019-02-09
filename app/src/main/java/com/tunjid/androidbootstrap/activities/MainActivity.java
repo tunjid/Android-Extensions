@@ -6,13 +6,15 @@ import android.transition.TransitionManager;
 import android.view.View;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseActivity;
-import com.tunjid.androidbootstrap.view.animator.ViewHider;
 import com.tunjid.androidbootstrap.fragments.RouteFragment;
+import com.tunjid.androidbootstrap.functions.Consumer;
 import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator;
 import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator.GlyphState;
+import com.tunjid.androidbootstrap.view.animator.ViewHider;
 import com.tunjid.androidbootstrap.view.util.InsetFlags;
 import com.tunjid.androidbootstrap.view.util.ViewUtil;
 
@@ -21,7 +23,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -53,6 +57,7 @@ public class MainActivity extends BaseActivity {
     private Toolbar toolbar;
     private MaterialButton fab;
     private ConstraintLayout constraintLayout;
+    private CoordinatorLayout coordinatorLayout;
 
     final FragmentManager.FragmentLifecycleCallbacks fragmentViewCreatedCallback = new FragmentManager.FragmentLifecycleCallbacks() {
         @Override
@@ -81,6 +86,7 @@ public class MainActivity extends BaseActivity {
         bottomInsetView = findViewById(R.id.bottom_inset);
         keyboardPadding = findViewById(R.id.keyboard_padding);
         constraintLayout = findViewById(R.id.constraint_layout);
+        coordinatorLayout = findViewById(R.id.coordinator_layout);
 
         toolbarHider = ViewHider.of(toolbar).setDirection(ViewHider.TOP).build();
         fabHider = ViewHider.of(fab).setDirection(ViewHider.BOTTOM).build();
@@ -112,6 +118,16 @@ public class MainActivity extends BaseActivity {
 
     public void setFabClickListener(View.OnClickListener onClickListener) {
         fab.setOnClickListener(onClickListener);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void showSnackBar(Consumer<Snackbar> consumer) {
+        Snackbar snackbar = Snackbar.make(coordinatorLayout, "", Snackbar.LENGTH_SHORT);
+
+        // Necessary to remove snackbar padding for keyboard on older versions of Android
+        ViewCompat.setOnApplyWindowInsetsListener(snackbar.getView(), (view, insets) -> insets);
+        consumer.accept(snackbar);
+        snackbar.show();
     }
 
     public boolean isFabExtended() {

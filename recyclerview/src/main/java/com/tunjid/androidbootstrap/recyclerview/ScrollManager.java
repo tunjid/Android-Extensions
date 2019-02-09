@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -21,9 +20,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import static androidx.recyclerview.widget.ItemTouchHelper.Callback.makeMovementFlags;
 
 @SuppressWarnings("WeakerAccess")
-public class ScrollManager<T> {
+public class ScrollManager<T, VH extends RecyclerView.ViewHolder> {
 
     static final String TAG = "ScrollManager";
+
+    public static final int NO_SWIPE_OR_DRAG = 0;
+    public static final int SWIPE_DRAG_ALL_DIRECTIONS = makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.START | ItemTouchHelper.END);
 
     @Nullable
     protected EndlessScroller scroller;
@@ -35,14 +37,14 @@ public class ScrollManager<T> {
     protected SwipeRefreshLayout refreshLayout;
 
     protected RecyclerView recyclerView;
-    protected Adapter adapter;
+    protected Adapter<VH> adapter;
 
     protected ScrollManager(@Nullable EndlessScroller scroller,
                             @Nullable ListPlaceholder<T> placeholder,
                             @Nullable SwipeRefreshLayout refreshLayout,
-                            @Nullable SwipeDragOptions options,
+                            @Nullable SwipeDragOptions<VH> options,
                             @Nullable RecyclerView.RecycledViewPool recycledViewPool,
-                            RecyclerView recyclerView, Adapter adapter, LayoutManager layoutManager,
+                            RecyclerView recyclerView, Adapter<VH> adapter, LayoutManager layoutManager,
                             List<ItemDecoration> decorations,
                             List<OnScrollListener> listeners,
                             boolean hasFixedSize) {
@@ -66,14 +68,14 @@ public class ScrollManager<T> {
         for (OnScrollListener listener : listeners) recyclerView.addOnScrollListener(listener);
     }
 
-    public static <T> Builder<T> withRecyclerView(RecyclerView recyclerView) {
-        Builder builder = new Builder<>();
+    public static <T, VH extends RecyclerView.ViewHolder> Builder<T, VH> withRecyclerView(RecyclerView recyclerView) {
+        Builder<T, VH> builder = new Builder<>();
         builder.recyclerView = recyclerView;
         return builder;
     }
 
-    public static SwipeDragOptionsBuilder swipeDragOptionsBuilder() {
-        return new SwipeDragOptionsBuilder();
+    public static <VH extends RecyclerView.ViewHolder> SwipeDragOptionsBuilder<VH> swipeDragOptionsBuilder() {
+        return new SwipeDragOptionsBuilder<>();
     }
 
     public void updateForEmptyList(T payload) {
@@ -180,62 +182,8 @@ public class ScrollManager<T> {
         recyclerView.postDelayed(runnable, delay);
     }
 
-    private static ItemTouchHelper fromSwipeDragOptions(ScrollManager scrollManager, SwipeDragOptions options) {
-        return new ItemTouchHelper(new ItemTouchHelper.Callback() {
-            @Override
-            public boolean isItemViewSwipeEnabled() {
-                return options.itemViewSwipeSupplier.get();
-            }
-
-            @Override
-            public boolean isLongPressDragEnabled() {
-                return options.longPressDragSupplier.get();
-            }
-
-            @Override
-            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-                return options.movementFlagsSupplier.apply(viewHolder);
-            }
-
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                int from = viewHolder.getAdapterPosition();
-                int to = target.getAdapterPosition();
-                List items = options.listSupplier.get();
-
-                if (from < to) for (int i = from; i < to; i++) Collections.swap(items, i, i + 1);
-                else for (int i = from; i > to; i--) Collections.swap(items, i, i - 1);
-
-                scrollManager.notifyItemMoved(from, to);
-                return true;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                int position = viewHolder.getAdapterPosition();
-                options.listSupplier.get().remove(position);
-                scrollManager.notifyItemRemoved(position);
-            }
-
-            @Override
-            public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
-                super.onSelectedChanged(viewHolder, actionState);
-                options.swipeDragStartConsumerConsumer.accept(viewHolder, actionState);
-            }
-
-            @Override
-            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-                super.clearView(recyclerView, viewHolder);
-                options.swipeDragEndConsumerConsumer.accept(viewHolder);
-            }
-        });
+    private static <T, VH extends RecyclerView.ViewHolder> ItemTouchHelper fromSwipeDragOptions(ScrollManager<T, VH> scrollManager, SwipeDragOptions<VH> options) {
+        return new ItemTouchHelper(new SwipeDragTouchHelper<>(scrollManager, options));
     }
-
-    public static int defaultMovements() {
-        int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
-        int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
-        return makeMovementFlags(dragFlags, swipeFlags);
-    }
-
 
 }

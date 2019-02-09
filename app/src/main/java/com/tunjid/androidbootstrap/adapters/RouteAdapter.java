@@ -1,32 +1,22 @@
 package com.tunjid.androidbootstrap.adapters;
 
-import android.annotation.SuppressLint;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.model.Route;
 import com.tunjid.androidbootstrap.recyclerview.InteractiveAdapter;
-import com.tunjid.androidbootstrap.recyclerview.InteractiveViewHolder;
+import com.tunjid.androidbootstrap.viewholders.RouteItemViewHolder;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.core.widget.TextViewCompat;
-import androidx.transition.AutoTransition;
-import androidx.transition.TransitionManager;
-import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 /**
  * Adapter for displaying links to various parts of the app
  * <p>
  * Created by tj.dahunsi on 5/6/16.
  */
-public class RouteAdapter extends InteractiveAdapter<RouteAdapter.RouteItemViewHolder, RouteAdapter.RouteAdapterListener> {
+public class RouteAdapter extends InteractiveAdapter<RouteItemViewHolder, RouteAdapter.RouteAdapterListener> {
 
     private List<Route> routes;
 
@@ -62,74 +52,4 @@ public class RouteAdapter extends InteractiveAdapter<RouteAdapter.RouteItemViewH
         void onItemClicked(Route route);
     }
 
-    static class RouteItemViewHolder extends InteractiveViewHolder<RouteAdapterListener>
-            implements View.OnClickListener {
-
-        Route route;
-
-        TextView routeDestination;
-        TextView routeDescription;
-
-        RouteItemViewHolder(View itemView, RouteAdapterListener listener) {
-            super(itemView, listener);
-
-            routeDestination = itemView.findViewById(R.id.destination);
-            routeDescription = itemView.findViewById(R.id.description);
-
-            itemView.setOnClickListener(this);
-            routeDescription.setOnClickListener(this);
-
-            setIcons(true, routeDestination);
-        }
-
-        void bind(Route route) {
-            this.route = route;
-
-            routeDestination.setText(route.getDestination());
-            routeDescription.setText(route.getDescription());
-        }
-
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.description:
-                    adapterListener.onItemClicked(route);
-                    break;
-                default:
-                    changeVisibility(routeDestination, routeDescription);
-                    break;
-            }
-        }
-
-        @SuppressLint("ResourceAsColor")
-        private void setIcons(boolean isDown, TextView... textViews) {
-            int resVal = isDown ? R.drawable.anim_vect_down_to_right_arrow : R.drawable.anim_vect_right_to_down_arrow;
-
-            for (TextView textView : textViews) {
-                Drawable icon = AnimatedVectorDrawableCompat.create(itemView.getContext(), resVal);
-                if (icon != null) {
-                    icon = DrawableCompat.wrap(icon.mutate());
-                    DrawableCompat.setTint(icon, R.color.dark_grey);
-                    DrawableCompat.setTintMode(icon, PorterDuff.Mode.SRC_IN);
-                    TextViewCompat.setCompoundDrawablesRelativeWithIntrinsicBounds(textView, null, null, icon, null);
-                }
-            }
-        }
-
-        private void changeVisibility(TextView clicked, View... changing) {
-            TransitionManager.beginDelayedTransition((ViewGroup) itemView.getParent(), new AutoTransition());
-
-            boolean visible = changing[0].getVisibility() == View.VISIBLE;
-
-            setIcons(visible, clicked);
-
-            AnimatedVectorDrawableCompat animatedDrawable = (AnimatedVectorDrawableCompat)
-                    TextViewCompat.getCompoundDrawablesRelative(clicked)[2];
-
-            animatedDrawable.start();
-
-            int visibility = visible ? View.GONE : View.VISIBLE;
-            for (View view : changing) view.setVisibility(visibility);
-        }
-    }
 }

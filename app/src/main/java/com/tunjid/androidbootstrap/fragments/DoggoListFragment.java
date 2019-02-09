@@ -12,15 +12,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.tunjid.androidbootstrap.R;
-import com.tunjid.androidbootstrap.adapters.ImageListAdapter;
-import com.tunjid.androidbootstrap.adapters.ImageListAdapter.ImageListAdapterListener;
-import com.tunjid.androidbootstrap.adapters.ImageListAdapter.ImageViewHolder;
+import com.tunjid.androidbootstrap.adapters.DoggoAdapter;
+import com.tunjid.androidbootstrap.adapters.DoggoAdapter.ImageListAdapterListener;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment;
+import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator;
 import com.tunjid.androidbootstrap.model.Doggo;
 import com.tunjid.androidbootstrap.recyclerview.ScrollManager;
-import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator;
 import com.tunjid.androidbootstrap.view.util.ViewUtil;
+import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder;
 
 import java.util.List;
 import java.util.Map;
@@ -53,11 +53,11 @@ public class DoggoListFragment extends AppBaseFragment
         View rootView = inflater.inflate(R.layout.fragment_doggo_list, container, false);
 
         scrollManager = ScrollManager.withRecyclerView(rootView.findViewById(R.id.recycler_view))
-                .withGridLayoutManager(2)
-                .withAdapter(new ImageListAdapter(Doggo.doggos, this))
+                .withAdapter(new DoggoAdapter<>(Doggo.doggos, R.layout.viewholder_doggo_list, DoggoViewHolder::new, this))
                 .addScrollListener((dx, dy) -> { if (Math.abs(dy) > 4) setFabExtended(dy < 0); })
                 .addDecoration(getDivider(DividerItemDecoration.HORIZONTAL))
                 .addDecoration(getDivider(DividerItemDecoration.VERTICAL))
+                .withGridLayoutManager(2)
                 .build();
 
         postponeEnterTransition();
@@ -160,7 +160,7 @@ public class DoggoListFragment extends AppBaseFragment
         Doggo doggo = Doggo.getTransitionDoggo();
         if (doggo == null) return null;
 
-        ImageViewHolder holder = (ImageViewHolder) scrollManager.findViewHolderForItemId(doggo.hashCode());
+        DoggoViewHolder holder = (DoggoViewHolder) scrollManager.findViewHolderForItemId(doggo.hashCode());
         if (holder == null) return null;
 
         return holder.thumbnail;

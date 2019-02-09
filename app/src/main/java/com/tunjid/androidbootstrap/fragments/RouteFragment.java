@@ -68,7 +68,8 @@ public class RouteFragment extends AppBaseFragment
             showFragment(SpanbuilderFragment.newInstance());
         } else if (route.getDestination().equals(TileFragment.class.getSimpleName())) {
             showFragment(TileFragment.newInstance());
-        }
-    }
+        } else if (route.getDestination().equals(DoggoRankFragment.class.getSimpleName())) {
+            showFragment(DoggoRankFragment.newInstance());
+        }    }
 
 }

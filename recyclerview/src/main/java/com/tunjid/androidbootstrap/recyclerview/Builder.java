@@ -3,7 +3,6 @@ package com.tunjid.androidbootstrap.recyclerview;
 import android.util.Log;
 
 import com.tunjid.androidbootstrap.functions.BiConsumer;
-import com.tunjid.androidbootstrap.functions.BiFunction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import static com.tunjid.androidbootstrap.recyclerview.ScrollManager.TAG;
 
 @SuppressWarnings("WeakerAccess")
-public class Builder<T> {
+public class Builder<T, VH extends RecyclerView.ViewHolder> {
 
     private static final int LINEAR_LAYOUT_MANAGER = 0;
     private static final int GRID_LAYOUT_MANAGER = 1;
@@ -50,85 +49,85 @@ public class Builder<T> {
     Builder() {
     }
 
-    public Builder<T> setHasFixedSize() {
+    public Builder<T, VH> setHasFixedSize() {
         this.hasFixedSize = true;
         return this;
     }
 
-    public Builder<T> withAdapter(@NonNull RecyclerView.Adapter adapter) {
+    public Builder<T, VH> withAdapter(@NonNull RecyclerView.Adapter adapter) {
         this.adapter = adapter;
         return this;
     }
 
-    public Builder<T> onLayoutManager(Consumer<RecyclerView.LayoutManager> layoutManagerConsumer) {
+    public Builder<T, VH> onLayoutManager(Consumer<RecyclerView.LayoutManager> layoutManagerConsumer) {
         this.layoutManagerConsumer = layoutManagerConsumer;
         return this;
     }
 
-    public Builder<T> withLinearLayoutManager() {
+    public Builder<T, VH> withLinearLayoutManager() {
         layoutManagerType = LINEAR_LAYOUT_MANAGER;
         return this;
     }
 
-    public Builder<T> withGridLayoutManager(int spanCount) {
+    public Builder<T, VH> withGridLayoutManager(int spanCount) {
         layoutManagerType = GRID_LAYOUT_MANAGER;
         this.spanCount = spanCount;
         return this;
     }
 
-    public Builder<T> withStaggeredGridLayoutManager(int spanCount) {
+    public Builder<T, VH> withStaggeredGridLayoutManager(int spanCount) {
         layoutManagerType = STAGGERED_GRID_LAYOUT_MANAGER;
         this.spanCount = spanCount;
         return this;
     }
 
-    public Builder<T> withRecycledViewPool(RecyclerView.RecycledViewPool recycledViewPool) {
+    public Builder<T, VH> withRecycledViewPool(RecyclerView.RecycledViewPool recycledViewPool) {
         this.recycledViewPool = recycledViewPool;
         return this;
     }
 
-    public Builder<T> withInconsistencyHandler(Consumer<IndexOutOfBoundsException> handler) {
+    public Builder<T, VH> withInconsistencyHandler(Consumer<IndexOutOfBoundsException> handler) {
         this.handler = handler;
         return this;
     }
 
-    public Builder<T> withEndlessScrollCallback(@NonNull Runnable scrollCallback) {
+    public Builder<T, VH> withEndlessScrollCallback(@NonNull Runnable scrollCallback) {
         this.scrollCallback = scrollCallback;
         return this;
     }
 
-    public Builder<T> addStateListener(@NonNull Consumer<Integer> stateListener) {
+    public Builder<T, VH> addStateListener(@NonNull Consumer<Integer> stateListener) {
         this.stateConsumers.add(stateListener);
         return this;
     }
 
-    public Builder<T> addScrollListener(@NonNull BiConsumer<Integer, Integer> scrollListener) {
+    public Builder<T, VH> addScrollListener(@NonNull BiConsumer<Integer, Integer> scrollListener) {
         this.displacementConsumers.add(scrollListener);
         return this;
     }
 
-    public Builder<T> addDecoration(@NonNull RecyclerView.ItemDecoration decoration) {
+    public Builder<T, VH> addDecoration(@NonNull RecyclerView.ItemDecoration decoration) {
         this.itemDecorations.add(decoration);
         return this;
     }
 
-    public Builder<T> withRefreshLayout(@NonNull SwipeRefreshLayout refreshLayout, Runnable refreshAction) {
+    public Builder<T, VH> withRefreshLayout(@NonNull SwipeRefreshLayout refreshLayout, Runnable refreshAction) {
         this.refreshLayout = refreshLayout;
         refreshLayout.setOnRefreshListener(refreshAction::run);
         return this;
     }
 
-    public Builder<T> withPlaceholder(@NonNull ListPlaceholder placeholder) {
+    public Builder<T, VH> withPlaceholder(@NonNull ListPlaceholder placeholder) {
         this.placeholder = placeholder;
         return this;
     }
 
-    public Builder<T> withSwipeDragOptions(@NonNull SwipeDragOptions swipeDragOptions) {
+    public Builder<T, VH> withSwipeDragOptions(@NonNull SwipeDragOptions swipeDragOptions) {
         this.swipeDragOptions = swipeDragOptions;
         return this;
     }
 
-    public ScrollManager<T> build() {
+    public ScrollManager<T, VH> build() {
         switch (layoutManagerType) {
             case STAGGERED_GRID_LAYOUT_MANAGER:
                 layoutManager = new StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL) {

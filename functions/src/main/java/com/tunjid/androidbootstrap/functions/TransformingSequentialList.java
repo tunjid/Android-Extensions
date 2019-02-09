@@ -14,7 +14,7 @@ public final class TransformingSequentialList<F, T> extends AbstractSequentialLi
 
     public static <F, T> List<T> transform(List<F> fromList,
                                            Function<? super F, ? extends T> fromFunction) {
-        return new TransformingSequentialList<>(fromList, fromFunction, null);
+        return transform(fromList, fromFunction, null);
     }
 
     public static <F, T> List<T> transform(List<F> fromList,

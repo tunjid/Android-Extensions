@@ -4,8 +4,9 @@
     <string name="ble_not_supported">BLE is not supported</string>
 
     <!-- Route Descriptions -->
+    <string name="route_doggo_list">A list of hints demonstrating delegation of shared element transitions to the calling fragment.</string>
+    <string name="route_doggo_rank">A list of good boyes showing drag and drop functionality.</string>
     <string name="route_tile">A grid of colorful tiles demonstrating the Diffable interface.</string>
-    <string name="route_image_list">A list of hints demonstrating delegation of shared element transitions to the calling fragment.</string>
     <string name="route_ble_scan">A fragment demonstrating the use of the BLEScanner from the Communications module.</string>
     <string name="route_nsd_scan">A fragment demonstrating the use of the NsdHelper from the Communications module.</string>
     <string name="route_hiding_view">A fragment demonstrating the ViewHider, useful for implementing the "quick return" pattern</string>
@@ -36,8 +37,13 @@
     <!-- NSD -->
     <string name="no_nsd_devices">No NSD devices found</string>
 
+    <!-- Doggo Rank -->
+    <string name="reset_doggos">Reset Doggos</string>
+    <string name="doggo_moved">%1$s is now #%2$d!</string>
+    <string name="doggo_removed">%1$s has been adopted!</string>
+
     <!-- Tiles -->
-    <string name="static_tiles">CONSTANT TILE COUNT</string>
-    <string name="dynamic_tiles">DYNAMIC TILE COUNT</string>
+    <string name="static_tiles">Constant tile count</string>
+    <string name="dynamic_tiles">Dynamic tile count</string>
 
 </resources>
