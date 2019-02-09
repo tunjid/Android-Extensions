@@ -1,9 +1,8 @@
-apply from: "${project.rootDir}/common.gradle"
+apply from: "${project.rootDir}/androidLib.gradle"
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation parent.ext.material
-
     implementation project(':view')
 
     testImplementation 'junit:junit:4.12'

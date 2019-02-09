@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public final class TransformingSequentialList<F, T> extends AbstractSequentialList<T> {
+final class TransformingSequentialList<F, T> extends AbstractSequentialList<T> {
 
     private final List<F> fromList;
 

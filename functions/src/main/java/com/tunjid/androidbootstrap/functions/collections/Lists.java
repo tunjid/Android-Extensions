@@ -2,6 +2,8 @@ package com.tunjid.androidbootstrap.functions.collections;
 
 import com.tunjid.androidbootstrap.functions.Function;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -28,14 +30,14 @@ public class Lists {
         return new TransformingSequentialList<>(fromList, fromFunction, toFunction);
     }
 
-    //    @Nullable
+    @Nullable
     @SuppressWarnings({"unused", "unchecked"})
     public static <T> T findFirst(List<?> list, Class<T> typeClass) {
         for (Object item : list) if (typeClass.isAssignableFrom(item.getClass())) return (T) item;
         return null;
     }
 
-    //    @Nullable
+    @Nullable
     @SuppressWarnings({"unused", "unchecked"})
     public static <T> T findLast(List<?> list, Class<T> typeClass) {
         ListIterator<?> li = list.listIterator(list.size());
