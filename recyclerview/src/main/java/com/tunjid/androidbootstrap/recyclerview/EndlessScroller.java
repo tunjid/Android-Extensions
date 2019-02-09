@@ -12,19 +12,21 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 public abstract class EndlessScroller extends RecyclerView.OnScrollListener {
 
-    private static final int visibleThreshold = 5; // The minimum amount of items to have below your current scroll position before loading more.
 
     private final boolean isReverse;
     private int previousTotal = 0; // The total number of items in the dataset after the last load
+    private final int visibleThreshold; // The minimum amount of items to have below your current scroll position before loading more.
     private boolean loading = true; // True if we are still waiting for the last set of data to load.
 
     private RecyclerView.LayoutManager layoutManager;
 
-    EndlessScroller(RecyclerView.LayoutManager layoutManager) {
+    EndlessScroller(int visibleThreshold, RecyclerView.LayoutManager layoutManager) {
+        this.visibleThreshold = visibleThreshold;
         this.layoutManager = layoutManager;
         isReverse = isReverse();
     }
 
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public boolean scrollThresholdFilter(int dx, int dy){
         return Math.abs(dy) < 3;
     }

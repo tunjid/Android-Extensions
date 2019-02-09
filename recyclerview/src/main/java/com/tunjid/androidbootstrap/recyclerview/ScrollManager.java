@@ -19,7 +19,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import static androidx.recyclerview.widget.ItemTouchHelper.Callback.makeMovementFlags;
 
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"unused, WeakerAccess"})
 public class ScrollManager<T, VH extends RecyclerView.ViewHolder> {
 
     static final String TAG = "ScrollManager";
@@ -68,8 +68,8 @@ public class ScrollManager<T, VH extends RecyclerView.ViewHolder> {
         for (OnScrollListener listener : listeners) recyclerView.addOnScrollListener(listener);
     }
 
-    public static <T, VH extends RecyclerView.ViewHolder> Builder<T, VH> withRecyclerView(RecyclerView recyclerView) {
-        Builder<T, VH> builder = new Builder<>();
+    public static <T, VH extends RecyclerView.ViewHolder> ScrollManagerBuilder<T, VH> withRecyclerView(RecyclerView recyclerView) {
+        ScrollManagerBuilder<T, VH> builder = new ScrollManagerBuilder<>();
         builder.recyclerView = recyclerView;
         return builder;
     }
