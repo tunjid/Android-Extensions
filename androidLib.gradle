@@ -2,6 +2,11 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
 
+allprojects {
+    group = parent.ext.groupId
+    version = parent.ext.androidLibraryVersion
+}
+
 android {
     compileSdkVersion parent.ext.compileSdkVersion
     buildToolsVersion parent.ext.buildToolsVersion
@@ -52,9 +57,9 @@ bintray {
         licenses = ['MIT']
         vcsUrl = 'https://github.com/tunjid/android-bootstrap.git'
         version {
-            name = '3.0.1'
+            name = '4.0.0'
             desc = 'An Android library to bootstrap an Android application.'
-            vcsTag = '3.0.1'
+            vcsTag = '4.0.0'
         }
     }
 }
