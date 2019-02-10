@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tunjid.androidbootstrap.R;
-import com.tunjid.androidbootstrap.adapters.ImageListAdapter.ImageListAdapterListener;
-import com.tunjid.androidbootstrap.adapters.ImageListAdapter.ImageViewHolder;
+import com.tunjid.androidbootstrap.adapters.DoggoAdapter.ImageListAdapterListener;
+import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.model.Doggo;
 
@@ -39,7 +39,7 @@ public class DoggoFragment extends AppBaseFragment
         Doggo doggo = getArguments().getParcelable(ARG_DOGGO);
 
         rootView.setTag(doggo);
-        new ImageViewHolder(rootView, this).bind(doggo);
+        new DoggoViewHolder(rootView, this).bind(doggo);
 
         return rootView;
     }

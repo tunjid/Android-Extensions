@@ -1,0 +1,10 @@
+apply from: "${project.rootDir}/javaLib.gradle"
+
+dependencies {
+    implementation 'org.jetbrains:annotations:15.0'
+}
+
+//noinspection GroovyUnusedAssignment
+sourceCompatibility = "8"
+//noinspection GroovyUnusedAssignment
+targetCompatibility = "8"

@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/single_margin"
-            app:layout_behavior="com.tunjid.androidbootstrap.view.behavior.BottomTransientBarBehavior" />
+            app:layout_behavior="@string/bottom_transient_bar_behavior" />
 
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

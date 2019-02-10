@@ -53,11 +53,16 @@ dependencies {
     implementation parent.ext.recyclerView
     implementation parent.ext.constraintLayout
 
-    implementation 'androidx.multidex:multidex:2.0.0'
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation "androidx.lifecycle:lifecycle-viewmodel:2.0.0"
+    implementation "androidx.lifecycle:lifecycle-extensions:2.0.0"
 
     // other dependencies
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'jp.wasabeef:picasso-transformations:2.1.2'
+
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.7'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
     testImplementation parent.ext.material
     testImplementation parent.ext.supportAnnotations
@@ -67,5 +72,9 @@ dependencies {
 
     implementation project(':view')
     implementation project(':core')
+    implementation project(':material')
+    implementation project(':functions')
+    implementation project(':recyclerview')
     implementation project(':communications')
+    implementation project(':constraintlayout')
 }

@@ -6,7 +6,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.android.tools.build:gradle:3.3.1'
         classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.2'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
     }
@@ -34,7 +34,8 @@ buildscript {
         if (bintrayFile.exists()) bintrayProps.load(new FileInputStream(bintrayFile))
 
         groupId = libProps['groupId']
-        libraryVersion = libProps['libraryVersion']
+        androidLibraryVersion = libProps['androidLibraryVersion']
+        javaLibraryVersion = libProps['javaLibraryVersion']
         artifactoryUrl = libProps['artifactoryUrl']
 
         bintrayUser = bintrayProps['user']

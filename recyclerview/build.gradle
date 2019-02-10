@@ -1,0 +1,15 @@
+apply from: "${project.rootDir}/androidLib.gradle"
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation parent.ext.appCompat
+    implementation parent.ext.recyclerView
+
+    implementation project(':view')
+    implementation project(':functions')
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.1.0-beta02'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-beta02'
+}

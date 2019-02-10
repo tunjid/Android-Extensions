@@ -31,7 +31,7 @@
             android:layout_marginTop="@dimen/single_margin"
             android:lineSpacingMultiplier="1.2"
             android:text="@string/app_name"
-            android:textSize="@dimen/small_text"
+            android:textSize="@dimen/paragraph_text"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/destination"

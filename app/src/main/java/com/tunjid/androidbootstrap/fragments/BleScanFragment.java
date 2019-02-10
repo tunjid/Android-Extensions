@@ -3,20 +3,9 @@ package com.tunjid.androidbootstrap.fragments;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.ParcelUuid;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.app.ActivityCompat;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,16 +14,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.tunjid.androidbootstrap.PlaceHolder;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.ScanAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
-import com.tunjid.androidbootstrap.communications.bluetooth.BLEScanner;
-import com.tunjid.androidbootstrap.communications.bluetooth.ScanFilterCompat;
-import com.tunjid.androidbootstrap.communications.bluetooth.ScanResultCompat;
+import com.tunjid.androidbootstrap.recyclerview.ScrollManager;
+import com.tunjid.androidbootstrap.viewholders.ScanViewHolder;
+import com.tunjid.androidbootstrap.viewmodels.BleViewModel;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.os.Build.VERSION.SDK_INT;
@@ -42,21 +34,14 @@ import static android.os.Build.VERSION_CODES.M;
 
 public class BleScanFragment extends AppBaseFragment
         implements
-        BLEScanner.BleScanCallback,
         ScanAdapter.ScanAdapterListener {
 
     private static final int REQUEST_ENABLE_BT = 1;
-    private static final long SCAN_PERIOD = 10000;    // Stops scanning after 10 seconds.
-
-    public static final String CUSTOM_SERVICE_UUID = "195AE58A-437A-489B-B0CD-B7C9C394BAE4";
 
     private boolean isScanning;
-    private boolean hasBle;
 
-    private RecyclerView recyclerView;
-
-    private BLEScanner scanner;
-    private List<ScanResultCompat> bleDevices = new ArrayList<>();
+    private ScrollManager<PlaceHolder.State, ScanViewHolder> scrollManager;
+    private BleViewModel viewModel;
 
     public static BleScanFragment newInstance() {
         BleScanFragment fragment = new BleScanFragment();
@@ -69,85 +54,59 @@ public class BleScanFragment extends AppBaseFragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        viewModel = ViewModelProviders.of(this).get(BleViewModel.class);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_ble_scan, container, false);
+        View root = inflater.inflate(R.layout.fragment_ble_scan, container, false);
+        PlaceHolder placeHolder = new PlaceHolder(root.findViewById(R.id.placeholder_container));
+        placeHolder.bind(new PlaceHolder.State(R.string.no_ble_devices, R.drawable.ic_bluetooth_24dp));
 
-        recyclerView = rootView.findViewById(R.id.list);
-        recyclerView.setAdapter(new ScanAdapter(this, bleDevices));
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.addItemDecoration(new DividerItemDecoration(requireActivity(), DividerItemDecoration.VERTICAL));
+        scrollManager = ScrollManager.<PlaceHolder.State, ScanViewHolder>
+                withRecyclerView(root.findViewById(R.id.list))
+                .addDecoration(new DividerItemDecoration(requireActivity(), DividerItemDecoration.VERTICAL))
+                .withAdapter(new ScanAdapter(this, viewModel.getScanResults()))
+                .withPlaceholder(placeHolder)
+                .withLinearLayoutManager()
+                .build();
 
-        return rootView;
+        return root;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if (viewModel.hasBle()) return;
 
         Activity activity = requireActivity();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
-                && activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
-            if (bluetoothManager == null) return;
-
-            BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
-
-            if (bluetoothAdapter == null) {
-                Snackbar.make(recyclerView, R.string.no_ble, Snackbar.LENGTH_SHORT).show();
-                activity.onBackPressed();
-                return;
-            }
-
-            hasBle = true;
-            scanner = BLEScanner.getBuilder(bluetoothAdapter)
-                    .addFilter(ScanFilterCompat.getBuilder()
-                            .setServiceUuid(new ParcelUuid(UUID.fromString(CUSTOM_SERVICE_UUID)))
-                            .build())
-                    .withCallBack(this).build();
-        }
-
-        // Use this check to determine whether BLE is supported on the device.  Then you can
-        // selectively disable BLE-related features.
-        else {
-            Toast.makeText(activity, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
-            activity.onBackPressed();
-        }
+        Toast.makeText(activity, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
+        activity.onBackPressed();
     }
 
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-
-        // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.menu_ble_scan, menu);
 
         menu.findItem(R.id.menu_stop).setVisible(isScanning);
         menu.findItem(R.id.menu_scan).setVisible(!isScanning);
 
-        if (!isScanning) {
-            menu.findItem(R.id.menu_refresh).setVisible(false);
-        }
-        else {
-            menu.findItem(R.id.menu_refresh).setVisible(true);
-            menu.findItem(R.id.menu_refresh).setActionView(R.layout.actionbar_indeterminate_progress);
-        }
+        MenuItem refresh = menu.findItem(R.id.menu_refresh);
+
+        refresh.setVisible(isScanning);
+        if (isScanning) refresh.setActionView(R.layout.actionbar_indeterminate_progress);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_scan:
-                bleDevices.clear();
-                recyclerView.getAdapter().notifyDataSetChanged();
-                scanLeDevice(true);
+                scanDevices(true);
                 break;
             case R.id.menu_stop:
-                scanLeDevice(false);
+                scanDevices(false);
                 break;
         }
         return true;
@@ -156,19 +115,16 @@ public class BleScanFragment extends AppBaseFragment
     @Override
     public void onPause() {
         super.onPause();
-        bleDevices.clear();
-        scanLeDevice(false);
+        viewModel.stopScanning();
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        if (!hasBle) return;
-
         // Ensures BT is enabled on the device.  If BT is not currently enabled,
         // fire an intent to display a dialog asking the user to grant permission to enable it.
-        if (!scanner.isEnabled()) {
+        if (!viewModel.isBleOn()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
@@ -177,7 +133,7 @@ public class BleScanFragment extends AppBaseFragment
                 ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
 
         if (noPermit) requestPermissions(new String[]{ACCESS_COARSE_LOCATION}, REQUEST_ENABLE_BT);
-        else scanLeDevice(true);
+        else scanDevices(true);
     }
 
     @Override
@@ -186,8 +142,7 @@ public class BleScanFragment extends AppBaseFragment
             case REQUEST_ENABLE_BT: {
                 // If request is cancelled, the result arrays are empty.
                 boolean canScan = grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
-
-                if (canScan) scanLeDevice(true);
+                if (canScan) scanDevices(true);
             }
         }
     }
@@ -205,42 +160,26 @@ public class BleScanFragment extends AppBaseFragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        recyclerView = null;
+        scrollManager = null;
     }
 
     @Override
     public void onBluetoothDeviceClicked(final BluetoothDevice bluetoothDevice) {
-        if (getView() != null) {
-            Snackbar.make(getView(), bluetoothDevice.getAddress(), Snackbar.LENGTH_SHORT).show();
-        }
+        showSnackbar(snackBar -> snackBar.setText(bluetoothDevice.getAddress()));
     }
 
-    @Override
-    public void onDeviceFound(final ScanResultCompat result) {
-        if (!bleDevices.contains(result)) {
-            bleDevices.add(result);
-            recyclerView.getAdapter().notifyDataSetChanged();
-        }
-    }
-
-    // Used to menu_ble_scan for BLE devices
-    private void scanLeDevice(boolean enable) {
-        if (!hasBle) return;
-
+    private void scanDevices(boolean enable) {
         isScanning = enable;
 
-        if (enable) scanner.startScan();
-        else scanner.stopScan();
+        if (isScanning) disposables.add(viewModel.findDevices()
+                .doOnSubscribe(__ -> requireActivity().invalidateOptionsMenu())
+                .doFinally(this::onScanningStopped)
+                .subscribe(scrollManager::onDiff, Throwable::printStackTrace));
+        else viewModel.stopScanning();
+    }
 
+    private void onScanningStopped() {
+        isScanning = false;
         requireActivity().invalidateOptionsMenu();
-
-        // Stops  after a pre-defined menu_ble_scan period.
-        if (enable) {
-            recyclerView.postDelayed(() -> {
-                isScanning = false;
-                scanner.stopScan();
-                if (getActivity() != null) getActivity().invalidateOptionsMenu();
-            }, SCAN_PERIOD);
-        }
     }
 }

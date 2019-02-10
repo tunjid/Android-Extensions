@@ -1,18 +1,16 @@
 package com.tunjid.androidbootstrap.adapters;
 
-import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.material.textfield.TextInputLayout;
 import com.tunjid.androidbootstrap.R;
-import com.tunjid.androidbootstrap.view.recyclerview.InteractiveAdapter;
-import com.tunjid.androidbootstrap.view.recyclerview.InteractiveViewHolder;
+import com.tunjid.androidbootstrap.recyclerview.InteractiveAdapter;
+import com.tunjid.androidbootstrap.viewholders.InputViewHolder;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
 
-public class InputAdapter extends InteractiveAdapter<InputAdapter.InputViewHolder, InteractiveAdapter.AdapterListener> {
+public class InputAdapter extends InteractiveAdapter<InputViewHolder, InteractiveAdapter.AdapterListener> {
 
     private List<String> hints;
 
@@ -32,6 +30,15 @@ public class InputAdapter extends InteractiveAdapter<InputAdapter.InputViewHolde
         holder.bind(hints.get(position));
     }
 
+    @Override public void onViewDetachedFromWindow(@NonNull InputViewHolder holder) {
+        holder.text.removeTextChangedListener(holder);
+    }
+
+    @Override
+    public void onViewRecycled(@NonNull InputViewHolder holder) {
+        holder.text.removeTextChangedListener(holder);
+    }
+
     @Override
     public int getItemCount() {
         return hints.size();
@@ -43,17 +50,4 @@ public class InputAdapter extends InteractiveAdapter<InputAdapter.InputViewHolde
     }
 
 
-    static class InputViewHolder extends InteractiveViewHolder {
-
-        private final TextInputLayout input;
-
-        InputViewHolder(View itemView) {
-            super(itemView);
-            input = (TextInputLayout) itemView;
-        }
-
-        void bind(String hint) {
-            input.setHint(hint);
-        }
-    }
 }

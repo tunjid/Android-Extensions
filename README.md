@@ -8,17 +8,24 @@
 This repository is a collection of modules intending to help bootstrap an Android Application.
 There are 4 modules:
 
-1. Core: A module that hosts classes related to Activities, Fragments and other Android core components.
+1. Core: A module that hosts classes related to ```Activities```, ```Fragments``` and other ```Android``` core components.
 2. View: A module containing UI building blocks, like animators and helper methods for views.
-3. Communications: Utility classes for Near Service Discovery (NSD) and Bluetooth Low Energy (BLE) communication.
-4. Test: Testing utilities built mostly around Espresso.
+3. RecyclerView: Utility classes for the ```RecyclerView``` ```ViewGroup``` like drag and drop, swipe gestures, endless scrolling and much more.
+4. ConstraintLayout: Utility classes for the ```ConstraintLayout``` ```ViewGroup```.
+5. Material: Utility classes around Google's Material Design components including an expandable floating action button.
+6. Communications: Utility classes for Near Service Discovery (NSD) and Bluetooth Low Energy (BLE) communication.
+7. Test: Testing utilities built mostly around Espresso.
 
 build.gradle lines
 
-    implementation 'com.tunjid.android-bootstrap:core:3.0.1'
-    implementation 'com.tunjid.android-bootstrap:communications:3.0.1'
-    implementation 'com.tunjid.android-bootstrap:test:3.0.1'
-    implementation 'com.tunjid.android-bootstrap:view:3.0.1'
+    implementation 'com.tunjid.android-bootstrap:constraintlayout:4.0.0'
+    implementation 'com.tunjid.android-bootstrap:communications:4.0.0'
+    implementation 'com.tunjid.android-bootstrap:recyclerview:4.0.0'
+    implementation 'com.tunjid.android-bootstrap:functions:1.0.0'    
+    implementation 'com.tunjid.android-bootstrap:material:4.0.0'
+    implementation 'com.tunjid.android-bootstrap:core:4.0.0'
+    implementation 'com.tunjid.android-bootstrap:view:4.0.0'
+    implementation 'com.tunjid.android-bootstrap:test:4.0.0'
 
 
 Projects that use This library include:
@@ -32,6 +39,15 @@ Read more about the core module, classes and components [here](https://github.co
 
 ## View
 Read more about the view module, classes and components [here](https://github.com/tunjid/android-bootstrap/blob/master/view/README.md).
+
+## RecyclerView
+Read more about the RecyclerView module, classes and components [here](https://github.com/tunjid/android-bootstrap/blob/master/recyclerview/README.md).
+
+## ConstraintLayout
+Read more about the ConstraintLayout module, classes and components [here](https://github.com/tunjid/android-bootstrap/blob/master/constraintlayout/README.md).
+
+## Material
+Read more about the Material module, classes and components [here](https://github.com/tunjid/android-bootstrap/blob/master/material/README.md).
 
 ## Communications
 Read more about the communications module, classes and components [here](https://github.com/tunjid/android-bootstrap/blob/master/communications/README.md).
