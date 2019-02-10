@@ -81,7 +81,9 @@ public class SpanbuilderFragment extends AppBaseFragment {
                 .append(".")
                 .appendSpace()
                 .append(SpanBuilder.of("This is a clickable span")
-                        .click(textView, () -> showSnackbar(snackBar -> snackBar.setText("Clicked text!")))
+                        .click(textView,
+                                paint -> paint.setUnderlineText(true),
+                                () -> showSnackbar(snackBar -> snackBar.setText("Clicked text!")))
                         .build())
                 .appendNewLine()
                 .build();

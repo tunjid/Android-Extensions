@@ -1,4 +1,4 @@
-package com.tunjid.androidbootstrap.recyclerview;
+package com.tunjid.androidbootstrap.recyclerview.diff;
 
 import com.tunjid.androidbootstrap.functions.BiFunction;
 import com.tunjid.androidbootstrap.functions.Function;

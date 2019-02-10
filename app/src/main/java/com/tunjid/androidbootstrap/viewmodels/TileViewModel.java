@@ -4,7 +4,7 @@ import android.app.Application;
 
 import com.tunjid.androidbootstrap.functions.collections.Lists;
 import com.tunjid.androidbootstrap.model.Tile;
-import com.tunjid.androidbootstrap.recyclerview.Diff;
+import com.tunjid.androidbootstrap.recyclerview.diff.Diff;
 
 import java.util.ArrayList;
 import java.util.Collections;

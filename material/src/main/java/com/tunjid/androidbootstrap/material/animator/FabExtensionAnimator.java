@@ -157,8 +157,8 @@ public class FabExtensionAnimator {
 
     private static class SimpleGlyphState extends GlyphState {
 
-        public Drawable icon;
-        public CharSequence text;
+        final Drawable icon;
+        final CharSequence text;
 
         private SimpleGlyphState(CharSequence text, Drawable icon) {
             this.text = text;

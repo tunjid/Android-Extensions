@@ -2,7 +2,7 @@ package com.tunjid.androidbootstrap.model;
 
 import android.graphics.Color;
 
-import com.tunjid.androidbootstrap.recyclerview.Differentiable;
+import com.tunjid.androidbootstrap.recyclerview.diff.Differentiable;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;

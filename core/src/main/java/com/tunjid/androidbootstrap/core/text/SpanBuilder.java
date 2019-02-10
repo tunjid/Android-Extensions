@@ -2,12 +2,6 @@ package com.tunjid.androidbootstrap.core.text;
 
 import android.content.Context;
 import android.graphics.Typeface;
-
-import androidx.annotation.ColorInt;
-import androidx.annotation.ColorRes;
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -22,9 +16,16 @@ import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.widget.TextView;
 
+import com.tunjid.androidbootstrap.functions.Consumer;
+
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 /**
  * Provides {@link String#format} style functions that work with {@link Spanned} strings and preserve formatting.
@@ -83,8 +84,10 @@ public class SpanBuilder {
         return this;
     }
 
-    public SpanBuilder click(TextView textView, Runnable clickAction) {
-        this.content = click(textView, clickAction, content);
+    public SpanBuilder click(TextView textView,
+                             Consumer<TextPaint> paintConsumer,
+                             Runnable clickAction) {
+        this.content = click(textView, paintConsumer, clickAction, content);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
         return this;
     }
@@ -212,13 +215,15 @@ public class SpanBuilder {
         return apply(content, new RelativeSizeSpan(relativeSize));
     }
 
-    private static CharSequence click(TextView textView, Runnable clickAction, CharSequence... content) {
+    private static CharSequence click(TextView textView,
+                                      Consumer<TextPaint> paintConsumer,
+                                      Runnable clickAction,
+                                      CharSequence... content) {
         return apply(content, new ClickableSpan() {
             public void onClick(@NonNull View widget) { clickAction.run(); }
 
             public void updateDrawState(@NonNull TextPaint paint) {
-                paint.setColor(textView.getCurrentTextColor());
-                paint.setUnderlineText(false);
+                paintConsumer.accept(paint);
             }
         });
     }

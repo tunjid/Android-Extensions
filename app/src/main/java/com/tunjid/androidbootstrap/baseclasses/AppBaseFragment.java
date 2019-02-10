@@ -62,6 +62,7 @@ public abstract class AppBaseFragment extends BaseFragment {
     public void togglePersistentUi() {
         toggleFab(showsFab());
         toggleToolbar(showsToolBar());
+        if (!restoredFromBackStack()) setFabExtended(true);
 
         MainActivity hostingActivity = getHostingActivity();
         hostingActivity.updateFab(getFabState());

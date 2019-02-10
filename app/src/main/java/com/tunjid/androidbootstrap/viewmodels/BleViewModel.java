@@ -11,8 +11,8 @@ import com.tunjid.androidbootstrap.communications.bluetooth.ScanFilterCompat;
 import com.tunjid.androidbootstrap.communications.bluetooth.ScanResultCompat;
 import com.tunjid.androidbootstrap.functions.Function;
 import com.tunjid.androidbootstrap.functions.collections.Lists;
-import com.tunjid.androidbootstrap.recyclerview.Diff;
-import com.tunjid.androidbootstrap.recyclerview.Differentiable;
+import com.tunjid.androidbootstrap.recyclerview.diff.Diff;
+import com.tunjid.androidbootstrap.recyclerview.diff.Differentiable;
 
 import java.util.ArrayList;
 import java.util.Collections;
