@@ -8,7 +8,8 @@ import com.tunjid.androidbootstrap.functions.Supplier;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-class SwipeDragOptions<VH extends RecyclerView.ViewHolder> {
+@SuppressWarnings("WeakerAccess")
+public class SwipeDragOptions<VH extends RecyclerView.ViewHolder> {
 
     Supplier<Boolean> itemViewSwipeSupplier;
     Supplier<Boolean> longPressDragSupplier;
@@ -21,7 +22,7 @@ class SwipeDragOptions<VH extends RecyclerView.ViewHolder> {
     Function<VH, Integer> movementFlagFunction;
     Function<VH, View> dragHandleFunction;
 
-    SwipeDragOptions(Supplier<Boolean> itemViewSwipeSupplier,
+    public SwipeDragOptions(Supplier<Boolean> itemViewSwipeSupplier,
                      Supplier<Boolean> longPressDragSupplier,
                      BiConsumer<VH, VH> dragConsumer,
                      BiConsumer<VH, Integer> swipeConsumer,
