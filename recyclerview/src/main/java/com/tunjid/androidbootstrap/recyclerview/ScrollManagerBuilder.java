@@ -47,7 +47,7 @@ public class ScrollManagerBuilder<T, VH extends RecyclerView.ViewHolder> {
     protected List<Consumer<Integer>> stateConsumers = new ArrayList<>();
     protected List<BiConsumer<Integer, Integer>> displacementConsumers = new ArrayList<>();
 
-    ScrollManagerBuilder() {
+    public ScrollManagerBuilder() {
     }
 
     public ScrollManagerBuilder<T, VH> setHasFixedSize() {

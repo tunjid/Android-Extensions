@@ -23,6 +23,9 @@ public class SwipeDragOptionsBuilder<VH extends RecyclerView.ViewHolder> {
     private Function<VH, Integer> movementFlagsFunction = viewHolder -> SWIPE_DRAG_ALL_DIRECTIONS;
     private Function<VH, View> dragHandleFunction = viewHolder -> viewHolder.itemView;
 
+    @SuppressWarnings("WeakerAccess")
+    public SwipeDragOptionsBuilder() {}
+
     public SwipeDragOptionsBuilder<VH> setItemViewSwipeSupplier(Supplier<Boolean> itemViewSwipeSupplier) {
         this.itemViewSwipeSupplier = itemViewSwipeSupplier;
         return this;
