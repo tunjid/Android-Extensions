@@ -42,9 +42,7 @@ public abstract class AbstractScrollManagerBuilder<S extends ScrollManager<T, VH
     protected List<Consumer<Integer>> stateConsumers = new ArrayList<>();
     protected List<BiConsumer<Integer, Integer>> displacementConsumers = new ArrayList<>();
 
-
-
-    public AbstractScrollManagerBuilder() { }
+    public AbstractScrollManagerBuilder() {}
 
     public AbstractScrollManagerBuilder<S, T, VH> setHasFixedSize() {
         this.hasFixedSize = true;
