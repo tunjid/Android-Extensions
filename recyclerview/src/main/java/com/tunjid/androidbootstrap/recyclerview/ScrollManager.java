@@ -44,10 +44,19 @@ public class ScrollManager<T, VH extends RecyclerView.ViewHolder> {
                             @Nullable SwipeRefreshLayout refreshLayout,
                             @Nullable SwipeDragOptions<VH> options,
                             @Nullable RecyclerView.RecycledViewPool recycledViewPool,
-                            RecyclerView recyclerView, Adapter<VH> adapter, LayoutManager layoutManager,
+                            RecyclerView recyclerView,
+                            Adapter<VH> adapter,
+                            LayoutManager layoutManager,
                             List<ItemDecoration> decorations,
                             List<OnScrollListener> listeners,
                             boolean hasFixedSize) {
+
+        if (recyclerView == null)
+            throw new IllegalArgumentException("RecyclerView must be provided");
+        if (layoutManager == null)
+            throw new IllegalArgumentException("RecyclerView LayoutManager must be provided");
+        if (adapter == null)
+            throw new IllegalArgumentException("RecyclerView Adapter must be provided");
 
         this.scroller = scroller;
         this.placeholder = placeholder;

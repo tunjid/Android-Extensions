@@ -1,5 +1,7 @@
 package com.tunjid.androidbootstrap.recyclerview;
 
+import android.util.Log;
+
 import com.tunjid.androidbootstrap.functions.BiConsumer;
 import com.tunjid.androidbootstrap.functions.Consumer;
 
@@ -13,6 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import static com.tunjid.androidbootstrap.recyclerview.ScrollManager.TAG;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public abstract class AbstractScrollManagerBuilder<S extends ScrollManager<T, VH>, T, VH extends RecyclerView.ViewHolder> {
@@ -197,6 +201,9 @@ public abstract class AbstractScrollManagerBuilder<S extends ScrollManager<T, VH
                 };
                 break;
         }
+
+        if (handler == null) Log.w(TAG, "InconsistencyHandler is not provided, " +
+                "inconsistencies in the RecyclerView adapter will cause crashes at runtime");
 
         if (layoutManager instanceof LinearLayoutManager)
             ((LinearLayoutManager) layoutManager).setRecycleChildrenOnDetach(true);
