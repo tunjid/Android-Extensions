@@ -20,7 +20,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import static androidx.recyclerview.widget.ItemTouchHelper.Callback.makeMovementFlags;
 
 @SuppressWarnings({"unused, WeakerAccess"})
-public class ScrollManager<T, VH extends RecyclerView.ViewHolder> {
+public class ScrollManager<VH extends RecyclerView.ViewHolder, T> {
 
     static final String TAG = "ScrollManager";
 
@@ -75,12 +75,6 @@ public class ScrollManager<T, VH extends RecyclerView.ViewHolder> {
         if (touchHelper != null) touchHelper.attachToRecyclerView(recyclerView);
         for (ItemDecoration decoration : decorations) recyclerView.addItemDecoration(decoration);
         for (OnScrollListener listener : listeners) recyclerView.addOnScrollListener(listener);
-    }
-
-    public static <T, VH extends RecyclerView.ViewHolder> ScrollManagerBuilder<T, VH> withRecyclerView(RecyclerView recyclerView) {
-        ScrollManagerBuilder<T, VH> builder = new ScrollManagerBuilder<>();
-        builder.recyclerView = recyclerView;
-        return builder;
     }
 
     public static <VH extends RecyclerView.ViewHolder> SwipeDragOptionsBuilder<VH> swipeDragOptionsBuilder() {
@@ -191,7 +185,7 @@ public class ScrollManager<T, VH extends RecyclerView.ViewHolder> {
         recyclerView.postDelayed(runnable, delay);
     }
 
-    private static <T, VH extends RecyclerView.ViewHolder> ItemTouchHelper fromSwipeDragOptions(ScrollManager<T, VH> scrollManager, SwipeDragOptions<VH> options) {
+    private static <VH extends RecyclerView.ViewHolder, T> ItemTouchHelper fromSwipeDragOptions(ScrollManager<VH, T> scrollManager, SwipeDragOptions<VH> options) {
         return new ItemTouchHelper(new SwipeDragTouchHelper<>(scrollManager, options));
     }
 

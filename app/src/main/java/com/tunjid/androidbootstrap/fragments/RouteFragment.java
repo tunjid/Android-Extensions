@@ -11,7 +11,7 @@ import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.RouteAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.model.Route;
-import com.tunjid.androidbootstrap.recyclerview.ScrollManager;
+import com.tunjid.androidbootstrap.recyclerview.ScrollManagerBuilder;
 import com.tunjid.androidbootstrap.viewholders.RouteItemViewHolder;
 import com.tunjid.androidbootstrap.viewmodels.RouteViewModel;
 
@@ -48,8 +48,8 @@ public class RouteFragment extends AppBaseFragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_route, container, false);
 
-        ScrollManager.<PlaceHolder.State, RouteItemViewHolder>
-                withRecyclerView(rootView.findViewById(R.id.recycler_view))
+        new ScrollManagerBuilder<RouteItemViewHolder, PlaceHolder.State>()
+                .withRecyclerView(rootView.findViewById(R.id.recycler_view))
                 .withLinearLayoutManager()
                 .withAdapter(new RouteAdapter(viewModel.getRoutes(), this))
                 .build();

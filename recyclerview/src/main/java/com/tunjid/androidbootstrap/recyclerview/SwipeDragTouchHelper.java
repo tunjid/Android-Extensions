@@ -9,14 +9,14 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-class SwipeDragTouchHelper<T, VH extends RecyclerView.ViewHolder> extends ItemTouchHelper.Callback
+class SwipeDragTouchHelper<VH extends RecyclerView.ViewHolder, T> extends ItemTouchHelper.Callback
         implements RecyclerView.OnChildAttachStateChangeListener {
 
     private int actionState;
-    private final ScrollManager<T, VH> scrollManager;
+    private final ScrollManager<VH, T> scrollManager;
     private final SwipeDragOptions<VH> options;
 
-    SwipeDragTouchHelper(ScrollManager<T, VH> scrollManager, SwipeDragOptions<VH> options) {
+    SwipeDragTouchHelper(ScrollManager<VH, T> scrollManager, SwipeDragOptions<VH> options) {
         this.scrollManager = scrollManager;
         this.options = options;
         scrollManager.getRecyclerView().addOnChildAttachStateChangeListener(this);
