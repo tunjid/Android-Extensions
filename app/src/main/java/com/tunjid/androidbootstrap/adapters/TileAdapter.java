@@ -36,6 +36,12 @@ public class TileAdapter extends InteractiveAdapter<TileViewHolder, TileAdapter.
     }
 
     @Override
+    public void onViewRecycled(@NonNull TileViewHolder holder) {
+        super.onViewRecycled(holder);
+        holder.unBind();
+    }
+
+    @Override
     public long getItemId(int position) {
         return tiles.get(position).getNumber();
     }

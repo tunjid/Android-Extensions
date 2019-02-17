@@ -9,6 +9,9 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import static android.util.Log.w;
+import static com.tunjid.androidbootstrap.recyclerview.ScrollManager.TAG;
+
 class SwipeDragTouchHelper<VH extends RecyclerView.ViewHolder, T> extends ItemTouchHelper.Callback
         implements RecyclerView.OnChildAttachStateChangeListener {
 
@@ -71,7 +74,10 @@ class SwipeDragTouchHelper<VH extends RecyclerView.ViewHolder, T> extends ItemTo
     @SuppressWarnings("unchecked")
     @SuppressLint("ClickableViewAccessibility")
     public void onChildViewAttachedToWindow(@NonNull View view) {
-        VH holder = (VH) scrollManager.getRecyclerView().findContainingViewHolder(view);
+        RecyclerView recyclerView = getRecyclerView();
+        if (recyclerView == null) return;
+
+        VH holder = (VH) recyclerView.findContainingViewHolder(view);
         if (holder == null) return;
 
         options.dragHandleFunction.apply(holder).setOnTouchListener((touched, motionEvent) -> {
@@ -84,8 +90,18 @@ class SwipeDragTouchHelper<VH extends RecyclerView.ViewHolder, T> extends ItemTo
     @Override
     @SuppressWarnings("unchecked")
     public void onChildViewDetachedFromWindow(@NonNull View view) {
-        VH viewHolder = (VH) scrollManager.getRecyclerView().findContainingViewHolder(view);
+        RecyclerView recyclerView = getRecyclerView();
+        if (recyclerView == null) return;
+
+        VH viewHolder = (VH) recyclerView.findContainingViewHolder(view);
         if (viewHolder != null)
             options.dragHandleFunction.apply(viewHolder).setOnTouchListener(null);
+    }
+
+    @Nullable
+    private RecyclerView getRecyclerView() {
+        RecyclerView recyclerView = scrollManager.getRecyclerView();
+        if (recyclerView == null) w(TAG, "Null RecyclerView. Did you clear it?");
+        return recyclerView;
     }
 }

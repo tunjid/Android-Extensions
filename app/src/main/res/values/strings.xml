@@ -6,7 +6,8 @@
     <!-- Route Descriptions -->
     <string name="route_doggo_list">A list of hints demonstrating delegation of shared element transitions to the calling fragment.</string>
     <string name="route_doggo_rank">A list of good boyes showing drag and drop functionality.</string>
-    <string name="route_tile">A grid of colorful tiles demonstrating the Diffable interface.</string>
+    <string name="route_shifting_tile">A grid of shifting colorful tiles demonstrating the Diffable interface.</string>
+    <string name="route_endless_tile">A grid of colorful tiles demonstrating endless scrolling with the Diffable interface.</string>
     <string name="route_ble_scan">A fragment demonstrating the use of the BLEScanner from the Communications module.</string>
     <string name="route_nsd_scan">A fragment demonstrating the use of the NsdHelper from the Communications module.</string>
     <string name="route_hiding_view">A fragment demonstrating the ViewHider, useful for implementing the "quick return" pattern</string>
