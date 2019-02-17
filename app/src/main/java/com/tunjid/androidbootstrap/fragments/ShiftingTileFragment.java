@@ -1,6 +1,5 @@
 package com.tunjid.androidbootstrap.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,10 +10,10 @@ import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.TileAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator;
-import com.tunjid.androidbootstrap.recyclerview.ScrollManager;
-import com.tunjid.androidbootstrap.recyclerview.ScrollManagerBuilder;
+import com.tunjid.androidbootstrap.recyclerview.ListManager;
+import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder;
 import com.tunjid.androidbootstrap.viewholders.TileViewHolder;
-import com.tunjid.androidbootstrap.viewmodels.TileViewModel;
+import com.tunjid.androidbootstrap.viewmodels.ShiftingTileViewModel;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,35 +21,29 @@ import androidx.lifecycle.ViewModelProviders;
 
 import static androidx.core.content.ContextCompat.getDrawable;
 
-public class TileFragment extends AppBaseFragment {
+public class ShiftingTileFragment extends AppBaseFragment {
 
-    private TileViewModel viewModel;
-    private ScrollManager<TileViewHolder, PlaceHolder.State> scrollManager;
+    private ShiftingTileViewModel viewModel;
+    private ListManager<TileViewHolder, PlaceHolder.State> listManager;
 
-    public static TileFragment newInstance() {
-        TileFragment fragment = new TileFragment();
+    public static ShiftingTileFragment newInstance() {
+        ShiftingTileFragment fragment = new ShiftingTileFragment();
         fragment.setArguments(new Bundle());
         return fragment;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        viewModel = ViewModelProviders.of(this).get(TileViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(ShiftingTileViewModel.class);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_route, container, false);
-        scrollManager = new ScrollManagerBuilder<TileViewHolder, PlaceHolder.State>()
+        listManager = new ListManagerBuilder<TileViewHolder, PlaceHolder.State>()
                 .withRecyclerView(root.findViewById(R.id.recycler_view))
                 .withGridLayoutManager(4)
                 .withAdapter(new TileAdapter(viewModel.getTiles(), tile -> {}))
@@ -60,9 +53,9 @@ public class TileFragment extends AppBaseFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        disposables.add(viewModel.watchTiles().subscribe(scrollManager::onDiff, Throwable::printStackTrace));
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        disposables.add(viewModel.watchTiles().subscribe(listManager::onDiff, Throwable::printStackTrace));
     }
 
     @Override

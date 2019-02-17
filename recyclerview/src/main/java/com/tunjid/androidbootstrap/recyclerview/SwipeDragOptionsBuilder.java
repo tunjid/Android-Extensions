@@ -8,7 +8,7 @@ import com.tunjid.androidbootstrap.functions.Supplier;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import static com.tunjid.androidbootstrap.recyclerview.ScrollManager.SWIPE_DRAG_ALL_DIRECTIONS;
+import static com.tunjid.androidbootstrap.recyclerview.ListManager.SWIPE_DRAG_ALL_DIRECTIONS;
 
 public class SwipeDragOptionsBuilder<VH extends RecyclerView.ViewHolder> {
 

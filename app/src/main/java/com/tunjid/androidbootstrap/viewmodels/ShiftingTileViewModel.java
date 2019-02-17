@@ -21,7 +21,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
 
-public class TileViewModel extends AndroidViewModel {
+public class ShiftingTileViewModel extends AndroidViewModel {
 
     private static final int NUM_TILES = 32;
 
@@ -30,7 +30,7 @@ public class TileViewModel extends AndroidViewModel {
     private final CompositeDisposable disposables;
     private final PublishProcessor<DiffUtil.DiffResult> processor;
 
-    public TileViewModel(@NonNull Application application) {
+    public ShiftingTileViewModel(@NonNull Application application) {
         super(application);
         tiles = new ArrayList<>(generateTiles(NUM_TILES));
         disposables = new CompositeDisposable();

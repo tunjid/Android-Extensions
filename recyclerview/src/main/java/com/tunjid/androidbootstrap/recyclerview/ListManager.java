@@ -20,9 +20,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import static androidx.recyclerview.widget.ItemTouchHelper.Callback.makeMovementFlags;
 
 @SuppressWarnings({"unused, WeakerAccess"})
-public class ScrollManager<VH extends RecyclerView.ViewHolder, T> {
+public class ListManager<VH extends RecyclerView.ViewHolder, T> {
 
-    static final String TAG = "ScrollManager";
+    static final String TAG = "ListManager";
 
     public static final int NO_SWIPE_OR_DRAG = 0;
     public static final int SWIPE_DRAG_ALL_DIRECTIONS = makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.START | ItemTouchHelper.END);
@@ -39,17 +39,17 @@ public class ScrollManager<VH extends RecyclerView.ViewHolder, T> {
     protected RecyclerView recyclerView;
     protected Adapter<VH> adapter;
 
-    protected ScrollManager(@Nullable EndlessScroller scroller,
-                            @Nullable ListPlaceholder<T> placeholder,
-                            @Nullable SwipeRefreshLayout refreshLayout,
-                            @Nullable SwipeDragOptions<VH> options,
-                            @Nullable RecyclerView.RecycledViewPool recycledViewPool,
-                            RecyclerView recyclerView,
-                            Adapter<VH> adapter,
-                            LayoutManager layoutManager,
-                            List<ItemDecoration> decorations,
-                            List<OnScrollListener> listeners,
-                            boolean hasFixedSize) {
+    protected ListManager(@Nullable EndlessScroller scroller,
+                          @Nullable ListPlaceholder<T> placeholder,
+                          @Nullable SwipeRefreshLayout refreshLayout,
+                          @Nullable SwipeDragOptions<VH> options,
+                          @Nullable RecyclerView.RecycledViewPool recycledViewPool,
+                          RecyclerView recyclerView,
+                          Adapter<VH> adapter,
+                          LayoutManager layoutManager,
+                          List<ItemDecoration> decorations,
+                          List<OnScrollListener> listeners,
+                          boolean hasFixedSize) {
 
         if (recyclerView == null)
             throw new IllegalArgumentException("RecyclerView must be provided");
@@ -185,8 +185,8 @@ public class ScrollManager<VH extends RecyclerView.ViewHolder, T> {
         recyclerView.postDelayed(runnable, delay);
     }
 
-    private static <VH extends RecyclerView.ViewHolder, T> ItemTouchHelper fromSwipeDragOptions(ScrollManager<VH, T> scrollManager, SwipeDragOptions<VH> options) {
-        return new ItemTouchHelper(new SwipeDragTouchHelper<>(scrollManager, options));
+    private static <VH extends RecyclerView.ViewHolder, T> ItemTouchHelper fromSwipeDragOptions(ListManager<VH, T> listManager, SwipeDragOptions<VH> options) {
+        return new ItemTouchHelper(new SwipeDragTouchHelper<>(listManager, options));
     }
 
 }

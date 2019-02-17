@@ -11,7 +11,7 @@ import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.RouteAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.model.Route;
-import com.tunjid.androidbootstrap.recyclerview.ScrollManagerBuilder;
+import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder;
 import com.tunjid.androidbootstrap.viewholders.RouteItemViewHolder;
 import com.tunjid.androidbootstrap.viewmodels.RouteViewModel;
 
@@ -48,7 +48,7 @@ public class RouteFragment extends AppBaseFragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_route, container, false);
 
-        new ScrollManagerBuilder<RouteItemViewHolder, PlaceHolder.State>()
+        new ListManagerBuilder<RouteItemViewHolder, PlaceHolder.State>()
                 .withRecyclerView(rootView.findViewById(R.id.recycler_view))
                 .withLinearLayoutManager()
                 .withAdapter(new RouteAdapter(viewModel.getRoutes(), this))
@@ -69,8 +69,10 @@ public class RouteFragment extends AppBaseFragment
             showFragment(HidingViewFragment.newInstance());
         } else if (route.getDestination().equals(SpanbuilderFragment.class.getSimpleName())) {
             showFragment(SpanbuilderFragment.newInstance());
-        } else if (route.getDestination().equals(TileFragment.class.getSimpleName())) {
-            showFragment(TileFragment.newInstance());
+        } else if (route.getDestination().equals(ShiftingTileFragment.class.getSimpleName())) {
+            showFragment(ShiftingTileFragment.newInstance());
+        } else if (route.getDestination().equals(EndlessTileFragment.class.getSimpleName())) {
+            showFragment(EndlessTileFragment.newInstance());
         } else if (route.getDestination().equals(DoggoRankFragment.class.getSimpleName())) {
             showFragment(DoggoRankFragment.newInstance());
         }

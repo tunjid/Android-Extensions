@@ -16,10 +16,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import static com.tunjid.androidbootstrap.recyclerview.ScrollManager.TAG;
+import static com.tunjid.androidbootstrap.recyclerview.ListManager.TAG;
 
 /**
- * Abstract thisInstance class for creating {@link ScrollManager scrollmanagers}
+ * Abstract thisInstance class for creating {@link ListManager scrollmanagers}
  * <p></p>
  * The breakdown for the generic types are as follows:
  * <p></p>
@@ -28,16 +28,16 @@ import static com.tunjid.androidbootstrap.recyclerview.ScrollManager.TAG;
  * this subclass will need to override each method here to return their custom thisInstance type to
  * maintain the fluency of the API which is fairly tedious.
  * <p></p>
- * S: The type of the {@link ScrollManager} to be built.
+ * S: The type of the {@link ListManager} to be built.
  * <p></p>
  * VH: The {@link androidx.recyclerview.widget.RecyclerView.ViewHolder} type in the {@link RecyclerView}
  * <p></p>
  * T: The type bound in the {@link ListPlaceholder}
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
-public abstract class AbstractScrollManagerBuilder<
-        B extends AbstractScrollManagerBuilder<B, S, VH, T>,
-        S extends ScrollManager<VH, T>,
+public abstract class AbstractListManagerBuilder<
+        B extends AbstractListManagerBuilder<B, S, VH, T>,
+        S extends ListManager<VH, T>,
         VH extends RecyclerView.ViewHolder,
         T> {
 
@@ -70,7 +70,7 @@ public abstract class AbstractScrollManagerBuilder<
     protected final B thisInstance;
 
     @SuppressWarnings("unchecked")
-    public AbstractScrollManagerBuilder() { thisInstance = (B) this;}
+    public AbstractListManagerBuilder() { thisInstance = (B) this;}
 
     public final B setHasFixedSize() {
         this.hasFixedSize = true;

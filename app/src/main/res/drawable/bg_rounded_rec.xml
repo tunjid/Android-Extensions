@@ -4,6 +4,6 @@
     <corners android:radius="@dimen/quarter_margin" />
 
     <stroke
-        android:width="1px"
+        android:width="@dimen/eigth_margin"
         android:color="@color/black" />
 </shape>

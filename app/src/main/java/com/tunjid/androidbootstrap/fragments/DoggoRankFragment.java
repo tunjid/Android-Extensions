@@ -12,8 +12,8 @@ import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator;
-import com.tunjid.androidbootstrap.recyclerview.ScrollManager;
-import com.tunjid.androidbootstrap.recyclerview.ScrollManagerBuilder;
+import com.tunjid.androidbootstrap.recyclerview.ListManager;
+import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder;
 import com.tunjid.androidbootstrap.viewholders.DoggoRankViewHolder;
 import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder;
 import com.tunjid.androidbootstrap.viewmodels.DoggoRankViewModel;
@@ -24,13 +24,13 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DiffUtil;
 
 import static androidx.core.content.ContextCompat.getDrawable;
-import static com.tunjid.androidbootstrap.recyclerview.ScrollManager.SWIPE_DRAG_ALL_DIRECTIONS;
+import static com.tunjid.androidbootstrap.recyclerview.ListManager.SWIPE_DRAG_ALL_DIRECTIONS;
 
 public class DoggoRankFragment extends AppBaseFragment
         implements DoggoAdapter.ImageListAdapterListener {
 
     private DoggoRankViewModel viewModel;
-    private ScrollManager<DoggoRankViewHolder, PlaceHolder.State> scrollManager;
+    private ListManager<DoggoRankViewHolder, PlaceHolder.State> listManager;
 
     public static DoggoRankFragment newInstance() {
         DoggoRankFragment fragment = new DoggoRankFragment();
@@ -51,13 +51,13 @@ public class DoggoRankFragment extends AppBaseFragment
         View root = inflater.inflate(R.layout.fragment_simple_list, container, false);
         PlaceHolder placeHolder = new PlaceHolder(root.findViewById(R.id.placeholder_container));
 
-        scrollManager = new ScrollManagerBuilder<DoggoRankViewHolder, PlaceHolder.State>()
+        listManager = new ListManagerBuilder<DoggoRankViewHolder, PlaceHolder.State>()
                 .withRecyclerView(root.findViewById(R.id.recycler_view))
                 .withAdapter(new DoggoAdapter<>(viewModel.getDoggos(), R.layout.viewholder_doggo_rank, DoggoRankViewHolder::new, this))
                 .addScrollListener((dx, dy) -> { if (Math.abs(dy) > 4) setFabExtended(dy < 0); })
                 .withPlaceholder(placeHolder)
                 .withLinearLayoutManager()
-                .withSwipeDragOptions(ScrollManager.<DoggoRankViewHolder>swipeDragOptionsBuilder()
+                .withSwipeDragOptions(ListManager.<DoggoRankViewHolder>swipeDragOptionsBuilder()
                         .setMovementFlagsFunction(viewHolder -> SWIPE_DRAG_ALL_DIRECTIONS)
                         .setSwipeConsumer((holder, position) -> removeDoggo(holder))
                         .setDragHandleFunction(DoggoRankViewHolder::getDragView)
@@ -94,7 +94,7 @@ public class DoggoRankFragment extends AppBaseFragment
     }
 
     private void onDiff(DiffUtil.DiffResult diffResult) {
-        scrollManager.onDiff(diffResult);
+        listManager.onDiff(diffResult);
         togglePersistentUi();
     }
 
@@ -103,18 +103,18 @@ public class DoggoRankFragment extends AppBaseFragment
         int to = end.getAdapterPosition();
 
         viewModel.swap(from, to);
-        scrollManager.notifyItemMoved(from, to);
-        scrollManager.notifyItemChanged(from);
-        scrollManager.notifyItemChanged(to);
+        listManager.notifyItemMoved(from, to);
+        listManager.notifyItemChanged(from);
+        listManager.notifyItemChanged(to);
     }
 
     private void removeDoggo(DoggoViewHolder viewHolder) {
         int position = viewHolder.getAdapterPosition();
         Pair<Integer, Integer> minMax = viewModel.remove(position);
 
-        scrollManager.notifyItemRemoved(position);
+        listManager.notifyItemRemoved(position);
         // Only necessary to rebind views lower so they have the right position
-        scrollManager.notifyItemRangeChanged(minMax.first, minMax.second);
+        listManager.notifyItemRangeChanged(minMax.first, minMax.second);
     }
 
     private void onSwipeOrDragStarted(DoggoRankViewHolder holder, int actionState) {

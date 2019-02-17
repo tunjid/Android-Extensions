@@ -19,7 +19,7 @@ bi function applied to the ```Lists``` to diff.
 A ```RecyclerViewAdapter``` that hosts a ```ViewHolder``` with a typed interaction listener;
 Implementations could be ClickListeners, LongClickListeners, both combined or what have you.
 
-## ScrollManager
+## ListManager
 
 A class that integrates very common behaviors for a RecyclerView into a highly functional and fluent API.
 Convenience methods for dispatching updates to the RecyclerView are also exposed.
@@ -30,7 +30,7 @@ A class that makes infinite scrolling for a RecyclerView easier
 
 ## ListPlaceholder
 
-Interface for displaying a placeholder in an empty RecyclerView with a ScrollManager
+Interface for displaying a placeholder in an empty RecyclerView with a ListManager
 
 
 

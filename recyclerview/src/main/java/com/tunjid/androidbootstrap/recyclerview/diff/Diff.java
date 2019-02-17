@@ -32,11 +32,12 @@ public class Diff<T> {
      * list and the output of the accumulator function applied to the source list and the additions.
      * </p>
      * Regardless of implementation, the accumulator function is pure, it does not mutate the source
-     * list or the additions list.
+     * list or the additions list, and as such is best used for diff calculations
+     * in a background thread.
      *
      * @param src             The original source list in the {@link androidx.recyclerview.widget.RecyclerView}
      * @param additions       Input to the accumulator function to mutate the source list
-     * @param accumulator     A function that yields a new list for which a the diff will be calculated
+     * @param accumulator     A function that yields a new list for which the diff will be calculated
      * @param diffingFunction A function that determines how items in the lists are differentiated
      *                        from each other
      * @param <T>             Type parameter of the lists
@@ -50,10 +51,9 @@ public class Diff<T> {
             BiFunction<List<T>, List<T>, List<T>> accumulator,
             Function<T, Differentiable> diffingFunction) {
 
-        ArrayList<T> destCopy = new ArrayList<>(src);
-        ArrayList<T> additionsCopy = new ArrayList<>(additions);
-        List<T> updated = accumulator.apply(destCopy, additionsCopy);
-        return new Diff<>(calculateDiff(new DiffCallback<>(destCopy, updated, diffingFunction)), updated);
+        List<T> updated = accumulator.apply(new ArrayList<>(src), new ArrayList<>(additions));
+        DiffUtil.DiffResult result = calculateDiff(new DiffCallback<>(new ArrayList<>(src), updated, diffingFunction));
+        return new Diff<>(result, updated);
     }
 
     /**
