@@ -20,7 +20,7 @@ build.gradle lines
 
     implementation 'com.tunjid.android-bootstrap:constraintlayout:4.0.2'
     implementation 'com.tunjid.android-bootstrap:communications:4.0.2'
-    implementation 'com.tunjid.android-bootstrap:recyclerview:4.0.2'
+    implementation 'com.tunjid.android-bootstrap:recyclerview:4.0.3'
     implementation 'com.tunjid.android-bootstrap:functions:1.0.2'    
     implementation 'com.tunjid.android-bootstrap:material:4.0.2'
     implementation 'com.tunjid.android-bootstrap:core:4.0.2'
