@@ -44,7 +44,7 @@ public class EndlessTileFragment extends AppBaseFragment {
                 .withRecyclerView(root.findViewById(R.id.recycler_view))
                 .withGridLayoutManager(3)
                 .withAdapter(new TileAdapter(viewModel.getTiles(), tile -> {}))
-                .withEndlessScrollCallback(32, __ -> disposables.add(viewModel.getMoreTiles().subscribe(scrollManager::onDiff, Throwable::printStackTrace)))
+                .withEndlessScrollCallback(EndlessTileViewModel.NUM_TILES, __ -> disposables.add(viewModel.getMoreTiles().subscribe(scrollManager::onDiff, Throwable::printStackTrace)))
                 .build();
 
         return root;

@@ -9,4 +9,5 @@
     android:gravity="center"
     android:padding="@dimen/single_margin"
     android:textSize="@dimen/large_text"
+    android:textStyle="bold"
     tools:test="8" />

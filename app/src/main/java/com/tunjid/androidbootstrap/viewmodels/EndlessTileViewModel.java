@@ -20,7 +20,7 @@ import static io.reactivex.schedulers.Schedulers.io;
 
 public class EndlessTileViewModel extends AndroidViewModel {
 
-    private static final int NUM_TILES = 32;
+    public static final int NUM_TILES = 24;
 
     private final List<Tile> tiles;
 
