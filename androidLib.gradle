@@ -1,11 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
-
-allprojects {
-    group = parent.ext.groupId
-    version = parent.ext.androidLibraryVersion
-}
+apply from: "${project.rootDir}/version.gradle"
 
 android {
     compileSdkVersion parent.ext.compileSdkVersion
@@ -37,7 +33,7 @@ android {
 
     libraryVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "${project.getName()}-${parent.ext.androidLibraryVersion}.aar"
+            outputFileName = "${project.getName()}-${project.version}.aar"
         }
     }
 }
@@ -57,7 +53,7 @@ bintray {
         licenses = ['MIT']
         vcsUrl = 'https://github.com/tunjid/android-bootstrap.git'
         version {
-            name = '4.0.2'
+            name = project.version
             desc = 'An Android library to bootstrap an Android application.'
             vcsTag = '4.0.2'
         }
@@ -67,12 +63,12 @@ bintray {
 publishing {
     publications {
         lib(MavenPublication) {
-            version = parent.ext.androidLibraryVersion
+            version = project.version
             groupId parent.ext.groupId
             artifactId project.getName()
 
             // Tell maven to prepare the generated "*.aar" file for publishing
-            artifact("$buildDir/outputs/aar/${project.getName()}-${version}.aar")
+            artifact("$buildDir/outputs/aar/${project.getName()}-${project.version}.aar")
 
             // Add sources too
             artifact(sourcesJar) {

@@ -2,11 +2,7 @@ apply plugin: 'java-library'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
-
-allprojects {
-    group = parent.ext.groupId
-    version = parent.ext.javaLibraryVersion
-}
+apply from: "${project.rootDir}/version.gradle"
 
 bintray {
     user = parent.ext.bintrayUser
@@ -23,7 +19,7 @@ bintray {
         licenses = ['MIT']
         vcsUrl = 'https://github.com/tunjid/android-bootstrap.git'
         version {
-            name = '4.0.2'
+            name = project.version
             desc = 'An suite of libraries to bootstrap an Android application.'
             vcsTag = '4.0.2'
         }
@@ -33,7 +29,7 @@ bintray {
 publishing {
     publications {
         lib(MavenPublication) {
-            version = parent.ext.javaLibraryVersion
+            version = project.version
             groupId parent.ext.groupId
             artifactId project.getName()
 
