@@ -18,8 +18,8 @@ import com.tunjid.androidbootstrap.PlaceHolder;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.ScanAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
-import com.tunjid.androidbootstrap.recyclerview.ScrollManager;
-import com.tunjid.androidbootstrap.recyclerview.ScrollManagerBuilder;
+import com.tunjid.androidbootstrap.recyclerview.ListManager;
+import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder;
 import com.tunjid.androidbootstrap.viewholders.ScanViewHolder;
 import com.tunjid.androidbootstrap.viewmodels.BleViewModel;
 
@@ -41,7 +41,7 @@ public class BleScanFragment extends AppBaseFragment
 
     private boolean isScanning;
 
-    private ScrollManager<ScanViewHolder, PlaceHolder.State> scrollManager;
+    private ListManager<ScanViewHolder, PlaceHolder.State> listManager;
     private BleViewModel viewModel;
 
     public static BleScanFragment newInstance() {
@@ -65,7 +65,7 @@ public class BleScanFragment extends AppBaseFragment
         PlaceHolder placeHolder = new PlaceHolder(root.findViewById(R.id.placeholder_container));
         placeHolder.bind(new PlaceHolder.State(R.string.no_ble_devices, R.drawable.ic_bluetooth_24dp));
 
-        scrollManager = new ScrollManagerBuilder<ScanViewHolder, PlaceHolder.State>()
+        listManager = new ListManagerBuilder<ScanViewHolder, PlaceHolder.State>()
                 .withRecyclerView(root.findViewById(R.id.list))
                 .addDecoration(new DividerItemDecoration(requireActivity(), DividerItemDecoration.VERTICAL))
                 .withAdapter(new ScanAdapter(this, viewModel.getScanResults()))
@@ -161,7 +161,7 @@ public class BleScanFragment extends AppBaseFragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        scrollManager = null;
+        listManager = null;
     }
 
     @Override
@@ -175,7 +175,7 @@ public class BleScanFragment extends AppBaseFragment
         if (isScanning) disposables.add(viewModel.findDevices()
                 .doOnSubscribe(__ -> requireActivity().invalidateOptionsMenu())
                 .doFinally(this::onScanningStopped)
-                .subscribe(scrollManager::onDiff, Throwable::printStackTrace));
+                .subscribe(listManager::onDiff, Throwable::printStackTrace));
         else viewModel.stopScanning();
     }
 

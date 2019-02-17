@@ -10,19 +10,19 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import static android.util.Log.w;
-import static com.tunjid.androidbootstrap.recyclerview.ScrollManager.TAG;
+import static com.tunjid.androidbootstrap.recyclerview.ListManager.TAG;
 
 class SwipeDragTouchHelper<VH extends RecyclerView.ViewHolder, T> extends ItemTouchHelper.Callback
         implements RecyclerView.OnChildAttachStateChangeListener {
 
     private int actionState;
-    private final ScrollManager<VH, T> scrollManager;
+    private final ListManager<VH, T> listManager;
     private final SwipeDragOptions<VH> options;
 
-    SwipeDragTouchHelper(ScrollManager<VH, T> scrollManager, SwipeDragOptions<VH> options) {
-        this.scrollManager = scrollManager;
+    SwipeDragTouchHelper(ListManager<VH, T> listManager, SwipeDragOptions<VH> options) {
+        this.listManager = listManager;
         this.options = options;
-        scrollManager.getRecyclerView().addOnChildAttachStateChangeListener(this);
+        listManager.getRecyclerView().addOnChildAttachStateChangeListener(this);
     }
 
     @Override
@@ -82,7 +82,7 @@ class SwipeDragTouchHelper<VH extends RecyclerView.ViewHolder, T> extends ItemTo
 
         options.dragHandleFunction.apply(holder).setOnTouchListener((touched, motionEvent) -> {
             if (motionEvent.getActionMasked() == MotionEvent.ACTION_DOWN)
-                scrollManager.startDrag(holder);
+                listManager.startDrag(holder);
             return false;
         });
     }
@@ -100,7 +100,7 @@ class SwipeDragTouchHelper<VH extends RecyclerView.ViewHolder, T> extends ItemTo
 
     @Nullable
     private RecyclerView getRecyclerView() {
-        RecyclerView recyclerView = scrollManager.getRecyclerView();
+        RecyclerView recyclerView = listManager.getRecyclerView();
         if (recyclerView == null) w(TAG, "Null RecyclerView. Did you clear it?");
         return recyclerView;
     }

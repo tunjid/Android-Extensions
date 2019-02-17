@@ -30,7 +30,7 @@ A class that makes infinite scrolling for a RecyclerView easier
 
 ## ListPlaceholder
 
-Interface for displaying a placeholder in an empty RecyclerView with a ScrollManager
+Interface for displaying a placeholder in an empty RecyclerView with a ListManager
 
 
 

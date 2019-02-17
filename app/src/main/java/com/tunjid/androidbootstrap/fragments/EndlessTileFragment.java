@@ -9,8 +9,8 @@ import com.tunjid.androidbootstrap.PlaceHolder;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.TileAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
-import com.tunjid.androidbootstrap.recyclerview.ScrollManager;
-import com.tunjid.androidbootstrap.recyclerview.ScrollManagerBuilder;
+import com.tunjid.androidbootstrap.recyclerview.ListManager;
+import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder;
 import com.tunjid.androidbootstrap.viewholders.TileViewHolder;
 import com.tunjid.androidbootstrap.viewmodels.EndlessTileViewModel;
 
@@ -21,7 +21,7 @@ import androidx.lifecycle.ViewModelProviders;
 public class EndlessTileFragment extends AppBaseFragment {
 
     private EndlessTileViewModel viewModel;
-    private ScrollManager<TileViewHolder, PlaceHolder.State> scrollManager;
+    private ListManager<TileViewHolder, PlaceHolder.State> listManager;
 
     public static EndlessTileFragment newInstance() {
         EndlessTileFragment fragment = new EndlessTileFragment();
@@ -40,11 +40,11 @@ public class EndlessTileFragment extends AppBaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_route, container, false);
-        scrollManager = new ScrollManagerBuilder<TileViewHolder, PlaceHolder.State>()
+        listManager = new ListManagerBuilder<TileViewHolder, PlaceHolder.State>()
                 .withRecyclerView(root.findViewById(R.id.recycler_view))
                 .withGridLayoutManager(3)
                 .withAdapter(new TileAdapter(viewModel.getTiles(), tile -> {}))
-                .withEndlessScrollCallback(EndlessTileViewModel.NUM_TILES, __ -> disposables.add(viewModel.getMoreTiles().subscribe(scrollManager::onDiff, Throwable::printStackTrace)))
+                .withEndlessScrollCallback(EndlessTileViewModel.NUM_TILES, __ -> disposables.add(viewModel.getMoreTiles().subscribe(listManager::onDiff, Throwable::printStackTrace)))
                 .build();
 
         return root;
