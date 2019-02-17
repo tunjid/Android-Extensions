@@ -20,7 +20,8 @@ public abstract class EndlessScroller extends RecyclerView.OnScrollListener {
 
     private RecyclerView.LayoutManager layoutManager;
 
-    EndlessScroller(int visibleThreshold, RecyclerView.LayoutManager layoutManager) {
+    @SuppressWarnings("WeakerAccess")
+    public EndlessScroller(int visibleThreshold, RecyclerView.LayoutManager layoutManager) {
         this.visibleThreshold = visibleThreshold;
         this.layoutManager = layoutManager;
         isReverse = isReverse();
@@ -60,7 +61,8 @@ public abstract class EndlessScroller extends RecyclerView.OnScrollListener {
 
     public abstract void onLoadMore(int currentItemCount);
 
-    private boolean isReverse() {
+    @SuppressWarnings("WeakerAccess")
+    protected boolean isReverse() {
         if (layoutManager instanceof LinearLayoutManager) {
             return ((LinearLayoutManager) layoutManager).getStackFromEnd();
         }
@@ -70,7 +72,8 @@ public abstract class EndlessScroller extends RecyclerView.OnScrollListener {
         return false;
     }
 
-    private int getFirstVisiblePosition() {
+    @SuppressWarnings("WeakerAccess")
+    protected int getFirstVisiblePosition() {
         if (layoutManager instanceof LinearLayoutManager) {
             return ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
         }

@@ -7,27 +7,19 @@ public interface Predicate<T> {
 
     default Predicate<T> and(Predicate<? super T> var1) {
         Objects.requireNonNull(var1);
-        return (var2) -> {
-            return this.test(var2) && var1.test(var2);
-        };
+        return (var2) -> this.test(var2) && var1.test(var2);
     }
 
     default Predicate<T> negate() {
-        return (var1) -> {
-            return !this.test(var1);
-        };
+        return (var1) -> !this.test(var1);
     }
 
     default Predicate<T> or(Predicate<? super T> var1) {
         Objects.requireNonNull(var1);
-        return (var2) -> {
-            return this.test(var2) || var1.test(var2);
-        };
+        return (var2) -> this.test(var2) || var1.test(var2);
     }
 
     static <T> Predicate<T> isEqual(Object var0) {
-        return null == var0 ? Objects::isNull : (var1) -> {
-            return var0.equals(var1);
-        };
+        return null == var0 ? var1 -> var1 == null : var0::equals;
     }
 }

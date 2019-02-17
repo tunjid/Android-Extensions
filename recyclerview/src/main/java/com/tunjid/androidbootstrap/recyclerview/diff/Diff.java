@@ -50,10 +50,9 @@ public class Diff<T> {
             BiFunction<List<T>, List<T>, List<T>> accumulator,
             Function<T, Differentiable> diffingFunction) {
 
-        ArrayList<T> destCopy = new ArrayList<>(src);
-        ArrayList<T> additionsCopy = new ArrayList<>(additions);
-        List<T> updated = accumulator.apply(destCopy, additionsCopy);
-        return new Diff<>(calculateDiff(new DiffCallback<>(destCopy, updated, diffingFunction)), updated);
+        List<T> updated = accumulator.apply(new ArrayList<>(src), new ArrayList<>(additions));
+        DiffUtil.DiffResult result = calculateDiff(new DiffCallback<>(new ArrayList<>(src), updated, diffingFunction));
+        return new Diff<>(result, updated);
     }
 
     /**
