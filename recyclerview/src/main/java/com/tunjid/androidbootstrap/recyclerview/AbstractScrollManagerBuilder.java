@@ -18,8 +18,29 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import static com.tunjid.androidbootstrap.recyclerview.ScrollManager.TAG;
 
+/**
+ * Abstract thisInstance class for creating {@link ScrollManager scrollmanagers}
+ * <p></p>
+ * The breakdown for the generic types are as follows:
+ * <p></p>
+ * B: The implicit type of the Builder. This is only necessary to make the return type for each
+ * thisInstance method be the type of any inheriting class, and not this base class. Otherwise inheritors of
+ * this subclass will need to override each method here to return their custom thisInstance type to
+ * maintain the fluency of the API which is fairly tedious.
+ * <p></p>
+ * S: The type of the {@link ScrollManager} to be built.
+ * <p></p>
+ * VH: The {@link androidx.recyclerview.widget.RecyclerView.ViewHolder} type in the {@link RecyclerView}
+ * <p></p>
+ * T: The type bound in the {@link ListPlaceholder}
+ */
 @SuppressWarnings({"unused", "WeakerAccess"})
-public abstract class AbstractScrollManagerBuilder<S extends ScrollManager<T, VH>, T, VH extends RecyclerView.ViewHolder> {
+public abstract class AbstractScrollManagerBuilder<
+        B extends AbstractScrollManagerBuilder<B, S, VH, T>,
+        S extends ScrollManager<VH, T>,
+        VH extends RecyclerView.ViewHolder,
+        T> {
+
     private static final int LINEAR_LAYOUT_MANAGER = 0;
     private static final int GRID_LAYOUT_MANAGER = 1;
     private static final int STAGGERED_GRID_LAYOUT_MANAGER = 2;
@@ -46,85 +67,93 @@ public abstract class AbstractScrollManagerBuilder<S extends ScrollManager<T, VH
     protected List<Consumer<Integer>> stateConsumers = new ArrayList<>();
     protected List<BiConsumer<Integer, Integer>> displacementConsumers = new ArrayList<>();
 
-    public AbstractScrollManagerBuilder() {}
+    protected final B thisInstance;
 
-    public AbstractScrollManagerBuilder<S, T, VH> setHasFixedSize() {
+    @SuppressWarnings("unchecked")
+    public AbstractScrollManagerBuilder() { thisInstance = (B) this;}
+
+    public final B setHasFixedSize() {
         this.hasFixedSize = true;
-        return this;
+        return thisInstance;
     }
 
-    public AbstractScrollManagerBuilder<S, T, VH> withAdapter(@NonNull RecyclerView.Adapter<VH> adapter) {
+    public final B withRecyclerView(@NonNull RecyclerView recyclerView) {
+        this.recyclerView = recyclerView;
+        return thisInstance;
+    }
+
+    public final B withAdapter(@NonNull RecyclerView.Adapter<VH> adapter) {
         this.adapter = adapter;
-        return this;
+        return thisInstance;
     }
 
-    public AbstractScrollManagerBuilder<S, T, VH> onLayoutManager(Consumer<RecyclerView.LayoutManager> layoutManagerConsumer) {
+    public final B onLayoutManager(Consumer<RecyclerView.LayoutManager> layoutManagerConsumer) {
         this.layoutManagerConsumer = layoutManagerConsumer;
-        return this;
+        return thisInstance;
     }
 
-    public AbstractScrollManagerBuilder<S, T, VH> withLinearLayoutManager() {
+    public final B withLinearLayoutManager() {
         layoutManagerType = LINEAR_LAYOUT_MANAGER;
-        return this;
+        return thisInstance;
     }
 
-    public AbstractScrollManagerBuilder<S, T, VH> withGridLayoutManager(int spanCount) {
+    public final B withGridLayoutManager(int spanCount) {
         layoutManagerType = GRID_LAYOUT_MANAGER;
         this.spanCount = spanCount;
-        return this;
+        return thisInstance;
     }
 
-    public AbstractScrollManagerBuilder<S, T, VH> withStaggeredGridLayoutManager(int spanCount) {
+    public final B withStaggeredGridLayoutManager(int spanCount) {
         layoutManagerType = STAGGERED_GRID_LAYOUT_MANAGER;
         this.spanCount = spanCount;
-        return this;
+        return thisInstance;
     }
 
-    public AbstractScrollManagerBuilder<S, T, VH> withRecycledViewPool(RecyclerView.RecycledViewPool recycledViewPool) {
+    public final B withRecycledViewPool(RecyclerView.RecycledViewPool recycledViewPool) {
         this.recycledViewPool = recycledViewPool;
-        return this;
+        return thisInstance;
     }
 
-    public AbstractScrollManagerBuilder<S, T, VH> withInconsistencyHandler(Consumer<IndexOutOfBoundsException> handler) {
+    public final B withInconsistencyHandler(Consumer<IndexOutOfBoundsException> handler) {
         this.handler = handler;
-        return this;
+        return thisInstance;
     }
 
-    public AbstractScrollManagerBuilder<S, T, VH> withEndlessScrollCallback(int threshold, @NonNull Consumer<Integer> endlessScrollConsumer) {
+    public final B withEndlessScrollCallback(int threshold, @NonNull Consumer<Integer> endlessScrollConsumer) {
         this.endlessScrollVisibleThreshold = threshold;
         this.endlessScrollConsumer = endlessScrollConsumer;
-        return this;
+        return thisInstance;
     }
 
-    public AbstractScrollManagerBuilder<S, T, VH> addStateListener(@NonNull Consumer<Integer> stateListener) {
+    public final B addStateListener(@NonNull Consumer<Integer> stateListener) {
         this.stateConsumers.add(stateListener);
-        return this;
+        return thisInstance;
     }
 
-    public AbstractScrollManagerBuilder<S, T, VH> addScrollListener(@NonNull BiConsumer<Integer, Integer> scrollListener) {
+    public final B addScrollListener(@NonNull BiConsumer<Integer, Integer> scrollListener) {
         this.displacementConsumers.add(scrollListener);
-        return this;
+        return thisInstance;
     }
 
-    public AbstractScrollManagerBuilder<S, T, VH> addDecoration(@NonNull RecyclerView.ItemDecoration decoration) {
+    public final B addDecoration(@NonNull RecyclerView.ItemDecoration decoration) {
         this.itemDecorations.add(decoration);
-        return this;
+        return thisInstance;
     }
 
-    public AbstractScrollManagerBuilder<S, T, VH> withRefreshLayout(@NonNull SwipeRefreshLayout refreshLayout, Runnable refreshAction) {
+    public final B withRefreshLayout(@NonNull SwipeRefreshLayout refreshLayout, Runnable refreshAction) {
         this.refreshLayout = refreshLayout;
         refreshLayout.setOnRefreshListener(refreshAction::run);
-        return this;
+        return thisInstance;
     }
 
-    public AbstractScrollManagerBuilder<S, T, VH> withPlaceholder(@NonNull ListPlaceholder<T> placeholder) {
+    public final B withPlaceholder(@NonNull ListPlaceholder<T> placeholder) {
         this.placeholder = placeholder;
-        return this;
+        return thisInstance;
     }
 
-    public AbstractScrollManagerBuilder<S, T, VH> withSwipeDragOptions(@NonNull SwipeDragOptions<VH> swipeDragOptions) {
+    public final B withSwipeDragOptions(@NonNull SwipeDragOptions<VH> swipeDragOptions) {
         this.swipeDragOptions = swipeDragOptions;
-        return this;
+        return thisInstance;
     }
 
     public abstract S build();

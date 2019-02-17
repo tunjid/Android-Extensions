@@ -15,6 +15,7 @@ import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.NsdAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.recyclerview.ScrollManager;
+import com.tunjid.androidbootstrap.recyclerview.ScrollManagerBuilder;
 import com.tunjid.androidbootstrap.viewholders.NSDViewHolder;
 import com.tunjid.androidbootstrap.viewmodels.NsdViewModel;
 
@@ -35,7 +36,7 @@ public class NsdScanFragment extends AppBaseFragment
 
     private boolean isScanning;
 
-    private ScrollManager<PlaceHolder.State, NSDViewHolder> scrollManager;
+    private ScrollManager<NSDViewHolder, PlaceHolder.State> scrollManager;
     private NsdViewModel viewModel;
 
     public NsdScanFragment() {
@@ -64,8 +65,8 @@ public class NsdScanFragment extends AppBaseFragment
         PlaceHolder placeHolder = new PlaceHolder(root.findViewById(R.id.placeholder_container));
         placeHolder.bind(new PlaceHolder.State(R.string.no_nsd_devices, R.drawable.ic_signal_wifi__24dp));
 
-        scrollManager = ScrollManager.<PlaceHolder.State, NSDViewHolder>
-                withRecyclerView(root.findViewById(R.id.list))
+        scrollManager = new ScrollManagerBuilder<NSDViewHolder, PlaceHolder.State>()
+                .withRecyclerView(root.findViewById(R.id.list))
                 .addDecoration(new DividerItemDecoration(requireActivity(), VERTICAL))
                 .withAdapter(new NsdAdapter(this, viewModel.getServices()))
                 .withPlaceholder(placeHolder)

@@ -4,13 +4,13 @@ import java.util.List;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-public class ScrollManagerBuilder<T, VH extends RecyclerView.ViewHolder>
-        extends AbstractScrollManagerBuilder<ScrollManager<T, VH>, T, VH> {
+public class ScrollManagerBuilder<VH extends RecyclerView.ViewHolder, T>
+        extends AbstractScrollManagerBuilder<ScrollManagerBuilder<VH, T>, ScrollManager<VH, T>, VH, T> {
 
-    ScrollManagerBuilder() {}
+    public ScrollManagerBuilder() {}
 
     @Override
-    public ScrollManager<T, VH> build() {
+    public ScrollManager<VH, T> build() {
         RecyclerView.LayoutManager layoutManager = buildLayoutManager();
         EndlessScroller scroller = buildEndlessScroller(layoutManager);
         List<RecyclerView.OnScrollListener> scrollListeners = buildScrollListeners();

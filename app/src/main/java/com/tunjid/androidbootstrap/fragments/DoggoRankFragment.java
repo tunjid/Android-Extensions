@@ -13,6 +13,7 @@ import com.tunjid.androidbootstrap.adapters.DoggoAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator;
 import com.tunjid.androidbootstrap.recyclerview.ScrollManager;
+import com.tunjid.androidbootstrap.recyclerview.ScrollManagerBuilder;
 import com.tunjid.androidbootstrap.viewholders.DoggoRankViewHolder;
 import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder;
 import com.tunjid.androidbootstrap.viewmodels.DoggoRankViewModel;
@@ -29,7 +30,7 @@ public class DoggoRankFragment extends AppBaseFragment
         implements DoggoAdapter.ImageListAdapterListener {
 
     private DoggoRankViewModel viewModel;
-    private ScrollManager<PlaceHolder.State, DoggoRankViewHolder> scrollManager;
+    private ScrollManager<DoggoRankViewHolder, PlaceHolder.State> scrollManager;
 
     public static DoggoRankFragment newInstance() {
         DoggoRankFragment fragment = new DoggoRankFragment();
@@ -50,8 +51,8 @@ public class DoggoRankFragment extends AppBaseFragment
         View root = inflater.inflate(R.layout.fragment_simple_list, container, false);
         PlaceHolder placeHolder = new PlaceHolder(root.findViewById(R.id.placeholder_container));
 
-        scrollManager = ScrollManager.<PlaceHolder.State, DoggoRankViewHolder>
-                withRecyclerView(root.findViewById(R.id.recycler_view))
+        scrollManager = new ScrollManagerBuilder<DoggoRankViewHolder, PlaceHolder.State>()
+                .withRecyclerView(root.findViewById(R.id.recycler_view))
                 .withAdapter(new DoggoAdapter<>(viewModel.getDoggos(), R.layout.viewholder_doggo_rank, DoggoRankViewHolder::new, this))
                 .addScrollListener((dx, dy) -> { if (Math.abs(dy) > 4) setFabExtended(dy < 0); })
                 .withPlaceholder(placeHolder)
