@@ -1,5 +1,6 @@
 package com.tunjid.androidbootstrap.activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
@@ -37,7 +38,7 @@ import static com.tunjid.androidbootstrap.view.util.ViewUtil.getLayoutParams;
 
 public class MainActivity extends BaseActivity {
 
-    public static final int ANIMATION_DURATION = 200;
+    public static final int ANIMATION_DURATION = 300;
 
     public static int topInset;
 
@@ -60,10 +61,18 @@ public class MainActivity extends BaseActivity {
     private CoordinatorLayout coordinatorLayout;
 
     final FragmentManager.FragmentLifecycleCallbacks fragmentViewCreatedCallback = new FragmentManager.FragmentLifecycleCallbacks() {
+
+        @Override
+        public void onFragmentPreAttached(@NonNull FragmentManager fm, @NonNull Fragment f, @NonNull Context context) {
+            adjustInsetForFragment(f);
+        }
+
         @Override
         public void onFragmentViewCreated(@NonNull FragmentManager fm, @NonNull androidx.fragment.app.Fragment f, @NonNull View v, @Nullable Bundle savedInstanceState) {
             if (isNotInMainFragmentContainer(v)) return;
-            adjustInsetForFragment(f);
+            AppBaseFragment fragment = (AppBaseFragment) f;
+
+            constraintLayout.postDelayed(fragment::togglePersistentUi, ANIMATION_DURATION);
             setOnApplyWindowInsetsListener(v, (view, insets) -> consumeFragmentInsets(insets));
         }
     };

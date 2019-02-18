@@ -4,6 +4,7 @@ package com.tunjid.androidbootstrap.view.util;
 public class InsetFlags {
 
     public static final InsetFlags ALL = new InsetFlags(true, true, true, true);
+    public static final InsetFlags NO_TOP = new InsetFlags(true, false, true, true);
     public static final InsetFlags NONE = new InsetFlags(false, false, false, false);
     public static final InsetFlags BOTTOM = new InsetFlags(false, false, false, true);
     public static final InsetFlags VERTICAL = new InsetFlags(false, true, false, true);

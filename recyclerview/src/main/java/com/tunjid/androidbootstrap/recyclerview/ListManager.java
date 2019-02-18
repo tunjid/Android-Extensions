@@ -149,7 +149,6 @@ public class ListManager<VH extends RecyclerView.ViewHolder, T> {
         adapter = null;
     }
 
-    @SuppressWarnings("unused")
     public int getFirstVisiblePosition() {
         LayoutManager layoutManager = recyclerView.getLayoutManager();
         if (layoutManager instanceof LinearLayoutManager) {
@@ -173,8 +172,9 @@ public class ListManager<VH extends RecyclerView.ViewHolder, T> {
         return recyclerView;
     }
 
-    public RecyclerView.ViewHolder findViewHolderForItemId(long id) {
-        return recyclerView.findViewHolderForItemId(id);
+    @SuppressWarnings("unchecked")
+    public VH findViewHolderForItemId(long id) {
+        return (VH) recyclerView.findViewHolderForItemId(id);
     }
 
     public void post(Runnable runnable) {
