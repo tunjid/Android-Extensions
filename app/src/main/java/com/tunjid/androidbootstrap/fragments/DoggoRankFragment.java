@@ -138,7 +138,6 @@ public class DoggoRankFragment extends AppBaseFragment
         return requireActivity()
                 .getSupportFragmentManager()
                 .beginTransaction()
-                .setReorderingAllowed(true)
                 .addSharedElement(holder.thumbnail, ViewUtil.transitionName(doggo, holder.thumbnail));
     }
 

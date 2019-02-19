@@ -72,8 +72,7 @@ public class MainActivity extends BaseActivity {
             AppBaseFragment fragment = (AppBaseFragment) f;
             if (fragment.restoredFromBackStack()) adjustInsetForFragment(f);
 
-            toggleToolbar(fragment.showsToolBar());
-            constraintLayout.postDelayed(fragment::togglePersistentUi, ANIMATION_DURATION+100);
+            fragment.togglePersistentUi();
             setOnApplyWindowInsetsListener(v, (view, insets) -> consumeFragmentInsets(insets));
         }
     };
