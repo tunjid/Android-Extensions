@@ -7,28 +7,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.tunjid.androidbootstrap.PlaceHolder;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter.ImageListAdapterListener;
 import com.tunjid.androidbootstrap.adapters.InputAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator;
 import com.tunjid.androidbootstrap.model.Doggo;
+import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder;
 import com.tunjid.androidbootstrap.view.util.InsetFlags;
 import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder;
+import com.tunjid.androidbootstrap.viewholders.InputViewHolder;
 
 import java.util.Arrays;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class AdoptDoggoFragment extends AppBaseFragment
         implements ImageListAdapterListener {
 
-    private static final String ARG_DOGGO = "doggo";
-    private static final InsetFlags NO_TOP = InsetFlags.create(true, false, true, true);
+    static final String ARG_DOGGO = "doggo";
 
     private Doggo doggo;
 
@@ -48,8 +48,9 @@ public class AdoptDoggoFragment extends AppBaseFragment
         return super.getStableTag() + "-" + getArguments().getParcelable(ARG_DOGGO).hashCode();
     }
 
+    @Override
     @SuppressWarnings("ConstantConditions")
-    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         doggo = getArguments().getParcelable(ARG_DOGGO);
     }
@@ -57,10 +58,12 @@ public class AdoptDoggoFragment extends AppBaseFragment
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_adopt_doggo, container, false);
-        RecyclerView recyclerView = root.findViewById(R.id.model_list);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
-        recyclerView.setAdapter(new InputAdapter(Arrays.asList(getResources().getStringArray(R.array.adoption_items))));
+        new ListManagerBuilder<InputViewHolder, PlaceHolder.State>()
+                .withRecyclerView(root.findViewById(R.id.model_list))
+                .withLinearLayoutManager()
+                .withAdapter(new InputAdapter(Arrays.asList(getResources().getStringArray(R.array.adoption_items))))
+                .build();
 
         DoggoViewHolder viewHolder = new DoggoViewHolder(root, this);
         viewHolder.bind(doggo);
@@ -71,17 +74,22 @@ public class AdoptDoggoFragment extends AppBaseFragment
         return root;
     }
 
-    @Override public boolean showsToolBar() { return false; }
+    @Override
+    public boolean showsToolBar() { return false; }
 
-    @Override public boolean showsFab() { return true; }
+    @Override
+    public boolean showsFab() { return true; }
 
-    @Override public InsetFlags insetFlags() { return NO_TOP; }
+    @Override
+    public InsetFlags insetFlags() { return InsetFlags.NO_TOP; }
 
-    @Override protected FabExtensionAnimator.GlyphState getFabState() {
+    @Override
+    protected FabExtensionAnimator.GlyphState getFabState() {
         return FabExtensionAnimator.newState(getString(R.string.adopt), ContextCompat.getDrawable(requireContext(), R.drawable.ic_hug_24dp));
     }
 
-    @Override protected View.OnClickListener getFabClickListener() {
+    @Override
+    protected View.OnClickListener getFabClickListener() {
         return view -> showSnackbar(snackBar -> snackBar.setText(getString(R.string.adopted_doggo, doggo.getName())));
     }
 

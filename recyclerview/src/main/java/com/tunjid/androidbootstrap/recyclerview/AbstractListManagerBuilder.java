@@ -54,7 +54,7 @@ public abstract class AbstractListManagerBuilder<
     protected SwipeRefreshLayout refreshLayout;
 
     protected RecyclerView recyclerView;
-    protected RecyclerView.Adapter<VH> adapter;
+    protected RecyclerView.Adapter<? extends VH> adapter;
 
     protected SwipeDragOptions<VH> swipeDragOptions;
     protected RecyclerView.RecycledViewPool recycledViewPool;
@@ -82,7 +82,7 @@ public abstract class AbstractListManagerBuilder<
         return thisInstance;
     }
 
-    public final B withAdapter(@NonNull RecyclerView.Adapter<VH> adapter) {
+    public final B withAdapter(@NonNull RecyclerView.Adapter<? extends VH> adapter) {
         this.adapter = adapter;
         return thisInstance;
     }

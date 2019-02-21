@@ -4,15 +4,16 @@ package com.tunjid.androidbootstrap.view.util;
 public class InsetFlags {
 
     public static final InsetFlags ALL = new InsetFlags(true, true, true, true);
+    public static final InsetFlags NO_TOP = new InsetFlags(true, false, true, true);
     public static final InsetFlags NONE = new InsetFlags(false, false, false, false);
     public static final InsetFlags BOTTOM = new InsetFlags(false, false, false, true);
     public static final InsetFlags VERTICAL = new InsetFlags(false, true, false, true);
     public static final InsetFlags HORIZONTAL = new InsetFlags(true, false, true, true);
 
-    private boolean topInset;
-    private boolean leftInset;
-    private boolean rightInset;
-    private boolean bottomInset;
+    private final boolean topInset;
+    private final boolean leftInset;
+    private final boolean rightInset;
+    private final boolean bottomInset;
 
     @SuppressWarnings("unused")
     public static InsetFlags create(boolean hasLeftInset, boolean hasTopInset, boolean hasRightInset, boolean hasBottomInset) {

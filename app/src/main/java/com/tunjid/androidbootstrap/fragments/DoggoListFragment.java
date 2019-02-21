@@ -163,7 +163,7 @@ public class DoggoListFragment extends AppBaseFragment
         Doggo doggo = Doggo.getTransitionDoggo();
         if (doggo == null) return null;
 
-        DoggoViewHolder holder = (DoggoViewHolder) listManager.findViewHolderForItemId(doggo.hashCode());
+        DoggoViewHolder holder = listManager.findViewHolderForItemId(doggo.hashCode());
         if (holder == null) return null;
 
         return holder.thumbnail;

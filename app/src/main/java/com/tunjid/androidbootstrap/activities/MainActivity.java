@@ -1,5 +1,6 @@
 package com.tunjid.androidbootstrap.activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
@@ -29,15 +30,13 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
 
 import static androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener;
 import static com.tunjid.androidbootstrap.view.util.ViewUtil.getLayoutParams;
 
 public class MainActivity extends BaseActivity {
 
-    public static final int ANIMATION_DURATION = 200;
+    public static final int ANIMATION_DURATION = 300;
 
     public static int topInset;
 
@@ -60,10 +59,20 @@ public class MainActivity extends BaseActivity {
     private CoordinatorLayout coordinatorLayout;
 
     final FragmentManager.FragmentLifecycleCallbacks fragmentViewCreatedCallback = new FragmentManager.FragmentLifecycleCallbacks() {
+
+        @Override
+        public void onFragmentPreAttached(@NonNull FragmentManager fm, @NonNull Fragment f, @NonNull Context context) {
+            adjustInsetForFragment(f); // Called when showing a fragment the first time only
+        }
+
         @Override
         public void onFragmentViewCreated(@NonNull FragmentManager fm, @NonNull androidx.fragment.app.Fragment f, @NonNull View v, @Nullable Bundle savedInstanceState) {
             if (isNotInMainFragmentContainer(v)) return;
-            adjustInsetForFragment(f);
+
+            AppBaseFragment fragment = (AppBaseFragment) f;
+            if (fragment.restoredFromBackStack()) adjustInsetForFragment(f);
+
+            fragment.togglePersistentUi();
             setOnApplyWindowInsetsListener(v, (view, insets) -> consumeFragmentInsets(insets));
         }
     };
@@ -167,8 +176,7 @@ public class MainActivity extends BaseActivity {
         InsetFlags insetFlags = ((AppBaseFragment) fragment).insetFlags();
         ViewUtil.getLayoutParams(toolbar).topMargin = insetFlags.hasTopInset() ? 0 : topInset;
         TransitionManager.beginDelayedTransition(constraintLayout, new AutoTransition()
-                .excludeChildren(RecyclerView.class, true)
-                .excludeChildren(ViewPager.class, true)
+                .addTarget(R.id.main_fragment_container)
                 .setDuration(ANIMATION_DURATION)
         );
 

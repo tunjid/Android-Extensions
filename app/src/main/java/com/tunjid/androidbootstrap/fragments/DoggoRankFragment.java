@@ -1,5 +1,6 @@
 package com.tunjid.androidbootstrap.fragments;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -11,19 +12,24 @@ import com.tunjid.androidbootstrap.PlaceHolder;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
+import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment;
 import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator;
+import com.tunjid.androidbootstrap.model.Doggo;
 import com.tunjid.androidbootstrap.recyclerview.ListManager;
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder;
+import com.tunjid.androidbootstrap.view.util.ViewUtil;
 import com.tunjid.androidbootstrap.viewholders.DoggoRankViewHolder;
 import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder;
 import com.tunjid.androidbootstrap.viewmodels.DoggoRankViewModel;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DiffUtil;
 
 import static androidx.core.content.ContextCompat.getDrawable;
+import static com.tunjid.androidbootstrap.fragments.AdoptDoggoFragment.ARG_DOGGO;
 import static com.tunjid.androidbootstrap.recyclerview.ListManager.SWIPE_DRAG_ALL_DIRECTIONS;
 
 public class DoggoRankFragment extends AppBaseFragment
@@ -69,6 +75,8 @@ public class DoggoRankFragment extends AppBaseFragment
                         .build())
                 .build();
 
+        postponeEnterTransition();
+
         return root;
     }
 
@@ -76,6 +84,23 @@ public class DoggoRankFragment extends AppBaseFragment
     public void onResume() {
         super.onResume();
         disposables.add(viewModel.watchDoggos().subscribe(this::onDiff, Throwable::printStackTrace));
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        listManager = null;
+    }
+
+    @Override
+    public void onDoggoClicked(Doggo doggo) {
+        Doggo.setTransitionDoggo(doggo);
+        showFragment(AdoptDoggoFragment.newInstance(doggo));
+    }
+
+    @Override
+    public void onDoggoImageLoaded(Doggo doggo) {
+        if (doggo.equals(Doggo.getTransitionDoggo())) startPostponedEnterTransition();
     }
 
     @Override
@@ -91,6 +116,29 @@ public class DoggoRankFragment extends AppBaseFragment
     @Override
     protected View.OnClickListener getFabClickListener() {
         return view -> viewModel.resetList();
+    }
+
+    @Nullable
+    @Override
+    @SuppressLint({"CommitTransaction"})
+    public FragmentTransaction provideFragmentTransaction(BaseFragment to) {
+        if (!to.getStableTag().contains(AdoptDoggoFragment.class.getSimpleName())) return null;
+
+        if (listManager == null) return null;
+
+        Bundle args = to.getArguments();
+        if (args == null) return null;
+
+        Doggo doggo = args.getParcelable(ARG_DOGGO);
+        if (doggo == null) return null;
+
+        DoggoRankViewHolder holder = listManager.findViewHolderForItemId(doggo.hashCode());
+        if (holder == null) return null;
+
+        return requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .addSharedElement(holder.thumbnail, ViewUtil.transitionName(doggo, holder.thumbnail));
     }
 
     private void onDiff(DiffUtil.DiffResult diffResult) {

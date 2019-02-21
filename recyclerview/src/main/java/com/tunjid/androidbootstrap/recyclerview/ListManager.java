@@ -37,7 +37,7 @@ public class ListManager<VH extends RecyclerView.ViewHolder, T> {
     protected SwipeRefreshLayout refreshLayout;
 
     protected RecyclerView recyclerView;
-    protected Adapter<VH> adapter;
+    protected Adapter<? extends VH> adapter;
 
     protected ListManager(@Nullable EndlessScroller scroller,
                           @Nullable ListPlaceholder<T> placeholder,
@@ -45,7 +45,7 @@ public class ListManager<VH extends RecyclerView.ViewHolder, T> {
                           @Nullable SwipeDragOptions<VH> options,
                           @Nullable RecyclerView.RecycledViewPool recycledViewPool,
                           RecyclerView recyclerView,
-                          Adapter<VH> adapter,
+                          Adapter<? extends VH> adapter,
                           LayoutManager layoutManager,
                           List<ItemDecoration> decorations,
                           List<OnScrollListener> listeners,
@@ -149,7 +149,6 @@ public class ListManager<VH extends RecyclerView.ViewHolder, T> {
         adapter = null;
     }
 
-    @SuppressWarnings("unused")
     public int getFirstVisiblePosition() {
         LayoutManager layoutManager = recyclerView.getLayoutManager();
         if (layoutManager instanceof LinearLayoutManager) {
@@ -173,8 +172,9 @@ public class ListManager<VH extends RecyclerView.ViewHolder, T> {
         return recyclerView;
     }
 
-    public RecyclerView.ViewHolder findViewHolderForItemId(long id) {
-        return recyclerView.findViewHolderForItemId(id);
+    @SuppressWarnings("unchecked")
+    public VH findViewHolderForItemId(long id) {
+        return (VH) recyclerView.findViewHolderForItemId(id);
     }
 
     public void post(Runnable runnable) {
