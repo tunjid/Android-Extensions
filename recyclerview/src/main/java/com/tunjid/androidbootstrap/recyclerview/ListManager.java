@@ -37,7 +37,7 @@ public class ListManager<VH extends RecyclerView.ViewHolder, T> {
     protected SwipeRefreshLayout refreshLayout;
 
     protected RecyclerView recyclerView;
-    protected Adapter<VH> adapter;
+    protected Adapter<? extends VH> adapter;
 
     protected ListManager(@Nullable EndlessScroller scroller,
                           @Nullable ListPlaceholder<T> placeholder,
@@ -45,7 +45,7 @@ public class ListManager<VH extends RecyclerView.ViewHolder, T> {
                           @Nullable SwipeDragOptions<VH> options,
                           @Nullable RecyclerView.RecycledViewPool recycledViewPool,
                           RecyclerView recyclerView,
-                          Adapter<VH> adapter,
+                          Adapter<? extends VH> adapter,
                           LayoutManager layoutManager,
                           List<ItemDecoration> decorations,
                           List<OnScrollListener> listeners,
