@@ -108,8 +108,7 @@ public class DoggoListFragment extends AppBaseFragment
     }
 
     private void scrollToPosition() {
-        RecyclerView recyclerView = listManager.getRecyclerView();
-        recyclerView.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+        listManager.withRecyclerView(recyclerView -> recyclerView.addOnLayoutChangeListener(new OnLayoutChangeListener() {
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 recyclerView.removeOnLayoutChangeListener(this);
                 Doggo last = Doggo.getTransitionDoggo();
@@ -126,7 +125,7 @@ public class DoggoListFragment extends AppBaseFragment
 
                 if (shouldScroll) recyclerView.post(() -> layoutManager.scrollToPosition(index));
             }
-        });
+        }));
     }
 
     @Nullable

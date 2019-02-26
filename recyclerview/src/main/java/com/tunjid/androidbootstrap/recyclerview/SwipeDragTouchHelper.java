@@ -1,7 +1,6 @@
 package com.tunjid.androidbootstrap.recyclerview;
 
 import android.annotation.SuppressLint;
-import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -9,8 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import static android.util.Log.w;
-import static com.tunjid.androidbootstrap.recyclerview.ListManager.TAG;
+import static android.view.MotionEvent.ACTION_DOWN;
 
 class SwipeDragTouchHelper<VH extends RecyclerView.ViewHolder, T> extends ItemTouchHelper.Callback
         implements RecyclerView.OnChildAttachStateChangeListener {
@@ -74,34 +72,23 @@ class SwipeDragTouchHelper<VH extends RecyclerView.ViewHolder, T> extends ItemTo
     @SuppressWarnings("unchecked")
     @SuppressLint("ClickableViewAccessibility")
     public void onChildViewAttachedToWindow(@NonNull View view) {
-        RecyclerView recyclerView = getRecyclerView();
-        if (recyclerView == null) return;
+        listManager.withRecyclerView(recyclerView -> {
+            VH holder = (VH) recyclerView.findContainingViewHolder(view);
+            if (holder == null) return;
 
-        VH holder = (VH) recyclerView.findContainingViewHolder(view);
-        if (holder == null) return;
-
-        options.dragHandleFunction.apply(holder).setOnTouchListener((touched, motionEvent) -> {
-            if (motionEvent.getActionMasked() == MotionEvent.ACTION_DOWN)
-                listManager.startDrag(holder);
-            return false;
+            options.dragHandleFunction.apply(holder).setOnTouchListener((touched, motionEvent) -> {
+                if (motionEvent.getActionMasked() == ACTION_DOWN) listManager.startDrag(holder);
+                return false;
+            });
         });
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void onChildViewDetachedFromWindow(@NonNull View view) {
-        RecyclerView recyclerView = getRecyclerView();
-        if (recyclerView == null) return;
-
-        VH viewHolder = (VH) recyclerView.findContainingViewHolder(view);
-        if (viewHolder != null)
-            options.dragHandleFunction.apply(viewHolder).setOnTouchListener(null);
-    }
-
-    @Nullable
-    private RecyclerView getRecyclerView() {
-        RecyclerView recyclerView = listManager.getRecyclerView();
-        if (recyclerView == null) w(TAG, "Null RecyclerView. Did you clear it?");
-        return recyclerView;
+        listManager.withRecyclerView(recyclerView -> {
+            VH holder = (VH) recyclerView.findContainingViewHolder(view);
+            if (holder != null) options.dragHandleFunction.apply(holder).setOnTouchListener(null);
+        });
     }
 }

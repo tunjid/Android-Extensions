@@ -18,14 +18,14 @@ There are 4 modules:
 
 build.gradle lines
 
-    implementation 'com.tunjid.android-bootstrap:constraintlayout:5.0.0-alpha2'
-    implementation 'com.tunjid.android-bootstrap:communications:5.0.0-alpha2'
-    implementation 'com.tunjid.android-bootstrap:recyclerview:5.0.0-alpha2'
-    implementation 'com.tunjid.android-bootstrap:functions:1.0.3-alpha2'
-    implementation 'com.tunjid.android-bootstrap:material:5.0.0-alpha2'
-    implementation 'com.tunjid.android-bootstrap:core:5.0.0-alpha2'
-    implementation 'com.tunjid.android-bootstrap:view:5.0.0-alpha2'
-    implementation 'com.tunjid.android-bootstrap:test:5.0.0-alpha2'
+    implementation 'com.tunjid.android-bootstrap:constraintlayout:5.0.0-alpha3'
+    implementation 'com.tunjid.android-bootstrap:communications:5.0.0-alpha3'
+    implementation 'com.tunjid.android-bootstrap:recyclerview:5.0.0-alpha3'
+    implementation 'com.tunjid.android-bootstrap:functions:1.0.3-alpha3'
+    implementation 'com.tunjid.android-bootstrap:material:5.0.0-alpha3'
+    implementation 'com.tunjid.android-bootstrap:core:5.0.0-alpha3'
+    implementation 'com.tunjid.android-bootstrap:view:5.0.0-alpha3'
+    implementation 'com.tunjid.android-bootstrap:test:5.0.0-alpha3'
 
 
 Projects that use This library include:
@@ -37,20 +37,28 @@ Projects that use This library include:
 ## Core
 Read more about the core module, classes and components [here](https://github.com/tunjid/android-bootstrap/blob/master/core/README.md).
 
+A medium post with some of it's offerings can be read [here](https://medium.com/@Tunji_D/i-want-it-all-owning-the-system-window-and-consuming-insets-718b7e19960)
+                                                             and [here](https://medium.com/@Tunji_D/concatenating-arbitrary-text-spans-in-android-90305ebb8e9b) .
+
 ## View
 Read more about the view module, classes and components [here](https://github.com/tunjid/android-bootstrap/blob/master/view/README.md).
+A medium post with some of it's offerings can be read [here].
 
 ## RecyclerView
 Read more about the RecyclerView module, classes and components [here](https://github.com/tunjid/android-bootstrap/blob/master/recyclerview/README.md).
+A medium post with some of it's offerings can be read [here](https://medium.com/@Tunji_D/composing-attributes-of-a-dynamic-recyclerview-with-functions-300064990bd4).
 
 ## ConstraintLayout
 Read more about the ConstraintLayout module, classes and components [here](https://github.com/tunjid/android-bootstrap/blob/master/constraintlayout/README.md).
+A medium post with some of it's offerings can be read [here](https://proandroiddev.com/sliding-along-composing-a-dynamic-reusable-viewpager-indicator-animator-f7c46d559a21).
 
 ## Material
 Read more about the Material module, classes and components [here](https://github.com/tunjid/android-bootstrap/blob/master/material/README.md).
+A medium post with some of it's offerings can be read [here](https://proandroiddev.com/creating-an-expandable-floating-action-button-in-android-6626b968559e).
 
 ## Communications
 Read more about the communications module, classes and components [here](https://github.com/tunjid/android-bootstrap/blob/master/communications/README.md).
+A project using it can be seen [here](https://github.com/tunjid/BluetoothRcSwitch).
 
 ## Test
 Warning, here be dragons, I haven't updated this in a bit; move fast, break things and all that.
