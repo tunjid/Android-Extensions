@@ -1,6 +1,10 @@
 package com.tunjid.androidbootstrap.recyclerview;
 
 
+import android.util.Log;
+
+import com.tunjid.androidbootstrap.functions.Consumer;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -168,8 +172,32 @@ public class ListManager<VH extends RecyclerView.ViewHolder, T> {
         return -1;
     }
 
+    public int getLastVisiblePosition() {
+        LayoutManager layoutManager = recyclerView.getLayoutManager();
+        if (layoutManager instanceof LinearLayoutManager) {
+            LinearLayoutManager castedManager = (LinearLayoutManager) layoutManager;
+            return castedManager.findLastVisibleItemPosition();
+        } else if (layoutManager instanceof StaggeredGridLayoutManager) {
+            StaggeredGridLayoutManager castedManager = (StaggeredGridLayoutManager) layoutManager;
+
+            int[] positions = new int[castedManager.getSpanCount()];
+            castedManager.findLastVisibleItemPositions(positions);
+
+            List<Integer> indexes = new ArrayList<>(positions.length);
+            for (int i : positions) indexes.add(i);
+
+            return Collections.max(indexes);
+        }
+        return -1;
+    }
+
     public RecyclerView getRecyclerView() {
         return recyclerView;
+    }
+
+    public void withRecyclerView(Consumer<RecyclerView> consumer) {
+        if (recyclerView != null) consumer.accept(recyclerView);
+        else Log.w(TAG, "ListManager RecyclerView is null. Did you clear it?");
     }
 
     @SuppressWarnings("unchecked")
