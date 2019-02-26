@@ -65,7 +65,7 @@ public class DoggoRankFragment extends AppBaseFragment
                 .withLinearLayoutManager()
                 .withSwipeDragOptions(ListManager.<DoggoRankViewHolder>swipeDragOptionsBuilder()
                         .setMovementFlagsFunction(viewHolder -> SWIPE_DRAG_ALL_DIRECTIONS)
-                        .setSwipeConsumer((holder, position) -> removeDoggo(holder))
+                        .setSwipeConsumer((holder, direction) -> removeDoggo(holder))
                         .setDragHandleFunction(DoggoRankViewHolder::getDragView)
                         .setSwipeDragStartConsumer(this::onSwipeOrDragStarted)
                         .setSwipeDragEndConsumer(this::onSwipeOrDragEnded)

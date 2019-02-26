@@ -153,6 +153,11 @@ public class ListManager<VH extends RecyclerView.ViewHolder, T> {
         adapter = null;
     }
 
+    public void withRecyclerView(Consumer<RecyclerView> consumer) {
+        if (recyclerView != null) consumer.accept(recyclerView);
+        else Log.w(TAG, "ListManager RecyclerView is null. Did you clear it?");
+    }
+
     public int getFirstVisiblePosition() {
         LayoutManager layoutManager = recyclerView.getLayoutManager();
         if (layoutManager instanceof LinearLayoutManager) {
@@ -193,11 +198,6 @@ public class ListManager<VH extends RecyclerView.ViewHolder, T> {
 
     public RecyclerView getRecyclerView() {
         return recyclerView;
-    }
-
-    public void withRecyclerView(Consumer<RecyclerView> consumer) {
-        if (recyclerView != null) consumer.accept(recyclerView);
-        else Log.w(TAG, "ListManager RecyclerView is null. Did you clear it?");
     }
 
     @SuppressWarnings("unchecked")

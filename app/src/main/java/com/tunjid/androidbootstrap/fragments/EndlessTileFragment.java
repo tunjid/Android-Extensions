@@ -18,6 +18,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 
+import static com.tunjid.androidbootstrap.viewmodels.EndlessTileViewModel.NUM_TILES;
+
 public class EndlessTileFragment extends AppBaseFragment {
 
     private EndlessTileViewModel viewModel;
@@ -43,8 +45,9 @@ public class EndlessTileFragment extends AppBaseFragment {
         listManager = new ListManagerBuilder<TileViewHolder, PlaceHolder.State>()
                 .withRecyclerView(root.findViewById(R.id.recycler_view))
                 .withGridLayoutManager(3)
-                .withAdapter(new TileAdapter(viewModel.getTiles(), tile -> {}))
-                .withEndlessScrollCallback(EndlessTileViewModel.NUM_TILES, __ -> disposables.add(viewModel.getMoreTiles().subscribe(listManager::onDiff, Throwable::printStackTrace)))
+                .withAdapter(new TileAdapter(viewModel.getTiles(), tile -> showSnackbar(snackBar -> snackBar.setText(tile.toString()))))
+                .withEndlessScrollCallback(NUM_TILES, __ -> disposables.add(viewModel.getMoreTiles()
+                        .subscribe(listManager::onDiff, Throwable::printStackTrace)))
                 .build();
 
         return root;
