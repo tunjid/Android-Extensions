@@ -57,7 +57,7 @@ public class ShiftingTileViewModel extends AndroidViewModel {
     private void dance() {
         disposables.add(Flowable.interval(2, TimeUnit.SECONDS, Schedulers.io())
                 .map(__ -> makeNewTiles())
-                .map(newTiles -> Diff.calculate(tiles, newTiles, (__, ___) -> newTiles))
+                .map(newTiles -> Diff.calculate(tiles, newTiles, (__, newTilesCopy) -> newTilesCopy))
                 .observeOn(mainThread())
                 .subscribe(diff -> {
                     Lists.replace(tiles, diff.cumulative);
