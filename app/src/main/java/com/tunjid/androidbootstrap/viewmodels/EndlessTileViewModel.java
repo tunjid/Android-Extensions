@@ -1,7 +1,6 @@
 package com.tunjid.androidbootstrap.viewmodels;
 
 import android.app.Application;
-import android.util.Log;
 
 import com.tunjid.androidbootstrap.functions.collections.Lists;
 import com.tunjid.androidbootstrap.model.Tile;
@@ -43,7 +42,6 @@ public class EndlessTileViewModel extends AndroidViewModel {
                 .observeOn(mainThread())
                 .map(diff -> {
                     Lists.replace(tiles, diff.cumulative);
-                    Log.i("TEST", "new size: " + tiles.size());
                     return diff.result;
                 });
     }
