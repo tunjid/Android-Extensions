@@ -18,14 +18,14 @@ There are 4 modules:
 
 build.gradle lines
 
-    implementation 'com.tunjid.android-bootstrap:constraintlayout:5.0.0-alpha3'
-    implementation 'com.tunjid.android-bootstrap:communications:5.0.0-alpha3'
-    implementation 'com.tunjid.android-bootstrap:recyclerview:5.0.0-alpha3'
-    implementation 'com.tunjid.android-bootstrap:functions:1.0.3-alpha3'
-    implementation 'com.tunjid.android-bootstrap:material:5.0.0-alpha3'
-    implementation 'com.tunjid.android-bootstrap:core:5.0.0-alpha3'
-    implementation 'com.tunjid.android-bootstrap:view:5.0.0-alpha3'
-    implementation 'com.tunjid.android-bootstrap:test:5.0.0-alpha3'
+    implementation 'com.tunjid.android-bootstrap:constraintlayout:5.0.0-beta1'
+    implementation 'com.tunjid.android-bootstrap:communications:5.0.0-beta1'
+    implementation 'com.tunjid.android-bootstrap:recyclerview:5.0.0-beta1'
+    implementation 'com.tunjid.android-bootstrap:functions:1.0.3-beta1'
+    implementation 'com.tunjid.android-bootstrap:material:5.0.0-beta1'
+    implementation 'com.tunjid.android-bootstrap:core:5.0.0-beta1'
+    implementation 'com.tunjid.android-bootstrap:view:5.0.0-beta1'
+    implementation 'com.tunjid.android-bootstrap:test:5.0.0-beta1'
 
 
 Projects that use This library include:
