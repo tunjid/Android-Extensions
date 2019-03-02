@@ -59,6 +59,7 @@ public abstract class AppBaseFragment extends BaseFragment {
         if (!restoredFromBackStack()) setFabExtended(true);
 
         MainActivity hostingActivity = getHostingActivity();
+        hostingActivity.setTitle(getTitle());
         hostingActivity.updateFab(getFabState());
         hostingActivity.setFabClickListener(getFabClickListener());
     }
@@ -68,6 +69,10 @@ public abstract class AppBaseFragment extends BaseFragment {
     }
 
     protected boolean isFabExtended() { return getHostingActivity().isFabExtended(); }
+
+    protected String getTitle() {
+        return getClass().getSimpleName();
+    }
 
     protected GlyphState getFabState() {
         return FabExtensionAnimator.newState(getText(R.string.app_name), getDrawable(requireContext(), R.drawable.ic_circle_24dp));
