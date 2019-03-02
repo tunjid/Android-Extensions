@@ -46,7 +46,7 @@ public class ShiftingTileFragment extends AppBaseFragment {
         listManager = new ListManagerBuilder<TileViewHolder, PlaceHolder.State>()
                 .withRecyclerView(root.findViewById(R.id.recycler_view))
                 .withGridLayoutManager(4)
-                .withAdapter(new TileAdapter(viewModel.getTiles(), tile -> {}))
+                .withAdapter(new TileAdapter(viewModel.getTiles(), tile -> showSnackbar(bar -> bar.setText(tile.getId()))))
                 .build();
 
         return root;

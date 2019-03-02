@@ -58,6 +58,11 @@ public class RouteFragment extends AppBaseFragment
     }
 
     @Override
+    protected String getTitle() {
+        return getString(R.string.app_name);
+    }
+
+    @Override
     public void onItemClicked(Route route) {
         if (route.getDestination().equals(DoggoListFragment.class.getSimpleName())) {
             showFragment(DoggoListFragment.newInstance());

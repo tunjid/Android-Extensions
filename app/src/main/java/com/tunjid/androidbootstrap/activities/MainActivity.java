@@ -2,12 +2,11 @@ package com.tunjid.androidbootstrap.activities;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.transition.AutoTransition;
-import android.transition.TransitionManager;
 import android.view.View;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.transitionseverywhere.ChangeText;
 import com.tunjid.androidbootstrap.R;
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseActivity;
@@ -30,6 +29,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.transition.AutoTransition;
+import androidx.transition.TransitionManager;
 
 import static androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener;
 import static com.tunjid.androidbootstrap.view.util.ViewUtil.getLayoutParams;
@@ -129,7 +130,12 @@ public class MainActivity extends BaseActivity {
         fab.setOnClickListener(onClickListener);
     }
 
-    @SuppressWarnings("unchecked")
+    public void setTitle(String title) {
+        TransitionManager.beginDelayedTransition(toolbar, new ChangeText()
+                .setChangeBehavior(ChangeText.CHANGE_BEHAVIOR_OUT_IN));
+        toolbar.setTitle(title);
+    }
+
     public void showSnackBar(Consumer<Snackbar> consumer) {
         Snackbar snackbar = Snackbar.make(coordinatorLayout, "", Snackbar.LENGTH_SHORT);
 
