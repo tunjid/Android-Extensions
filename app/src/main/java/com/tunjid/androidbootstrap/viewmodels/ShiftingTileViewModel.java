@@ -60,7 +60,7 @@ public class ShiftingTileViewModel extends AndroidViewModel {
                 .map(newTiles -> Diff.calculate(tiles, newTiles, (__, newTilesCopy) -> newTilesCopy))
                 .observeOn(mainThread())
                 .subscribe(diff -> {
-                    Lists.replace(tiles, diff.cumulative);
+                    Lists.replace(tiles, diff.items);
                     processor.onNext(diff.result);
                 }, processor::onError));
     }

@@ -100,7 +100,7 @@ public class DoggoRankViewModel extends AndroidViewModel {
                 .observeOn(mainThread())
                 .subscribe(doggoDiff -> {
                     doggos.clear();
-                    doggos.addAll(doggoDiff.cumulative);
+                    doggos.addAll(doggoDiff.items);
                     processor.onNext(doggoDiff.result);
                 }));
     }

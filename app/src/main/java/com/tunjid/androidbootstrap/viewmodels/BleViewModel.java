@@ -92,7 +92,7 @@ public class BleViewModel extends AndroidViewModel {
                 .concatWith(processor.take(SCAN_PERIOD, TimeUnit.SECONDS, Schedulers.io()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(mainThread()).map(diff -> {
-                    Lists.replace(scanResults, diff.cumulative);
+                    Lists.replace(scanResults, diff.items);
                     return diff.result;
                 });
     }

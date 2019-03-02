@@ -68,7 +68,7 @@ public class NsdViewModel extends AndroidViewModel {
                 .concatWith(processor.take(SCAN_PERIOD, TimeUnit.SECONDS, Schedulers.io()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(mainThread()).map(diff -> {
-                    Lists.replace(services, diff.cumulative);
+                    Lists.replace(services, diff.items);
                     return diff.result;
                 });
     }

@@ -41,7 +41,7 @@ public class EndlessTileViewModel extends AndroidViewModel {
                 .subscribeOn(io())
                 .observeOn(mainThread())
                 .map(diff -> {
-                    Lists.replace(tiles, diff.cumulative);
+                    Lists.replace(tiles, diff.items);
                     return diff.result;
                 });
     }
