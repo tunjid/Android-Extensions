@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -30,7 +31,7 @@ import static com.tunjid.androidbootstrap.recyclerview.ListManager.TAG;
  * <p></p>
  * S: The type of the {@link ListManager} to be built.
  * <p></p>
- * VH: The {@link androidx.recyclerview.widget.RecyclerView.ViewHolder} type in the {@link RecyclerView}
+ * VH: The {@link ViewHolder} type in the {@link RecyclerView}
  * <p></p>
  * T: The type bound in the {@link ListPlaceholder}
  */
@@ -38,12 +39,12 @@ import static com.tunjid.androidbootstrap.recyclerview.ListManager.TAG;
 public abstract class AbstractListManagerBuilder<
         B extends AbstractListManagerBuilder<B, S, VH, T>,
         S extends ListManager<VH, T>,
-        VH extends RecyclerView.ViewHolder,
+        VH extends ViewHolder,
         T> {
 
-    private static final int LINEAR_LAYOUT_MANAGER = 0;
-    private static final int GRID_LAYOUT_MANAGER = 1;
-    private static final int STAGGERED_GRID_LAYOUT_MANAGER = 2;
+    private static final int LINEAR_LAYOUT_MANAGER = 1;
+    private static final int GRID_LAYOUT_MANAGER = 2;
+    private static final int STAGGERED_GRID_LAYOUT_MANAGER = 3;
 
     protected int spanCount;
     protected int layoutManagerType;
@@ -55,6 +56,7 @@ public abstract class AbstractListManagerBuilder<
 
     protected RecyclerView recyclerView;
     protected RecyclerView.Adapter<? extends VH> adapter;
+    protected RecyclerView.LayoutManager customLayoutManager;
 
     protected SwipeDragOptions<VH> swipeDragOptions;
     protected RecyclerView.RecycledViewPool recycledViewPool;
@@ -106,6 +108,11 @@ public abstract class AbstractListManagerBuilder<
     public final B withStaggeredGridLayoutManager(int spanCount) {
         layoutManagerType = STAGGERED_GRID_LAYOUT_MANAGER;
         this.spanCount = spanCount;
+        return thisInstance;
+    }
+
+    public final B withCustomLayoutManager(RecyclerView.LayoutManager layoutManager) {
+        this.customLayoutManager = layoutManager;
         return thisInstance;
     }
 
@@ -203,7 +210,7 @@ public abstract class AbstractListManagerBuilder<
     }
 
     protected RecyclerView.LayoutManager buildLayoutManager() {
-        RecyclerView.LayoutManager layoutManager = null;
+        RecyclerView.LayoutManager layoutManager;
         switch (layoutManagerType) {
             case STAGGERED_GRID_LAYOUT_MANAGER:
                 layoutManager = new StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL) {
@@ -229,13 +236,15 @@ public abstract class AbstractListManagerBuilder<
                     }
                 };
                 break;
+            default:
+                if (customLayoutManager != null) layoutManager = customLayoutManager;
+                else throw new IllegalArgumentException("LayoutManager must be provided");
+                break;
         }
 
         if (handler == null) Log.w(TAG, "InconsistencyHandler is not provided, " +
                 "inconsistencies in the RecyclerView adapter will cause crashes at runtime");
 
-        if (layoutManager instanceof LinearLayoutManager)
-            ((LinearLayoutManager) layoutManager).setRecycleChildrenOnDetach(true);
         if (layoutManagerConsumer != null) layoutManagerConsumer.accept(layoutManager);
 
         return layoutManager;
