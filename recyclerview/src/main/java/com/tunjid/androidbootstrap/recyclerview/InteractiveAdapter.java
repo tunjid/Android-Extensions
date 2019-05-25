@@ -9,7 +9,7 @@ import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-public abstract class InteractiveAdapter<VH extends InteractiveViewHolder, T extends InteractiveAdapter.AdapterListener>
+public abstract class InteractiveAdapter<VH extends InteractiveViewHolder, T>
         extends RecyclerView.Adapter<VH> {
 
     protected T adapterListener;
@@ -19,7 +19,6 @@ public abstract class InteractiveAdapter<VH extends InteractiveViewHolder, T ext
         this.adapterListener = adapterListener;
     }
 
-    @SuppressWarnings("WeakerAccess")
     protected InteractiveAdapter() { }
 
     protected View getItemView(@LayoutRes int res, ViewGroup parent) {
@@ -29,5 +28,6 @@ public abstract class InteractiveAdapter<VH extends InteractiveViewHolder, T ext
     /**
      * An interface for any interaction this adapter carries
      */
+    @Deprecated // Use your own type definition for this
     public interface AdapterListener {}
 }
