@@ -57,7 +57,7 @@ class DoggoPagerFragment : AppBaseFragment() {
         val indicatorSize = resources.getDimensionPixelSize(R.dimen.single_and_half_margin)
 
         viewPager.adapter = DoggoPagerAdapter(Doggo.doggos, childFragmentManager)
-        viewPager.currentItem = Doggo.getTransitionIndex()
+        viewPager.currentItem = Doggo.transitionIndex
         viewPager.addOnPageChangeListener(object : SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
                 onDoggoSwiped(position)
@@ -144,7 +144,7 @@ class DoggoPagerFragment : AppBaseFragment() {
                 if (names == null || sharedElements == null || view == null) return
 
                 val currentFragment = Objects.requireNonNull<PagerAdapter>(viewPager.adapter)
-                        .instantiateItem(viewPager, Doggo.getTransitionIndex()) as Fragment
+                        .instantiateItem(viewPager, Doggo.transitionIndex) as Fragment
                 val view = currentFragment.view ?: return
 
                 sharedElements[names[0]] = view.findViewById(R.id.doggo_image)
