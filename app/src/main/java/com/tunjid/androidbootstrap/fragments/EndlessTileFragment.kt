@@ -13,7 +13,7 @@ import com.tunjid.androidbootstrap.recyclerview.ListManager
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
 import com.tunjid.androidbootstrap.viewholders.TileViewHolder
 import com.tunjid.androidbootstrap.viewmodels.EndlessTileViewModel
-import com.tunjid.androidbootstrap.viewmodels.EndlessTileViewModel.NUM_TILES
+import com.tunjid.androidbootstrap.viewmodels.EndlessTileViewModel.Companion.NUM_TILES
 
 class EndlessTileFragment : AppBaseFragment() {
 
