@@ -23,10 +23,7 @@ class Doggo : Parcelable {
     @DrawableRes
     @get:DrawableRes
     var imageRes: Int
-        private set
-
     var name: String
-        private set
 
     private constructor(@DrawableRes imageRes: Int) {
         this.imageRes = imageRes
