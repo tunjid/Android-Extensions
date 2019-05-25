@@ -3,7 +3,7 @@ package com.tunjid.androidbootstrap.recyclerview;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
-public abstract class InteractiveViewHolder<T extends InteractiveAdapter.AdapterListener>
+public abstract class InteractiveViewHolder<T>
         extends RecyclerView.ViewHolder {
 
     protected T adapterListener;

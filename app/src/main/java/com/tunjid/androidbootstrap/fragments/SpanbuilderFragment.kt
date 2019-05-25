@@ -1,43 +1,39 @@
-package com.tunjid.androidbootstrap.fragments;
+package com.tunjid.androidbootstrap.fragments
 
-import android.content.Context;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import com.tunjid.androidbootstrap.R;
-import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment;
-import com.tunjid.androidbootstrap.core.text.SpanBuilder;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import com.tunjid.androidbootstrap.R
+import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
+import com.tunjid.androidbootstrap.core.text.SpanBuilder
 
 /**
- * Fragment showing a static list of images
- * <p>
+ * Fragment showing the use of a SpanBuilder
+ *
  * Created by tj.dahunsi on 5/6/17.
  */
 
-public class SpanbuilderFragment extends AppBaseFragment {
+class SpanbuilderFragment : AppBaseFragment() {
 
-    public static SpanbuilderFragment newInstance() {
-        SpanbuilderFragment fragment = new SpanbuilderFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
+    companion object {
+
+        fun newInstance(): SpanbuilderFragment {
+            val fragment = SpanbuilderFragment()
+            val args = Bundle()
+            fragment.arguments = args
+            return fragment
+        }
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_spanbuilder, container, false);
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val rootView = inflater.inflate(R.layout.fragment_spanbuilder, container, false)
 
-        TextView textView = rootView.findViewById(R.id.text);
-        Context context = textView.getContext();
+        val textView = rootView.findViewById<TextView>(R.id.text)
+        val context = textView.context
 
-        CharSequence text = SpanBuilder.of("This is a regular span")
+        val text = SpanBuilder.of("This is a regular span")
                 .prependSpace()
                 .prepend(".")
                 .prepend(1)
@@ -74,7 +70,7 @@ public class SpanbuilderFragment extends AppBaseFragment {
                 .append(".")
                 .appendSpace()
                 .append(SpanBuilder.of("This is a resized span")
-                        .resize(1.2F)
+                        .resize(1.2f)
                         .build())
                 .appendNewLine()
                 .append(7)
@@ -82,14 +78,15 @@ public class SpanbuilderFragment extends AppBaseFragment {
                 .appendSpace()
                 .append(SpanBuilder.of("This is a clickable span")
                         .click(textView,
-                                paint -> paint.setUnderlineText(true),
-                                () -> showSnackbar(snackBar -> snackBar.setText("Clicked text!")))
+                                { paint -> paint.isUnderlineText = true },
+                                { showSnackbar { snackBar -> snackBar.setText("Clicked text!") } })
                         .build())
                 .appendNewLine()
-                .build();
+                .build()
 
-        textView.setText(text);
+        textView.text = text
 
-        return rootView;
+        return rootView
     }
+
 }
