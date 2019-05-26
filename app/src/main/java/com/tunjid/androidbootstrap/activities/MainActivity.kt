@@ -1,13 +1,19 @@
 package com.tunjid.androidbootstrap.activities
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.O
 import android.os.Bundle
 import android.view.View
+import android.view.View.*
+import android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
 import androidx.annotation.LayoutRes
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -30,14 +36,19 @@ import com.tunjid.androidbootstrap.view.util.ViewUtil.getLayoutParams
 class MainActivity : BaseActivity() {
 
     companion object {
+        private const val DEFAULT_SYSTEM_UI_FLAGS = SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+
         const val ANIMATION_DURATION = 300
         var topInset: Int = 0
+        var bottomInset: Int = 0
     }
 
     private var insetsApplied: Boolean = false
     private var leftInset: Int = 0
     private var rightInset: Int = 0
-    private var bottomInset: Int = 0
 
     private lateinit var fabHider: ViewHider
     private lateinit var toolbarHider: ViewHider
@@ -100,8 +111,9 @@ class MainActivity : BaseActivity() {
         fabExtensionAnimator = FabExtensionAnimator(fab)
         fabExtensionAnimator.isExtended = true
 
+        window.decorView.systemUiVisibility = DEFAULT_SYSTEM_UI_FLAGS
+
         setSupportActionBar(this.toolbar)
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         setOnApplyWindowInsetsListener(this.constraintLayout) { _, insets -> consumeSystemInsets(insets) }
     }
 
@@ -119,7 +131,7 @@ class MainActivity : BaseActivity() {
         fabExtensionAnimator.updateGlyphs(glyphState)
     }
 
-    fun setFabClickListener(onClickListener: View.OnClickListener) {
+    fun setFabClickListener(onClickListener: OnClickListener) {
         fab.setOnClickListener(onClickListener)
     }
 
@@ -165,23 +177,37 @@ class MainActivity : BaseActivity() {
         return insets
     }
 
+    @SuppressLint("InlinedApi")
     private fun adjustInsetForFragment(fragment: Fragment) {
         if (fragment !is AppBaseFragment) return
 
         val insetFlags = fragment.insetFlags()
         ViewUtil.getLayoutParams(toolbar).topMargin = if (insetFlags.hasTopInset()) 0 else topInset
+        ViewUtil.getLayoutParams(coordinatorLayout).bottomMargin = if (insetFlags.hasBottomInset()) 0 else bottomInset
 
         TransitionManager.beginDelayedTransition(constraintLayout, AutoTransition()
-                .addTarget(R.id.main_fragment_container)
                 .setDuration(ANIMATION_DURATION.toLong())
+                .addTarget(R.id.main_fragment_container)
+                .addTarget(R.id.coordinator_layout)
         )
 
-        topInsetView.visibility = if (insetFlags.hasTopInset()) View.VISIBLE else View.GONE
+        topInsetView.visibility = if (insetFlags.hasTopInset()) VISIBLE else GONE
+        bottomInsetView.visibility = if (insetFlags.hasBottomInset()) VISIBLE else GONE
+
         constraintLayout.setPadding(
                 if (insetFlags.hasLeftInset()) this.leftInset else 0,
                 0,
                 if (insetFlags.hasRightInset()) this.rightInset else 0,
                 0)
+
+        if (SDK_INT < O) return
+
+        val isLight = ColorUtils.calculateLuminance(fragment.navBarColor) > 0.5
+        val systemUiVisibility = if (isLight) DEFAULT_SYSTEM_UI_FLAGS or SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        else DEFAULT_SYSTEM_UI_FLAGS
+
+        window.decorView.systemUiVisibility = systemUiVisibility
+        window.navigationBarColor = fragment.navBarColor
     }
 
 }

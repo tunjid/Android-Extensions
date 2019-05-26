@@ -8,9 +8,11 @@ import androidx.lifecycle.ViewModelProviders
 import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.adapters.RouteAdapter
+import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.model.Route
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
+import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.viewholders.RouteItemViewHolder
 import com.tunjid.androidbootstrap.viewmodels.RouteViewModel
 
@@ -41,11 +43,13 @@ class RouteFragment : AppBaseFragment(), RouteAdapter.RouteAdapterListener {
         ListManagerBuilder<RouteItemViewHolder, PlaceHolder.State>()
                 .withRecyclerView(rootView.findViewById(R.id.recycler_view))
                 .withLinearLayoutManager()
-                .withAdapter(RouteAdapter(viewModel.routes, this))
+                .withPaddedAdapter(RouteAdapter(viewModel.routes, this))
                 .build()
 
         return rootView
     }
+
+    override fun insetFlags(): InsetFlags = NO_BOTTOM
 
     override fun onItemClicked(route: Route) {
         showFragment(when (route.destination) {

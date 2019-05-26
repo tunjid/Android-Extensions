@@ -1,6 +1,7 @@
 package com.tunjid.androidbootstrap.fragments
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -36,6 +37,9 @@ class DoggoPagerFragment : AppBaseFragment() {
             return fragment
         }
     }
+
+    override val navBarColor: Int
+        get() = Color.TRANSPARENT
 
     public override val fabState: GlyphState
         get() = newState(dogName, ContextCompat.getDrawable(requireContext(), R.drawable.ic_hug_24dp))

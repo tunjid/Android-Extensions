@@ -17,13 +17,13 @@ android {
     defaultConfig {
         minSdkVersion parent.ext.minSdkVersion
         targetSdkVersion parent.ext.targetSdkVersion
-        applicationId "com.tunjid.andoidbootstrap.sample"
+        applicationId 'com.tunjid.andoidbootstrap.sample'
         versionCode 1
-        versionName "1.0"
+        versionName '1.0'
         multiDexEnabled true  //add this line
         vectorDrawables.useSupportLibrary = true
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
         debug {
@@ -58,9 +58,10 @@ dependencies {
     implementation parent.ext.recyclerView
     implementation parent.ext.constraintLayout
 
+    implementation 'androidx.core:core-ktx:1.0.2'
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation "androidx.lifecycle:lifecycle-viewmodel:2.0.0"
-    implementation "androidx.lifecycle:lifecycle-extensions:2.0.0"
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.0.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
 
     // other dependencies
     implementation 'com.squareup.picasso:picasso:2.71828'
@@ -71,7 +72,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$parent.ext.kotlin_version"
 
-    implementation "com.andkulikov:transitionseverywhere:2.0.0-alpha01"
+    implementation 'com.andkulikov:transitionseverywhere:2.0.0-alpha01'
 
     testImplementation parent.ext.material
     testImplementation parent.ext.supportAnnotations
