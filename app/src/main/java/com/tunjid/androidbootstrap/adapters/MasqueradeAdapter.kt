@@ -31,8 +31,8 @@ class MasqueradeAdapter<T : RecyclerView.ViewHolder>(
             else Long.MAX_VALUE - (position - proxyAdapter.itemCount)
 
     override fun getItemViewType(position: Int): Int =
-        if (position < proxyAdapter.itemCount) proxyAdapter.getItemViewType(position)
-        else super.getItemViewType(position)
+            if (position < proxyAdapter.itemCount) proxyAdapter.getItemViewType(position)
+            else super.getItemViewType(position)
 
     override fun onBindViewHolder(holder: T, position: Int) {
         val isFromProxy = position < proxyAdapter.itemCount
@@ -53,7 +53,8 @@ class MasqueradeAdapter<T : RecyclerView.ViewHolder>(
 
     override fun onViewDetachedFromWindow(holder: T) = proxyAdapter.onViewDetachedFromWindow(holder)
 
-    override fun setHasStableIds(hasStableIds: Boolean) = proxyAdapter.setHasStableIds(hasStableIds)
+    override fun setHasStableIds(hasStableIds: Boolean) = super.setHasStableIds(hasStableIds)
+            .apply { proxyAdapter.setHasStableIds(hasStableIds) }
 
     override fun onFailedToRecycleView(holder: T): Boolean =
             proxyAdapter.onFailedToRecycleView(holder)
