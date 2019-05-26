@@ -30,14 +30,51 @@ class MasqueradeAdapter<T : RecyclerView.ViewHolder>(
             if (position < proxyAdapter.itemCount) proxyAdapter.getItemId(position)
             else Long.MAX_VALUE - (position - proxyAdapter.itemCount)
 
+    override fun getItemViewType(position: Int): Int =
+        if (position < proxyAdapter.itemCount) proxyAdapter.getItemViewType(position)
+        else super.getItemViewType(position)
+
     override fun onBindViewHolder(holder: T, position: Int) {
         val isFromProxy = position < proxyAdapter.itemCount
+        adjustSpacers(holder, isFromProxy)
 
+        if (isFromProxy) proxyAdapter.onBindViewHolder(holder, position)
+    }
+
+    override fun onBindViewHolder(holder: T, position: Int, payloads: MutableList<Any>) {
+        val isFromProxy = position < proxyAdapter.itemCount
+        adjustSpacers(holder, isFromProxy)
+
+        if (isFromProxy) proxyAdapter.onBindViewHolder(holder, position, payloads)
+    }
+
+    override fun unregisterAdapterDataObserver(observer: RecyclerView.AdapterDataObserver) =
+            proxyAdapter.unregisterAdapterDataObserver(observer)
+
+    override fun onViewDetachedFromWindow(holder: T) = proxyAdapter.onViewDetachedFromWindow(holder)
+
+    override fun setHasStableIds(hasStableIds: Boolean) = proxyAdapter.setHasStableIds(hasStableIds)
+
+    override fun onFailedToRecycleView(holder: T): Boolean =
+            proxyAdapter.onFailedToRecycleView(holder)
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) =
+            proxyAdapter.onAttachedToRecyclerView(recyclerView)
+
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) =
+            proxyAdapter.onDetachedFromRecyclerView(recyclerView)
+
+    override fun onViewRecycled(holder: T) = proxyAdapter.onViewRecycled(holder)
+
+    override fun registerAdapterDataObserver(observer: RecyclerView.AdapterDataObserver) =
+            proxyAdapter.registerAdapterDataObserver(observer)
+
+    override fun onViewAttachedToWindow(holder: T) = proxyAdapter.onViewAttachedToWindow(holder)
+
+    private fun adjustSpacers(holder: T, isFromProxy: Boolean) {
         holder.itemView.visibility = if (isFromProxy) VISIBLE else INVISIBLE
         holder.itemView.layoutParams.height = if (isFromProxy) RecyclerView.LayoutParams.WRAP_CONTENT else bottomInset
         (holder.itemView as? ViewGroup)?.forEach { it.visibility = if (isFromProxy) VISIBLE else GONE }
-
-        if (isFromProxy) proxyAdapter.onBindViewHolder(holder, position)
     }
 
 }
