@@ -11,6 +11,7 @@ import com.tunjid.androidbootstrap.adapters.TileAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.recyclerview.ListManager
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
+import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.viewholders.TileViewHolder
 import com.tunjid.androidbootstrap.viewmodels.EndlessTileViewModel
 import com.tunjid.androidbootstrap.viewmodels.EndlessTileViewModel.Companion.NUM_TILES
@@ -45,4 +46,6 @@ class EndlessTileFragment : AppBaseFragment() {
 
         return root
     }
+
+    override fun insetFlags(): InsetFlags = NO_BOTTOM
 }

@@ -9,10 +9,12 @@ import androidx.lifecycle.ViewModelProviders
 import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.adapters.TileAdapter
+import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator
 import com.tunjid.androidbootstrap.recyclerview.ListManager
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
+import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.viewholders.TileViewHolder
 import com.tunjid.androidbootstrap.viewmodels.ShiftingTileViewModel
 
@@ -44,7 +46,7 @@ class ShiftingTileFragment : AppBaseFragment() {
         listManager = ListManagerBuilder<TileViewHolder, PlaceHolder.State>()
                 .withRecyclerView(root.findViewById(R.id.recycler_view))
                 .withGridLayoutManager(4)
-                .withAdapter(TileAdapter(viewModel.tiles) { showSnackbar { bar -> bar.setText(it.id) } })
+                .withPaddedAdapter(TileAdapter(viewModel.tiles) { showSnackbar { bar -> bar.setText(it.id) } }, 4)
                 .build()
 
         return root
@@ -56,6 +58,8 @@ class ShiftingTileFragment : AppBaseFragment() {
     }
 
     override fun showsFab(): Boolean = true
+
+    override fun insetFlags(): InsetFlags = NO_BOTTOM
 
     companion object {
 

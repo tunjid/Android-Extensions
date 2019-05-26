@@ -11,6 +11,7 @@ import android.transition.Fade
 import android.transition.Transition
 import android.transition.TransitionSet
 import android.view.View
+import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getDrawable
@@ -29,6 +30,7 @@ abstract class AppBaseFragment : BaseFragment() {
 
     companion object {
         private const val BACKGROUND_TINT_DURATION = 1200
+        val NO_BOTTOM: InsetFlags = InsetFlags.create(true, true, true, false)
     }
 
     protected val disposables = CompositeDisposable()
@@ -38,6 +40,10 @@ abstract class AppBaseFragment : BaseFragment() {
         set(extended) {
             hostingActivity.isFabExtended = extended
         }
+
+    @get:ColorInt
+    open val navBarColor: Int
+        get() = ContextCompat.getColor(requireContext(), R.color.white_75)
 
     protected open val title: String
         get() = javaClass.simpleName

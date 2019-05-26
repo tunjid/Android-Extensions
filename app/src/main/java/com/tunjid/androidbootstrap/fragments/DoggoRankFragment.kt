@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter
+import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment
 import com.tunjid.androidbootstrap.fragments.AdoptDoggoFragment.Companion.ARG_DOGGO
@@ -22,6 +23,7 @@ import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.recyclerview.ListManager
 import com.tunjid.androidbootstrap.recyclerview.ListManager.SWIPE_DRAG_ALL_DIRECTIONS
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
+import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.view.util.ViewUtil
 import com.tunjid.androidbootstrap.viewholders.DoggoRankViewHolder
 import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
@@ -58,7 +60,11 @@ class DoggoRankFragment : AppBaseFragment(), DoggoAdapter.ImageListAdapterListen
 
         listManager = ListManagerBuilder<DoggoRankViewHolder, PlaceHolder.State>()
                 .withRecyclerView(root.findViewById(R.id.recycler_view))
-                .withAdapter(DoggoAdapter(viewModel.doggos, R.layout.viewholder_doggo_rank, { itemView, adapterListener -> DoggoRankViewHolder(itemView, adapterListener) }, this))
+                .withPaddedAdapter(DoggoAdapter(
+                        viewModel.doggos,
+                        R.layout.viewholder_doggo_rank,
+                        { itemView, adapterListener -> DoggoRankViewHolder(itemView, adapterListener) },
+                        this))
                 .addScrollListener { _, dy -> if (Math.abs(dy!!) > 4) isFabExtended = dy < 0 }
                 .withPlaceholder(placeHolder)
                 .withLinearLayoutManager()
@@ -88,6 +94,8 @@ class DoggoRankFragment : AppBaseFragment(), DoggoAdapter.ImageListAdapterListen
         super.onDestroyView()
         listManager.clear()
     }
+
+    override fun insetFlags(): InsetFlags = NO_BOTTOM
 
     override fun onDoggoClicked(doggo: Doggo) {
         Doggo.setTransitionDoggo(doggo)

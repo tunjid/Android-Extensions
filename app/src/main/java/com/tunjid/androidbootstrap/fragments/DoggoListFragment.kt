@@ -20,12 +20,14 @@ import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter.ImageListAdapterListener
+import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment
 import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.recyclerview.ListManager
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
+import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.view.util.ViewUtil
 import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 import java.util.Objects.requireNonNull
@@ -62,7 +64,11 @@ class DoggoListFragment : AppBaseFragment(), ImageListAdapterListener {
 
         listManager = ListManagerBuilder<DoggoViewHolder, PlaceHolder.State>()
                 .withRecyclerView(rootView.findViewById(R.id.recycler_view))
-                .withAdapter(DoggoAdapter(Doggo.doggos, R.layout.viewholder_doggo_list, { itemView, adapterListener -> DoggoViewHolder(itemView, adapterListener) }, this))
+                .withPaddedAdapter(DoggoAdapter(
+                        Doggo.doggos,
+                        R.layout.viewholder_doggo_list,
+                        { itemView, adapterListener -> DoggoViewHolder(itemView, adapterListener) },
+                        this), 2)
                 .addScrollListener { _, dy -> if (Math.abs(dy!!) > 4) isFabExtended = dy < 0 }
                 .addDecoration(getDivider(DividerItemDecoration.HORIZONTAL))
                 .addDecoration(getDivider(DividerItemDecoration.VERTICAL))
@@ -84,6 +90,8 @@ class DoggoListFragment : AppBaseFragment(), ImageListAdapterListener {
     }
 
     override fun showsFab(): Boolean = true
+
+    override fun insetFlags(): InsetFlags = NO_BOTTOM
 
     override fun onDoggoClicked(doggo: Doggo) {
         Doggo.setTransitionDoggo(doggo)
