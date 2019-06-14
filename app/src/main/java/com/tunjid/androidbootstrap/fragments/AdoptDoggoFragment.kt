@@ -83,11 +83,8 @@ class AdoptDoggoFragment : AppBaseFragment(), ImageListAdapterListener {
     private fun setColorFilter(color: Int, imageView: ImageView) = imageView.setColorFilter(color)
 
     private fun prepareSharedElementTransition() {
-        val baseTransition = baseTransition()
         val baseSharedTransition = baseSharedTransition()
 
-        enterTransition = baseTransition
-        exitTransition = baseTransition
         sharedElementEnterTransition = baseSharedTransition
         sharedElementReturnTransition = baseSharedTransition
     }

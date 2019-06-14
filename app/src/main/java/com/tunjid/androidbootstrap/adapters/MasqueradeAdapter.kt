@@ -48,8 +48,8 @@ class MasqueradeAdapter<T : RecyclerView.ViewHolder>(
         if (isFromProxy) proxyAdapter.onBindViewHolder(holder, position, payloads)
     }
 
-    override fun unregisterAdapterDataObserver(observer: RecyclerView.AdapterDataObserver) =
-            proxyAdapter.unregisterAdapterDataObserver(observer)
+    override fun unregisterAdapterDataObserver(observer: RecyclerView.AdapterDataObserver) = super.unregisterAdapterDataObserver(observer)
+            .apply { proxyAdapter.unregisterAdapterDataObserver(observer) }
 
     override fun onViewDetachedFromWindow(holder: T) = proxyAdapter.onViewDetachedFromWindow(holder)
 
@@ -67,8 +67,8 @@ class MasqueradeAdapter<T : RecyclerView.ViewHolder>(
 
     override fun onViewRecycled(holder: T) = proxyAdapter.onViewRecycled(holder)
 
-    override fun registerAdapterDataObserver(observer: RecyclerView.AdapterDataObserver) =
-            proxyAdapter.registerAdapterDataObserver(observer)
+    override fun registerAdapterDataObserver(observer: RecyclerView.AdapterDataObserver) = super.registerAdapterDataObserver(observer)
+            .apply { proxyAdapter.registerAdapterDataObserver(observer) }
 
     override fun onViewAttachedToWindow(holder: T) = proxyAdapter.onViewAttachedToWindow(holder)
 

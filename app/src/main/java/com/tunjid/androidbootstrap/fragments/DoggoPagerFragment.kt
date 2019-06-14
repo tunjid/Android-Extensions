@@ -134,11 +134,8 @@ class DoggoPagerFragment : AppBaseFragment() {
     }
 
     private fun prepareSharedElementTransition() {
-        val baseTransition = baseTransition()
         val baseSharedTransition = baseSharedTransition()
 
-        enterTransition = baseTransition
-        exitTransition = baseTransition
         sharedElementEnterTransition = baseSharedTransition
         sharedElementReturnTransition = baseSharedTransition
 

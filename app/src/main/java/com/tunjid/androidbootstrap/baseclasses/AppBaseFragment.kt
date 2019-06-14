@@ -93,22 +93,15 @@ abstract class AppBaseFragment : BaseFragment() {
         hostingActivity.setFabClickListener(fabClickListener)
     }
 
-    protected fun showSnackbar(consumer: (Snackbar) -> Unit) {
-        hostingActivity.showSnackBar(consumer)
-    }
+    protected fun showSnackbar(consumer: (Snackbar) -> Unit) =
+            hostingActivity.showSnackBar(consumer)
 
-    protected fun baseTransition(): Transition {
-        return Fade()
-    }
-
-    protected fun baseSharedTransition(): Transition {
-        return TransitionSet()
-                .setOrdering(TransitionSet.ORDERING_TOGETHER)
-                .addTransition(ChangeImageTransform())
-                .addTransition(ChangeTransform())
-                .addTransition(ChangeBounds())
-                .setDuration(ANIMATION_DURATION.toLong())
-    }
+    protected fun baseSharedTransition(): Transition = TransitionSet()
+            .setOrdering(TransitionSet.ORDERING_TOGETHER)
+            .addTransition(ChangeImageTransform())
+            .addTransition(ChangeTransform())
+            .addTransition(ChangeBounds())
+            .setDuration(ANIMATION_DURATION.toLong())
 
     protected fun <T : View> tintView(@ColorRes colorRes: Int, view: T, biConsumer: (Int, T) -> Unit) {
         val endColor = ContextCompat.getColor(requireContext(), colorRes)
