@@ -163,8 +163,8 @@ class MainActivity : BaseActivity() {
         rightInset = insets.systemWindowInsetRight
         bottomInset = insets.systemWindowInsetBottom
 
-        ViewUtil.getLayoutParams(this.topInsetView).height = topInset
-        ViewUtil.getLayoutParams(this.bottomInsetView).height = bottomInset
+        topInsetView.layoutParams.height = topInset
+        bottomInsetView.layoutParams.height = bottomInset
 
         adjustInsetForFragment(currentFragment)
 
