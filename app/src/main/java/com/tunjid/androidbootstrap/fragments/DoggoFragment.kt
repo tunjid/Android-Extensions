@@ -12,18 +12,6 @@ import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 
 class DoggoFragment : AppBaseFragment(), ImageListAdapterListener {
 
-    companion object {
-        private const val ARG_DOGGO = "doggo"
-
-        fun newInstance(doggo: Doggo): DoggoFragment {
-            val fragment = DoggoFragment()
-            val args = Bundle()
-            args.putParcelable("doggo", doggo)
-            fragment.arguments = args
-            return fragment
-        }
-    }
-
     override fun getStableTag(): String {
         return super.getStableTag() + "-" + arguments!!.getParcelable(ARG_DOGGO)
     }
@@ -38,12 +26,16 @@ class DoggoFragment : AppBaseFragment(), ImageListAdapterListener {
         return rootView
     }
 
-    override fun toggleToolbar(show: Boolean) { /* Nothing, delegate to parent fragment */ }
-
-    override fun toggleFab(show: Boolean) { /* Nothing, delegate to parent fragment */ }
-
-    override fun togglePersistentUi() { /* Nothing, delegate to parent fragment */ }
+    override fun togglePersistentUi() = Unit /* Nothing, delegate to parent fragment */
 
     override fun onDoggoImageLoaded(doggo: Doggo) = parentFragment!!.startPostponedEnterTransition()
 
+    companion object {
+        private const val ARG_DOGGO = "doggo"
+
+        fun newInstance(doggo: Doggo): DoggoFragment = DoggoFragment().apply {
+            arguments = Bundle().apply { putParcelable("doggo", doggo) }
+        }
+
+    }
 }

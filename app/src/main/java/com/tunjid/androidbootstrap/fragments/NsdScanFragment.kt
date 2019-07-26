@@ -3,13 +3,11 @@ package com.tunjid.androidbootstrap.fragments
 
 import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-
+import android.view.*
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.adapters.NsdAdapter
@@ -18,30 +16,17 @@ import com.tunjid.androidbootstrap.recyclerview.ListManager
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
 import com.tunjid.androidbootstrap.viewholders.NSDViewHolder
 import com.tunjid.androidbootstrap.viewmodels.NsdViewModel
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.DividerItemDecoration
-
-import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 
 /**
  * A [Fragment] listing supported NSD servers
  */
 class NsdScanFragment : AppBaseFragment(), NsdAdapter.ServiceClickedListener {
 
-    companion object {
-        fun newInstance(): NsdScanFragment {
-            val fragment = NsdScanFragment()
-            val bundle = Bundle()
-
-            fragment.arguments = bundle
-            return fragment
-        }
-    }
-
     private var isScanning: Boolean = false
     private lateinit var listManager: ListManager<NSDViewHolder, PlaceHolder.State>
     private lateinit var viewModel: NsdViewModel
+
+    override val toolBarMenuRes: Int = R.menu.menu_nsd_scan
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,30 +61,30 @@ class NsdScanFragment : AppBaseFragment(), NsdAdapter.ServiceClickedListener {
         listManager.clear()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_nsd_scan, menu)
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
 
-        menu.findItem(R.id.menu_stop).isVisible = isScanning
-        menu.findItem(R.id.menu_scan).isVisible = !isScanning
+        menu.findItem(R.id.menu_stop)?.isVisible = isScanning
+        menu.findItem(R.id.menu_scan)?.isVisible = !isScanning
 
         val refresh = menu.findItem(R.id.menu_refresh)
 
-        refresh.isVisible = isScanning
-        if (isScanning) refresh.setActionView(R.layout.actionbar_indeterminate_progress)
+        refresh?.isVisible = isScanning
+        if (isScanning) refresh?.setActionView(R.layout.actionbar_indeterminate_progress)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+        return when (item.itemId) {
             R.id.menu_scan -> {
                 scanDevices(true)
-                return true
+                true
             }
             R.id.menu_stop -> {
                 scanDevices(false)
-                return true
+                true
             }
+            else -> super.onOptionsItemSelected(item)
         }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onServiceClicked(serviceInfo: NsdServiceInfo) {}
@@ -123,4 +108,7 @@ class NsdScanFragment : AppBaseFragment(), NsdAdapter.ServiceClickedListener {
         requireActivity().invalidateOptionsMenu()
     }
 
+    companion object {
+        fun newInstance(): NsdScanFragment = NsdScanFragment().apply { arguments = Bundle() }
+    }
 }

@@ -7,7 +7,6 @@ import android.util.Pair
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat.getDrawable
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DiffUtil
@@ -18,7 +17,6 @@ import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment
 import com.tunjid.androidbootstrap.fragments.AdoptDoggoFragment.Companion.ARG_DOGGO
-import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.recyclerview.ListManager
 import com.tunjid.androidbootstrap.recyclerview.ListManager.SWIPE_DRAG_ALL_DIRECTIONS
@@ -28,29 +26,23 @@ import com.tunjid.androidbootstrap.view.util.ViewUtil
 import com.tunjid.androidbootstrap.viewholders.DoggoRankViewHolder
 import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 import com.tunjid.androidbootstrap.viewmodels.DoggoRankViewModel
+import kotlin.math.abs
 
 class DoggoRankFragment : AppBaseFragment(), DoggoAdapter.ImageListAdapterListener {
-
-    companion object {
-        fun newInstance(): DoggoRankFragment {
-            val fragment = DoggoRankFragment()
-            fragment.arguments = Bundle()
-            return fragment
-        }
-    }
 
     private lateinit var viewModel: DoggoRankViewModel
     private lateinit var listManager: ListManager<DoggoRankViewHolder, PlaceHolder.State>
 
-    override val fabState: FabExtensionAnimator.GlyphState
-        get() = FabExtensionAnimator.newState(getText(R.string.reset_doggos), getDrawable(requireContext(), R.drawable.ic_restore_24dp))
+    override val fabIconRes: Int = R.drawable.ic_restore_24dp
+
+    override val fabText: CharSequence
+        get() = getString(R.string.reset_doggos)
 
     override val fabClickListener: View.OnClickListener
         get() = View.OnClickListener { viewModel.resetList() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         viewModel = ViewModelProviders.of(this).get(DoggoRankViewModel::class.java)
     }
 
@@ -65,7 +57,7 @@ class DoggoRankFragment : AppBaseFragment(), DoggoAdapter.ImageListAdapterListen
                         R.layout.viewholder_doggo_rank,
                         { itemView, adapterListener -> DoggoRankViewHolder(itemView, adapterListener) },
                         this))
-                .addScrollListener { _, dy -> if (Math.abs(dy!!) > 4) isFabExtended = dy < 0 }
+                .addScrollListener { _, dy -> if (abs(dy!!) > 4) isFabExtended = dy < 0 }
                 .withPlaceholder(placeHolder)
                 .withLinearLayoutManager()
                 .withSwipeDragOptions(ListManager.swipeDragOptionsBuilder<DoggoRankViewHolder>()
@@ -95,7 +87,8 @@ class DoggoRankFragment : AppBaseFragment(), DoggoAdapter.ImageListAdapterListen
         listManager.clear()
     }
 
-    override fun insetFlags(): InsetFlags = NO_BOTTOM
+    override val insetFlags: InsetFlags
+        get() = NO_BOTTOM
 
     override fun onDoggoClicked(doggo: Doggo) {
         Doggo.setTransitionDoggo(doggo)
@@ -106,9 +99,10 @@ class DoggoRankFragment : AppBaseFragment(), DoggoAdapter.ImageListAdapterListen
         if (doggo == Doggo.getTransitionDoggo()) startPostponedEnterTransition()
     }
 
-    override fun showsFab(): Boolean {
-        return true
-    }
+    override val showsFab: Boolean
+        get() {
+            return true
+        }
 
     @SuppressLint("CommitTransaction")
     override fun provideFragmentTransaction(fragmentTo: BaseFragment): FragmentTransaction? {
@@ -157,4 +151,7 @@ class DoggoRankFragment : AppBaseFragment(), DoggoAdapter.ImageListAdapterListen
         if (!TextUtils.isEmpty(message)) showSnackbar { snackBar -> snackBar.setText(message) }
     }
 
+    companion object {
+        fun newInstance(): DoggoRankFragment = DoggoRankFragment().apply { arguments = Bundle() }
+    }
 }

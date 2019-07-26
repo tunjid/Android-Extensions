@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Android Bootstrap</string>
+    <string name="empty_string" />
     <string name="unknown_device">Unknown device</string>
     <string name="ble_not_supported">BLE is not supported</string>
 

@@ -18,14 +18,6 @@ import com.tunjid.androidbootstrap.viewmodels.RouteViewModel
 
 class RouteFragment : AppBaseFragment(), RouteAdapter.RouteAdapterListener {
 
-    companion object {
-        fun newInstance(): RouteFragment {
-            val fragment = RouteFragment()
-            fragment.arguments = Bundle()
-            return fragment
-        }
-    }
-
     private lateinit var viewModel: RouteViewModel
 
     override val title: String
@@ -33,7 +25,6 @@ class RouteFragment : AppBaseFragment(), RouteAdapter.RouteAdapterListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         viewModel = ViewModelProviders.of(this).get(RouteViewModel::class.java)
     }
 
@@ -49,7 +40,7 @@ class RouteFragment : AppBaseFragment(), RouteAdapter.RouteAdapterListener {
         return rootView
     }
 
-    override fun insetFlags(): InsetFlags = NO_BOTTOM
+    override val insetFlags: InsetFlags = NO_BOTTOM
 
     override fun onItemClicked(route: Route) {
         showFragment(when (route.destination) {
@@ -65,4 +56,7 @@ class RouteFragment : AppBaseFragment(), RouteAdapter.RouteAdapterListener {
         })
     }
 
+    companion object {
+        fun newInstance(): RouteFragment = RouteFragment().apply { arguments = Bundle() }
+    }
 }

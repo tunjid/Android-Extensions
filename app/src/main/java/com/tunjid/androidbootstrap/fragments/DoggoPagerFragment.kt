@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.SharedElementCallback
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.viewpager.widget.PagerAdapter
@@ -20,12 +19,14 @@ import com.tunjid.androidbootstrap.adapters.DoggoPagerAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.constraintlayout.animator.ViewPagerIndicatorAnimator
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment
-import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator.GlyphState
-import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator.newState
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.view.util.ViewUtil
 import java.util.*
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.sin
 
 class DoggoPagerFragment : AppBaseFragment() {
 
@@ -38,11 +39,12 @@ class DoggoPagerFragment : AppBaseFragment() {
         }
     }
 
+    override val fabIconRes: Int = R.drawable.ic_hug_24dp
+
+    override val fabText: CharSequence get() = dogName
+
     override val navBarColor: Int
         get() = Color.TRANSPARENT
-
-    public override val fabState: GlyphState
-        get() = newState(dogName, ContextCompat.getDrawable(requireContext(), R.drawable.ic_hug_24dp))
 
     override val fabClickListener: View.OnClickListener
         get() = View.OnClickListener { Doggo.getTransitionDoggo()?.let { showFragment(AdoptDoggoFragment.newInstance(it)) } }
@@ -81,9 +83,9 @@ class DoggoPagerFragment : AppBaseFragment() {
 
         indicatorAnimator.addIndicatorWatcher { indicator, position, fraction, _ ->
             val radians = Math.PI * fraction
-            val sine = (-Math.sin(radians)).toFloat()
-            val cosine = Math.cos(radians).toFloat()
-            val maxScale = Math.max(Math.abs(cosine), 0.4f)
+            val sine = (-sin(radians)).toFloat()
+            val cosine = cos(radians).toFloat()
+            val maxScale = max(abs(cosine), 0.4f)
 
             val currentIndicator = indicatorAnimator.getIndicatorAt(position)
             currentIndicator.scaleX = maxScale
@@ -102,17 +104,20 @@ class DoggoPagerFragment : AppBaseFragment() {
         togglePersistentUi()
     }
 
-    override fun insetFlags(): InsetFlags {
-        return InsetFlags.NONE
-    }
+    override val insetFlags: InsetFlags
+        get() {
+            return InsetFlags.NONE
+        }
 
-    override fun showsToolBar(): Boolean {
-        return false
-    }
+    override val showsToolBar: Boolean
+        get() {
+            return false
+        }
 
-    override fun showsFab(): Boolean {
-        return true
-    }
+    override val showsFab: Boolean
+        get() {
+            return true
+        }
 
     @SuppressLint("CommitTransaction")
     override fun provideFragmentTransaction(fragmentTo: BaseFragment): FragmentTransaction? {

@@ -17,16 +17,6 @@ import com.tunjid.androidbootstrap.core.text.SpanBuilder
 
 class SpanbuilderFragment : AppBaseFragment() {
 
-    companion object {
-
-        fun newInstance(): SpanbuilderFragment {
-            val fragment = SpanbuilderFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            return fragment
-        }
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_spanbuilder, container, false)
 
@@ -89,4 +79,7 @@ class SpanbuilderFragment : AppBaseFragment() {
         return rootView
     }
 
+    companion object {
+        fun newInstance(): SpanbuilderFragment = SpanbuilderFragment().apply { arguments = Bundle() }
+    }
 }

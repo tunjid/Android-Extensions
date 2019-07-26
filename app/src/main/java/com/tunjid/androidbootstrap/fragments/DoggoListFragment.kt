@@ -23,7 +23,6 @@ import com.tunjid.androidbootstrap.adapters.DoggoAdapter.ImageListAdapterListene
 import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment
-import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.recyclerview.ListManager
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
@@ -31,21 +30,19 @@ import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.view.util.ViewUtil
 import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 import java.util.Objects.requireNonNull
+import kotlin.math.abs
 
 class DoggoListFragment : AppBaseFragment(), ImageListAdapterListener {
 
-    companion object {
-        fun newInstance(): DoggoListFragment {
-            val fragment = DoggoListFragment()
-            fragment.arguments = Bundle()
-            return fragment
-        }
-    }
-
     private lateinit var listManager: ListManager<DoggoViewHolder, PlaceHolder.State>
 
-    override val fabState: FabExtensionAnimator.GlyphState
-        get() = FabExtensionAnimator.newState(getText(R.string.collapse_prompt), getDrawable(requireContext(), R.drawable.ic_paw_24dp))
+    override val fabIconRes: Int = R.drawable.ic_paw_24dp
+
+    override val fabText: CharSequence get() = getString(R.string.collapse_prompt)
+
+    override val showsFab: Boolean = true
+
+    override val insetFlags: InsetFlags = NO_BOTTOM
 
     override val fabClickListener: View.OnClickListener
         get() = View.OnClickListener { isFabExtended = !isFabExtended }
@@ -69,7 +66,7 @@ class DoggoListFragment : AppBaseFragment(), ImageListAdapterListener {
                         R.layout.viewholder_doggo_list,
                         { itemView, adapterListener -> DoggoViewHolder(itemView, adapterListener) },
                         this), 2)
-                .addScrollListener { _, dy -> if (Math.abs(dy!!) > 4) isFabExtended = dy < 0 }
+                .addScrollListener { _, dy -> if (abs(dy!!) > 4) isFabExtended = dy < 0 }
                 .addDecoration(getDivider(DividerItemDecoration.HORIZONTAL))
                 .addDecoration(getDivider(DividerItemDecoration.VERTICAL))
                 .withGridLayoutManager(2)
@@ -88,10 +85,6 @@ class DoggoListFragment : AppBaseFragment(), ImageListAdapterListener {
         super.onDestroyView()
         listManager.clear()
     }
-
-    override fun showsFab(): Boolean = true
-
-    override fun insetFlags(): InsetFlags = NO_BOTTOM
 
     override fun onDoggoClicked(doggo: Doggo) {
         Doggo.setTransitionDoggo(doggo)
@@ -160,4 +153,7 @@ class DoggoListFragment : AppBaseFragment(), ImageListAdapterListener {
                 .addSharedElement(imageView, ViewUtil.transitionName(doggo, imageView))
     }
 
+    companion object {
+        fun newInstance(): DoggoListFragment = DoggoListFragment().apply { arguments = Bundle() }
+    }
 }

@@ -18,15 +18,6 @@ import com.tunjid.androidbootstrap.view.animator.ViewHider
 
 class HidingViewFragment : AppBaseFragment() {
 
-    companion object {
-        fun newInstance(): HidingViewFragment {
-            val fragment = HidingViewFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            return fragment
-        }
-    }
-
     private lateinit var leftHider: ViewHider
     private lateinit var topHider: ViewHider
     private lateinit var rightHider: ViewHider
@@ -69,4 +60,7 @@ class HidingViewFragment : AppBaseFragment() {
         }
     }
 
+    companion object {
+        fun newInstance(): HidingViewFragment = HidingViewFragment().apply { arguments = Bundle() }
+    }
 }

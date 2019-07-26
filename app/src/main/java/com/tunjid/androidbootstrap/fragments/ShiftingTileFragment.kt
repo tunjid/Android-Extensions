@@ -4,14 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat.getDrawable
 import androidx.lifecycle.ViewModelProviders
 import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.adapters.TileAdapter
 import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
-import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator
 import com.tunjid.androidbootstrap.recyclerview.ListManager
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
 import com.tunjid.androidbootstrap.view.util.InsetFlags
@@ -23,11 +21,15 @@ class ShiftingTileFragment : AppBaseFragment() {
     private lateinit var viewModel: ShiftingTileViewModel
     private lateinit var listManager: ListManager<TileViewHolder, PlaceHolder.State>
 
-    override val fabState: FabExtensionAnimator.GlyphState
-        get() = if (viewModel.changes())
-            FabExtensionAnimator.newState(getText(R.string.static_tiles), getDrawable(requireContext(), R.drawable.ic_grid_24dp))
-        else
-            FabExtensionAnimator.newState(getText(R.string.dynamic_tiles), getDrawable(requireContext(), R.drawable.ic_blur_24dp))
+    override val fabIconRes: Int
+        get() = if (viewModel.changes()) R.drawable.ic_grid_24dp else R.drawable.ic_blur_24dp
+
+    override val fabText: CharSequence
+        get() = getString(if (viewModel.changes()) R.string.static_tiles else R.string.dynamic_tiles)
+
+    override val showsFab: Boolean = true
+
+    override val insetFlags: InsetFlags = NO_BOTTOM
 
     override val fabClickListener: View.OnClickListener
         get() = View.OnClickListener {
@@ -37,7 +39,6 @@ class ShiftingTileFragment : AppBaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         viewModel = ViewModelProviders.of(this).get(ShiftingTileViewModel::class.java)
     }
 
@@ -57,16 +58,7 @@ class ShiftingTileFragment : AppBaseFragment() {
         disposables.add(viewModel.watchTiles().subscribe(listManager::onDiff, Throwable::printStackTrace))
     }
 
-    override fun showsFab(): Boolean = true
-
-    override fun insetFlags(): InsetFlags = NO_BOTTOM
-
     companion object {
-
-        fun newInstance(): ShiftingTileFragment {
-            val fragment = ShiftingTileFragment()
-            fragment.arguments = Bundle()
-            return fragment
-        }
+        fun newInstance(): ShiftingTileFragment = ShiftingTileFragment().apply { arguments = Bundle() }
     }
 }

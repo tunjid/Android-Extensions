@@ -18,20 +18,13 @@ import com.tunjid.androidbootstrap.viewmodels.EndlessTileViewModel.Companion.NUM
 
 class EndlessTileFragment : AppBaseFragment() {
 
-    companion object {
-        fun newInstance(): EndlessTileFragment {
-            val fragment = EndlessTileFragment()
-            fragment.arguments = Bundle()
-            return fragment
-        }
-    }
-
     private lateinit var viewModel: EndlessTileViewModel
     private lateinit var listManager: ListManager<TileViewHolder, PlaceHolder.State>
 
+    override val insetFlags: InsetFlags = NO_BOTTOM
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         viewModel = ViewModelProviders.of(this).get(EndlessTileViewModel::class.java)
     }
 
@@ -47,5 +40,7 @@ class EndlessTileFragment : AppBaseFragment() {
         return root
     }
 
-    override fun insetFlags(): InsetFlags = NO_BOTTOM
+    companion object {
+        fun newInstance(): EndlessTileFragment = EndlessTileFragment().apply { arguments = Bundle() }
+    }
 }

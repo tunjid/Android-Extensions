@@ -7,33 +7,42 @@ import android.graphics.Color
 import android.transition.ChangeBounds
 import android.transition.ChangeImageTransform
 import android.transition.ChangeTransform
-import android.transition.Fade
 import android.transition.Transition
 import android.transition.TransitionSet
 import android.view.View
-import androidx.annotation.ColorInt
-import androidx.annotation.ColorRes
+import androidx.annotation.*
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getDrawable
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidbootstrap.R
+import com.tunjid.androidbootstrap.UiState
 import com.tunjid.androidbootstrap.activities.MainActivity
 import com.tunjid.androidbootstrap.activities.MainActivity.Companion.ANIMATION_DURATION
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment
-import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator
-import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator.GlyphState
 import com.tunjid.androidbootstrap.view.util.InsetFlags
 import io.reactivex.disposables.CompositeDisposable
 
 abstract class AppBaseFragment : BaseFragment() {
 
-    companion object {
-        private const val BACKGROUND_TINT_DURATION = 1200
-        val NO_BOTTOM: InsetFlags = InsetFlags.create(true, true, true, false)
-    }
-
     protected val disposables = CompositeDisposable()
+
+    protected open val fabIconRes: Int
+        @DrawableRes get() = R.drawable.ic_circle_24dp
+
+    protected open val fabText: CharSequence
+         get() = getString(R.string.app_name)
+
+    open val toolBarMenuRes: Int
+        @MenuRes get() = 0
+
+    open val insetFlags: InsetFlags = InsetFlags.ALL
+
+    open val showsFab: Boolean = false
+
+    open val showsToolBar: Boolean = true
+
+    protected open val title: String
+        get() = this::class.java.simpleName
 
     protected var isFabExtended: Boolean
         get() = hostingActivity.isFabExtended
@@ -44,12 +53,6 @@ abstract class AppBaseFragment : BaseFragment() {
     @get:ColorInt
     open val navBarColor: Int
         get() = ContextCompat.getColor(requireContext(), R.color.white_75)
-
-    protected open val title: String
-        get() = javaClass.simpleName
-
-    protected open val fabState: GlyphState
-        get() = FabExtensionAnimator.newState(getText(R.string.app_name), getDrawable(requireContext(), R.drawable.ic_circle_24dp))
 
     protected open val fabClickListener: View.OnClickListener
         get() = View.OnClickListener { }
@@ -62,35 +65,9 @@ abstract class AppBaseFragment : BaseFragment() {
         disposables.clear()
     }
 
-    open fun toggleFab(show: Boolean) {
-        hostingActivity.toggleFab(show)
-    }
-
-    open fun toggleToolbar(show: Boolean) {
-        hostingActivity.toggleToolbar(show)
-    }
-
-    open fun insetFlags(): InsetFlags {
-        return InsetFlags.ALL
-    }
-
-    open fun showsFab(): Boolean {
-        return false
-    }
-
-    open fun showsToolBar(): Boolean {
-        return true
-    }
-
     open fun togglePersistentUi() {
-        toggleFab(showsFab())
-        toggleToolbar(showsToolBar())
+        hostingActivity.update(fromThis())
         if (!restoredFromBackStack()) isFabExtended = true
-
-        val hostingActivity = hostingActivity
-        hostingActivity.setTitle(title)
-        hostingActivity.updateFab(fabState)
-        hostingActivity.setFabClickListener(fabClickListener)
     }
 
     protected fun showSnackbar(consumer: (Snackbar) -> Unit) =
@@ -121,6 +98,25 @@ abstract class AppBaseFragment : BaseFragment() {
                 .beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out,
                         android.R.anim.fade_in, android.R.anim.fade_out)
+    }
+
+    private fun fromThis(): UiState {
+        return UiState(
+                this.fabIconRes,
+                this.fabText,
+                this.toolBarMenuRes,
+                this.navBarColor,
+                this.showsFab,
+                this.showsToolBar,
+                this.insetFlags,
+                this.title,
+                if (view == null) null else fabClickListener
+        )
+    }
+
+    companion object {
+        private const val BACKGROUND_TINT_DURATION = 1200
+        val NO_BOTTOM: InsetFlags = InsetFlags.create(true, true, true, false)
     }
 
 }

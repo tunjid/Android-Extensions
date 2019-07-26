@@ -6,41 +6,30 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.content.ContextCompat
 import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter.ImageListAdapterListener
 import com.tunjid.androidbootstrap.adapters.InputAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
-import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
 import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 import com.tunjid.androidbootstrap.viewholders.InputViewHolder
-import java.util.*
 
 class AdoptDoggoFragment : AppBaseFragment(), ImageListAdapterListener {
 
-    companion object {
-        internal const val ARG_DOGGO = "doggo"
-
-        fun newInstance(doggo: Doggo): AdoptDoggoFragment {
-            val fragment = AdoptDoggoFragment()
-            val args = Bundle()
-
-            args.putParcelable(ARG_DOGGO, doggo)
-            fragment.arguments = args
-            fragment.prepareSharedElementTransition()
-
-            return fragment
-        }
-    }
-
     private lateinit var doggo: Doggo
 
-    override val fabState: FabExtensionAnimator.GlyphState
-        get() = FabExtensionAnimator.newState(getString(R.string.adopt), ContextCompat.getDrawable(requireContext(), R.drawable.ic_hug_24dp))
+    override val fabIconRes: Int = R.drawable.ic_hug_24dp
+
+    override val fabText: CharSequence get() = getString(R.string.adopt)
+
+    override val showsToolBar: Boolean = false
+
+    override val showsFab: Boolean = true
+
+    override val insetFlags: InsetFlags = InsetFlags.NO_TOP
 
     override val fabClickListener: View.OnClickListener
         get() = View.OnClickListener {
@@ -62,7 +51,7 @@ class AdoptDoggoFragment : AppBaseFragment(), ImageListAdapterListener {
         ListManagerBuilder<InputViewHolder, PlaceHolder.State>()
                 .withRecyclerView(root.findViewById(R.id.model_list))
                 .withLinearLayoutManager()
-                .withAdapter(InputAdapter(Arrays.asList(*resources.getStringArray(R.array.adoption_items))))
+                .withAdapter(InputAdapter(listOf(*resources.getStringArray(R.array.adoption_items))))
                 .build()
 
         val viewHolder = DoggoViewHolder(root, this)
@@ -74,12 +63,6 @@ class AdoptDoggoFragment : AppBaseFragment(), ImageListAdapterListener {
         return root
     }
 
-    override fun showsToolBar(): Boolean = false
-
-    override fun showsFab(): Boolean = true
-
-    override fun insetFlags(): InsetFlags = InsetFlags.NO_TOP
-
     private fun setColorFilter(color: Int, imageView: ImageView) = imageView.setColorFilter(color)
 
     private fun prepareSharedElementTransition() {
@@ -87,6 +70,15 @@ class AdoptDoggoFragment : AppBaseFragment(), ImageListAdapterListener {
 
         sharedElementEnterTransition = baseSharedTransition
         sharedElementReturnTransition = baseSharedTransition
+    }
+
+    companion object {
+        internal const val ARG_DOGGO = "doggo"
+
+        fun newInstance(doggo: Doggo): AdoptDoggoFragment = AdoptDoggoFragment().apply {
+            arguments = Bundle().apply { putParcelable(ARG_DOGGO, doggo) }
+            prepareSharedElementTransition()
+        }
     }
 
 }

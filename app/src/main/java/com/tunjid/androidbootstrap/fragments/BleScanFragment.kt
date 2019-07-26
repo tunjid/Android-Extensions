@@ -9,12 +9,7 @@ import android.content.pm.PackageManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.M
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProviders
@@ -30,21 +25,12 @@ import com.tunjid.androidbootstrap.viewmodels.BleViewModel
 
 class BleScanFragment : AppBaseFragment(), ScanAdapter.ScanAdapterListener {
 
-    companion object {
-        private const val REQUEST_ENABLE_BT = 1
-
-        fun newInstance(): BleScanFragment {
-            val fragment = BleScanFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            return fragment
-        }
-    }
-
     private var isScanning: Boolean = false
 
     private lateinit var listManager: ListManager<ScanViewHolder, PlaceHolder.State>
     private lateinit var viewModel: BleViewModel
+
+    override val toolBarMenuRes: Int = R.menu.menu_ble_scan
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,16 +63,16 @@ class BleScanFragment : AppBaseFragment(), ScanAdapter.ScanAdapterListener {
         activity.onBackPressed()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_ble_scan, menu)
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
 
-        menu.findItem(R.id.menu_stop).isVisible = isScanning
-        menu.findItem(R.id.menu_scan).isVisible = !isScanning
+        menu.findItem(R.id.menu_stop)?.isVisible = isScanning
+        menu.findItem(R.id.menu_scan)?.isVisible = !isScanning
 
         val refresh = menu.findItem(R.id.menu_refresh)
 
-        refresh.isVisible = isScanning
-        if (isScanning) refresh.setActionView(R.layout.actionbar_indeterminate_progress)
+        refresh?.isVisible = isScanning
+        if (isScanning) refresh?.setActionView(R.layout.actionbar_indeterminate_progress)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -160,6 +146,12 @@ class BleScanFragment : AppBaseFragment(), ScanAdapter.ScanAdapterListener {
     private fun onScanningStopped() {
         isScanning = false
         requireActivity().invalidateOptionsMenu()
+    }
+
+    companion object {
+        private const val REQUEST_ENABLE_BT = 1
+
+        fun newInstance(): BleScanFragment = BleScanFragment().apply { arguments =  Bundle() }
     }
 
 }
