@@ -113,6 +113,7 @@ class MainActivity : BaseActivity() {
         fabExtensionAnimator = FabExtensionAnimator(fab)
         fabExtensionAnimator.isExtended = true
 
+        toolbar.title = getString(R.string.app_name)
         toolbar.setOnMenuItemClickListener(this::onMenuItemClicked)
 
         window.decorView.systemUiVisibility = DEFAULT_SYSTEM_UI_FLAGS
@@ -274,21 +275,21 @@ class MainActivity : BaseActivity() {
 }
 
 fun Toolbar.update(menu: Int, title: CharSequence) {
-    if (childCount <= 2) {
+    if (visibility != VISIBLE) {
         setTitle(title)
         replaceMenu(menu)
     } else for (i in 0 until childCount) {
         val child = getChildAt(i)
         if (child is ImageView) continue
 
-        child.animate().alpha(0f).setDuration(TOOLBAR_ANIM_DELAY.toLong()).withEndAction {
+        child.animate().alpha(0F).setDuration(TOOLBAR_ANIM_DELAY.toLong()).withEndAction {
             if (child is TextView) setTitle(title)
             else if (child is ActionMenuView) replaceMenu(menu)
 
             child.animate()
                     .setDuration(TOOLBAR_ANIM_DELAY.toLong())
                     .setInterpolator(AccelerateDecelerateInterpolator())
-                    .alpha(1f)
+                    .alpha(1F)
                     .start()
         }.start()
     }

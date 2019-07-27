@@ -56,13 +56,13 @@ class UiState : Parcelable {
              toolbarStateConsumer: (Int, CharSequence) -> Unit,
              fabClickListenerConsumer: (View.OnClickListener?) -> Unit
     ): UiState {
+        either(force, newState, { state -> state.toolBarMenu }, { state -> state.toolbarTitle }, toolbarStateConsumer)
+        either(force, newState, { state -> state.fabIcon }, { state -> state.fabText }, fabStateConsumer)
+
         only(force, newState, { state -> state.showsFab }, showsFabConsumer)
         only(force, newState, { state -> state.showsToolbar }, showsToolbarConsumer)
         only(force, newState, { state -> state.navBarColor }, navBarColorConsumer)
         only(force, newState, { state -> state.insetFlags }, insetFlagsConsumer)
-
-        either(force, newState, { state -> state.fabIcon }, { state -> state.fabText }, fabStateConsumer)
-        either(force, newState, { state -> state.toolBarMenu }, { state -> state.toolbarTitle }, toolbarStateConsumer)
 
         fabClickListenerConsumer.invoke(newState.fabClickListener)
 
