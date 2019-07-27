@@ -28,6 +28,8 @@ buildscript {
         supportAnnotations = 'androidx.annotation:annotation:1.0.0'
         constraintLayout = 'androidx.constraintlayout:constraintlayout:1.1.3'
 
+        kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
         // Artifactory publishing params
         libProps = new Properties()
         bintrayProps = new Properties()

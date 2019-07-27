@@ -21,6 +21,10 @@ public class ViewUtil {
         return object.hashCode() + "-" + view.getId();
     }
 
+    /**
+     * Use ViewKt.doOnNextLayout instead
+     */
+    @Deprecated
     public static void listenForLayout(View view, Runnable onLayout) {
         ViewTreeObserver observer = view.getViewTreeObserver();
         if (!observer.isAlive()) return;
@@ -34,3 +38,4 @@ public class ViewUtil {
         });
     }
 }
+

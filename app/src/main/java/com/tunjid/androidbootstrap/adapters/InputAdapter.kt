@@ -7,7 +7,7 @@ import com.tunjid.androidbootstrap.recyclerview.InteractiveAdapter
 import com.tunjid.androidbootstrap.viewholders.InputViewHolder
 
 class InputAdapter(private val hints: List<String>)
-    : InteractiveAdapter<InputViewHolder, InteractiveAdapter.AdapterListener>() {
+    : InteractiveAdapter<InputViewHolder, Nothing>() {
 
     init {
         setHasStableIds(true)

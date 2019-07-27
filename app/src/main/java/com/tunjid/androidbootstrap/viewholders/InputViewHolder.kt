@@ -5,22 +5,18 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.text.Editable
+import android.text.TextUtils.isEmpty
 import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
-
+import androidx.core.content.ContextCompat
+import androidx.core.view.doOnNextLayout
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.recyclerview.InteractiveViewHolder
 
-import androidx.core.content.ContextCompat
-
-import android.text.TextUtils.isEmpty
-import com.tunjid.androidbootstrap.recyclerview.InteractiveAdapter
-import com.tunjid.androidbootstrap.view.util.ViewUtil.listenForLayout
-
 class InputViewHolder(itemView: View)
-    : InteractiveViewHolder<InteractiveAdapter.AdapterListener>(itemView), TextWatcher {
+    : InteractiveViewHolder<Nothing>(itemView), TextWatcher {
 
     private var lastLineCount = 1
 
@@ -38,7 +34,7 @@ class InputViewHolder(itemView: View)
         hint.text = hintValue
         text.addTextChangedListener(this)
         setTintAlpha(text.hasFocus())
-        listenForLayout(hint) { scaleHint(isEmpty(text.text)) }
+        hint.doOnNextLayout { scaleHint(isEmpty(text.text)) }
     }
 
     override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {/* Nothing */
@@ -49,7 +45,7 @@ class InputViewHolder(itemView: View)
 
     override fun afterTextChanged(editable: Editable) {
         val currentLineCount = text.lineCount
-        if (lastLineCount != currentLineCount) listenForLayout(hint) { scaleHint(false) }
+        if (lastLineCount != currentLineCount) hint.doOnNextLayout { scaleHint(false) }
         lastLineCount = currentLineCount
     }
 

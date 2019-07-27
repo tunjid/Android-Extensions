@@ -11,12 +11,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.View.*
 import android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
-import android.view.animation.AccelerateDecelerateInterpolator
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
-import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -40,6 +36,7 @@ import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator
 import com.tunjid.androidbootstrap.view.animator.ViewHider
 import com.tunjid.androidbootstrap.view.util.ViewUtil
 import com.tunjid.androidbootstrap.view.util.ViewUtil.getLayoutParams
+import com.tunjid.androidbootstrap.view.util.update
 
 class MainActivity : BaseActivity() {
 
@@ -142,7 +139,7 @@ class MainActivity : BaseActivity() {
 
     fun update(state: UiState) = updateUI(false, state)
 
-    private fun updateMainToolBar(menu: Int, title: CharSequence) = toolbar.update(menu, title).also {
+    private fun updateMainToolBar(menu: Int, title: CharSequence) = toolbar.update(title, menu).also {
         currentFragment?.onPrepareOptionsMenu(toolbar.menu)
     }
 
@@ -273,31 +270,3 @@ class MainActivity : BaseActivity() {
         var bottomInset: Int = 0
     }
 }
-
-fun Toolbar.update(menu: Int, title: CharSequence) {
-    if (visibility != VISIBLE) {
-        setTitle(title)
-        replaceMenu(menu)
-    } else for (i in 0 until childCount) {
-        val child = getChildAt(i)
-        if (child is ImageView) continue
-
-        child.animate().alpha(0F).setDuration(TOOLBAR_ANIM_DELAY.toLong()).withEndAction {
-            if (child is TextView) setTitle(title)
-            else if (child is ActionMenuView) replaceMenu(menu)
-
-            child.animate()
-                    .setDuration(TOOLBAR_ANIM_DELAY.toLong())
-                    .setInterpolator(AccelerateDecelerateInterpolator())
-                    .alpha(1F)
-                    .start()
-        }.start()
-    }
-}
-
-fun Toolbar.replaceMenu(menu: Int) {
-    this.menu.clear()
-    if (menu != 0) inflateMenu(menu)
-}
-
-const val TOOLBAR_ANIM_DELAY = 200
