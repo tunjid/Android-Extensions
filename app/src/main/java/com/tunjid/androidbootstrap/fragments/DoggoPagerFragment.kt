@@ -30,24 +30,19 @@ import kotlin.math.sin
 
 class DoggoPagerFragment : AppBaseFragment() {
 
-    companion object {
-        fun newInstance(): DoggoPagerFragment {
-            val fragment = DoggoPagerFragment()
-            fragment.arguments = Bundle()
-            fragment.prepareSharedElementTransition()
-            return fragment
-        }
-    }
-
     override val fabIconRes: Int = R.drawable.ic_hug_24dp
 
     override val fabText: CharSequence get() = dogName
 
-    override val navBarColor: Int
-        get() = Color.TRANSPARENT
+    override val insetFlags: InsetFlags = InsetFlags.NONE
 
-    override val fabClickListener: View.OnClickListener
-        get() = View.OnClickListener { Doggo.getTransitionDoggo()?.let { showFragment(AdoptDoggoFragment.newInstance(it)) } }
+    override val showsToolBar: Boolean = false
+
+    override val showsFab: Boolean = true
+
+    override val navBarColor: Int = Color.TRANSPARENT
+
+    override val fabClickListener: View.OnClickListener = View.OnClickListener { Doggo.getTransitionDoggo()?.let { showFragment(AdoptDoggoFragment.newInstance(it)) } }
 
     private val dogName: String
         get() {
@@ -65,9 +60,7 @@ class DoggoPagerFragment : AppBaseFragment() {
         viewPager.adapter = DoggoPagerAdapter(Doggo.doggos, childFragmentManager)
         viewPager.currentItem = Doggo.transitionIndex
         viewPager.addOnPageChangeListener(object : SimpleOnPageChangeListener() {
-            override fun onPageSelected(position: Int) {
-                onDoggoSwiped(position)
-            }
+            override fun onPageSelected(position: Int) = onDoggoSwiped(position)
         })
 
         val indicatorAnimator = ViewPagerIndicatorAnimator.builder()
@@ -103,21 +96,6 @@ class DoggoPagerFragment : AppBaseFragment() {
         Doggo.setTransitionDoggo(Doggo.doggos[position])
         togglePersistentUi()
     }
-
-    override val insetFlags: InsetFlags
-        get() {
-            return InsetFlags.NONE
-        }
-
-    override val showsToolBar: Boolean
-        get() {
-            return false
-        }
-
-    override val showsFab: Boolean
-        get() {
-            return true
-        }
 
     @SuppressLint("CommitTransaction")
     override fun provideFragmentTransaction(fragmentTo: BaseFragment): FragmentTransaction? {
@@ -156,6 +134,10 @@ class DoggoPagerFragment : AppBaseFragment() {
                 sharedElements[names[0]] = view.findViewById(R.id.doggo_image)
             }
         })
+    }
+
+    companion object {
+        fun newInstance(): DoggoPagerFragment = DoggoPagerFragment().apply { arguments = Bundle(); prepareSharedElementTransition() }
     }
 
 }

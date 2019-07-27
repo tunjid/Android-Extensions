@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.os.bundleOf
 import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter.ImageListAdapterListener
@@ -31,8 +32,7 @@ class AdoptDoggoFragment : AppBaseFragment(), ImageListAdapterListener {
 
     override val insetFlags: InsetFlags = InsetFlags.NO_TOP
 
-    override val fabClickListener: View.OnClickListener
-        get() = View.OnClickListener {
+    override val fabClickListener: View.OnClickListener = View.OnClickListener {
             showSnackbar { snackBar -> snackBar.setText(getString(R.string.adopted_doggo, doggo.name)) }
         }
 
@@ -76,7 +76,7 @@ class AdoptDoggoFragment : AppBaseFragment(), ImageListAdapterListener {
         internal const val ARG_DOGGO = "doggo"
 
         fun newInstance(doggo: Doggo): AdoptDoggoFragment = AdoptDoggoFragment().apply {
-            arguments = Bundle().apply { putParcelable(ARG_DOGGO, doggo) }
+            arguments = bundleOf(ARG_DOGGO to doggo)
             prepareSharedElementTransition()
         }
     }
