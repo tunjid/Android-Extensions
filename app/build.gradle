@@ -53,6 +53,7 @@ dependencies {
 
     // Android support libraries
     implementation parent.ext.kotlin
+    implementation parent.ext.palette
     implementation parent.ext.material
     implementation parent.ext.appCompat
     implementation parent.ext.cardView
@@ -60,7 +61,7 @@ dependencies {
     implementation parent.ext.constraintLayout
 
     implementation 'androidx.core:core-ktx:1.0.2'
-    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'androidx.fragment:fragment-ktx:1.1.0-rc03'
     implementation 'androidx.lifecycle:lifecycle-viewmodel:2.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
 
@@ -68,7 +69,8 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'jp.wasabeef:picasso-transformations:2.1.2'
 
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.6'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.10'
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.4.0'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
     implementation 'com.andkulikov:transitionseverywhere:2.0.0-alpha01'

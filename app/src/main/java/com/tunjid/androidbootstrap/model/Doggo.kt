@@ -2,14 +2,10 @@ package com.tunjid.androidbootstrap.model
 
 import android.os.Parcel
 import android.os.Parcelable
-
-import com.tunjid.androidbootstrap.R
-
-import java.util.Arrays
-import java.util.Random
-import java.util.concurrent.atomic.AtomicReference
-
 import androidx.annotation.DrawableRes
+import com.tunjid.androidbootstrap.R
+import java.util.*
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Model class for G O O D  B O Y E S  A N D  G I R L E S  B R O N T
@@ -59,13 +55,13 @@ class Doggo : Parcelable {
 
         private val transitionDoggo = AtomicReference<Doggo>()
 
-        private val DOGGO_NOUNS = Arrays.asList(
+        private val DOGGO_NOUNS = listOf(
                 "F R E N",
                 "B O Y E",
                 "G I R L E"
         )
 
-        private val DOGGO_ADJECTIVES = Arrays.asList(
+        private val DOGGO_ADJECTIVES = listOf(
                 "F L Y",
                 "L A Z Y",
                 "G O O D",
@@ -74,7 +70,7 @@ class Doggo : Parcelable {
                 "B A M B O O Z L E"
         )
 
-        val doggos: List<Doggo> = Arrays.asList(
+        val doggos: List<Doggo> = listOf(
                 Doggo(R.drawable.doggo1),
                 Doggo(R.drawable.doggo2),
                 Doggo(R.drawable.doggo3),

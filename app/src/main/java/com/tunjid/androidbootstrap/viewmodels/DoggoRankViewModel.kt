@@ -18,22 +18,21 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers.io
 import java.util.*
+import kotlin.math.min
 
 class DoggoRankViewModel(application: Application) : AndroidViewModel(application) {
 
     val doggos: MutableList<Doggo> = ArrayList(Doggo.doggos)
     private val disposables: CompositeDisposable = CompositeDisposable()
-    private val processor: PublishProcessor<DiffUtil.DiffResult> = PublishProcessor.create<DiffUtil.DiffResult>()
+    private val processor: PublishProcessor<DiffUtil.DiffResult> = PublishProcessor.create()
 
     private var doggoIdPositionPair: Pair<Long, Int>? = null
 
-    fun watchDoggos(): Flowable<DiffUtil.DiffResult> {
-        return processor
-    }
+    fun watchDoggos(): Flowable<DiffUtil.DiffResult> = processor
 
     fun onActionStarted(doggoIdActionPair: Pair<Long, Int>) {
         val id = doggoIdActionPair.first
-        val currentIndex = Lists.transform<Doggo, Int>(doggos) { it.hashCode() }.indexOf(id.toInt())
+        val currentIndex = Lists.transform(doggos) { it.hashCode() }.indexOf(id.toInt())
         doggoIdPositionPair = Pair(id, currentIndex)
     }
 
@@ -46,7 +45,7 @@ class DoggoRankViewModel(application: Application) : AndroidViewModel(applicatio
         doggos.removeAt(position)
 
         val lastIndex = doggos.size - 1
-        return Pair(Math.min(position, lastIndex), lastIndex)
+        return Pair(min(position, lastIndex), lastIndex)
     }
 
     fun onActionEnded(doggoIdActionPair: Pair<Long, Int>): String {
@@ -58,7 +57,7 @@ class DoggoRankViewModel(application: Application) : AndroidViewModel(applicatio
         if (action == ACTION_STATE_IDLE || startId != endId) return ""
 
         val isRemoving = action == ACTION_STATE_SWIPE
-        val ids = Lists.transform<Doggo, Int>(if (isRemoving) Doggo.doggos else doggos) { it.hashCode() }
+        val ids = Lists.transform(if (isRemoving) Doggo.doggos else doggos) { it.hashCode() }
         val endPosition = ids.indexOf(endId.toInt())
 
         if (endPosition < 0) return ""

@@ -72,9 +72,11 @@ publishing {
             artifact("$buildDir/outputs/aar/${project.getName()}-${project.version}.aar")
 
             // Add sources too
-            artifact(sourcesJar) {
-                classifier = 'sources'
-                extension = 'jar'
+            afterEvaluate {
+                artifact(sourcesJar) {
+                    classifier = 'sources'
+                    extension = 'jar'
+                }
             }
 
             //The publication doesn't know about our dependencies, so we have to manually add them to the pom
@@ -102,7 +104,7 @@ publishing {
 
 // Gradle task to generate sources after building a release aar
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
+    archiveClassifier = 'sources'
     from android.sourceSets.main.java.srcDirs
 }
 

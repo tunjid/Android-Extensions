@@ -11,6 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.SharedElementCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.viewModels
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener
@@ -22,6 +23,7 @@ import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.view.util.ViewUtil
+import com.tunjid.androidbootstrap.viewmodels.DoggoViewModel
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.cos
@@ -29,6 +31,8 @@ import kotlin.math.max
 import kotlin.math.sin
 
 class DoggoPagerFragment : AppBaseFragment() {
+
+    private val viewModel by viewModels<DoggoViewModel>()
 
     override val fabIconRes: Int = R.drawable.ic_hug_24dp
 
@@ -57,7 +61,7 @@ class DoggoPagerFragment : AppBaseFragment() {
         val resources = resources
         val indicatorSize = resources.getDimensionPixelSize(R.dimen.single_and_half_margin)
 
-        viewPager.adapter = DoggoPagerAdapter(Doggo.doggos, childFragmentManager)
+        viewPager.adapter = DoggoPagerAdapter(viewModel.doggos, childFragmentManager)
         viewPager.currentItem = Doggo.transitionIndex
         viewPager.addOnPageChangeListener(object : SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) = onDoggoSwiped(position)
@@ -86,10 +90,27 @@ class DoggoPagerFragment : AppBaseFragment() {
             indicator.translationY = indicatorSize * sine
         }
 
+        indicatorAnimator.addIndicatorWatcher watcher@{ indicator, position, fraction, _ ->
+            if (fraction == 0F) return@watcher
+
+            val static = intArrayOf(0, 0).apply { indicatorAnimator.getIndicatorAt(position).getLocationInWindow(this) }
+            val dynamic = intArrayOf(0, 0).apply { indicator.getLocationInWindow(this) }
+            val toTheRight = dynamic[0] > static[0]
+
+            viewModel.onSwiped(position, fraction, toTheRight)
+        }
+
         prepareSharedElementTransition()
-        tintView<View>(R.color.black, root, { color, view -> view.setBackgroundColor(color) })
+
         if (savedInstanceState == null) postponeEnterTransition()
+
         return root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val root = view ?: return
+        disposables.add(viewModel.getColors(Color.TRANSPARENT).subscribe(root::setBackgroundColor, Throwable::printStackTrace))
     }
 
     private fun onDoggoSwiped(position: Int) {

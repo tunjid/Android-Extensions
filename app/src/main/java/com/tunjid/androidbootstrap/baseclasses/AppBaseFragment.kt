@@ -30,7 +30,7 @@ abstract class AppBaseFragment : BaseFragment() {
         @DrawableRes get() = R.drawable.ic_circle_24dp
 
     protected open val fabText: CharSequence
-         get() = getString(R.string.app_name)
+        get() = getString(R.string.app_name)
 
     open val toolBarMenuRes: Int
         @MenuRes get() = 0
@@ -93,29 +93,26 @@ abstract class AppBaseFragment : BaseFragment() {
     }
 
     @SuppressLint("CommitTransaction")
-    override fun provideFragmentTransaction(fragmentTo: BaseFragment): FragmentTransaction? {
-        return requireActivity().supportFragmentManager
-                .beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out,
-                        android.R.anim.fade_in, android.R.anim.fade_out)
-    }
+    override fun provideFragmentTransaction(fragmentTo: BaseFragment): FragmentTransaction? =
+            requireActivity().supportFragmentManager
+                    .beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out,
+                            android.R.anim.fade_in, android.R.anim.fade_out)
 
-    private fun fromThis(): UiState {
-        return UiState(
-                this.fabIconRes,
-                this.fabText,
-                this.toolBarMenuRes,
-                this.navBarColor,
-                this.showsFab,
-                this.showsToolBar,
-                this.insetFlags,
-                this.title,
-                if (view == null) null else fabClickListener
-        )
-    }
+    private fun fromThis(): UiState = UiState(
+            this.fabIconRes,
+            this.fabText,
+            this.toolBarMenuRes,
+            this.navBarColor,
+            this.showsFab,
+            this.showsToolBar,
+            this.insetFlags,
+            this.title,
+            if (view == null) null else fabClickListener
+    )
 
     companion object {
-        private const val BACKGROUND_TINT_DURATION = 1200
+        const val BACKGROUND_TINT_DURATION = 1200
         val NO_BOTTOM: InsetFlags = InsetFlags.create(true, true, true, false)
     }
 
