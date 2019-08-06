@@ -47,7 +47,6 @@ class DoggoViewModel(application: Application) : AndroidViewModel(application) {
     })
 
     fun onSwiped(current: Int, fraction: Float, toTheRight: Boolean) {
-        val doggos = Doggo.doggos
         val percentage = if (toTheRight) fraction else 1 - fraction
         val next = when (toTheRight) {
             true -> min(current + 1, doggos.size - 1)
