@@ -106,7 +106,7 @@ class MainActivity : BaseActivity() {
         coordinatorLayout = findViewById(R.id.coordinator_layout)
 
         toolbarHider = ViewHider.of(toolbar).setDirection(ViewHider.TOP).build()
-        fabHider = ViewHider.of(fab).setDirection(ViewHider.BOTTOM).build()
+        fabHider = ViewHider.of(fab).setDirection(ViewHider.BOTTOM).addEndRunnable { fab.visibility = VISIBLE }.build()
         fabExtensionAnimator = FabExtensionAnimator(fab)
         fabExtensionAnimator.isExtended = true
 
