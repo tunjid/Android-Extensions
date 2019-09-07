@@ -50,6 +50,7 @@ class DoggoRankFragment : AppBaseFragment(), GlobalUiController, DoggoAdapter.Im
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
+                toolBarMenu = 0,
                 showsToolbar = true,
                 fabText = getString(R.string.reset_doggos),
                 fabIcon = R.drawable.ic_restore_24dp,

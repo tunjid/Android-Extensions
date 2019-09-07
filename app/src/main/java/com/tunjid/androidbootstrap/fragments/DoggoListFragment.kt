@@ -57,6 +57,7 @@ class DoggoListFragment : AppBaseFragment(), GlobalUiController, ImageListAdapte
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
+                toolBarMenu = 0,
                 showsToolbar = true,
                 fabIcon = R.drawable.ic_paw_24dp,
                 fabText = getString(R.string.collapse_prompt),

@@ -46,6 +46,7 @@ class ShiftingTileFragment : AppBaseFragment(), GlobalUiController {
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
                 showsToolbar = true,
+                toolBarMenu = 0,
                 showsFab = true,
                 fabIcon = fabIconRes,
                 fabText = fabText,

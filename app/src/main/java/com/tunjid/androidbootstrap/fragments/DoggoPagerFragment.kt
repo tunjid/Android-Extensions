@@ -45,6 +45,7 @@ class DoggoPagerFragment : AppBaseFragment(), GlobalUiController {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         uiState = uiState.copy(
                 showsToolbar = false,
+                toolBarMenu = 0,
                 fabIcon = R.drawable.ic_hug_24dp,
                 showsFab = true,
                 fabExtended = !restoredFromBackStack(),

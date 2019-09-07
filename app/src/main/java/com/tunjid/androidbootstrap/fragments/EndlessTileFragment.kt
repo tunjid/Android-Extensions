@@ -40,6 +40,7 @@ class EndlessTileFragment : AppBaseFragment(), GlobalUiController {
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
                 showsToolbar = true,
+                toolBarMenu = 0,
                 showsFab = false,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
         )

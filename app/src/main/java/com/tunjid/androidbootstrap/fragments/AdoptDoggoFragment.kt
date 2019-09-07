@@ -42,6 +42,7 @@ class AdoptDoggoFragment : AppBaseFragment(), GlobalUiController, ImageListAdapt
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         uiState = uiState.copy(
                 showsToolbar = false,
+                toolBarMenu = 0,
                 fabText = getString(R.string.adopt),
                 fabIcon = R.drawable.ic_hug_24dp,
                 showsFab = true,
