@@ -5,7 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
 import com.tunjid.androidbootstrap.GlobalUiController
 import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
@@ -24,14 +25,14 @@ class EndlessTileFragment : AppBaseFragment(), GlobalUiController {
 
     override var uiState: UiState by activityGlobalUiController()
 
-    private lateinit var viewModel: EndlessTileViewModel
+    private val viewModel by viewModels<EndlessTileViewModel>()
     private lateinit var listManager: ListManager<TileViewHolder, PlaceHolder.State>
 
     override val insetFlags: InsetFlags = NO_BOTTOM
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(EndlessTileViewModel::class.java)
+        viewModel.moreTiles.observe(this) { listManager.onDiff(it) }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -48,7 +49,7 @@ class EndlessTileFragment : AppBaseFragment(), GlobalUiController {
                 .withRecyclerView(root.findViewById(R.id.recycler_view))
                 .withGridLayoutManager(3)
                 .withAdapter(TileAdapter(viewModel.tiles) { showSnackbar { snackBar -> snackBar.setText(it.toString()) } })
-                .withEndlessScrollCallback(NUM_TILES) { disposables.add(viewModel.moreTiles.subscribe(listManager::onDiff, Throwable::printStackTrace)) }
+                .withEndlessScrollCallback(NUM_TILES) { viewModel.fetchMore() }
                 .build()
 
         return root

@@ -17,7 +17,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.tunjid.androidbootstrap.GlobalUiController
 import com.tunjid.androidbootstrap.PlaceHolder
@@ -35,15 +36,14 @@ class BleScanFragment : AppBaseFragment(), GlobalUiController, ScanAdapter.ScanA
 
     override var uiState: UiState by activityGlobalUiController()
 
-    private var isScanning: Boolean = false
+    private val viewModel by viewModels<BleViewModel>()
 
     private lateinit var listManager: ListManager<ScanViewHolder, PlaceHolder.State>
-    private lateinit var viewModel: BleViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-        viewModel = ViewModelProviders.of(this).get(BleViewModel::class.java)
+        viewModel.devices.observe(this) { listManager.onDiff(it) }
+        viewModel.isScanning.observe(this) { activity?.invalidateOptionsMenu() }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -51,7 +51,7 @@ class BleScanFragment : AppBaseFragment(), GlobalUiController, ScanAdapter.ScanA
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
                 toolBarMenu = R.menu.menu_ble_scan,
-                showsToolbar = false,
+                showsToolbar = true,
                 showsFab = false,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
         )
@@ -83,22 +83,23 @@ class BleScanFragment : AppBaseFragment(), GlobalUiController, ScanAdapter.ScanA
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
 
-        menu.findItem(R.id.menu_stop)?.isVisible = isScanning
-        menu.findItem(R.id.menu_scan)?.isVisible = !isScanning
+        val currentlyScanning = viewModel.isScanning.value ?: false
+
+        menu.findItem(R.id.menu_stop)?.isVisible = currentlyScanning
+        menu.findItem(R.id.menu_scan)?.isVisible = !currentlyScanning
 
         val refresh = menu.findItem(R.id.menu_refresh)
 
-        refresh?.isVisible = isScanning
-        if (isScanning) refresh?.setActionView(R.layout.actionbar_indeterminate_progress)
+        refresh?.isVisible = currentlyScanning
+        if (currentlyScanning) refresh?.setActionView(R.layout.actionbar_indeterminate_progress)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menu_scan -> scanDevices(true)
-            R.id.menu_stop -> scanDevices(false)
-        }
-        return true
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.menu_scan -> scanDevices(true).let { true }
+        R.id.menu_stop -> scanDevices(false).let { true }
+        else -> true
     }
+
 
     override fun onPause() {
         super.onPause()
@@ -146,24 +147,13 @@ class BleScanFragment : AppBaseFragment(), GlobalUiController, ScanAdapter.ScanA
         listManager.clear()
     }
 
-    override fun onBluetoothDeviceClicked(bluetoothDevice: BluetoothDevice) {
-        showSnackbar { snackBar -> snackBar.setText(bluetoothDevice.address) }
-    }
+    override fun onBluetoothDeviceClicked(bluetoothDevice: BluetoothDevice) =
+            showSnackbar { snackBar -> snackBar.setText(bluetoothDevice.address) }
 
-    private fun scanDevices(enable: Boolean) {
-        isScanning = enable
+    private fun scanDevices(enable: Boolean) =
+            if (enable) viewModel.findDevices()
+            else viewModel.stopScanning()
 
-        if (isScanning) disposables.add(viewModel.findDevices()
-                .doOnSubscribe { requireActivity().invalidateOptionsMenu() }
-                .doFinally { this.onScanningStopped() }
-                .subscribe(listManager::onDiff, Throwable::printStackTrace))
-        else viewModel.stopScanning()
-    }
-
-    private fun onScanningStopped() {
-        isScanning = false
-        requireActivity().invalidateOptionsMenu()
-    }
 
     companion object {
         private const val REQUEST_ENABLE_BT = 1

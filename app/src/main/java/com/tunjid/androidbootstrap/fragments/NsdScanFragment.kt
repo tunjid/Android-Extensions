@@ -10,7 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import com.tunjid.androidbootstrap.GlobalUiController
@@ -32,14 +33,15 @@ class NsdScanFragment : AppBaseFragment(), GlobalUiController, NsdAdapter.Servic
 
     override var uiState: UiState by activityGlobalUiController()
 
-    private var isScanning: Boolean = false
+    private val viewModel by viewModels<NsdViewModel>()
+
     private lateinit var listManager: ListManager<NSDViewHolder, PlaceHolder.State>
-    private lateinit var viewModel: NsdViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        viewModel = ViewModelProviders.of(this).get(NsdViewModel::class.java)
+        viewModel.scanChanges.observe(this) { listManager.onDiff(it) }
+        viewModel.isScanning.observe(this) { activity?.invalidateOptionsMenu() }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -81,49 +83,30 @@ class NsdScanFragment : AppBaseFragment(), GlobalUiController, NsdAdapter.Servic
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
 
-        menu.findItem(R.id.menu_stop)?.isVisible = isScanning
-        menu.findItem(R.id.menu_scan)?.isVisible = !isScanning
+        val currentlyScanning = viewModel.isScanning.value ?: false
+
+        menu.findItem(R.id.menu_stop)?.isVisible = currentlyScanning
+        menu.findItem(R.id.menu_scan)?.isVisible = !currentlyScanning
 
         val refresh = menu.findItem(R.id.menu_refresh)
 
-        refresh?.isVisible = isScanning
-        if (isScanning) refresh?.setActionView(R.layout.actionbar_indeterminate_progress)
+        refresh?.isVisible = currentlyScanning
+        if (currentlyScanning) refresh?.setActionView(R.layout.actionbar_indeterminate_progress)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_scan -> {
-                scanDevices(true)
-                true
-            }
-            R.id.menu_stop -> {
-                scanDevices(false)
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.menu_scan -> scanDevices(true).let { true }
+        R.id.menu_stop -> scanDevices(false).let { true }
+        else -> true
     }
 
-    override fun onServiceClicked(serviceInfo: NsdServiceInfo) {}
+    override fun onServiceClicked(serviceInfo: NsdServiceInfo) = Unit
 
-    override fun isSelf(serviceInfo: NsdServiceInfo): Boolean {
-        return false
-    }
+    override fun isSelf(serviceInfo: NsdServiceInfo): Boolean = false
 
-    private fun scanDevices(enable: Boolean) {
-        isScanning = enable
-
-        if (isScanning) disposables.add(viewModel.findDevices()
-                .doOnSubscribe { requireActivity().invalidateOptionsMenu() }
-                .doFinally(this::onScanningStopped)
-                .subscribe(listManager::onDiff, Throwable::printStackTrace))
-        else viewModel.stopScanning()
-    }
-
-    private fun onScanningStopped() {
-        isScanning = false
-        requireActivity().invalidateOptionsMenu()
-    }
+    private fun scanDevices(enable: Boolean) =
+            if (enable) viewModel.findDevices()
+            else viewModel.stopScanning()
 
     companion object {
         fun newInstance(): NsdScanFragment = NsdScanFragment().apply { arguments = Bundle() }

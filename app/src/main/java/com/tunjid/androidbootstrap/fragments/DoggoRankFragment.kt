@@ -9,7 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DiffUtil
 import com.tunjid.androidbootstrap.GlobalUiController
 import com.tunjid.androidbootstrap.PlaceHolder
@@ -36,12 +37,13 @@ class DoggoRankFragment : AppBaseFragment(), GlobalUiController, DoggoAdapter.Im
 
     override var uiState: UiState by activityGlobalUiController()
 
-    private lateinit var viewModel: DoggoRankViewModel
+    private val viewModel by viewModels<DoggoRankViewModel>()
+
     private lateinit var listManager: ListManager<DoggoRankViewHolder, PlaceHolder.State>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(DoggoRankViewModel::class.java)
+        viewModel.watchDoggos().observe(this, this::onDiff)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -85,11 +87,6 @@ class DoggoRankFragment : AppBaseFragment(), GlobalUiController, DoggoAdapter.Im
         postponeEnterTransition()
 
         return root
-    }
-
-    override fun onResume() {
-        super.onResume()
-        disposables.add(viewModel.watchDoggos().subscribe(this::onDiff, Throwable::printStackTrace))
     }
 
     override fun onDestroyView() {

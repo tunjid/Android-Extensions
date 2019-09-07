@@ -12,6 +12,7 @@ import androidx.palette.graphics.Palette
 import com.tunjid.androidbootstrap.App
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment.Companion.BACKGROUND_TINT_DURATION
 import com.tunjid.androidbootstrap.model.Doggo
+import com.tunjid.androidbootstrap.toLiveData
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -32,7 +33,7 @@ class DoggoViewModel(application: Application) : AndroidViewModel(application) {
 
     val doggos = Doggo.doggos
 
-    fun getColors(startColor: Int): Flowable<Int> = processor.startWith(when (val doggo = Doggo.getTransitionDoggo()) {
+    fun getColors(startColor: Int)= processor.startWith(when (val doggo = Doggo.getTransitionDoggo()) {
         null -> Flowable.empty<Int>()
         else -> colorMap.getOrPut(doggo) { doggo.calculateColor() }.flatMapPublisher { endColor ->
             Flowable.create<Int>({ emitter ->
@@ -44,7 +45,7 @@ class DoggoViewModel(application: Application) : AndroidViewModel(application) {
                 animator.start()
             }, BackpressureStrategy.DROP)
         }
-    })
+    }).toLiveData()
 
     fun onSwiped(current: Int, fraction: Float, toTheRight: Boolean) {
         val percentage = if (toTheRight) fraction else 1 - fraction

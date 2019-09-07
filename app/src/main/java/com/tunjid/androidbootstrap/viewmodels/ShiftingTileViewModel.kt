@@ -2,10 +2,12 @@ package com.tunjid.androidbootstrap.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.DiffUtil
 import com.tunjid.androidbootstrap.functions.collections.Lists
 import com.tunjid.androidbootstrap.model.Tile
 import com.tunjid.androidbootstrap.recyclerview.diff.Diff
+import com.tunjid.androidbootstrap.toLiveData
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.CompositeDisposable
@@ -30,13 +32,9 @@ class ShiftingTileViewModel(application: Application) : AndroidViewModel(applica
         changes = !changes
     }
 
-    fun changes(): Boolean {
-        return changes
-    }
+    fun changes(): Boolean = changes
 
-    fun watchTiles(): Flowable<DiffUtil.DiffResult> {
-        return processor
-    }
+    fun watchTiles(): LiveData<DiffUtil.DiffResult> = processor.toLiveData()
 
     private fun dance() {
         disposables.add(Flowable.interval(2, TimeUnit.SECONDS, Schedulers.io())

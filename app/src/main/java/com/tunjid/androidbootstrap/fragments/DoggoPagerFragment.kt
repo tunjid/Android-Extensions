@@ -12,6 +12,7 @@ import androidx.core.app.SharedElementCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener
@@ -105,7 +106,7 @@ class DoggoPagerFragment : AppBaseFragment(), GlobalUiController {
     override fun onResume() {
         super.onResume()
         val root = view ?: return
-        disposables.add(viewModel.getColors(Color.TRANSPARENT).subscribe(root::setBackgroundColor, Throwable::printStackTrace))
+        viewModel.getColors(Color.TRANSPARENT).observe(this, root::setBackgroundColor)
     }
 
     private fun onDoggoSwiped(position: Int) {

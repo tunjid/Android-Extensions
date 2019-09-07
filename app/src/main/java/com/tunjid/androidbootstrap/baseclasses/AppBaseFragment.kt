@@ -22,8 +22,6 @@ import io.reactivex.disposables.CompositeDisposable
 
 abstract class AppBaseFragment : BaseFragment() {
 
-    protected val disposables = CompositeDisposable()
-
     //    protected open val fabIconRes: Int
 //        @DrawableRes get() = R.drawable.ic_circle_24dp
 //
@@ -51,11 +49,6 @@ abstract class AppBaseFragment : BaseFragment() {
 
     private val hostingActivity: MainActivity
         get() = requireActivity() as MainActivity
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        disposables.clear()
-    }
 
     protected fun showSnackbar(consumer: (Snackbar) -> Unit) =
             hostingActivity.showSnackBar(consumer)

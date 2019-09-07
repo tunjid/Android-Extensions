@@ -35,6 +35,7 @@ class RouteFragment : AppBaseFragment(), GlobalUiController, RouteAdapter.RouteA
 
         uiState = uiState.copy(
                 toolbarTitle = getString(R.string.app_name),
+                toolBarMenu = 0,
                 showsToolbar = true,
                 showsFab = false,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)

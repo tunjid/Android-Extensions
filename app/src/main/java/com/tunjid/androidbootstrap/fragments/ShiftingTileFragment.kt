@@ -5,7 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
 import com.tunjid.androidbootstrap.GlobalUiController
 import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
@@ -26,7 +27,7 @@ class ShiftingTileFragment : AppBaseFragment(), GlobalUiController {
 
     override val insetFlags: InsetFlags = NO_BOTTOM
 
-    private lateinit var viewModel: ShiftingTileViewModel
+    private val viewModel by viewModels<ShiftingTileViewModel>()
     private lateinit var listManager: ListManager<TileViewHolder, PlaceHolder.State>
 
     private val fabIconRes: Int
@@ -37,7 +38,7 @@ class ShiftingTileFragment : AppBaseFragment(), GlobalUiController {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(ShiftingTileViewModel::class.java)
+        viewModel.watchTiles().observe(this) { listManager.onDiff(it) }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -63,11 +64,6 @@ class ShiftingTileFragment : AppBaseFragment(), GlobalUiController {
                 .build()
 
         return root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        disposables.add(viewModel.watchTiles().subscribe(listManager::onDiff, Throwable::printStackTrace))
     }
 
     companion object {
