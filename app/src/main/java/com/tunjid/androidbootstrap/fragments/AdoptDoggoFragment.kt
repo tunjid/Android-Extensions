@@ -1,11 +1,15 @@
 package com.tunjid.androidbootstrap.fragments
 
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import com.tunjid.androidbootstrap.GlobalUiController
@@ -64,13 +68,25 @@ class AdoptDoggoFragment : AppBaseFragment(), GlobalUiController, ImageListAdapt
         val viewHolder = DoggoViewHolder(root, this)
         viewHolder.bind(doggo)
 
-        tintView(R.color.black_50, viewHolder.thumbnail, { color, imageView -> this.setColorFilter(color, imageView) })
-        viewHolder.fullSize?.let { tintView(R.color.black_50, viewHolder.fullSize, { color, imageView -> this.setColorFilter(color, imageView) }) }
+        viewHolder.thumbnail.tint(R.color.black_50) { color, imageView -> this.setColorFilter(color, imageView) }
+        viewHolder.fullSize?.let { viewHolder.fullSize.tint(R.color.black_50) { color, imageView -> this.setColorFilter(color, imageView) } }
 
         return root
     }
 
     private fun setColorFilter(color: Int, imageView: ImageView) = imageView.setColorFilter(color)
+
+    private fun <T : View> T.tint(@ColorRes colorRes: Int, biConsumer: (Int, T) -> Unit) {
+        val endColor = ContextCompat.getColor(requireContext(), colorRes)
+        val startColor = Color.TRANSPARENT
+
+        val animator = ValueAnimator.ofObject(ArgbEvaluator(), startColor, endColor)
+        animator.duration = BACKGROUND_TINT_DURATION.toLong()
+        animator.addUpdateListener { animation ->
+            (animation.animatedValue as? Int)?.let { biConsumer.invoke(it, this) }
+        }
+        animator.start()
+    }
 
     private fun prepareSharedElementTransition() {
         val baseSharedTransition = baseSharedTransition()
