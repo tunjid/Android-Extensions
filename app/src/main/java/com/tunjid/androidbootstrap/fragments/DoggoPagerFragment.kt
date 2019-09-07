@@ -3,9 +3,7 @@ package com.tunjid.androidbootstrap.fragments
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.SharedElementCallback
@@ -34,7 +32,7 @@ import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.sin
 
-class DoggoPagerFragment : AppBaseFragment(), GlobalUiController {
+class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager), GlobalUiController {
 
     override var uiState: UiState by activityGlobalUiController()
 
@@ -42,7 +40,9 @@ class DoggoPagerFragment : AppBaseFragment(), GlobalUiController {
 
     override val insetFlags: InsetFlags = InsetFlags.NONE
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         uiState = uiState.copy(
                 showsToolbar = false,
                 toolBarMenu = 0,
@@ -53,8 +53,7 @@ class DoggoPagerFragment : AppBaseFragment(), GlobalUiController {
                 fabClickListener = View.OnClickListener { Doggo.getTransitionDoggo()?.let { showFragment(AdoptDoggoFragment.newInstance(it)) } }
         )
 
-        val root = inflater.inflate(R.layout.fragment_doggo_pager, container, false)
-        val viewPager = root.findViewById<ViewPager>(R.id.view_pager)
+        val viewPager = view.findViewById<ViewPager>(R.id.view_pager)
         val resources = resources
         val indicatorSize = resources.getDimensionPixelSize(R.dimen.single_and_half_margin)
 
@@ -70,8 +69,8 @@ class DoggoPagerFragment : AppBaseFragment(), GlobalUiController {
                 .setIndicatorPadding(resources.getDimensionPixelSize(R.dimen.half_margin))
                 .setInActiveDrawable(R.drawable.ic_circle_24dp)
                 .setActiveDrawable(R.drawable.ic_doggo_24dp)
-                .setGuideLine(root.findViewById(R.id.guide))
-                .setContainer(root as ConstraintLayout)
+                .setGuideLine(view.findViewById(R.id.guide))
+                .setContainer(view as ConstraintLayout)
                 .setViewPager(viewPager)
                 .build()
 
@@ -100,8 +99,6 @@ class DoggoPagerFragment : AppBaseFragment(), GlobalUiController {
         prepareSharedElementTransition()
 
         if (savedInstanceState == null) postponeEnterTransition()
-
-        return root
     }
 
     override fun onResume() {

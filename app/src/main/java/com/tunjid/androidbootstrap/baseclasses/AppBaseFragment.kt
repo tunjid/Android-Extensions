@@ -6,6 +6,7 @@ import android.transition.ChangeImageTransform
 import android.transition.ChangeTransform
 import android.transition.Transition
 import android.transition.TransitionSet
+import androidx.annotation.LayoutRes
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidbootstrap.activities.MainActivity
@@ -13,7 +14,7 @@ import com.tunjid.androidbootstrap.activities.MainActivity.Companion.ANIMATION_D
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment
 import com.tunjid.androidbootstrap.view.util.InsetFlags
 
-abstract class AppBaseFragment : BaseFragment() {
+abstract class AppBaseFragment(@LayoutRes contentLayoutId: Int = 0) : BaseFragment(contentLayoutId) {
 
     open val insetFlags: InsetFlags = InsetFlags.ALL
 

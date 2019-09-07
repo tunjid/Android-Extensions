@@ -3,11 +3,9 @@ package com.tunjid.androidbootstrap.fragments
 
 import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -29,7 +27,7 @@ import com.tunjid.androidbootstrap.viewmodels.NsdViewModel
 /**
  * A [Fragment] listing supported NSD servers
  */
-class NsdScanFragment : AppBaseFragment(), GlobalUiController, NsdAdapter.ServiceClickedListener {
+class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan), GlobalUiController, NsdAdapter.ServiceClickedListener {
 
     override var uiState: UiState by activityGlobalUiController()
 
@@ -44,8 +42,8 @@ class NsdScanFragment : AppBaseFragment(), GlobalUiController, NsdAdapter.Servic
         viewModel.isScanning.observe(this) { activity?.invalidateOptionsMenu() }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
@@ -55,19 +53,16 @@ class NsdScanFragment : AppBaseFragment(), GlobalUiController, NsdAdapter.Servic
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
         )
 
-        val root = inflater.inflate(R.layout.fragment_nsd_scan, container, false)
-        val placeHolder = PlaceHolder(root.findViewById(R.id.placeholder_container))
+        val placeHolder = PlaceHolder(view.findViewById(R.id.placeholder_container))
         placeHolder.bind(PlaceHolder.State(R.string.no_nsd_devices, R.drawable.ic_signal_wifi__24dp))
 
         listManager = ListManagerBuilder<NSDViewHolder, PlaceHolder.State>()
-                .withRecyclerView(root.findViewById(R.id.list))
+                .withRecyclerView(view.findViewById(R.id.list))
                 .addDecoration(DividerItemDecoration(requireActivity(), VERTICAL))
                 .withAdapter(NsdAdapter(this, viewModel.services))
                 .withPlaceholder(placeHolder)
                 .withLinearLayoutManager()
                 .build()
-
-        return root
     }
 
     override fun onResume() {

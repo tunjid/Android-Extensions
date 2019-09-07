@@ -1,9 +1,7 @@
 package com.tunjid.androidbootstrap.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.tunjid.androidbootstrap.GlobalUiController
 import com.tunjid.androidbootstrap.R
@@ -19,7 +17,7 @@ import com.tunjid.androidbootstrap.view.animator.ViewHider
  * Created by tj.dahunsi on 5/6/17.
  */
 
-class HidingViewFragment : AppBaseFragment(), GlobalUiController {
+class HidingViewFragment : AppBaseFragment(R.layout.fragment_hiding_view), GlobalUiController {
 
     override var uiState: UiState by activityGlobalUiController()
 
@@ -28,7 +26,8 @@ class HidingViewFragment : AppBaseFragment(), GlobalUiController {
     private lateinit var rightHider: ViewHider
     private lateinit var bottomHider: ViewHider
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
@@ -38,25 +37,21 @@ class HidingViewFragment : AppBaseFragment(), GlobalUiController {
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
         )
 
-        val rootView = inflater.inflate(R.layout.fragment_hiding_view, container, false)
-
-        val leftButton = rootView.findViewById<View>(R.id.left_button)
-        val topButton = rootView.findViewById<View>(R.id.top_button)
-        val rightButton = rootView.findViewById<View>(R.id.right_button)
-        val bottomButton = rootView.findViewById<View>(R.id.bottom_button)
+        val leftButton = view.findViewById<View>(R.id.left_button)
+        val topButton = view.findViewById<View>(R.id.top_button)
+        val rightButton = view.findViewById<View>(R.id.right_button)
+        val bottomButton = view.findViewById<View>(R.id.bottom_button)
 
         leftButton.setOnClickListener(this::onClick)
         topButton.setOnClickListener(this::onClick)
         rightButton.setOnClickListener(this::onClick)
         bottomButton.setOnClickListener(this::onClick)
-        rootView.findViewById<View>(R.id.reset).setOnClickListener(this::onClick)
+        view.findViewById<View>(R.id.reset).setOnClickListener(this::onClick)
 
         leftHider = ViewHider.of(leftButton).setDirection(ViewHider.LEFT).build()
         topHider = ViewHider.of(topButton).setDirection(ViewHider.TOP).build()
         rightHider = ViewHider.of(rightButton).setDirection(ViewHider.RIGHT).build()
         bottomHider = ViewHider.of(bottomButton).setDirection(ViewHider.BOTTOM).build()
-
-        return rootView
     }
 
     private fun onClick(v: View) {

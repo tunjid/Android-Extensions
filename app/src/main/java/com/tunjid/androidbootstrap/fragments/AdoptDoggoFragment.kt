@@ -5,9 +5,7 @@ import android.animation.ValueAnimator
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
@@ -26,7 +24,7 @@ import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 import com.tunjid.androidbootstrap.viewholders.InputViewHolder
 
-class AdoptDoggoFragment : AppBaseFragment(), GlobalUiController, ImageListAdapterListener {
+class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo), GlobalUiController, ImageListAdapterListener {
 
     override var uiState: UiState by activityGlobalUiController()
 
@@ -42,7 +40,9 @@ class AdoptDoggoFragment : AppBaseFragment(), GlobalUiController, ImageListAdapt
         doggo = arguments!!.getParcelable(ARG_DOGGO)!!
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         uiState = uiState.copy(
                 showsToolbar = false,
                 toolBarMenu = 0,
@@ -52,25 +52,21 @@ class AdoptDoggoFragment : AppBaseFragment(), GlobalUiController, ImageListAdapt
                 fabExtended = !restoredFromBackStack(),
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),
                 fabClickListener = View.OnClickListener {
-                    showSnackbar { snackBar -> snackBar.setText(getString(R.string.adopted_doggo, doggo.name)) }
+                    showSnackbar { it.setText(getString(R.string.adopted_doggo, doggo.name)) }
                 }
         )
 
-        val root = inflater.inflate(R.layout.fragment_adopt_doggo, container, false)
-
         ListManagerBuilder<InputViewHolder, PlaceHolder.State>()
-                .withRecyclerView(root.findViewById(R.id.model_list))
+                .withRecyclerView(view.findViewById(R.id.model_list))
                 .withLinearLayoutManager()
                 .withAdapter(InputAdapter(listOf(*resources.getStringArray(R.array.adoption_items))))
                 .build()
 
-        val viewHolder = DoggoViewHolder(root, this)
+        val viewHolder = DoggoViewHolder(view, this)
         viewHolder.bind(doggo)
 
         viewHolder.thumbnail.tint(R.color.black_50) { color, imageView -> this.setColorFilter(color, imageView) }
         viewHolder.fullSize?.let { viewHolder.fullSize.tint(R.color.black_50) { color, imageView -> this.setColorFilter(color, imageView) } }
-
-        return root
     }
 
     private fun setColorFilter(color: Int, imageView: ImageView) = imageView.setColorFilter(color)

@@ -5,10 +5,8 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.transition.Fade
 import android.transition.TransitionSet
-import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnLayoutChangeListener
-import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.app.SharedElementCallback
 import androidx.core.content.ContextCompat
@@ -36,7 +34,7 @@ import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 import java.util.Objects.requireNonNull
 import kotlin.math.abs
 
-class DoggoListFragment : AppBaseFragment(), GlobalUiController, ImageListAdapterListener {
+class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalUiController, ImageListAdapterListener {
 
     override var uiState: UiState by activityGlobalUiController()
 
@@ -53,7 +51,8 @@ class DoggoListFragment : AppBaseFragment(), GlobalUiController, ImageListAdapte
             return holder.thumbnail
         }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
@@ -67,10 +66,8 @@ class DoggoListFragment : AppBaseFragment(), GlobalUiController, ImageListAdapte
                 fabClickListener = View.OnClickListener { uiState = uiState.copy(fabExtended = !uiState.fabExtended) }
         )
 
-        val rootView = inflater.inflate(R.layout.fragment_doggo_list, container, false)
-
         listManager = ListManagerBuilder<DoggoViewHolder, PlaceHolder.State>()
-                .withRecyclerView(rootView.findViewById(R.id.recycler_view))
+                .withRecyclerView(view.findViewById(R.id.recycler_view))
                 .withPaddedAdapter(DoggoAdapter(
                         Doggo.doggos,
                         R.layout.viewholder_doggo_list,
@@ -83,11 +80,7 @@ class DoggoListFragment : AppBaseFragment(), GlobalUiController, ImageListAdapte
                 .build()
 
         postponeEnterTransition()
-        return rootView
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         scrollToPosition()
     }
 

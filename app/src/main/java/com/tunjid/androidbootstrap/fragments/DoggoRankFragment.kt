@@ -4,9 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Pair
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
@@ -33,9 +31,11 @@ import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 import com.tunjid.androidbootstrap.viewmodels.DoggoRankViewModel
 import kotlin.math.abs
 
-class DoggoRankFragment : AppBaseFragment(), GlobalUiController, DoggoAdapter.ImageListAdapterListener {
+class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list), GlobalUiController, DoggoAdapter.ImageListAdapterListener {
 
     override var uiState: UiState by activityGlobalUiController()
+
+    override val insetFlags: InsetFlags = NO_BOTTOM
 
     private val viewModel by viewModels<DoggoRankViewModel>()
 
@@ -46,7 +46,8 @@ class DoggoRankFragment : AppBaseFragment(), GlobalUiController, DoggoAdapter.Im
         viewModel.watchDoggos().observe(this, this::onDiff)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
@@ -60,11 +61,10 @@ class DoggoRankFragment : AppBaseFragment(), GlobalUiController, DoggoAdapter.Im
                 fabClickListener = View.OnClickListener { viewModel.resetList() }
         )
 
-        val root = inflater.inflate(R.layout.fragment_simple_list, container, false)
-        val placeHolder = PlaceHolder(root.findViewById(R.id.placeholder_container))
+        val placeHolder = PlaceHolder(view.findViewById(R.id.placeholder_container))
 
         listManager = ListManagerBuilder<DoggoRankViewHolder, PlaceHolder.State>()
-                .withRecyclerView(root.findViewById(R.id.recycler_view))
+                .withRecyclerView(view.findViewById(R.id.recycler_view))
                 .withPaddedAdapter(DoggoAdapter(
                         viewModel.doggos,
                         R.layout.viewholder_doggo_rank,
@@ -86,17 +86,12 @@ class DoggoRankFragment : AppBaseFragment(), GlobalUiController, DoggoAdapter.Im
                 .build()
 
         postponeEnterTransition()
-
-        return root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         listManager.clear()
     }
-
-    override val insetFlags: InsetFlags
-        get() = NO_BOTTOM
 
     override fun onDoggoClicked(doggo: Doggo) {
         Doggo.setTransitionDoggo(doggo)

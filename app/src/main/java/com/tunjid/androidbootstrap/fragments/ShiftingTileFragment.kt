@@ -1,9 +1,7 @@
 package com.tunjid.androidbootstrap.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
@@ -43,7 +41,8 @@ class ShiftingTileFragment : AppBaseFragment(), GlobalUiController {
         viewModel.watchTiles().observe(this) { listManager.onDiff(it) }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
@@ -59,16 +58,13 @@ class ShiftingTileFragment : AppBaseFragment(), GlobalUiController {
                 }
         )
 
-        val root = inflater.inflate(R.layout.fragment_route, container, false)
         listManager = ListManagerBuilder<TileViewHolder, PlaceHolder.State>()
-                .withRecyclerView(root.findViewById<RecyclerView>(R.id.recycler_view)
+                .withRecyclerView(view.findViewById<RecyclerView>(R.id.recycler_view)
                         .apply { itemAnimator = SlideInItemAnimator() }
                 )
                 .withGridLayoutManager(4)
                 .withPaddedAdapter(TileAdapter(viewModel.tiles) { showSnackbar { bar -> bar.setText(it.id) } }, 4)
                 .build()
-
-        return root
     }
 
     companion object {

@@ -1,9 +1,7 @@
 package com.tunjid.androidbootstrap.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
@@ -21,7 +19,7 @@ import com.tunjid.androidbootstrap.viewholders.TileViewHolder
 import com.tunjid.androidbootstrap.viewmodels.EndlessTileViewModel
 import com.tunjid.androidbootstrap.viewmodels.EndlessTileViewModel.Companion.NUM_TILES
 
-class EndlessTileFragment : AppBaseFragment(), GlobalUiController {
+class EndlessTileFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiController {
 
     override var uiState: UiState by activityGlobalUiController()
 
@@ -35,7 +33,8 @@ class EndlessTileFragment : AppBaseFragment(), GlobalUiController {
         viewModel.moreTiles.observe(this) { listManager.onDiff(it) }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
@@ -45,15 +44,12 @@ class EndlessTileFragment : AppBaseFragment(), GlobalUiController {
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
         )
 
-        val root = inflater.inflate(R.layout.fragment_route, container, false)
         listManager = ListManagerBuilder<TileViewHolder, PlaceHolder.State>()
-                .withRecyclerView(root.findViewById(R.id.recycler_view))
+                .withRecyclerView(view.findViewById(R.id.recycler_view))
                 .withGridLayoutManager(3)
                 .withAdapter(TileAdapter(viewModel.tiles) { showSnackbar { snackBar -> snackBar.setText(it.toString()) } })
                 .withEndlessScrollCallback(NUM_TILES) { viewModel.fetchMore() }
                 .build()
-
-        return root
     }
 
     companion object {

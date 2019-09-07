@@ -1,9 +1,7 @@
 package com.tunjid.androidbootstrap.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
 import com.tunjid.androidbootstrap.GlobalUiController
@@ -20,9 +18,11 @@ import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.viewholders.RouteItemViewHolder
 import com.tunjid.androidbootstrap.viewmodels.RouteViewModel
 
-class RouteFragment : AppBaseFragment(), GlobalUiController, RouteAdapter.RouteAdapterListener {
+class RouteFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiController, RouteAdapter.RouteAdapterListener {
 
     override var uiState: UiState by activityGlobalUiController()
+
+    override val insetFlags: InsetFlags = NO_BOTTOM
 
     private lateinit var viewModel: RouteViewModel
 
@@ -31,7 +31,8 @@ class RouteFragment : AppBaseFragment(), GlobalUiController, RouteAdapter.RouteA
         viewModel = ViewModelProviders.of(this).get(RouteViewModel::class.java)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
                 toolbarTitle = getString(R.string.app_name),
@@ -41,18 +42,12 @@ class RouteFragment : AppBaseFragment(), GlobalUiController, RouteAdapter.RouteA
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
         )
 
-        val rootView = inflater.inflate(R.layout.fragment_route, container, false)
-
         ListManagerBuilder<RouteItemViewHolder, PlaceHolder.State>()
-                .withRecyclerView(rootView.findViewById(R.id.recycler_view))
+                .withRecyclerView(view.findViewById(R.id.recycler_view))
                 .withLinearLayoutManager()
                 .withPaddedAdapter(RouteAdapter(viewModel.routes, this))
                 .build()
-
-        return rootView
     }
-
-    override val insetFlags: InsetFlags = NO_BOTTOM
 
     override fun onItemClicked(route: Route) {
         showFragment(when (route.destination) {

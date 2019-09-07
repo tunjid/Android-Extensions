@@ -9,11 +9,9 @@ import android.content.pm.PackageManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.M
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -32,7 +30,7 @@ import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
 import com.tunjid.androidbootstrap.viewholders.ScanViewHolder
 import com.tunjid.androidbootstrap.viewmodels.BleViewModel
 
-class BleScanFragment : AppBaseFragment(), GlobalUiController, ScanAdapter.ScanAdapterListener {
+class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan), GlobalUiController, ScanAdapter.ScanAdapterListener {
 
     override var uiState: UiState by activityGlobalUiController()
 
@@ -46,7 +44,8 @@ class BleScanFragment : AppBaseFragment(), GlobalUiController, ScanAdapter.ScanA
         viewModel.isScanning.observe(this) { activity?.invalidateOptionsMenu() }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
@@ -56,19 +55,16 @@ class BleScanFragment : AppBaseFragment(), GlobalUiController, ScanAdapter.ScanA
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
         )
 
-        val root = inflater.inflate(R.layout.fragment_ble_scan, container, false)
-        val placeHolder = PlaceHolder(root.findViewById(R.id.placeholder_container))
+        val placeHolder = PlaceHolder(view.findViewById(R.id.placeholder_container))
         placeHolder.bind(PlaceHolder.State(R.string.no_ble_devices, R.drawable.ic_bluetooth_24dp))
 
         listManager = ListManagerBuilder<ScanViewHolder, PlaceHolder.State>()
-                .withRecyclerView(root.findViewById(R.id.list))
+                .withRecyclerView(view.findViewById(R.id.list))
                 .addDecoration(DividerItemDecoration(requireActivity(), DividerItemDecoration.VERTICAL))
                 .withAdapter(ScanAdapter(this, viewModel.scanResults))
                 .withPlaceholder(placeHolder)
                 .withLinearLayoutManager()
                 .build()
-
-        return root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -123,14 +119,14 @@ class BleScanFragment : AppBaseFragment(), GlobalUiController, ScanAdapter.ScanA
         else scanDevices(true)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        when (requestCode) {
-            REQUEST_ENABLE_BT -> {
-                // If request is cancelled, the result arrays are empty.
-                val canScan = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                if (canScan) scanDevices(true)
-            }
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) = when (requestCode) {
+        REQUEST_ENABLE_BT -> {
+            // If request is cancelled, the result arrays are empty.
+            val canScan = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            if (canScan) scanDevices(true)
+            Unit
         }
+        else -> Unit
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -138,7 +134,7 @@ class BleScanFragment : AppBaseFragment(), GlobalUiController, ScanAdapter.ScanA
 
         // User chose not to enable Bluetooth.
         if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
-            requireActivity().onBackPressed()
+            activity?.onBackPressed()
         }
     }
 

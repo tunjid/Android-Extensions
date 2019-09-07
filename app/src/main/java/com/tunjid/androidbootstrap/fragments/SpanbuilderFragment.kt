@@ -1,9 +1,7 @@
 package com.tunjid.androidbootstrap.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.tunjid.androidbootstrap.GlobalUiController
@@ -23,7 +21,8 @@ class SpanbuilderFragment : AppBaseFragment(), GlobalUiController {
 
     override var uiState: UiState by activityGlobalUiController()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
@@ -33,9 +32,7 @@ class SpanbuilderFragment : AppBaseFragment(), GlobalUiController {
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
         )
 
-        val rootView = inflater.inflate(R.layout.fragment_spanbuilder, container, false)
-
-        val textView = rootView.findViewById<TextView>(R.id.text)
+        val textView = view.findViewById<TextView>(R.id.text)
         val context = textView.context
 
         val text = SpanBuilder.of("This is a regular span")
@@ -90,8 +87,6 @@ class SpanbuilderFragment : AppBaseFragment(), GlobalUiController {
                 .build()
 
         textView.text = text
-
-        return rootView
     }
 
     companion object {
