@@ -7,9 +7,11 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
+import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidbootstrap.GlobalUiController
 import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
+import com.tunjid.androidbootstrap.SlideInItemAnimator
 import com.tunjid.androidbootstrap.UiState
 import com.tunjid.androidbootstrap.activityGlobalUiController
 import com.tunjid.androidbootstrap.adapters.TileAdapter
@@ -59,7 +61,9 @@ class ShiftingTileFragment : AppBaseFragment(), GlobalUiController {
 
         val root = inflater.inflate(R.layout.fragment_route, container, false)
         listManager = ListManagerBuilder<TileViewHolder, PlaceHolder.State>()
-                .withRecyclerView(root.findViewById(R.id.recycler_view))
+                .withRecyclerView(root.findViewById<RecyclerView>(R.id.recycler_view)
+                        .apply { itemAnimator = SlideInItemAnimator() }
+                )
                 .withGridLayoutManager(4)
                 .withPaddedAdapter(TileAdapter(viewModel.tiles) { showSnackbar { bar -> bar.setText(it.id) } }, 4)
                 .build()
