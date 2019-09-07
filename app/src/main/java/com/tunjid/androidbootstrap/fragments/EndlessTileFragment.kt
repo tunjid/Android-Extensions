@@ -4,9 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
+import com.tunjid.androidbootstrap.GlobalUiController
 import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
+import com.tunjid.androidbootstrap.UiState
+import com.tunjid.androidbootstrap.activityGlobalUiController
 import com.tunjid.androidbootstrap.adapters.TileAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.recyclerview.ListManager
@@ -16,7 +20,9 @@ import com.tunjid.androidbootstrap.viewholders.TileViewHolder
 import com.tunjid.androidbootstrap.viewmodels.EndlessTileViewModel
 import com.tunjid.androidbootstrap.viewmodels.EndlessTileViewModel.Companion.NUM_TILES
 
-class EndlessTileFragment : AppBaseFragment() {
+class EndlessTileFragment : AppBaseFragment(), GlobalUiController {
+
+    override var uiState: UiState by activityGlobalUiController()
 
     private lateinit var viewModel: EndlessTileViewModel
     private lateinit var listManager: ListManager<TileViewHolder, PlaceHolder.State>
@@ -29,6 +35,14 @@ class EndlessTileFragment : AppBaseFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+        uiState = uiState.copy(
+                toolbarTitle = this::class.java.simpleName,
+                showsToolbar = true,
+                showsFab = false,
+                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
+        )
+
         val root = inflater.inflate(R.layout.fragment_route, container, false)
         listManager = ListManagerBuilder<TileViewHolder, PlaceHolder.State>()
                 .withRecyclerView(root.findViewById(R.id.recycler_view))

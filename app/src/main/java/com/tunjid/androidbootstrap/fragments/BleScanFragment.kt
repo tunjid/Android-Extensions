@@ -9,13 +9,21 @@ import android.content.pm.PackageManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.M
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
+import com.tunjid.androidbootstrap.GlobalUiController
 import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
+import com.tunjid.androidbootstrap.UiState
+import com.tunjid.androidbootstrap.activityGlobalUiController
 import com.tunjid.androidbootstrap.adapters.ScanAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.recyclerview.ListManager
@@ -23,14 +31,14 @@ import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
 import com.tunjid.androidbootstrap.viewholders.ScanViewHolder
 import com.tunjid.androidbootstrap.viewmodels.BleViewModel
 
-class BleScanFragment : AppBaseFragment(), ScanAdapter.ScanAdapterListener {
+class BleScanFragment : AppBaseFragment(), GlobalUiController, ScanAdapter.ScanAdapterListener {
+
+    override var uiState: UiState by activityGlobalUiController()
 
     private var isScanning: Boolean = false
 
     private lateinit var listManager: ListManager<ScanViewHolder, PlaceHolder.State>
     private lateinit var viewModel: BleViewModel
-
-    override val toolBarMenuRes: Int = R.menu.menu_ble_scan
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +47,15 @@ class BleScanFragment : AppBaseFragment(), ScanAdapter.ScanAdapterListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+        uiState = uiState.copy(
+                toolbarTitle = this::class.java.simpleName,
+                toolBarMenu = R.menu.menu_ble_scan,
+                showsToolbar = false,
+                showsFab = false,
+                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
+        )
+
         val root = inflater.inflate(R.layout.fragment_ble_scan, container, false)
         val placeHolder = PlaceHolder(root.findViewById(R.id.placeholder_container))
         placeHolder.bind(PlaceHolder.State(R.string.no_ble_devices, R.drawable.ic_bluetooth_24dp))
@@ -151,7 +168,7 @@ class BleScanFragment : AppBaseFragment(), ScanAdapter.ScanAdapterListener {
     companion object {
         private const val REQUEST_ENABLE_BT = 1
 
-        fun newInstance(): BleScanFragment = BleScanFragment().apply { arguments =  Bundle() }
+        fun newInstance(): BleScanFragment = BleScanFragment().apply { arguments = Bundle() }
     }
 
 }

@@ -10,44 +10,20 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
 import com.tunjid.androidbootstrap.view.util.InsetFlags
 
-class UiState : Parcelable {
+data class UiState(
+        @DrawableRes val fabIcon: Int,
+        val fabText: CharSequence,
+        @MenuRes val toolBarMenu: Int,
+        @ColorInt val navBarColor: Int,
+        val showsFab: Boolean,
+        val fabExtended: Boolean,
+        val showsToolbar: Boolean,
+        val insetFlags: InsetFlags,
+        val toolbarTitle: CharSequence,
+        val fabClickListener: View.OnClickListener?
+) : Parcelable {
 
-    @DrawableRes
-    private val fabIcon: Int
-    private val fabText: CharSequence
-    @MenuRes
-    private val toolBarMenu: Int
-    @ColorInt
-    private val navBarColor: Int
-
-    private val showsFab: Boolean
-    private val showsToolbar: Boolean
-
-    private val insetFlags: InsetFlags
-    private val toolbarTitle: CharSequence
-    private val fabClickListener: View.OnClickListener?
-
-    constructor(fabIcon: Int,
-                fabText: CharSequence,
-                toolBarMenu: Int,
-                navBarColor: Int,
-                showsFab: Boolean,
-                showsToolbar: Boolean,
-                insetFlags: InsetFlags,
-                toolbarTitle: CharSequence,
-                fabClickListener: View.OnClickListener?) {
-        this.fabIcon = fabIcon
-        this.fabText = fabText
-        this.toolBarMenu = toolBarMenu
-        this.navBarColor = navBarColor
-        this.showsFab = showsFab
-        this.showsToolbar = showsToolbar
-        this.insetFlags = insetFlags
-        this.toolbarTitle = toolbarTitle
-        this.fabClickListener = fabClickListener
-    }
-
-    fun diff(force: Boolean, newState: UiState,
+    fun diff(newState: UiState,
              showsFabConsumer: (Boolean) -> Unit,
              showsToolbarConsumer: (Boolean) -> Unit,
              navBarColorConsumer: (Int) -> Unit,
@@ -56,29 +32,27 @@ class UiState : Parcelable {
              toolbarStateConsumer: (Int, CharSequence) -> Unit,
              fabClickListenerConsumer: (View.OnClickListener?) -> Unit
     ): UiState {
-        either(force, newState, { state -> state.toolBarMenu }, { state -> state.toolbarTitle }, toolbarStateConsumer)
-        either(force, newState, { state -> state.fabIcon }, { state -> state.fabText }, fabStateConsumer)
+        either(newState, { state -> state.toolBarMenu }, { state -> state.toolbarTitle }, toolbarStateConsumer)
+        either(newState, { state -> state.fabIcon }, { state -> state.fabText }, fabStateConsumer)
 
-        only(force, newState, { state -> state.showsFab }, showsFabConsumer)
-        only(force, newState, { state -> state.showsToolbar }, showsToolbarConsumer)
-        only(force, newState, { state -> state.navBarColor }, navBarColorConsumer)
-        only(force, newState, { state -> state.insetFlags }, insetFlagsConsumer)
+        only(newState, { state -> state.showsFab }, showsFabConsumer)
+        only(newState, { state -> state.showsToolbar }, showsToolbarConsumer)
+        only(newState, { state -> state.navBarColor }, navBarColorConsumer)
+        only(newState, { state -> state.insetFlags }, insetFlagsConsumer)
 
         fabClickListenerConsumer.invoke(newState.fabClickListener)
 
         return newState
     }
 
-    private fun <T> only(force: Boolean, that: UiState, first: (UiState) -> T, consumer: (T) -> Unit) {
+    private fun <T> only(that: UiState, first: (UiState) -> T, consumer: (T) -> Unit) {
         val thisFirst = first.invoke(this)
         val thatFirst = first.invoke(that)
 
-        if (force || thisFirst != thatFirst) consumer.invoke(thatFirst)
-
+        if (thisFirst != thatFirst) consumer.invoke(thatFirst)
     }
 
-    private fun <S, T> either(force: Boolean,
-                              that: UiState,
+    private fun <S, T> either(that: UiState,
                               first: (UiState) -> S,
                               second: (UiState) -> T,
                               biConsumer: (S, T) -> Unit) {
@@ -87,28 +61,27 @@ class UiState : Parcelable {
         val thisSecond = second.invoke(this)
         val thatSecond = second.invoke(that)
 
-        if (force || thisFirst != thatFirst || thisSecond != thatSecond)
+        if (thisFirst != thatFirst || thisSecond != thatSecond)
             biConsumer.invoke(thatFirst, thatSecond)
     }
 
-    private constructor(`in`: Parcel) {
-        fabIcon = `in`.readInt()
-        fabText = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(`in`)
-        toolBarMenu = `in`.readInt()
-        navBarColor = `in`.readInt()
-        showsFab = `in`.readByte().toInt() != 0x00
-        showsToolbar = `in`.readByte().toInt() != 0x00
-
-        val hasLeftInset = `in`.readByte().toInt() != 0x00
-        val hasTopInset = `in`.readByte().toInt() != 0x00
-        val hasRightInset = `in`.readByte().toInt() != 0x00
-        val hasBottomInset = `in`.readByte().toInt() != 0x00
-        insetFlags = InsetFlags.create(hasLeftInset, hasTopInset, hasRightInset, hasBottomInset)
-
-        toolbarTitle = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(`in`)
-
-        fabClickListener = null
-    }
+    private constructor(`in`: Parcel) : this(
+            fabIcon = `in`.readInt(),
+            fabText = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(`in`),
+            toolBarMenu = `in`.readInt(),
+            navBarColor = `in`.readInt(),
+            showsFab = `in`.readByte().toInt() != 0x00,
+            fabExtended = `in`.readByte().toInt() != 0x00,
+            showsToolbar = `in`.readByte().toInt() != 0x00,
+            insetFlags = InsetFlags.create(
+                    `in`.readByte().toInt() != 0x00,
+                    `in`.readByte().toInt() != 0x00,
+                    `in`.readByte().toInt() != 0x00,
+                    `in`.readByte().toInt() != 0x00
+            ),
+            toolbarTitle = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(`in`),
+            fabClickListener = null
+    )
 
     override fun describeContents(): Int {
         return 0
@@ -120,6 +93,7 @@ class UiState : Parcelable {
         dest.writeInt(toolBarMenu)
         dest.writeInt(navBarColor)
         dest.writeByte((if (showsFab) 0x01 else 0x00).toByte())
+        dest.writeByte((if (fabExtended) 0x01 else 0x00).toByte())
         dest.writeByte((if (showsToolbar) 0x01 else 0x00).toByte())
         dest.writeByte((if (insetFlags.hasLeftInset()) 0x01 else 0x00).toByte())
         dest.writeByte((if (insetFlags.hasTopInset()) 0x01 else 0x00).toByte())
@@ -138,6 +112,7 @@ class UiState : Parcelable {
                     toolBarMenu = 0,
                     navBarColor = Color.BLACK,
                     showsFab = true,
+                    fabExtended = true,
                     showsToolbar = true,
                     insetFlags = InsetFlags.ALL,
                     toolbarTitle = "",

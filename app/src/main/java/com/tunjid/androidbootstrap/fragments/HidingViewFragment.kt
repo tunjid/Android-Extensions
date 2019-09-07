@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
+import androidx.core.content.ContextCompat
+import com.tunjid.androidbootstrap.GlobalUiController
 import com.tunjid.androidbootstrap.R
+import com.tunjid.androidbootstrap.UiState
+import com.tunjid.androidbootstrap.activityGlobalUiController
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.view.animator.ViewHider
 
@@ -16,7 +19,9 @@ import com.tunjid.androidbootstrap.view.animator.ViewHider
  * Created by tj.dahunsi on 5/6/17.
  */
 
-class HidingViewFragment : AppBaseFragment() {
+class HidingViewFragment : AppBaseFragment(), GlobalUiController {
+
+    override var uiState: UiState by activityGlobalUiController()
 
     private lateinit var leftHider: ViewHider
     private lateinit var topHider: ViewHider
@@ -24,6 +29,14 @@ class HidingViewFragment : AppBaseFragment() {
     private lateinit var bottomHider: ViewHider
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+        uiState = uiState.copy(
+                toolbarTitle = this::class.java.simpleName,
+                showsToolbar = true,
+                showsFab = false,
+                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
+        )
+
         val rootView = inflater.inflate(R.layout.fragment_hiding_view, container, false)
 
         val leftButton = rootView.findViewById<View>(R.id.left_button)

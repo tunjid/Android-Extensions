@@ -4,9 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
+import com.tunjid.androidbootstrap.GlobalUiController
 import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
+import com.tunjid.androidbootstrap.UiState
+import com.tunjid.androidbootstrap.activityGlobalUiController
 import com.tunjid.androidbootstrap.adapters.TileAdapter
 import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
@@ -16,26 +20,20 @@ import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.viewholders.TileViewHolder
 import com.tunjid.androidbootstrap.viewmodels.ShiftingTileViewModel
 
-class ShiftingTileFragment : AppBaseFragment() {
+class ShiftingTileFragment : AppBaseFragment(), GlobalUiController {
+
+    override var uiState: UiState by activityGlobalUiController()
+
+    override val insetFlags: InsetFlags = NO_BOTTOM
 
     private lateinit var viewModel: ShiftingTileViewModel
     private lateinit var listManager: ListManager<TileViewHolder, PlaceHolder.State>
 
-    override val fabIconRes: Int
+    private val fabIconRes: Int
         get() = if (viewModel.changes()) R.drawable.ic_grid_24dp else R.drawable.ic_blur_24dp
 
-    override val fabText: CharSequence
+    private val fabText: CharSequence
         get() = getString(if (viewModel.changes()) R.string.static_tiles else R.string.dynamic_tiles)
-
-    override val showsFab: Boolean = true
-
-    override val insetFlags: InsetFlags = NO_BOTTOM
-
-    override val fabClickListener: View.OnClickListener
-        get() = View.OnClickListener {
-            viewModel.toggleChanges()
-            togglePersistentUi()
-        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +41,20 @@ class ShiftingTileFragment : AppBaseFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+        uiState = uiState.copy(
+                toolbarTitle = this::class.java.simpleName,
+                showsToolbar = true,
+                showsFab = true,
+                fabIcon = fabIconRes,
+                fabText = fabText,
+                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),
+                fabClickListener = View.OnClickListener {
+                    viewModel.toggleChanges()
+                    uiState = uiState.copy(fabIcon = fabIconRes, fabText = fabText)
+                }
+        )
+
         val root = inflater.inflate(R.layout.fragment_route, container, false)
         listManager = ListManagerBuilder<TileViewHolder, PlaceHolder.State>()
                 .withRecyclerView(root.findViewById(R.id.recycler_view))

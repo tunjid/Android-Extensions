@@ -3,13 +3,21 @@ package com.tunjid.androidbootstrap.fragments
 
 import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
+import com.tunjid.androidbootstrap.GlobalUiController
 import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
+import com.tunjid.androidbootstrap.UiState
+import com.tunjid.androidbootstrap.activityGlobalUiController
 import com.tunjid.androidbootstrap.adapters.NsdAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.recyclerview.ListManager
@@ -20,13 +28,13 @@ import com.tunjid.androidbootstrap.viewmodels.NsdViewModel
 /**
  * A [Fragment] listing supported NSD servers
  */
-class NsdScanFragment : AppBaseFragment(), NsdAdapter.ServiceClickedListener {
+class NsdScanFragment : AppBaseFragment(), GlobalUiController, NsdAdapter.ServiceClickedListener {
+
+    override var uiState: UiState by activityGlobalUiController()
 
     private var isScanning: Boolean = false
     private lateinit var listManager: ListManager<NSDViewHolder, PlaceHolder.State>
     private lateinit var viewModel: NsdViewModel
-
-    override val toolBarMenuRes: Int = R.menu.menu_nsd_scan
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +44,15 @@ class NsdScanFragment : AppBaseFragment(), NsdAdapter.ServiceClickedListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+
+        uiState = uiState.copy(
+                toolbarTitle = this::class.java.simpleName,
+                showsToolbar = true,
+                toolBarMenu = R.menu.menu_nsd_scan,
+                showsFab = false,
+                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
+        )
+
         val root = inflater.inflate(R.layout.fragment_nsd_scan, container, false)
         val placeHolder = PlaceHolder(root.findViewById(R.id.placeholder_container))
         placeHolder.bind(PlaceHolder.State(R.string.no_nsd_devices, R.drawable.ic_signal_wifi__24dp))

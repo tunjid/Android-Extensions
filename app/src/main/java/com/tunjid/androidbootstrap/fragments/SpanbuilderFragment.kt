@@ -5,7 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import com.tunjid.androidbootstrap.GlobalUiController
 import com.tunjid.androidbootstrap.R
+import com.tunjid.androidbootstrap.UiState
+import com.tunjid.androidbootstrap.activityGlobalUiController
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.core.text.SpanBuilder
 
@@ -15,9 +19,19 @@ import com.tunjid.androidbootstrap.core.text.SpanBuilder
  * Created by tj.dahunsi on 5/6/17.
  */
 
-class SpanbuilderFragment : AppBaseFragment() {
+class SpanbuilderFragment : AppBaseFragment(), GlobalUiController {
+
+    override var uiState: UiState by activityGlobalUiController()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+        uiState = uiState.copy(
+                toolbarTitle = this::class.java.simpleName,
+                showsToolbar = true,
+                showsFab = false,
+                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
+        )
+
         val rootView = inflater.inflate(R.layout.fragment_spanbuilder, container, false)
 
         val textView = rootView.findViewById<TextView>(R.id.text)

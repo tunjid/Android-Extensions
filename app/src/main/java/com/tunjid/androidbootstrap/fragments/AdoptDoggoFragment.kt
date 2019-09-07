@@ -6,9 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import com.tunjid.androidbootstrap.GlobalUiController
 import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
+import com.tunjid.androidbootstrap.UiState
+import com.tunjid.androidbootstrap.activityGlobalUiController
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter.ImageListAdapterListener
 import com.tunjid.androidbootstrap.adapters.InputAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
@@ -18,23 +22,13 @@ import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 import com.tunjid.androidbootstrap.viewholders.InputViewHolder
 
-class AdoptDoggoFragment : AppBaseFragment(), ImageListAdapterListener {
+class AdoptDoggoFragment : AppBaseFragment(), GlobalUiController, ImageListAdapterListener {
+
+    override var uiState: UiState by activityGlobalUiController()
 
     private lateinit var doggo: Doggo
 
-    override val fabIconRes: Int = R.drawable.ic_hug_24dp
-
-    override val fabText: CharSequence get() = getString(R.string.adopt)
-
-    override val showsToolBar: Boolean = false
-
-    override val showsFab: Boolean = true
-
     override val insetFlags: InsetFlags = InsetFlags.NO_TOP
-
-    override val fabClickListener: View.OnClickListener = View.OnClickListener {
-            showSnackbar { snackBar -> snackBar.setText(getString(R.string.adopted_doggo, doggo.name)) }
-        }
 
     override fun getStableTag(): String {
         return super.getStableTag() + "-" + arguments!!.getParcelable<Parcelable>(ARG_DOGGO)!!.hashCode()
@@ -46,6 +40,18 @@ class AdoptDoggoFragment : AppBaseFragment(), ImageListAdapterListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        uiState = uiState.copy(
+                showsToolbar = false,
+                fabText = getString(R.string.adopt),
+                fabIcon = R.drawable.ic_hug_24dp,
+                showsFab = true,
+                fabExtended = !restoredFromBackStack(),
+                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),
+                fabClickListener = View.OnClickListener {
+                    showSnackbar { snackBar -> snackBar.setText(getString(R.string.adopted_doggo, doggo.name)) }
+                }
+        )
+
         val root = inflater.inflate(R.layout.fragment_adopt_doggo, container, false)
 
         ListManagerBuilder<InputViewHolder, PlaceHolder.State>()

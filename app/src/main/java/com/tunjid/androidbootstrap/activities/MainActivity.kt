@@ -2,22 +2,15 @@ package com.tunjid.androidbootstrap.activities
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
-import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.O
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.View
-import android.view.View.*
-import android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
-import androidx.annotation.DrawableRes
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import androidx.annotation.LayoutRes
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.ColorUtils
 import androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.postDelayed
@@ -27,26 +20,20 @@ import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
+import com.tunjid.androidbootstrap.GlobalUiController
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.UiState
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.core.abstractclasses.BaseActivity
 import com.tunjid.androidbootstrap.fragments.RouteFragment
-import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator
-import com.tunjid.androidbootstrap.view.animator.ViewHider
-import com.tunjid.androidbootstrap.view.util.ViewUtil
+import com.tunjid.androidbootstrap.globalUiDriver
 import com.tunjid.androidbootstrap.view.util.ViewUtil.getLayoutParams
-import com.tunjid.androidbootstrap.view.util.update
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), GlobalUiController {
 
     private var insetsApplied: Boolean = false
     private var leftInset: Int = 0
     private var rightInset: Int = 0
-
-    private lateinit var fabHider: ViewHider
-    private lateinit var toolbarHider: ViewHider
-    private lateinit var fabExtensionAnimator: FabExtensionAnimator
 
     private lateinit var topInsetView: View
     private lateinit var bottomInsetView: View
@@ -58,7 +45,7 @@ class MainActivity : BaseActivity() {
     private lateinit var constraintLayout: ConstraintLayout
     private lateinit var coordinatorLayout: CoordinatorLayout
 
-    private lateinit var uiState: UiState
+    override var uiState: UiState by globalUiDriver()
 
     private val fragmentViewCreatedCallback: FragmentManager.FragmentLifecycleCallbacks = object : FragmentManager.FragmentLifecycleCallbacks() {
 
@@ -71,16 +58,9 @@ class MainActivity : BaseActivity() {
             val fragment = f as AppBaseFragment
             if (fragment.restoredFromBackStack()) adjustInsetForFragment(f)
 
-            fragment.togglePersistentUi()
             setOnApplyWindowInsetsListener(v) { _, insets -> consumeFragmentInsets(insets) }
         }
     }
-
-    var isFabExtended: Boolean
-        get() = fabExtensionAnimator.isExtended
-        set(extended) {
-            fabExtensionAnimator.isExtended = extended
-        }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,22 +85,9 @@ class MainActivity : BaseActivity() {
         constraintLayout = findViewById(R.id.constraint_layout)
         coordinatorLayout = findViewById(R.id.coordinator_layout)
 
-        toolbarHider = ViewHider.of(toolbar).setDirection(ViewHider.TOP).build()
-        fabHider = ViewHider.of(fab).setDirection(ViewHider.BOTTOM).addEndRunnable { fab.visibility = VISIBLE }.build()
-        fabExtensionAnimator = FabExtensionAnimator(fab)
-        fabExtensionAnimator.isExtended = true
-
         toolbar.title = getString(R.string.app_name)
-        toolbar.setOnMenuItemClickListener(this::onMenuItemClicked)
-
-        window.decorView.systemUiVisibility = DEFAULT_SYSTEM_UI_FLAGS
 
         setOnApplyWindowInsetsListener(this.constraintLayout) { _, insets -> consumeSystemInsets(insets) }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        updateUI(true, uiState)
     }
 
     public override fun onSaveInstanceState(outState: Bundle) {
@@ -136,57 +103,6 @@ class MainActivity : BaseActivity() {
     }
 
     override fun getCurrentFragment(): AppBaseFragment? = super.getCurrentFragment() as? AppBaseFragment
-
-    fun update(state: UiState) = updateUI(false, state)
-
-    private fun updateMainToolBar(menu: Int, title: CharSequence) = toolbar.update(title, menu).also {
-        currentFragment?.onPrepareOptionsMenu(toolbar.menu)
-    }
-
-    private fun toggleToolbar(show: Boolean) {
-        if (show) toolbarHider.show()
-        else toolbarHider.hide()
-    }
-
-    private fun setNavBarColor(color: Int) {
-        navBackgroundView.background = GradientDrawable(
-                GradientDrawable.Orientation.BOTTOM_TOP,
-                intArrayOf(color, Color.TRANSPARENT))
-    }
-
-    private fun setFabIcon(@DrawableRes icon: Int, title: CharSequence) = runOnUiThread {
-        if (icon != 0 && title.isNotBlank()) fabExtensionAnimator.updateGlyphs(FabExtensionAnimator.newState(
-                title,
-                ContextCompat.getDrawable(this@MainActivity, icon)))
-    }
-
-    private fun toggleFab(show: Boolean) =
-            if (show) this.fabHider.show()
-            else this.fabHider.hide()
-
-    private fun setFabClickListener(onClickListener: OnClickListener?) =
-            fab.setOnClickListener(onClickListener)
-
-
-    private fun onMenuItemClicked(item: MenuItem): Boolean {
-        val fragment = currentFragment
-        val selected = fragment != null && fragment.onOptionsItemSelected(item)
-
-        return selected || onOptionsItemSelected(item)
-    }
-
-    private fun updateUI(force: Boolean, state: UiState) {
-        uiState = uiState.diff(force,
-                state,
-                this::toggleFab,
-                this::toggleToolbar,
-                this::setNavBarColor,
-                {},
-                this::setFabIcon,
-                this::updateMainToolBar,
-                this::setFabClickListener
-        )
-    }
 
     fun showSnackBar(consumer: (Snackbar) -> Unit) {
         val snackbar = Snackbar.make(coordinatorLayout, "", Snackbar.LENGTH_SHORT)
@@ -229,8 +145,8 @@ class MainActivity : BaseActivity() {
         if (fragment !is AppBaseFragment) return
 
         val insetFlags = fragment.insetFlags
-        ViewUtil.getLayoutParams(toolbar).topMargin = if (insetFlags.hasTopInset()) 0 else topInset
-        ViewUtil.getLayoutParams(coordinatorLayout).bottomMargin = if (insetFlags.hasBottomInset()) 0 else bottomInset
+        getLayoutParams(toolbar).topMargin = if (insetFlags.hasTopInset()) 0 else topInset
+        getLayoutParams(coordinatorLayout).bottomMargin = if (insetFlags.hasBottomInset()) 0 else bottomInset
 
         TransitionManager.beginDelayedTransition(constraintLayout, AutoTransition()
                 .setDuration(ANIMATION_DURATION.toLong())
@@ -246,22 +162,9 @@ class MainActivity : BaseActivity() {
                 0,
                 if (insetFlags.hasRightInset()) this.rightInset else 0,
                 0)
-
-        if (SDK_INT < O) return
-
-        val isLight = ColorUtils.calculateLuminance(fragment.navBarColor) > 0.5
-        val systemUiVisibility = if (isLight) DEFAULT_SYSTEM_UI_FLAGS or SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-        else DEFAULT_SYSTEM_UI_FLAGS
-
-        window.decorView.systemUiVisibility = systemUiVisibility
-        window.navigationBarColor = fragment.navBarColor
     }
 
     companion object {
-        private const val DEFAULT_SYSTEM_UI_FLAGS = SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
 
         private const val UI_STATE = "APP_UI_STATE"
         const val ANIMATION_DURATION = 300

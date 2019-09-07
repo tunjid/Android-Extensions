@@ -25,15 +25,13 @@ class DoggoFragment : AppBaseFragment(), ImageListAdapterListener {
         return rootView
     }
 
-    override fun togglePersistentUi() = Unit /* Nothing, delegate to parent fragment */
-
     override fun onDoggoImageLoaded(doggo: Doggo) = parentFragment!!.startPostponedEnterTransition()
 
     companion object {
         private const val ARG_DOGGO = "doggo"
 
         fun newInstance(doggo: Doggo): DoggoFragment = DoggoFragment().apply {
-            arguments = Bundle().apply { putParcelable("doggo", doggo) }
+            arguments = Bundle().apply { putParcelable(ARG_DOGGO, doggo) }
         }
 
     }

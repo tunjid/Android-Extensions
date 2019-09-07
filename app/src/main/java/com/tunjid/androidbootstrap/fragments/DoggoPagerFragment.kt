@@ -15,7 +15,10 @@ import androidx.fragment.app.viewModels
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener
+import com.tunjid.androidbootstrap.GlobalUiController
 import com.tunjid.androidbootstrap.R
+import com.tunjid.androidbootstrap.UiState
+import com.tunjid.androidbootstrap.activityGlobalUiController
 import com.tunjid.androidbootstrap.adapters.DoggoPagerAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.constraintlayout.animator.ViewPagerIndicatorAnimator
@@ -30,32 +33,24 @@ import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.sin
 
-class DoggoPagerFragment : AppBaseFragment() {
+class DoggoPagerFragment : AppBaseFragment(), GlobalUiController {
+
+    override var uiState: UiState by activityGlobalUiController()
 
     private val viewModel by viewModels<DoggoViewModel>()
 
-    override val fabIconRes: Int = R.drawable.ic_hug_24dp
-
-    override val fabText: CharSequence get() = dogName
-
     override val insetFlags: InsetFlags = InsetFlags.NONE
 
-    override val showsToolBar: Boolean = false
-
-    override val showsFab: Boolean = true
-
-    override val navBarColor: Int = Color.TRANSPARENT
-
-    override val fabClickListener: View.OnClickListener = View.OnClickListener { Doggo.getTransitionDoggo()?.let { showFragment(AdoptDoggoFragment.newInstance(it)) } }
-
-    private val dogName: String
-        get() {
-            val doggo = Doggo.getTransitionDoggo() ?: return ""
-            val name = doggo.name.replace(" ", "")
-            return getString(R.string.adopt_doggo, name)
-        }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        uiState = uiState.copy(
+                showsToolbar = false,
+                fabIcon = R.drawable.ic_hug_24dp,
+                showsFab = true,
+                fabExtended = !restoredFromBackStack(),
+                navBarColor = Color.TRANSPARENT,
+                fabClickListener = View.OnClickListener { Doggo.getTransitionDoggo()?.let { showFragment(AdoptDoggoFragment.newInstance(it)) } }
+        )
+
         val root = inflater.inflate(R.layout.fragment_doggo_pager, container, false)
         val viewPager = root.findViewById<ViewPager>(R.id.view_pager)
         val resources = resources
@@ -114,8 +109,10 @@ class DoggoPagerFragment : AppBaseFragment() {
     }
 
     private fun onDoggoSwiped(position: Int) {
-        Doggo.setTransitionDoggo(Doggo.doggos[position])
-        togglePersistentUi()
+        Doggo.doggos[position].apply {
+            Doggo.setTransitionDoggo(this)
+            uiState = uiState.copy(fabText = getString(R.string.adopt_doggo, name.replace(" ", "")))
+        }
     }
 
     @SuppressLint("CommitTransaction")

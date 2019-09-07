@@ -13,6 +13,7 @@ import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.max
 
 class ShiftingTileViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -58,7 +59,7 @@ class ShiftingTileViewModel(application: Application) : AndroidViewModel(applica
     }
 
     private fun makeNewTiles(): List<Tile> {
-        return generateTiles(if (changes) Math.max(5, (Math.random() * NUM_TILES).toInt()) else NUM_TILES)
+        return generateTiles(if (changes) max(5, (Math.random() * NUM_TILES).toInt()) else NUM_TILES)
     }
 
     override fun onCleared() {
