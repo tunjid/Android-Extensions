@@ -47,6 +47,9 @@ class MainActivity : BaseActivity(), GlobalUiController {
 
     override var uiState: UiState by globalUiDriver()
 
+    override val currentFragment: AppBaseFragment?
+        get() = super.currentFragment as? AppBaseFragment
+
     private val fragmentViewCreatedCallback: FragmentManager.FragmentLifecycleCallbacks = object : FragmentManager.FragmentLifecycleCallbacks() {
 
         override fun onFragmentPreAttached(fm: FragmentManager, f: Fragment, context: Context) =
@@ -101,8 +104,6 @@ class MainActivity : BaseActivity(), GlobalUiController {
             currentFragment?.onPrepareOptionsMenu(toolbar.menu)
         }
     }
-
-    override fun getCurrentFragment(): AppBaseFragment? = super.getCurrentFragment() as? AppBaseFragment
 
     fun showSnackBar(consumer: (Snackbar) -> Unit) {
         val snackbar = Snackbar.make(coordinatorLayout, "", Snackbar.LENGTH_SHORT)

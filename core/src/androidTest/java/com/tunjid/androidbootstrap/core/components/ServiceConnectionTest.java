@@ -3,7 +3,9 @@ package com.tunjid.androidbootstrap.core.components;
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
-import androidx.test.runner.AndroidJUnit4;
+
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.tunjid.androidbootstrap.core.testclasses.TestService;
 import com.tunjid.androidbootstrap.test.resources.TestIdler;
@@ -47,12 +49,7 @@ public class ServiceConnectionTest {
         assertFalse(ServiceConnection.isServiceRunning(TestService.class, context));
 
         testIdler = new TestIdler(DEFAULT_TIME_OUT, TimeUnit.SECONDS);
-        bindCondition = new TestIdler.TestCondition() {
-            @Override
-            public boolean satisfied() {
-                return connection.isBound();
-            }
-        };
+        bindCondition = () -> connection.isBound();
     }
 
     @After

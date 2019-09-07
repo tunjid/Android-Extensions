@@ -12,8 +12,8 @@ import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 
 class DoggoFragment : AppBaseFragment(), ImageListAdapterListener {
 
-    override fun getStableTag(): String =
-            super.getStableTag() + "-" + arguments!!.getParcelable(ARG_DOGGO)
+    override val stableTag: String
+        get() = super.stableTag + "-" + arguments!!.getParcelable(ARG_DOGGO)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_image_detail, container, false)

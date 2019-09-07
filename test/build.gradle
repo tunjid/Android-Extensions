@@ -3,36 +3,40 @@ apply from: "${project.rootDir}/androidLib.gradle"
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation parent.ext.material
     implementation parent.ext.appCompat
     implementation parent.ext.recyclerView
 
     implementation 'junit:junit:4.12'
     implementation 'org.hamcrest:hamcrest-library:1.3'
     implementation 'org.mockito:mockito-android:2.7.22'
-    implementation 'androidx.test:runner:1.1.0-beta02'
 
-    implementation('androidx.test.espresso:espresso-core:3.1.0-beta02') {
-        exclude group: 'com.android.support'
-        exclude module: 'support-annotations'
-        exclude module: 'support-v4'
-        exclude module: 'support-v13'
-        exclude module: 'recyclerview-v7'
-        exclude module: 'design'
+    def androidTestExclusions = { lib, pairs ->
+        implementation(lib) {
+            pairs.each { exclude group: "${it.first}", module: "${it.second}" }
+        }
     }
-    implementation('androidx.test.espresso:espresso-contrib:3.1.0-beta02') {
-        exclude group: 'com.android.support'
-        exclude module: 'support-annotations'
-        exclude module: 'support-v4'
-        exclude module: 'support-v13'
-        exclude module: 'recyclerview-v7'
-        exclude module: 'design'
-    }
-    implementation('androidx.test.espresso:espresso-intents:3.1.0-beta02') {
-        exclude module: 'support-annotations'
-        exclude module: 'support-v4'
-        exclude module: 'support-v13'
-        exclude module: 'recyclerview-v7'
-        exclude module: 'design'
-    }
+
+    List exclusions = [
+            new Tuple2('androidx.appcompat', 'appcompat'),
+            new Tuple2('androidx.core', 'core'),
+            new Tuple2('androidx.activity', 'activity'),
+            new Tuple2('androidx.fragment', 'fragment'),
+            new Tuple2('androidx.loader', 'loader'),
+            new Tuple2('androidx.recyclerview', 'recyclerview'),
+            new Tuple2('androidx.viewpager2', 'viewpager2'),
+            new Tuple2('androidx.savedstate', 'savedstate'),
+            new Tuple2('androidx.lifecycle', 'lifecycle-livedata'),
+            new Tuple2('androidx.lifecycle', 'lifecycle-common'),
+            new Tuple2('androidx.lifecycle', 'lifecycle-viewmodel'),
+            new Tuple2('androidx.lifecycle', 'lifecycle-livedata-core'),
+            new Tuple2('androidx.lifecycle', 'lifecycle-runtime'),
+            new Tuple2('androidx.arch.core', 'core-runtime'),
+            new Tuple2('com.google.android.material', 'material')
+    ]
+
+    androidTestExclusions('androidx.test:runner:1.3.0-alpha02', exclusions)
+    androidTestExclusions('androidx.test:rules:1.2.0', exclusions)
+    androidTestExclusions('androidx.test.espresso:espresso-core:3.1.0-beta02', exclusions)
+    androidTestExclusions('androidx.test.espresso:espresso-contrib:3.1.0-beta02', exclusions)
+    androidTestExclusions('androidx.test.espresso:espresso-intents:3.1.0-beta02', exclusions)
 }

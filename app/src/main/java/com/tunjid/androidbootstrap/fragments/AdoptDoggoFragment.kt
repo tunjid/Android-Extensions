@@ -34,9 +34,8 @@ class AdoptDoggoFragment : AppBaseFragment(), GlobalUiController, ImageListAdapt
 
     override val insetFlags: InsetFlags = InsetFlags.NO_TOP
 
-    override fun getStableTag(): String {
-        return super.getStableTag() + "-" + arguments!!.getParcelable<Parcelable>(ARG_DOGGO)!!.hashCode()
-    }
+    override val stableTag: String
+        get() = super.stableTag + "-" + arguments!!.getParcelable<Parcelable>(ARG_DOGGO)!!.hashCode()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
