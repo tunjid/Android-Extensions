@@ -10,7 +10,6 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.postDelayed
@@ -29,7 +28,7 @@ import com.tunjid.androidbootstrap.fragments.RouteFragment
 import com.tunjid.androidbootstrap.globalUiDriver
 import com.tunjid.androidbootstrap.view.util.ViewUtil.getLayoutParams
 
-class MainActivity : BaseActivity(), GlobalUiController {
+class MainActivity : BaseActivity(R.layout.activity_main), GlobalUiController {
 
     private var insetsApplied: Boolean = false
     private var leftInset: Int = 0
@@ -67,11 +66,9 @@ class MainActivity : BaseActivity(), GlobalUiController {
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.statusBarColor = ContextCompat.getColor(this, R.color.transparent)
-        supportFragmentManager.registerFragmentLifecycleCallbacks(fragmentViewCreatedCallback, false)
-        setContentView(R.layout.activity_main)
 
         uiState = savedInstanceState?.getParcelable(UI_STATE) ?: UiState.freshState()
+        supportFragmentManager.registerFragmentLifecycleCallbacks(fragmentViewCreatedCallback, false)
 
         if (savedInstanceState == null) showFragment(RouteFragment.newInstance())
     }

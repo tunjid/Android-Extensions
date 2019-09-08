@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -100,9 +101,10 @@ class GlobalUiDriver(
         host.findViewById<View>(navBackgroundId)
     }
 
-    private val fragmentContainer: View by lazy {
+    private val fragmentContainer: FragmentContainerView by lazy {
+        host.window.statusBarColor = ContextCompat.getColor(host, R.color.transparent)
         host.window.decorView.systemUiVisibility = DEFAULT_SYSTEM_UI_FLAGS
-        host.findViewById<View>(fragmentContainerId)
+        host.findViewById<FragmentContainerView>(fragmentContainerId)
     }
 
     private val toolbarHider: ViewHider by lazy {

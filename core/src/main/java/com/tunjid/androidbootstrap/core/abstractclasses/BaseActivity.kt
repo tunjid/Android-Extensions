@@ -12,20 +12,20 @@ import com.tunjid.androidbootstrap.core.components.FragmentStateManager
 /**
  * Base Activity class
  */
-abstract class BaseActivity : AppCompatActivity() {
+abstract class BaseActivity(@LayoutRes contentLayoutId: Int = 0) : AppCompatActivity(contentLayoutId) {
 
     private lateinit var fragmentStateManager: FragmentStateManager
 
     /**
      * Convenience method for [FragmentStateManager.currentFragment]
      */
-   open val currentFragment: BaseFragment?
+    open val currentFragment: BaseFragment?
         get() = fragmentStateManager.currentFragment as BaseFragment?
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         fragmentStateManager = FragmentStateManager(supportFragmentManager)
         fragmentStateManager.onRestoreInstanceState(savedInstanceState)
+        super.onCreate(savedInstanceState)
     }
 
     override fun setContentView(@LayoutRes layoutResID: Int) {
