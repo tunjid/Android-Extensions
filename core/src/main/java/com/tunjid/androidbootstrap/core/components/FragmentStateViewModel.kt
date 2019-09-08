@@ -2,36 +2,78 @@ package com.tunjid.androidbootstrap.core.components
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.annotation.IdRes
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.*
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.savedstate.SavedStateRegistryOwner
 import com.tunjid.androidbootstrap.core.R
 import java.util.*
 
+@Suppress("unused")
+fun Fragment.childFragmentStateViewModelFactory(@IdRes idResource: Int) =
+        viewModels<FragmentStateViewModel> { FragmentStateViewModelFactory(childFragmentManager, idResource, this) }
+
+fun FragmentActivity.fragmentStateViewModelFactory(@IdRes idResource: Int) =
+        viewModels<FragmentStateViewModel> { FragmentStateViewModelFactory(supportFragmentManager, idResource, this) }
+
+@Suppress("UNCHECKED_CAST")
+private class FragmentStateViewModelFactory(
+        private val fragmentManager: FragmentManager,
+        @param:IdRes @field:IdRes @get:IdRes val idResource: Int = R.id.main_fragment_container,
+        owner: SavedStateRegistryOwner,
+        defaultArgs: Bundle? = null
+) : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
+    override fun <T : ViewModel?> create(
+            key: String,
+            modelClass: Class<T>,
+            handle: SavedStateHandle
+    ): T = FragmentStateViewModel(handle, fragmentManager, idResource) as T
+
+}
+
 /**
- * A class that keeps track of the [fragments][Fragment] in an
- * [activity&#39;s][android.app.Activity] [FragmentManager]
+ * A class that keeps track of the [fragments][Fragment] in a
+ * [FragmentManager], and enforces that they are added to the back stack.
  *
+ * It is best used for managing Fragments that are navigation destinations
  *
  * Created by tj.dahunsi on 4/23/17.
  */
 
-class FragmentStateManager @JvmOverloads constructor(
+class FragmentStateViewModel @JvmOverloads constructor(
+        private val state: SavedStateHandle,
         internal val fragmentManager: FragmentManager,
         @param:IdRes @field:IdRes @get:IdRes val idResource: Int = R.id.main_fragment_container
-) {
+) : ViewModel() {
 
     internal val fragmentTags = mutableSetOf<String>()
 
-    private var currentFragmentTag: String? = null
+    private val key: String
+        get() = "$CURRENT_FRAGMENT_KEY-$idResource"
+
+    /**
+     * Gets the last fragment added to the [FragmentManager]
+     */
+    val currentFragment: Fragment?
+        get() =
+            if (currentFragmentTag == null) null
+            else fragmentManager.findFragmentByTag(currentFragmentTag)
+
+    private var currentFragmentTag: String? = state[key]
+        set(value) {
+            field = value
+            state[key] = value
+        }
 
     /**
      * A class that keeps track of the fragments in the FragmentManager
      */
     private val fragmentLifecycleCallbacks = object : FragmentManager.FragmentLifecycleCallbacks() {
         override fun onFragmentCreated(fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?) {
-            // Not a fragment managed by this FragmentStateManager
+            // Not a fragment managed by this FragmentStateViewModel
             if (f.id != idResource) return
 
             fragmentTags.add(f.tag ?: throw IllegalStateException(MSG_FRAGMENT_HAS_NO_TAG))
@@ -70,13 +112,13 @@ class FragmentStateManager @JvmOverloads constructor(
         }
 
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
-            // Not a fragment managed by this FragmentStateManager
+            // Not a fragment managed by this FragmentStateViewModel
             if (f.id != idResource) return
             requireNotNull(f.tag) {
                 ("Fragment instance "
                         + f.javaClass.name
                         + " with no tag cannot be added to the back stack with " +
-                        "a FragmentStateManager")
+                        "a FragmentStateViewModel")
             }
 
             currentFragmentTag = f.tag
@@ -87,22 +129,12 @@ class FragmentStateManager @JvmOverloads constructor(
         }
     }
 
-    /**
-     * Gets the last fragment added to the [FragmentManager]
-     */
-    val currentFragment: Fragment?
-        get() =
-            if (currentFragmentTag == null) null
-            else fragmentManager.findFragmentByTag(currentFragmentTag)
-
     init {
         val backStackCount = fragmentManager.backStackEntryCount
 
         // Restore previous back stack entries in the Fragment manager
-        for (i in 0 until backStackCount) {
-            fragmentTags.add(fragmentManager.getBackStackEntryAt(i).name
-                    ?: throw IllegalStateException(MSG_FRAGMENT_HAS_NO_TAG))
-        }
+        for (i in 0 until backStackCount) fragmentTags.add(fragmentManager.getBackStackEntryAt(i).name
+                ?: throw IllegalStateException(MSG_FRAGMENT_HAS_NO_TAG))
 
         fragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleCallbacks, false)
     }
@@ -156,13 +188,6 @@ class FragmentStateManager @JvmOverloads constructor(
         return fragmentShown
     }
 
-    fun onSaveInstanceState(outState: Bundle) =
-            outState.putString(CURRENT_FRAGMENT_KEY, currentFragmentTag)
-
-    fun onRestoreInstanceState(savedState: Bundle?) {
-        if (savedState != null) currentFragmentTag = savedState.getString(CURRENT_FRAGMENT_KEY)
-    }
-
     /**
      * An interface to provide unique tags for [Fragments][Fragment]
      */
@@ -175,10 +200,10 @@ class FragmentStateManager @JvmOverloads constructor(
 
     companion object {
 
-        private const val CURRENT_FRAGMENT_KEY = "com.tunjid.androidbootstrap.core.components.FragmentStateManager.currentFragmentTag"
+        private const val CURRENT_FRAGMENT_KEY = "com.tunjid.androidbootstrap.core.components.FragmentStateViewModel.currentFragmentTag"
         private const val MSG_FRAGMENT_MISMATCH = "Fragment back stack entry name does not match a tag in the fragment manager"
-        internal const val MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK = "A fragment cannot be added to a FragmentManager managed by FragmentStateManager without adding it to the back stack"
-        internal const val MSG_FRAGMENT_HAS_NO_TAG = "A fragment cannot be added to a FragmentManager managed by FragmentStateManager without a Tag"
-        private const val MSG_DODGY_FRAGMENT = "Tag exists in FragmentStateManager but not in FragmentManager"
+        internal const val MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK = "A fragment cannot be added to a FragmentManager managed by FragmentStateViewModel without adding it to the back stack"
+        internal const val MSG_FRAGMENT_HAS_NO_TAG = "A fragment cannot be added to a FragmentManager managed by FragmentStateViewModel without a Tag"
+        private const val MSG_DODGY_FRAGMENT = "Tag exists in FragmentStateViewModel but not in FragmentManager"
     }
 }

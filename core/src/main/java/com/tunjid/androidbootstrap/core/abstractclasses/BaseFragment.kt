@@ -4,14 +4,14 @@ import android.content.Context
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import com.tunjid.androidbootstrap.core.components.FragmentStateManager
+import com.tunjid.androidbootstrap.core.components.FragmentStateViewModel
 
 /**
  * Base fragment
  */
 abstract class BaseFragment @JvmOverloads constructor(
         @LayoutRes contentLayoutId: Int = 0
-) : Fragment(contentLayoutId), FragmentStateManager.FragmentTagProvider {
+) : Fragment(contentLayoutId), FragmentStateViewModel.FragmentTagProvider {
 
     override val stableTag: String
         get() = javaClass.simpleName
