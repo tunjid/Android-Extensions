@@ -30,13 +30,13 @@ data class UiState(
              toolbarStateConsumer: (Int, CharSequence) -> Unit,
              fabClickListenerConsumer: (View.OnClickListener?) -> Unit
     ): UiState {
-        either(newState, { state -> state.toolBarMenu }, { state -> state.toolbarTitle }, toolbarStateConsumer)
-        either(newState, { state -> state.fabIcon }, { state -> state.fabText }, fabStateConsumer)
+        either(newState, UiState::toolBarMenu, UiState::toolbarTitle, toolbarStateConsumer)
+        either(newState, UiState::fabIcon, UiState::fabText, fabStateConsumer)
 
-        only(newState, { state -> state.showsFab }, showsFabConsumer)
-        only(newState, { state -> state.fabExtended }, fabExtendedConsumer)
-        only(newState, { state -> state.showsToolbar }, showsToolbarConsumer)
-        only(newState, { state -> state.navBarColor }, navBarColorConsumer)
+        only(newState, UiState::showsFab, showsFabConsumer)
+        only(newState, UiState::fabExtended, fabExtendedConsumer)
+        only(newState, UiState::showsToolbar, showsToolbarConsumer)
+        only(newState, UiState::navBarColor, navBarColorConsumer)
 
         fabClickListenerConsumer.invoke(newState.fabClickListener)
 
