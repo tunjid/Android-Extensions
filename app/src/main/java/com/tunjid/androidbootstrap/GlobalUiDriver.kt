@@ -172,14 +172,13 @@ class GlobalUiDriver(
         return selected || host.onOptionsItemSelected(item)
     }
 
-    private fun toggleToolbar(show: Boolean) {
-        if (show) toolbarHider.show()
-        else toolbarHider.hide()
-    }
+    private fun toggleToolbar(show: Boolean) =
+            if (show) toolbarHider.show()
+            else toolbarHider.hide()
 
     private fun toggleFab(show: Boolean) =
-            if (show) this.fabHider.show()
-            else this.fabHider.hide()
+            if (show) fabHider.show()
+            else fabHider.hide()
 
     private fun setNavBarColor(color: Int) {
         navBackgroundView.background = GradientDrawable(
