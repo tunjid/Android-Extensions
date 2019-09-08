@@ -21,7 +21,7 @@ import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.viewholders.TileViewHolder
 import com.tunjid.androidbootstrap.viewmodels.ShiftingTileViewModel
 
-class ShiftingTileFragment : AppBaseFragment(), GlobalUiController {
+class ShiftingTileFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiController {
 
     override var uiState: UiState by activityGlobalUiController()
 

@@ -84,26 +84,14 @@ class GlobalUiDriver(
         fragmentContainerId: Int
 ) : GlobalUiController, LifecycleEventObserver {
 
-    private lateinit var fabHider: ViewHider
-    private lateinit var toolbarHider: ViewHider
-    private lateinit var fabExtensionAnimator: FabExtensionAnimator
-
     // Lazy lookups because setContentView in the host will not have been called at delegation time.
 
-    private val fab: View by lazy {
-        host.findViewById<MaterialButton>(fabId).apply {
-            fabHider = ViewHider.of(this).setDirection(ViewHider.BOTTOM)
-                    .addEndRunnable { fab.visibility = View.VISIBLE }
-                    .build()
-
-            fabExtensionAnimator = FabExtensionAnimator(this)
-            fabExtensionAnimator.isExtended = true
-        }
+    private val fab: MaterialButton by lazy {
+        host.findViewById<MaterialButton>(fabId)
     }
 
     private val toolbar: Toolbar by lazy {
         host.findViewById<Toolbar>(toolbarId).apply {
-            toolbarHider = ViewHider.of(this).setDirection(ViewHider.TOP).build()
             setOnMenuItemClickListener(this@GlobalUiDriver::onMenuItemClicked)
         }
     }
@@ -115,6 +103,18 @@ class GlobalUiDriver(
     private val fragmentContainer: View by lazy {
         host.window.decorView.systemUiVisibility = DEFAULT_SYSTEM_UI_FLAGS
         host.findViewById<View>(fragmentContainerId)
+    }
+
+    private val toolbarHider: ViewHider by lazy {
+        ViewHider.of(toolbar).setDirection(ViewHider.TOP).build()
+    }
+
+    private val fabHider: ViewHider by lazy {
+        ViewHider.of(fab).setDirection(ViewHider.BOTTOM).addEndRunnable { fab.visibility = View.VISIBLE }.build()
+    }
+
+    private val fabExtensionAnimator: FabExtensionAnimator by lazy {
+        FabExtensionAnimator(fab).apply { isExtended = true }
     }
 
     private val backPressedCallback: OnBackPressedCallback
@@ -133,7 +133,7 @@ class GlobalUiDriver(
             // Therefore we insert this callback first, and manually remove it when the host is destroyed
             // by implementing the lifecyle observer interface.
             backPressedCallback = onBackPressedDispatcher.addCallback {
-                if (supportFragmentManager.backStackEntryCount > 0) supportFragmentManager.popBackStack()
+                if (supportFragmentManager.backStackEntryCount > 1) supportFragmentManager.popBackStack()
                 else finish() // Do not call onBackPressed, it will delegate back to this callback recursively
             }
         }
@@ -147,7 +147,6 @@ class GlobalUiDriver(
                     this::toggleFab,
                     this::toggleToolbar,
                     this::setNavBarColor,
-                    {},
                     this::setFabIcon,
                     this::updateMainToolBar,
                     this::setFabClickListener

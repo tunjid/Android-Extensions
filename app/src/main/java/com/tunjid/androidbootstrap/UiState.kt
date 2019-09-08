@@ -8,7 +8,6 @@ import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
-import com.tunjid.androidbootstrap.view.util.InsetFlags
 
 data class UiState(
         @DrawableRes val fabIcon: Int,
@@ -18,7 +17,6 @@ data class UiState(
         val showsFab: Boolean,
         val fabExtended: Boolean,
         val showsToolbar: Boolean,
-        val insetFlags: InsetFlags,
         val toolbarTitle: CharSequence,
         val fabClickListener: View.OnClickListener?
 ) : Parcelable {
@@ -27,7 +25,6 @@ data class UiState(
              showsFabConsumer: (Boolean) -> Unit,
              showsToolbarConsumer: (Boolean) -> Unit,
              navBarColorConsumer: (Int) -> Unit,
-             insetFlagsConsumer: (InsetFlags) -> Unit,
              fabStateConsumer: (Int, CharSequence) -> Unit,
              toolbarStateConsumer: (Int, CharSequence) -> Unit,
              fabClickListenerConsumer: (View.OnClickListener?) -> Unit
@@ -38,7 +35,6 @@ data class UiState(
         only(newState, { state -> state.showsFab }, showsFabConsumer)
         only(newState, { state -> state.showsToolbar }, showsToolbarConsumer)
         only(newState, { state -> state.navBarColor }, navBarColorConsumer)
-        only(newState, { state -> state.insetFlags }, insetFlagsConsumer)
 
         fabClickListenerConsumer.invoke(newState.fabClickListener)
 
@@ -73,12 +69,6 @@ data class UiState(
             showsFab = `in`.readByte().toInt() != 0x00,
             fabExtended = `in`.readByte().toInt() != 0x00,
             showsToolbar = `in`.readByte().toInt() != 0x00,
-            insetFlags = InsetFlags.create(
-                    `in`.readByte().toInt() != 0x00,
-                    `in`.readByte().toInt() != 0x00,
-                    `in`.readByte().toInt() != 0x00,
-                    `in`.readByte().toInt() != 0x00
-            ),
             toolbarTitle = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(`in`),
             fabClickListener = null
     )
@@ -95,11 +85,6 @@ data class UiState(
         dest.writeByte((if (showsFab) 0x01 else 0x00).toByte())
         dest.writeByte((if (fabExtended) 0x01 else 0x00).toByte())
         dest.writeByte((if (showsToolbar) 0x01 else 0x00).toByte())
-        dest.writeByte((if (insetFlags.hasLeftInset()) 0x01 else 0x00).toByte())
-        dest.writeByte((if (insetFlags.hasTopInset()) 0x01 else 0x00).toByte())
-        dest.writeByte((if (insetFlags.hasRightInset()) 0x01 else 0x00).toByte())
-        dest.writeByte((if (insetFlags.hasBottomInset()) 0x01 else 0x00).toByte())
-
         TextUtils.writeToParcel(toolbarTitle, dest, 0)
     }
 
@@ -114,7 +99,6 @@ data class UiState(
                     showsFab = true,
                     fabExtended = true,
                     showsToolbar = true,
-                    insetFlags = InsetFlags.ALL,
                     toolbarTitle = "",
                     fabClickListener = null
             )
