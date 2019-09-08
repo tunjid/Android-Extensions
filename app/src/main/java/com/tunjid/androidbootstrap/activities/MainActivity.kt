@@ -7,6 +7,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.annotation.LayoutRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -23,12 +24,13 @@ import com.tunjid.androidbootstrap.GlobalUiController
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.UiState
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
-import com.tunjid.androidbootstrap.core.abstractclasses.BaseActivity
+import com.tunjid.androidbootstrap.core.components.FragmentStateViewModel
+import com.tunjid.androidbootstrap.core.components.fragmentStateViewModelFactory
 import com.tunjid.androidbootstrap.fragments.RouteFragment
 import com.tunjid.androidbootstrap.globalUiDriver
 import com.tunjid.androidbootstrap.view.util.ViewUtil.getLayoutParams
 
-class MainActivity : BaseActivity(R.layout.activity_main), GlobalUiController {
+class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiController {
 
     private var insetsApplied: Boolean = false
     private var leftInset: Int = 0
@@ -46,8 +48,7 @@ class MainActivity : BaseActivity(R.layout.activity_main), GlobalUiController {
 
     override var uiState: UiState by globalUiDriver()
 
-    override val currentFragment: AppBaseFragment?
-        get() = super.currentFragment as? AppBaseFragment
+    val fragmentStateViewModel: FragmentStateViewModel by fragmentStateViewModelFactory(com.tunjid.androidbootstrap.core.R.id.main_fragment_container)
 
     private val fragmentViewCreatedCallback: FragmentManager.FragmentLifecycleCallbacks = object : FragmentManager.FragmentLifecycleCallbacks() {
 
@@ -70,7 +71,7 @@ class MainActivity : BaseActivity(R.layout.activity_main), GlobalUiController {
         uiState = savedInstanceState?.getParcelable(UI_STATE) ?: UiState.freshState()
         supportFragmentManager.registerFragmentLifecycleCallbacks(fragmentViewCreatedCallback, false)
 
-        if (savedInstanceState == null) showFragment(RouteFragment.newInstance())
+        if (savedInstanceState == null) RouteFragment.newInstance().apply { fragmentStateViewModel.showFragment(this, stableTag) }
     }
 
     override fun setContentView(@LayoutRes layoutResID: Int) {
@@ -98,7 +99,7 @@ class MainActivity : BaseActivity(R.layout.activity_main), GlobalUiController {
     override fun invalidateOptionsMenu() {
         super.invalidateOptionsMenu()
         toolbar.postDelayed(ANIMATION_DURATION.toLong()) {
-            currentFragment?.onPrepareOptionsMenu(toolbar.menu)
+            fragmentStateViewModel.currentFragment?.onPrepareOptionsMenu(toolbar.menu)
         }
     }
 
@@ -113,7 +114,7 @@ class MainActivity : BaseActivity(R.layout.activity_main), GlobalUiController {
 
     private fun isNotInMainFragmentContainer(view: View): Boolean {
         val parent = view.parent as View
-        return parent.id != R.id.main_fragment_container
+        return parent.id != fragmentStateViewModel.idResource
     }
 
     private fun consumeSystemInsets(insets: WindowInsetsCompat): WindowInsetsCompat {
@@ -127,7 +128,7 @@ class MainActivity : BaseActivity(R.layout.activity_main), GlobalUiController {
         topInsetView.layoutParams.height = topInset
         bottomInsetView.layoutParams.height = bottomInset
 
-        adjustInsetForFragment(currentFragment)
+        adjustInsetForFragment(fragmentStateViewModel.currentFragment)
 
         this.insetsApplied = true
         return insets

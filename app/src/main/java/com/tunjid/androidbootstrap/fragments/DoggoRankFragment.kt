@@ -10,15 +10,10 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DiffUtil
-import com.tunjid.androidbootstrap.GlobalUiController
-import com.tunjid.androidbootstrap.PlaceHolder
-import com.tunjid.androidbootstrap.R
-import com.tunjid.androidbootstrap.UiState
-import com.tunjid.androidbootstrap.activityGlobalUiController
+import com.tunjid.androidbootstrap.*
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter
 import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
-import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment
 import com.tunjid.androidbootstrap.fragments.AdoptDoggoFragment.Companion.ARG_DOGGO
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.recyclerview.ListManager
@@ -103,7 +98,7 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list), Global
     }
 
     @SuppressLint("CommitTransaction")
-    override fun provideFragmentTransaction(fragmentTo: BaseFragment): FragmentTransaction? {
+    override fun provideFragmentTransaction(fragmentTo: AppBaseFragment): FragmentTransaction? {
         if (!fragmentTo.stableTag.contains(AdoptDoggoFragment::class.java.simpleName)) return null
 
         val args = fragmentTo.arguments ?: return null

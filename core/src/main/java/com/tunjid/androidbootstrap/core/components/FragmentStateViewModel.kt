@@ -31,22 +31,22 @@ private class FragmentStateViewModelFactory(
             modelClass: Class<T>,
             handle: SavedStateHandle
     ): T = FragmentStateViewModel(handle, fragmentManager, idResource) as T
-
 }
 
 /**
  * A class that keeps track of the [fragments][Fragment] in a
  * [FragmentManager], and enforces that they are added to the back stack.
  *
- * It is best used for managing Fragments that are navigation destinations
+ * It is best used for managing Fragments that are navigation destinations in either a [FragmentActivity]
+ * or [Fragment].
  *
  * Created by tj.dahunsi on 4/23/17.
  */
 
-class FragmentStateViewModel @JvmOverloads constructor(
+class FragmentStateViewModel constructor(
         private val state: SavedStateHandle,
         internal val fragmentManager: FragmentManager,
-        @param:IdRes @field:IdRes @get:IdRes val idResource: Int = R.id.main_fragment_container
+        @param:IdRes @field:IdRes @get:IdRes val idResource: Int
 ) : ViewModel() {
 
     internal val fragmentTags = mutableSetOf<String>()
@@ -143,21 +143,6 @@ class FragmentStateViewModel @JvmOverloads constructor(
      * Attempts to show the fragment provided, if the fragment does not already exist in the
      * [FragmentManager] under the specified tag.
      *
-     * @param transaction         The fragment transaction to show the supplied fragment with.
-     * @param fragmentTagProvider A fragmentTagProvider provider specifying the
-     * fragment and tag
-     * @return true if the a fragment provided will be shown, false if the fragment instance already
-     * exists and will be restored instead.
-     */
-    fun showFragment(
-            transaction: FragmentTransaction,
-            fragmentTagProvider: FragmentTagProvider
-    ): Boolean = showFragment(fragmentTagProvider.fragment, fragmentTagProvider.stableTag, transaction)
-
-    /**
-     * Attempts to show the fragment provided, if the fragment does not already exist in the
-     * [FragmentManager] under the specified tag.
-     *
      * @param fragment    The fragment to show.
      * @param transaction The fragment transaction to show the supplied fragment with.
      * @param tag         the value to supply to this fragment for it's backstack entry name and tag
@@ -168,7 +153,7 @@ class FragmentStateViewModel @JvmOverloads constructor(
     fun showFragment(
             fragment: Fragment,
             tag: String,
-            transaction: FragmentTransaction = fragmentManager.beginTransaction()
+            transaction: FragmentTransaction? = null
     ): Boolean {
         val fragmentShown: Boolean
         if (currentFragmentTag != null && currentFragmentTag == tag) return false
@@ -181,7 +166,7 @@ class FragmentStateViewModel @JvmOverloads constructor(
                 (if (fragmentAlreadyExists) fragmentManager.findFragmentByTag(tag)
                 else fragment) ?: throw NullPointerException(MSG_DODGY_FRAGMENT)
 
-        transaction.addToBackStack(tag)
+        (transaction ?: fragmentManager.beginTransaction()).addToBackStack(tag)
                 .replace(idResource, fragmentToShow, tag)
                 .commit()
 
@@ -194,8 +179,6 @@ class FragmentStateViewModel @JvmOverloads constructor(
 
     interface FragmentTagProvider {
         val stableTag: String
-
-        val fragment: Fragment
     }
 
     companion object {

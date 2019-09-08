@@ -1,6 +1,7 @@
 package com.tunjid.androidbootstrap.core.components
 
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.SavedStateHandle
 import androidx.test.annotation.UiThreadTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
@@ -46,7 +47,7 @@ class FragmentStateViewModelTest {
     fun setUp() {
         testIdler = TestIdler(DEFAULT_TIME_OUT.toLong(), TimeUnit.SECONDS)
         activity = activityRule.activity as TestActivity
-        fragmentStateViewModel = FragmentStateViewModel(activity!!.supportFragmentManager)
+        fragmentStateViewModel = FragmentStateViewModel(SavedStateHandle(), activity!!.supportFragmentManager, R.id.main_fragment_container)
     }
 
     @After
@@ -93,7 +94,7 @@ class FragmentStateViewModelTest {
 
         // create new instance of fragentStateManager and confirm all
         // the old tags are restored
-        fragmentStateViewModel = FragmentStateViewModel(activity!!.supportFragmentManager)
+        fragmentStateViewModel = FragmentStateViewModel(SavedStateHandle(), activity!!.supportFragmentManager, R.id.main_fragment_container)
 
         assertTrue(fragmentStateViewModel!!.fragmentTags.contains(TAG_A))
         assertTrue(fragmentStateViewModel!!.fragmentTags.size == 1)
