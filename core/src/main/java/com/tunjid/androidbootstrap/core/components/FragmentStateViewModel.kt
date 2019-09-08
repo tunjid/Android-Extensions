@@ -9,7 +9,6 @@ import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
-import com.tunjid.androidbootstrap.core.R
 import java.util.*
 
 @Suppress("unused")
@@ -22,7 +21,7 @@ fun FragmentActivity.fragmentStateViewModelFactory(@IdRes idResource: Int) =
 @Suppress("UNCHECKED_CAST")
 private class FragmentStateViewModelFactory(
         private val fragmentManager: FragmentManager,
-        @param:IdRes @field:IdRes @get:IdRes val idResource: Int = R.id.main_fragment_container,
+        @param:IdRes @field:IdRes @get:IdRes val idResource: Int,
         owner: SavedStateRegistryOwner,
         defaultArgs: Bundle? = null
 ) : AbstractSavedStateViewModelFactory(owner, defaultArgs) {

@@ -48,28 +48,20 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
 
     override var uiState: UiState by globalUiDriver()
 
-    val fragmentStateViewModel: FragmentStateViewModel by fragmentStateViewModelFactory(com.tunjid.androidbootstrap.core.R.id.main_fragment_container)
-
-    private val fragmentViewCreatedCallback: FragmentManager.FragmentLifecycleCallbacks = object : FragmentManager.FragmentLifecycleCallbacks() {
-
-        override fun onFragmentPreAttached(fm: FragmentManager, f: Fragment, context: Context) =
-                adjustInsetForFragment(f) // Called when showing a fragment the first time only
-
-        override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
-            if (isNotInMainFragmentContainer(v)) return
-
-            val fragment = f as AppBaseFragment
-            if (fragment.restoredFromBackStack()) adjustInsetForFragment(f)
-
-            setOnApplyWindowInsetsListener(v) { _, insets -> consumeFragmentInsets(insets) }
-        }
-    }
+    val fragmentStateViewModel: FragmentStateViewModel by fragmentStateViewModelFactory(R.id.main_fragment_container)
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         uiState = savedInstanceState?.getParcelable(UI_STATE) ?: UiState.freshState()
-        supportFragmentManager.registerFragmentLifecycleCallbacks(fragmentViewCreatedCallback, false)
+        supportFragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
+
+            override fun onFragmentPreAttached(fm: FragmentManager, f: Fragment, context: Context) =
+                    adjustInsetForFragment(f)
+
+            override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) =
+                    onFragmentViewCreated(v, f)
+        }, false)
 
         if (savedInstanceState == null) RouteFragment.newInstance().apply { fragmentStateViewModel.showFragment(this, stableTag) }
     }
@@ -161,6 +153,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
                 0,
                 if (insetFlags.hasRightInset()) this.rightInset else 0,
                 0)
+    }
+
+    private fun onFragmentViewCreated(v: View, f: Fragment) {
+        if (isNotInMainFragmentContainer(v)) return
+
+        val fragment = f as AppBaseFragment
+        if (fragment.restoredFromBackStack()) adjustInsetForFragment(f)
+
+        setOnApplyWindowInsetsListener(v) { _, insets -> consumeFragmentInsets(insets) }
     }
 
     companion object {
