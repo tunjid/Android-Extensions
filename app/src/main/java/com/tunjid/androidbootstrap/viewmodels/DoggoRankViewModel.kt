@@ -11,7 +11,7 @@ import com.tunjid.androidbootstrap.functions.collections.Lists
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.recyclerview.diff.Diff
 import com.tunjid.androidbootstrap.recyclerview.diff.Differentiable
-import io.reactivex.Flowable
+import com.tunjid.androidbootstrap.toLiveData
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.CompositeDisposable
@@ -28,7 +28,7 @@ class DoggoRankViewModel(application: Application) : AndroidViewModel(applicatio
 
     private var doggoIdPositionPair: Pair<Long, Int>? = null
 
-    fun watchDoggos(): Flowable<DiffUtil.DiffResult> = processor
+    fun watchDoggos() = processor.toLiveData()
 
     fun onActionStarted(doggoIdActionPair: Pair<Long, Int>) {
         val id = doggoIdActionPair.first

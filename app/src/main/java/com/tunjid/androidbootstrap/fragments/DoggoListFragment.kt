@@ -5,19 +5,21 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.transition.Fade
 import android.transition.TransitionSet
-import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnLayoutChangeListener
-import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.app.SharedElementCallback
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getDrawable
 import androidx.fragment.app.FragmentTransaction
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import com.tunjid.androidbootstrap.GlobalUiController
 import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
+import com.tunjid.androidbootstrap.UiState
+import com.tunjid.androidbootstrap.activityGlobalUiController
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter.ImageListAdapterListener
 import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
@@ -32,52 +34,53 @@ import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 import java.util.Objects.requireNonNull
 import kotlin.math.abs
 
-class DoggoListFragment : AppBaseFragment(), ImageListAdapterListener {
+class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalUiController, ImageListAdapterListener {
 
-    private lateinit var listManager: ListManager<DoggoViewHolder, PlaceHolder.State>
-
-    override val fabIconRes: Int = R.drawable.ic_paw_24dp
-
-    override val fabText: CharSequence get() = getString(R.string.collapse_prompt)
-
-    override val showsFab: Boolean = true
+    override var uiState: UiState by activityGlobalUiController()
 
     override val insetFlags: InsetFlags = NO_BOTTOM
 
-    override val fabClickListener: View.OnClickListener
-        get() = View.OnClickListener { isFabExtended = !isFabExtended }
+    private lateinit var listManager: ListManager<DoggoViewHolder, PlaceHolder.State>
 
     private val transitionImage: ImageView?
         get() {
-            val doggo = Doggo.getTransitionDoggo() ?: return null
+            val doggo = Doggo.transitionDoggo ?: return null
             val holder = listManager.findViewHolderForItemId(doggo.hashCode().toLong())
                     ?: return null
 
             return holder.thumbnail
         }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_doggo_list, container, false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        uiState = uiState.copy(
+                toolbarTitle = this::class.java.simpleName,
+                toolBarMenu = 0,
+                showsToolbar = true,
+                fabIcon = R.drawable.ic_paw_24dp,
+                fabText = getString(R.string.collapse_prompt),
+                showsFab = true,
+                fabExtended = !restoredFromBackStack(),
+                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),
+                fabClickListener = View.OnClickListener { uiState = uiState.copy(fabExtended = !uiState.fabExtended) }
+        )
 
         listManager = ListManagerBuilder<DoggoViewHolder, PlaceHolder.State>()
-                .withRecyclerView(rootView.findViewById(R.id.recycler_view))
+                .withRecyclerView(view.findViewById(R.id.recycler_view))
                 .withPaddedAdapter(DoggoAdapter(
                         Doggo.doggos,
                         R.layout.viewholder_doggo_list,
                         { itemView, adapterListener -> DoggoViewHolder(itemView, adapterListener) },
                         this), 2)
-                .addScrollListener { _, dy -> if (abs(dy!!) > 4) isFabExtended = dy < 0 }
+                .addScrollListener { _, dy -> if (abs(dy) > 4) uiState = uiState.copy(fabExtended = dy < 0) }
                 .addDecoration(getDivider(DividerItemDecoration.HORIZONTAL))
                 .addDecoration(getDivider(DividerItemDecoration.VERTICAL))
                 .withGridLayoutManager(2)
                 .build()
 
         postponeEnterTransition()
-        return rootView
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         scrollToPosition()
     }
 
@@ -87,12 +90,12 @@ class DoggoListFragment : AppBaseFragment(), ImageListAdapterListener {
     }
 
     override fun onDoggoClicked(doggo: Doggo) {
-        Doggo.setTransitionDoggo(doggo)
+        Doggo.transitionDoggo = doggo
         showFragment(DoggoPagerFragment.newInstance())
     }
 
     override fun onDoggoImageLoaded(doggo: Doggo) {
-        if (doggo == Doggo.getTransitionDoggo()) startPostponedEnterTransition()
+        if (doggo == Doggo.transitionDoggo) startPostponedEnterTransition()
     }
 
     private fun getDivider(orientation: Int): RecyclerView.ItemDecoration {
@@ -107,7 +110,7 @@ class DoggoListFragment : AppBaseFragment(), ImageListAdapterListener {
             recyclerView.addOnLayoutChangeListener(object : OnLayoutChangeListener {
                 override fun onLayoutChange(v: View, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int) {
                     recyclerView.removeOnLayoutChangeListener(this)
-                    val last = Doggo.getTransitionDoggo() ?: return
+                    val last = Doggo.transitionDoggo ?: return
 
                     val index = Doggo.doggos.indexOf(last)
                     if (index < 0) return
@@ -127,7 +130,7 @@ class DoggoListFragment : AppBaseFragment(), ImageListAdapterListener {
     override fun provideFragmentTransaction(fragmentTo: BaseFragment): FragmentTransaction? {
         if (!fragmentTo.stableTag.contains(DoggoPagerFragment::class.java.simpleName)) return null
 
-        val doggo = Doggo.getTransitionDoggo()
+        val doggo = Doggo.transitionDoggo
         val imageView = transitionImage
         if (doggo == null || imageView == null) return null
 

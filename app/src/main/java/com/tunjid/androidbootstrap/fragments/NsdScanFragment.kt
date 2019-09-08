@@ -3,13 +3,20 @@ package com.tunjid.androidbootstrap.fragments
 
 import android.net.nsd.NsdServiceInfo
 import android.os.Bundle
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
+import com.tunjid.androidbootstrap.GlobalUiController
 import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
+import com.tunjid.androidbootstrap.UiState
+import com.tunjid.androidbootstrap.activityGlobalUiController
 import com.tunjid.androidbootstrap.adapters.NsdAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.recyclerview.ListManager
@@ -20,35 +27,42 @@ import com.tunjid.androidbootstrap.viewmodels.NsdViewModel
 /**
  * A [Fragment] listing supported NSD servers
  */
-class NsdScanFragment : AppBaseFragment(), NsdAdapter.ServiceClickedListener {
+class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan), GlobalUiController, NsdAdapter.ServiceClickedListener {
 
-    private var isScanning: Boolean = false
+    override var uiState: UiState by activityGlobalUiController()
+
+    private val viewModel by viewModels<NsdViewModel>()
+
     private lateinit var listManager: ListManager<NSDViewHolder, PlaceHolder.State>
-    private lateinit var viewModel: NsdViewModel
-
-    override val toolBarMenuRes: Int = R.menu.menu_nsd_scan
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        viewModel = ViewModelProviders.of(this).get(NsdViewModel::class.java)
+        viewModel.scanChanges.observe(this) { listManager.onDiff(it) }
+        viewModel.isScanning.observe(this) { activity?.invalidateOptionsMenu() }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        val root = inflater.inflate(R.layout.fragment_nsd_scan, container, false)
-        val placeHolder = PlaceHolder(root.findViewById(R.id.placeholder_container))
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        uiState = uiState.copy(
+                toolbarTitle = this::class.java.simpleName,
+                showsToolbar = true,
+                toolBarMenu = R.menu.menu_nsd_scan,
+                showsFab = false,
+                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
+        )
+
+        val placeHolder = PlaceHolder(view.findViewById(R.id.placeholder_container))
         placeHolder.bind(PlaceHolder.State(R.string.no_nsd_devices, R.drawable.ic_signal_wifi__24dp))
 
         listManager = ListManagerBuilder<NSDViewHolder, PlaceHolder.State>()
-                .withRecyclerView(root.findViewById(R.id.list))
+                .withRecyclerView(view.findViewById(R.id.list))
                 .addDecoration(DividerItemDecoration(requireActivity(), VERTICAL))
                 .withAdapter(NsdAdapter(this, viewModel.services))
                 .withPlaceholder(placeHolder)
                 .withLinearLayoutManager()
                 .build()
-
-        return root
     }
 
     override fun onResume() {
@@ -64,49 +78,30 @@ class NsdScanFragment : AppBaseFragment(), NsdAdapter.ServiceClickedListener {
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
 
-        menu.findItem(R.id.menu_stop)?.isVisible = isScanning
-        menu.findItem(R.id.menu_scan)?.isVisible = !isScanning
+        val currentlyScanning = viewModel.isScanning.value ?: false
+
+        menu.findItem(R.id.menu_stop)?.isVisible = currentlyScanning
+        menu.findItem(R.id.menu_scan)?.isVisible = !currentlyScanning
 
         val refresh = menu.findItem(R.id.menu_refresh)
 
-        refresh?.isVisible = isScanning
-        if (isScanning) refresh?.setActionView(R.layout.actionbar_indeterminate_progress)
+        refresh?.isVisible = currentlyScanning
+        if (currentlyScanning) refresh?.setActionView(R.layout.actionbar_indeterminate_progress)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_scan -> {
-                scanDevices(true)
-                true
-            }
-            R.id.menu_stop -> {
-                scanDevices(false)
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.menu_scan -> scanDevices(true).let { true }
+        R.id.menu_stop -> scanDevices(false).let { true }
+        else -> true
     }
 
-    override fun onServiceClicked(serviceInfo: NsdServiceInfo) {}
+    override fun onServiceClicked(serviceInfo: NsdServiceInfo) = Unit
 
-    override fun isSelf(serviceInfo: NsdServiceInfo): Boolean {
-        return false
-    }
+    override fun isSelf(serviceInfo: NsdServiceInfo): Boolean = false
 
-    private fun scanDevices(enable: Boolean) {
-        isScanning = enable
-
-        if (isScanning) disposables.add(viewModel.findDevices()
-                .doOnSubscribe { requireActivity().invalidateOptionsMenu() }
-                .doFinally(this::onScanningStopped)
-                .subscribe(listManager::onDiff, Throwable::printStackTrace))
-        else viewModel.stopScanning()
-    }
-
-    private fun onScanningStopped() {
-        isScanning = false
-        requireActivity().invalidateOptionsMenu()
-    }
+    private fun scanDevices(enable: Boolean) =
+            if (enable) viewModel.findDevices()
+            else viewModel.stopScanning()
 
     companion object {
         fun newInstance(): NsdScanFragment = NsdScanFragment().apply { arguments = Bundle() }

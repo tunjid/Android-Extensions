@@ -2,10 +2,12 @@ package com.tunjid.androidbootstrap.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.DiffUtil
 import com.tunjid.androidbootstrap.functions.collections.Lists
 import com.tunjid.androidbootstrap.model.Tile
 import com.tunjid.androidbootstrap.recyclerview.diff.Diff
+import com.tunjid.androidbootstrap.toLiveData
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.CompositeDisposable
@@ -13,6 +15,7 @@ import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.max
 
 class ShiftingTileViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -29,13 +32,9 @@ class ShiftingTileViewModel(application: Application) : AndroidViewModel(applica
         changes = !changes
     }
 
-    fun changes(): Boolean {
-        return changes
-    }
+    fun changes(): Boolean = changes
 
-    fun watchTiles(): Flowable<DiffUtil.DiffResult> {
-        return processor
-    }
+    fun watchTiles(): LiveData<DiffUtil.DiffResult> = processor.toLiveData()
 
     private fun dance() {
         disposables.add(Flowable.interval(2, TimeUnit.SECONDS, Schedulers.io())
@@ -58,7 +57,7 @@ class ShiftingTileViewModel(application: Application) : AndroidViewModel(applica
     }
 
     private fun makeNewTiles(): List<Tile> {
-        return generateTiles(if (changes) Math.max(5, (Math.random() * NUM_TILES).toInt()) else NUM_TILES)
+        return generateTiles(if (changes) max(5, (Math.random() * NUM_TILES).toInt()) else NUM_TILES)
     }
 
     override fun onCleared() {

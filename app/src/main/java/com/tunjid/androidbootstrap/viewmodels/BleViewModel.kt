@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.ParcelUuid
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import com.tunjid.androidbootstrap.communications.bluetooth.BLEScanner
 import com.tunjid.androidbootstrap.communications.bluetooth.ScanFilterCompat
@@ -15,6 +16,7 @@ import com.tunjid.androidbootstrap.recyclerview.diff.Diff
 import com.tunjid.androidbootstrap.recyclerview.diff.Differentiable
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
 import java.util.ArrayList
@@ -25,8 +27,13 @@ import kotlin.Comparator
 class BleViewModel(application: Application) : AndroidViewModel(application) {
 
     val scanResults: List<ScanResultCompat>
+
     private val scanner: BLEScanner?
+    private val disposables = CompositeDisposable()
     private var processor: PublishProcessor<Diff<ScanResultCompat>> = PublishProcessor.create()
+
+    val devices: MutableLiveData<DiffUtil.DiffResult> = MutableLiveData()
+    val isScanning: MutableLiveData<Boolean> = MutableLiveData()
 
     val isBleOn: Boolean
         get() = scanner != null && scanner.isEnabled
@@ -38,13 +45,13 @@ class BleViewModel(application: Application) : AndroidViewModel(application) {
             application.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         else null
 
-        if (bluetoothManager != null) scanner = BLEScanner.getBuilder(bluetoothManager.adapter)
+        scanner = if (bluetoothManager != null) BLEScanner.getBuilder(bluetoothManager.adapter)
                 .addFilter(ScanFilterCompat.getBuilder()
                         .setServiceUuid(ParcelUuid(UUID.fromString(CUSTOM_SERVICE_UUID)))
                         .build())
                 .withCallBack { this.onDeviceFound(it) }
                 .build()
-        else scanner = null
+        else null
 
         stopScanning()
         processor = PublishProcessor.create()
@@ -53,32 +60,34 @@ class BleViewModel(application: Application) : AndroidViewModel(application) {
     override fun onCleared() {
         super.onCleared()
         scanner?.stopScan()
+        disposables.clear()
     }
 
-    fun hasBle(): Boolean {
-        return scanner != null
-    }
+    fun hasBle(): Boolean = scanner != null
 
-    fun findDevices(): Flowable<DiffUtil.DiffResult> {
-        if (scanner == null) return Flowable.empty()
+    fun findDevices() {
+        if (scanner == null) return
 
         stopScanning()
         processor = PublishProcessor.create()
         scanner.startScan()
 
+        isScanning.value = true
+
         // Clear list first, then start scanning.
-        return Flowable.fromCallable {
+        disposables.add(Flowable.fromCallable {
             Diff.calculate(scanResults,
                     emptyList(),
                     { _, _ -> emptyList() },
                     { result -> Differentiable.fromCharSequence { result.device.address } })
         }
                 .concatWith(processor.take(SCAN_PERIOD, TimeUnit.SECONDS, Schedulers.io()))
+                .doOnTerminate { isScanning.postValue(false) }
                 .subscribeOn(Schedulers.io())
-                .observeOn(mainThread()).map { diff ->
+                .observeOn(mainThread()).subscribe { diff ->
                     Lists.replace(scanResults, diff.items)
-                    diff.result
-                }
+                    devices.value = diff.result
+                })
     }
 
     fun stopScanning() {

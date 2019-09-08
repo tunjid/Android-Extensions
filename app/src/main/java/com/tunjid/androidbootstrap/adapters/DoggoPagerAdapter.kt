@@ -7,7 +7,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 
 class DoggoPagerAdapter(private val doggos: List<Doggo>, fm: FragmentManager)
-    : FragmentStatePagerAdapter(fm) {
+    : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
     override fun getItem(position: Int): Fragment = DoggoFragment.newInstance(doggos[position])
 

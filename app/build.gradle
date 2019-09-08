@@ -53,6 +53,7 @@ dependencies {
 
     // Android support libraries
     implementation parent.ext.kotlin
+    implementation parent.ext.ktxCore
     implementation parent.ext.palette
     implementation parent.ext.material
     implementation parent.ext.appCompat
@@ -60,10 +61,15 @@ dependencies {
     implementation parent.ext.recyclerView
     implementation parent.ext.constraintLayout
 
-    implementation 'androidx.core:core-ktx:1.0.2'
-    implementation 'androidx.fragment:fragment-ktx:1.1.0-rc03'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.0.0'
+    implementation parent.ext.fragment
+    implementation parent.ext.fragmentKtx
+
+    implementation parent.ext.dynamicAnimations
+    implementation parent.ext.dynamicAnimationsKtx
+
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.1.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
+    implementation 'androidx.lifecycle:lifecycle-reactivestreams:2.0.0'
 
     // other dependencies
     implementation 'com.squareup.picasso:picasso:2.71828'

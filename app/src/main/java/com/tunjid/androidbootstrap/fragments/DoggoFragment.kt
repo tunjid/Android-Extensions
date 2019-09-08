@@ -1,31 +1,27 @@
 package com.tunjid.androidbootstrap.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter.ImageListAdapterListener
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 
-class DoggoFragment : AppBaseFragment(), ImageListAdapterListener {
+class DoggoFragment : AppBaseFragment(R.layout.fragment_image_detail), ImageListAdapterListener {
 
-    override fun getStableTag(): String =
-            super.getStableTag() + "-" + arguments!!.getParcelable(ARG_DOGGO)
+    override val stableTag: String
+        get() = super.stableTag + "-" + arguments!!.getParcelable(ARG_DOGGO)
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_image_detail, container, false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         val doggo = arguments!!.getParcelable<Doggo>(ARG_DOGGO)!!
 
-        rootView.tag = doggo
-        DoggoViewHolder(rootView, this).bind(doggo)
-
-        return rootView
+        view.tag = doggo
+        DoggoViewHolder(view, this).bind(doggo)
     }
-
-    override fun togglePersistentUi() = Unit /* Nothing, delegate to parent fragment */
 
     override fun onDoggoImageLoaded(doggo: Doggo) = parentFragment!!.startPostponedEnterTransition()
 
@@ -33,7 +29,7 @@ class DoggoFragment : AppBaseFragment(), ImageListAdapterListener {
         private const val ARG_DOGGO = "doggo"
 
         fun newInstance(doggo: Doggo): DoggoFragment = DoggoFragment().apply {
-            arguments = Bundle().apply { putParcelable("doggo", doggo) }
+            arguments = bundleOf(ARG_DOGGO to doggo)
         }
 
     }

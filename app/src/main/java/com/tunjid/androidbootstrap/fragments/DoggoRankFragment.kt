@@ -4,14 +4,17 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Pair
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DiffUtil
+import com.tunjid.androidbootstrap.GlobalUiController
 import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
+import com.tunjid.androidbootstrap.UiState
+import com.tunjid.androidbootstrap.activityGlobalUiController
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter
 import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
@@ -28,36 +31,46 @@ import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 import com.tunjid.androidbootstrap.viewmodels.DoggoRankViewModel
 import kotlin.math.abs
 
-class DoggoRankFragment : AppBaseFragment(), DoggoAdapter.ImageListAdapterListener {
+class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list), GlobalUiController, DoggoAdapter.ImageListAdapterListener {
 
-    private lateinit var viewModel: DoggoRankViewModel
+    override var uiState: UiState by activityGlobalUiController()
+
+    override val insetFlags: InsetFlags = NO_BOTTOM
+
+    private val viewModel by viewModels<DoggoRankViewModel>()
+
     private lateinit var listManager: ListManager<DoggoRankViewHolder, PlaceHolder.State>
-
-    override val fabIconRes: Int = R.drawable.ic_restore_24dp
-
-    override val fabText: CharSequence
-        get() = getString(R.string.reset_doggos)
-
-    override val fabClickListener: View.OnClickListener
-        get() = View.OnClickListener { viewModel.resetList() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(DoggoRankViewModel::class.java)
+        viewModel.watchDoggos().observe(this, this::onDiff)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val root = inflater.inflate(R.layout.fragment_simple_list, container, false)
-        val placeHolder = PlaceHolder(root.findViewById(R.id.placeholder_container))
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        uiState = uiState.copy(
+                toolbarTitle = this::class.java.simpleName,
+                toolBarMenu = 0,
+                showsToolbar = true,
+                fabText = getString(R.string.reset_doggos),
+                fabIcon = R.drawable.ic_restore_24dp,
+                showsFab = true,
+                fabExtended = !restoredFromBackStack(),
+                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),
+                fabClickListener = View.OnClickListener { viewModel.resetList() }
+        )
+
+        val placeHolder = PlaceHolder(view.findViewById(R.id.placeholder_container))
 
         listManager = ListManagerBuilder<DoggoRankViewHolder, PlaceHolder.State>()
-                .withRecyclerView(root.findViewById(R.id.recycler_view))
+                .withRecyclerView(view.findViewById(R.id.recycler_view))
                 .withPaddedAdapter(DoggoAdapter(
                         viewModel.doggos,
                         R.layout.viewholder_doggo_rank,
                         { itemView, adapterListener -> DoggoRankViewHolder(itemView, adapterListener) },
                         this))
-                .addScrollListener { _, dy -> if (abs(dy!!) > 4) isFabExtended = dy < 0 }
+                .addScrollListener { _, dy -> if (abs(dy) > 4) uiState = uiState.copy(fabExtended = dy < 0) }
                 .withPlaceholder(placeHolder)
                 .withLinearLayoutManager()
                 .withSwipeDragOptions(ListManager.swipeDragOptionsBuilder<DoggoRankViewHolder>()
@@ -73,13 +86,6 @@ class DoggoRankFragment : AppBaseFragment(), DoggoAdapter.ImageListAdapterListen
                 .build()
 
         postponeEnterTransition()
-
-        return root
-    }
-
-    override fun onResume() {
-        super.onResume()
-        disposables.add(viewModel.watchDoggos().subscribe(this::onDiff, Throwable::printStackTrace))
     }
 
     override fun onDestroyView() {
@@ -87,22 +93,14 @@ class DoggoRankFragment : AppBaseFragment(), DoggoAdapter.ImageListAdapterListen
         listManager.clear()
     }
 
-    override val insetFlags: InsetFlags
-        get() = NO_BOTTOM
-
     override fun onDoggoClicked(doggo: Doggo) {
-        Doggo.setTransitionDoggo(doggo)
+        Doggo.transitionDoggo = doggo
         showFragment(AdoptDoggoFragment.newInstance(doggo))
     }
 
     override fun onDoggoImageLoaded(doggo: Doggo) {
-        if (doggo == Doggo.getTransitionDoggo()) startPostponedEnterTransition()
+        if (doggo == Doggo.transitionDoggo) startPostponedEnterTransition()
     }
-
-    override val showsFab: Boolean
-        get() {
-            return true
-        }
 
     @SuppressLint("CommitTransaction")
     override fun provideFragmentTransaction(fragmentTo: BaseFragment): FragmentTransaction? {
@@ -120,7 +118,7 @@ class DoggoRankFragment : AppBaseFragment(), DoggoAdapter.ImageListAdapterListen
 
     private fun onDiff(diffResult: DiffUtil.DiffResult) {
         listManager.onDiff(diffResult)
-        togglePersistentUi()
+//        togglePersistentUi()
     }
 
     private fun moveDoggo(start: DoggoViewHolder, end: DoggoViewHolder) {
