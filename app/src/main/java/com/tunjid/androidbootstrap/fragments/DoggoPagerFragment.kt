@@ -40,6 +40,11 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager), Globa
 
     override val insetFlags: InsetFlags = InsetFlags.NONE
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.getColors(Color.TRANSPARENT).observe(this) { view?.setBackgroundColor(it) }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -99,12 +104,6 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager), Globa
         prepareSharedElementTransition()
 
         if (savedInstanceState == null) postponeEnterTransition()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        val root = view ?: return
-        viewModel.getColors(Color.TRANSPARENT).observe(this, root::setBackgroundColor)
     }
 
     private fun onDoggoSwiped(position: Int) {

@@ -17,7 +17,7 @@ import com.tunjid.androidbootstrap.core.text.SpanBuilder
  * Created by tj.dahunsi on 5/6/17.
  */
 
-class SpanbuilderFragment : AppBaseFragment(), GlobalUiController {
+class SpanbuilderFragment : AppBaseFragment(R.layout.fragment_spanbuilder), GlobalUiController {
 
     override var uiState: UiState by activityGlobalUiController()
 
