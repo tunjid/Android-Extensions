@@ -55,7 +55,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager), Globa
                 showsFab = true,
                 fabExtended = !restoredFromBackStack(),
                 navBarColor = Color.TRANSPARENT,
-                fabClickListener = View.OnClickListener { Doggo.getTransitionDoggo()?.let { showFragment(AdoptDoggoFragment.newInstance(it)) } }
+                fabClickListener = View.OnClickListener { Doggo.transitionDoggo?.let { showFragment(AdoptDoggoFragment.newInstance(it)) } }
         )
 
         val viewPager = view.findViewById<ViewPager>(R.id.view_pager)
@@ -108,7 +108,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager), Globa
 
     private fun onDoggoSwiped(position: Int) {
         Doggo.doggos[position].apply {
-            Doggo.setTransitionDoggo(this)
+            Doggo.transitionDoggo = this
             uiState = uiState.copy(fabText = getString(R.string.adopt_doggo, name.replace(" ", "")))
         }
     }
@@ -119,7 +119,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager), Globa
 
         val root = view ?: return null
 
-        val doggo = Doggo.getTransitionDoggo() ?: return null
+        val doggo = Doggo.transitionDoggo ?: return null
 
         val childRoot = root.findViewWithTag<View>(doggo) ?: return null
 

@@ -5,7 +5,6 @@ import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import com.tunjid.androidbootstrap.R
 import java.util.*
-import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Model class for G O O D  B O Y E S  A N D  G I R L E S  B R O N T
@@ -53,7 +52,7 @@ class Doggo : Parcelable {
 
     companion object {
 
-        private val transitionDoggo = AtomicReference<Doggo>()
+         var transitionDoggo: Doggo? = null
 
         private val DOGGO_NOUNS = listOf(
                 "F R E N",
@@ -82,15 +81,8 @@ class Doggo : Parcelable {
                 Doggo(R.drawable.doggo9)
         )
 
-        fun getTransitionDoggo(): Doggo? = transitionDoggo.get()
-
-        fun setTransitionDoggo(doggo: Doggo) = transitionDoggo.set(doggo)
-
         val transitionIndex: Int
-            get() {
-                val doggo = transitionDoggo.get()
-                return if (doggo == null) 0 else doggos.indexOf(doggo)
-            }
+            get() = transitionDoggo?.let { doggos.indexOf(it) } ?: 0
 
         @JvmField
         @Suppress("unused")

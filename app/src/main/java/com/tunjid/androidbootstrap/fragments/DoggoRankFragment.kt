@@ -94,12 +94,12 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list), Global
     }
 
     override fun onDoggoClicked(doggo: Doggo) {
-        Doggo.setTransitionDoggo(doggo)
+        Doggo.transitionDoggo = doggo
         showFragment(AdoptDoggoFragment.newInstance(doggo))
     }
 
     override fun onDoggoImageLoaded(doggo: Doggo) {
-        if (doggo == Doggo.getTransitionDoggo()) startPostponedEnterTransition()
+        if (doggo == Doggo.transitionDoggo) startPostponedEnterTransition()
     }
 
     @SuppressLint("CommitTransaction")

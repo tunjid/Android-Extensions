@@ -33,7 +33,7 @@ class DoggoViewModel(application: Application) : AndroidViewModel(application) {
 
     val doggos = Doggo.doggos
 
-    fun getColors(startColor: Int)= processor.startWith(when (val doggo = Doggo.getTransitionDoggo()) {
+    fun getColors(startColor: Int)= processor.startWith(when (val doggo = Doggo.transitionDoggo) {
         null -> Flowable.empty<Int>()
         else -> colorMap.getOrPut(doggo) { doggo.calculateColor() }.flatMapPublisher { endColor ->
             Flowable.create<Int>({ emitter ->

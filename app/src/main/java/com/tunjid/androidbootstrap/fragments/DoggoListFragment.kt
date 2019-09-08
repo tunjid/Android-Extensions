@@ -44,7 +44,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalU
 
     private val transitionImage: ImageView?
         get() {
-            val doggo = Doggo.getTransitionDoggo() ?: return null
+            val doggo = Doggo.transitionDoggo ?: return null
             val holder = listManager.findViewHolderForItemId(doggo.hashCode().toLong())
                     ?: return null
 
@@ -90,12 +90,12 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalU
     }
 
     override fun onDoggoClicked(doggo: Doggo) {
-        Doggo.setTransitionDoggo(doggo)
+        Doggo.transitionDoggo = doggo
         showFragment(DoggoPagerFragment.newInstance())
     }
 
     override fun onDoggoImageLoaded(doggo: Doggo) {
-        if (doggo == Doggo.getTransitionDoggo()) startPostponedEnterTransition()
+        if (doggo == Doggo.transitionDoggo) startPostponedEnterTransition()
     }
 
     private fun getDivider(orientation: Int): RecyclerView.ItemDecoration {
@@ -110,7 +110,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalU
             recyclerView.addOnLayoutChangeListener(object : OnLayoutChangeListener {
                 override fun onLayoutChange(v: View, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int) {
                     recyclerView.removeOnLayoutChangeListener(this)
-                    val last = Doggo.getTransitionDoggo() ?: return
+                    val last = Doggo.transitionDoggo ?: return
 
                     val index = Doggo.doggos.indexOf(last)
                     if (index < 0) return
@@ -130,7 +130,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalU
     override fun provideFragmentTransaction(fragmentTo: BaseFragment): FragmentTransaction? {
         if (!fragmentTo.stableTag.contains(DoggoPagerFragment::class.java.simpleName)) return null
 
-        val doggo = Doggo.getTransitionDoggo()
+        val doggo = Doggo.transitionDoggo
         val imageView = transitionImage
         if (doggo == null || imageView == null) return null
 
