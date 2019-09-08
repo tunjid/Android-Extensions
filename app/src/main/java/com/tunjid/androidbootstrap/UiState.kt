@@ -26,6 +26,7 @@ data class UiState(
              showsToolbarConsumer: (Boolean) -> Unit,
              navBarColorConsumer: (Int) -> Unit,
              fabStateConsumer: (Int, CharSequence) -> Unit,
+             fabExtendedConsumer: (Boolean) -> Unit,
              toolbarStateConsumer: (Int, CharSequence) -> Unit,
              fabClickListenerConsumer: (View.OnClickListener?) -> Unit
     ): UiState {
@@ -33,6 +34,7 @@ data class UiState(
         either(newState, { state -> state.fabIcon }, { state -> state.fabText }, fabStateConsumer)
 
         only(newState, { state -> state.showsFab }, showsFabConsumer)
+        only(newState, { state -> state.fabExtended }, fabExtendedConsumer)
         only(newState, { state -> state.showsToolbar }, showsToolbarConsumer)
         only(newState, { state -> state.navBarColor }, navBarColorConsumer)
 

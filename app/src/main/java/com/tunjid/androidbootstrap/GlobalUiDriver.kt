@@ -150,6 +150,7 @@ class GlobalUiDriver(
                     this::toggleToolbar,
                     this::setNavBarColor,
                     this::setFabIcon,
+                    fabExtensionAnimator::setExtended,
                     this::updateMainToolBar,
                     this::setFabClickListener
             )
