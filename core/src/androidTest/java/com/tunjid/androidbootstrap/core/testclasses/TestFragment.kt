@@ -8,7 +8,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.VisibleForTesting
 import androidx.core.os.bundleOf
-import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment
+import androidx.fragment.app.Fragment
+import com.tunjid.androidbootstrap.core.components.FragmentStateViewModel
 
 /**
  * Test fragment
@@ -17,10 +18,10 @@ import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment
  * Created by Shemanigans on 4/29/17.
  */
 @VisibleForTesting
-class TestFragment : BaseFragment() {
+class TestFragment : Fragment(), FragmentStateViewModel.FragmentTagProvider {
 
     override val stableTag: String
-        get() = super.stableTag + arguments!!.getString(STRING_ARG_KEY)!!
+        get() = arguments!!.getString(STRING_ARG_KEY)!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

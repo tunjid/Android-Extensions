@@ -15,16 +15,11 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import com.tunjid.androidbootstrap.GlobalUiController
-import com.tunjid.androidbootstrap.PlaceHolder
-import com.tunjid.androidbootstrap.R
-import com.tunjid.androidbootstrap.UiState
-import com.tunjid.androidbootstrap.activityGlobalUiController
+import com.tunjid.androidbootstrap.*
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter.ImageListAdapterListener
 import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
-import com.tunjid.androidbootstrap.core.abstractclasses.BaseFragment
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.recyclerview.ListManager
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
@@ -127,7 +122,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalU
     }
 
     @SuppressLint("CommitTransaction")
-    override fun provideFragmentTransaction(fragmentTo: BaseFragment): FragmentTransaction? {
+    override fun provideFragmentTransaction(fragmentTo: AppBaseFragment): FragmentTransaction? {
         if (!fragmentTo.stableTag.contains(DoggoPagerFragment::class.java.simpleName)) return null
 
         val doggo = Doggo.transitionDoggo

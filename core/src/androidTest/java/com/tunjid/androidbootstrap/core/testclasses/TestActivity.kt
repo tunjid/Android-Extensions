@@ -1,13 +1,12 @@
 package com.tunjid.androidbootstrap.core.testclasses
 
 import android.os.Bundle
-import androidx.annotation.IdRes
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-
+import androidx.annotation.IdRes
+import androidx.appcompat.app.AppCompatActivity
 import com.tunjid.androidbootstrap.core.R
-import com.tunjid.androidbootstrap.core.abstractclasses.BaseActivity
 
 /**
  * Test Activity
@@ -15,7 +14,7 @@ import com.tunjid.androidbootstrap.core.abstractclasses.BaseActivity
  *
  * Created by tj.dahunsi on 4/29/17.
  */
-class TestActivity : BaseActivity() {
+class TestActivity : AppCompatActivity() {
 
     @IdRes
     val ignoredLayoutId = View.generateViewId()

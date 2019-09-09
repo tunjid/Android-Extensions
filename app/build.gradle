@@ -79,9 +79,10 @@ dependencies {
     implementation parent.ext.dynamicAnimations
     implementation parent.ext.dynamicAnimationsKtx
 
-    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.1.0'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
-    implementation 'androidx.lifecycle:lifecycle-reactivestreams:2.0.0'
+    implementation parent.ext.lifecycleSavedState
+    implementation parent.ext.lifecycleViewModel
+    implementation parent.ext.lifecycleExtensions
+    implementation parent.ext.lifeCycleReactiveStreams
 
     // other dependencies
     implementation 'com.squareup.picasso:picasso:2.71828'
