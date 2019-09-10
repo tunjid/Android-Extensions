@@ -14,11 +14,11 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryOwner
 import java.util.*
 
-@Suppress("unused")
-fun Fragment.childFragmentStateViewModelFactory(@IdRes containerId: Int): Lazy<FragmentStackNavigator> =
+fun Fragment.childFragmentManagerNavigator(@IdRes containerId: Int): Lazy<FragmentStackNavigator> =
         lazy { FragmentStackNavigator(this, this, childFragmentManager, containerId) }
 
-fun FragmentActivity.fragmentStateViewModelFactory(@IdRes containerId: Int): Lazy<FragmentStackNavigator> =
+@Suppress("unused")
+fun FragmentActivity.fragmentManagerNavigator(@IdRes containerId: Int): Lazy<FragmentStackNavigator> =
         lazy { FragmentStackNavigator(this, this, supportFragmentManager, containerId) }
 
 /**

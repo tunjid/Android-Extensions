@@ -1,4 +1,4 @@
-package com.tunjid.androidbootstrap
+package com.tunjid.androidbootstrap.core.components
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,8 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
-import com.tunjid.androidbootstrap.core.components.FragmentStackNavigator
-import com.tunjid.androidbootstrap.core.components.childFragmentStateViewModelFactory
 import java.util.*
 import kotlin.collections.set
 
@@ -107,7 +105,7 @@ class StackFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val deferred: FragmentStackNavigator by childFragmentStateViewModelFactory(stackId)
+        val deferred: FragmentStackNavigator by childFragmentManagerNavigator(stackId)
         fragmentStackNavigator = deferred
     }
 

@@ -29,6 +29,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidbootstrap.*
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.core.components.FragmentStackNavigator
+import com.tunjid.androidbootstrap.core.components.MultiStackNavigator
 import com.tunjid.androidbootstrap.fragments.RouteFragment
 import com.tunjid.androidbootstrap.view.util.ViewUtil.getLayoutParams
 import kotlin.math.max
