@@ -1,23 +1,23 @@
 package com.tunjid.androidbootstrap
 
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.addCallback
+import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
+import androidx.core.view.doOnLayout
+import androidx.core.view.drawToBitmap
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentContainerView
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator
 import com.tunjid.androidbootstrap.view.animator.ViewHider
@@ -38,13 +38,14 @@ interface GlobalUiController {
  * [GlobalUiController]
  */
 fun FragmentActivity.globalUiDriver(
-        fabId: Int = R.id.fab,
         toolbarId: Int = R.id.toolbar,
+        fabId: Int = R.id.fab,
+        bottomNavId: Int = R.id.bottom_navigation,
         navBackgroundId: Int = R.id.nav_background,
-        fragmentContainerId: Int = R.id.main_fragment_container
+        currentFragmentSource: () -> Fragment?
 ) = object : ReadWriteProperty<FragmentActivity, UiState> {
 
-    private val driver = GlobalUiDriver(this@globalUiDriver, fabId, toolbarId, navBackgroundId, fragmentContainerId)
+    private val driver = GlobalUiDriver(this@globalUiDriver, toolbarId, fabId, bottomNavId, navBackgroundId, currentFragmentSource)
 
     override operator fun getValue(thisRef: FragmentActivity, property: KProperty<*>): UiState =
             driver.uiState
@@ -79,11 +80,12 @@ fun Fragment.activityGlobalUiController() = object : ReadWriteProperty<Fragment,
  */
 class GlobalUiDriver(
         private val host: FragmentActivity,
-        fabId: Int,
         toolbarId: Int,
+        fabId: Int,
+        bottomNavId: Int,
         navBackgroundId: Int,
-        fragmentContainerId: Int
-) : GlobalUiController, LifecycleEventObserver {
+        private val getCurrentFragment: () -> Fragment?
+) : GlobalUiController {
 
     // Lazy lookups because setContentView in the host will not have been called at delegation time.
 
@@ -92,19 +94,19 @@ class GlobalUiDriver(
     }
 
     private val toolbar: Toolbar by lazy {
+        host.window.statusBarColor = ContextCompat.getColor(host, R.color.transparent)
+        host.window.decorView.systemUiVisibility = DEFAULT_SYSTEM_UI_FLAGS
         host.findViewById<Toolbar>(toolbarId).apply {
             setOnMenuItemClickListener(this@GlobalUiDriver::onMenuItemClicked)
         }
     }
 
-    private val navBackgroundView: View by lazy {
-        host.findViewById<View>(navBackgroundId)
+    private val bottomNav: BottomNavigationView by lazy {
+        host.findViewById<BottomNavigationView>(bottomNavId)
     }
 
-    private val fragmentContainer: FragmentContainerView by lazy {
-        host.window.statusBarColor = ContextCompat.getColor(host, R.color.transparent)
-        host.window.decorView.systemUiVisibility = DEFAULT_SYSTEM_UI_FLAGS
-        host.findViewById<FragmentContainerView>(fragmentContainerId)
+    private val navBackgroundView: View by lazy {
+        host.findViewById<View>(navBackgroundId)
     }
 
     private val toolbarHider: ViewHider by lazy {
@@ -115,37 +117,36 @@ class GlobalUiDriver(
         ViewHider.of(fab).setDirection(ViewHider.BOTTOM).addEndRunnable { fab.visibility = View.VISIBLE }.build()
     }
 
+    private val bottomBarHider: ViewHider by lazy {
+        val bottomBarSnapshot = host.findViewById<ImageView>(R.id.bottom_nav_snapshot)
+        bottomNav.doOnLayout { bottomBarSnapshot.layoutParams.height = bottomNav.height }
+
+        ViewHider.of(bottomBarSnapshot)
+                .setDirection(ViewHider.BOTTOM)
+                .addStartRunnable {
+                    if (getCurrentFragment() == null) return@addStartRunnable
+                    if (bottomNav.isVisible) bottomBarSnapshot.setImageBitmap(bottomNav.drawToBitmap(Bitmap.Config.ARGB_8888))
+                    if (uiState.showsBottomNav) bottomNav.visibility = View.VISIBLE
+
+                    bottomNav.isVisible = uiState.showsBottomNav
+                }
+                .build()
+    }
+
     private val fabExtensionAnimator: FabExtensionAnimator by lazy {
         FabExtensionAnimator(fab).apply { isExtended = true }
     }
 
-    private val backPressedCallback: OnBackPressedCallback
-
     private var state: UiState = UiState.freshState()
-
-    init {
-        host.apply {
-            lifecycle.addObserver(this@GlobalUiDriver)
-
-            // It would be easier to pass the host as a lifecycle owner here, however
-            // For back press callbacks, insertion order matters. If I pass the host here, the
-            // callback will not be added till the host is in state started.
-            // Android dispatches onStart to Fragments and Activities in parallel, which can cause
-            // this to be registered AFTER a Fragment's call back is, which defeats the purpose.
-            // Therefore we insert this callback first, and manually remove it when the host is destroyed
-            // by implementing the lifecyle observer interface.
-            backPressedCallback = onBackPressedDispatcher.addCallback {
-                if (supportFragmentManager.backStackEntryCount > 1) supportFragmentManager.popBackStack()
-                else finish() // Do not call onBackPressed, it will delegate back to this callback recursively
-            }
-        }
-    }
 
     override var uiState: UiState
         get() = state
         set(value) {
-            state = state.diff(
+            val previous = state.copy()
+            state = value
+            previous.diff(
                     value,
+                    this::toggleBottomNav,
                     this::toggleFab,
                     this::toggleToolbar,
                     this::setNavBarColor,
@@ -155,6 +156,7 @@ class GlobalUiDriver(
                     this::setFabClickListener
             )
 
+            bottomBarHider
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
 
             val isLight = ColorUtils.calculateLuminance(value.navBarColor) > 0.5
@@ -166,7 +168,7 @@ class GlobalUiDriver(
         }
 
     private fun onMenuItemClicked(item: MenuItem): Boolean {
-        val fragment = host.supportFragmentManager.findFragmentById(fragmentContainer.id)
+        val fragment = getCurrentFragment()
         val selected = fragment != null && fragment.onOptionsItemSelected(item)
 
         return selected || host.onOptionsItemSelected(item)
@@ -180,6 +182,10 @@ class GlobalUiDriver(
             if (show) fabHider.show()
             else fabHider.hide()
 
+    private fun toggleBottomNav(show: Boolean) =
+            if (show) bottomBarHider.show()
+            else bottomBarHider.hide()
+
     private fun setNavBarColor(color: Int) {
         navBackgroundView.background = GradientDrawable(
                 GradientDrawable.Orientation.BOTTOM_TOP,
@@ -187,7 +193,7 @@ class GlobalUiDriver(
     }
 
     private fun updateMainToolBar(menu: Int, title: CharSequence) = toolbar.update(title, menu).also {
-        host.supportFragmentManager.findFragmentById(fragmentContainer.id)?.onPrepareOptionsMenu(toolbar.menu)
+        getCurrentFragment()?.onPrepareOptionsMenu(toolbar.menu)
     }
 
     private fun setFabIcon(@DrawableRes icon: Int, title: CharSequence) = host.runOnUiThread {
@@ -198,19 +204,6 @@ class GlobalUiDriver(
 
     private fun setFabClickListener(onClickListener: View.OnClickListener?) =
             fab.setOnClickListener(onClickListener)
-
-    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) = when (event) {
-        Lifecycle.Event.ON_ANY,
-        Lifecycle.Event.ON_CREATE,
-        Lifecycle.Event.ON_START,
-        Lifecycle.Event.ON_RESUME,
-        Lifecycle.Event.ON_PAUSE,
-        Lifecycle.Event.ON_STOP -> Unit
-        Lifecycle.Event.ON_DESTROY -> {
-            source.lifecycle.removeObserver(this)
-            backPressedCallback.remove()
-        }
-    }
 
     companion object {
         private const val DEFAULT_SYSTEM_UI_FLAGS = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or

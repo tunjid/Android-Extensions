@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.transition.*
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidbootstrap.activities.MainActivity
@@ -23,13 +24,17 @@ abstract class AppBaseFragment(
     private val hostingActivity: MainActivity
         get() = requireActivity() as MainActivity
 
+    val transitionFragmentManager: FragmentManager
+        get() = parentFragment?.childFragmentManager ?: requireActivity().supportFragmentManager
+
     override fun onDestroyView() {
         super.onDestroyView()
         arguments?.putBoolean(VIEW_DESTROYED, true)
     }
 
     fun showFragment(fragment: AppBaseFragment): Boolean =
-            fragment.let { hostingActivity.fragmentStateViewModel.showFragment(it, it.stableTag, provideFragmentTransaction(it)) }
+            fragment.let { hostingActivity.fragmentStateViewModel?.showFragment(it, it.stableTag, provideFragmentTransaction(it)) }
+                    ?: false
 
     protected fun showSnackbar(consumer: (Snackbar) -> Unit) =
             hostingActivity.showSnackBar(consumer)
@@ -43,10 +48,12 @@ abstract class AppBaseFragment(
 
     @SuppressLint("CommitTransaction")
     open fun provideFragmentTransaction(fragmentTo: AppBaseFragment): FragmentTransaction? =
-            requireActivity().supportFragmentManager
-                    .beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out,
-                            android.R.anim.fade_in, android.R.anim.fade_out)
+            transitionFragmentManager.beginTransaction().setCustomAnimations(
+                    android.R.anim.fade_in,
+                    android.R.anim.fade_out,
+                    android.R.anim.fade_in,
+                    android.R.anim.fade_out
+            )
 
     /**
      * Checks whether this fragment was shown before and it's view subsequently

@@ -50,6 +50,7 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan), GlobalUiCon
                 showsToolbar = true,
                 toolBarMenu = R.menu.menu_nsd_scan,
                 showsFab = false,
+                showsBottomNav = true,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
         )
 

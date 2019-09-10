@@ -49,6 +49,7 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo), Globa
                 fabText = getString(R.string.adopt),
                 fabIcon = R.drawable.ic_hug_24dp,
                 showsFab = true,
+                showsBottomNav = true,
                 fabExtended = !restoredFromBackStack(),
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),
                 fabClickListener = View.OnClickListener {

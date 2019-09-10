@@ -51,6 +51,7 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list), Global
                 fabText = getString(R.string.reset_doggos),
                 fabIcon = R.drawable.ic_restore_24dp,
                 showsFab = true,
+                showsBottomNav = false,
                 fabExtended = !restoredFromBackStack(),
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),
                 fabClickListener = View.OnClickListener { viewModel.resetList() }
@@ -105,8 +106,7 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list), Global
         val doggo = args.getParcelable<Doggo>(ARG_DOGGO) ?: return null
         val holder = listManager.findViewHolderForItemId(doggo.hashCode().toLong()) ?: return null
 
-        return requireActivity()
-                .supportFragmentManager
+        return transitionFragmentManager
                 .beginTransaction()
                 .addSharedElement(holder.thumbnail, ViewUtil.transitionName(doggo, holder.thumbnail))
     }

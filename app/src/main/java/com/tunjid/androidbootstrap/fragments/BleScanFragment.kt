@@ -52,6 +52,7 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan), GlobalUiCon
                 toolBarMenu = R.menu.menu_ble_scan,
                 showsToolbar = true,
                 showsFab = false,
+                showsBottomNav = false,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
         )
 

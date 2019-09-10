@@ -49,6 +49,7 @@ class ShiftingTileFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiC
                 showsToolbar = true,
                 toolBarMenu = 0,
                 showsFab = true,
+                showsBottomNav = false,
                 fabIcon = fabIconRes,
                 fabText = fabText,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),

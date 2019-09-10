@@ -53,6 +53,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager), Globa
                 fabIcon = R.drawable.ic_hug_24dp,
                 showsFab = true,
                 fabExtended = !restoredFromBackStack(),
+                showsBottomNav = false,
                 navBarColor = Color.TRANSPARENT,
                 fabClickListener = View.OnClickListener { Doggo.transitionDoggo?.let { showFragment(AdoptDoggoFragment.newInstance(it)) } }
         )
@@ -100,6 +101,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager), Globa
             viewModel.onSwiped(position, fraction, toTheRight)
         }
 
+        onDoggoSwiped(viewPager.currentItem)
         prepareSharedElementTransition()
 
         if (savedInstanceState == null) postponeEnterTransition()
@@ -124,8 +126,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager), Globa
 
         val imageView = childRoot.findViewById<ImageView>(R.id.doggo_image) ?: return null
 
-        return requireActivity()
-                .supportFragmentManager
+        return transitionFragmentManager
                 .beginTransaction()
                 .setReorderingAllowed(true)
                 .addSharedElement(imageView, ViewUtil.transitionName(doggo, imageView))

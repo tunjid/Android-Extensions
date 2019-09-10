@@ -33,7 +33,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalU
 
     override var uiState: UiState by activityGlobalUiController()
 
-    override val insetFlags: InsetFlags = NO_BOTTOM
+    override val insetFlags: InsetFlags = InsetFlags.ALL
 
     private lateinit var listManager: ListManager<DoggoViewHolder, PlaceHolder.State>
 
@@ -56,6 +56,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalU
                 fabIcon = R.drawable.ic_paw_24dp,
                 fabText = getString(R.string.collapse_prompt),
                 showsFab = true,
+                showsBottomNav = true,
                 fabExtended = !restoredFromBackStack(),
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),
                 fabClickListener = View.OnClickListener { uiState = uiState.copy(fabExtended = !uiState.fabExtended) }
@@ -144,8 +145,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalU
             }
         })
 
-        return requireActivity()
-                .supportFragmentManager
+        return transitionFragmentManager
                 .beginTransaction()
                 .setReorderingAllowed(true)
                 .addSharedElement(imageView, ViewUtil.transitionName(doggo, imageView))

@@ -41,6 +41,7 @@ class EndlessTileFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiCo
                 showsToolbar = true,
                 toolBarMenu = 0,
                 showsFab = false,
+                showsBottomNav = false,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
         )
 

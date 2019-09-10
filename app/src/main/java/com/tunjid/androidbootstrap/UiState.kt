@@ -14,6 +14,7 @@ data class UiState(
         val fabText: CharSequence,
         @MenuRes val toolBarMenu: Int,
         @ColorInt val navBarColor: Int,
+        val showsBottomNav: Boolean,
         val showsFab: Boolean,
         val fabExtended: Boolean,
         val showsToolbar: Boolean,
@@ -22,6 +23,7 @@ data class UiState(
 ) : Parcelable {
 
     fun diff(newState: UiState,
+             showsBottomNavConsumer: (Boolean) -> Unit,
              showsFabConsumer: (Boolean) -> Unit,
              showsToolbarConsumer: (Boolean) -> Unit,
              navBarColorConsumer: (Int) -> Unit,
@@ -33,6 +35,7 @@ data class UiState(
         either(newState, UiState::toolBarMenu, UiState::toolbarTitle, toolbarStateConsumer)
         either(newState, UiState::fabIcon, UiState::fabText, fabStateConsumer)
 
+        only(newState, UiState::showsBottomNav, showsBottomNavConsumer)
         only(newState, UiState::showsFab, showsFabConsumer)
         only(newState, UiState::fabExtended, fabExtendedConsumer)
         only(newState, UiState::showsToolbar, showsToolbarConsumer)
@@ -68,6 +71,7 @@ data class UiState(
             fabText = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(`in`),
             toolBarMenu = `in`.readInt(),
             navBarColor = `in`.readInt(),
+            showsBottomNav = `in`.readByte().toInt() != 0x00,
             showsFab = `in`.readByte().toInt() != 0x00,
             fabExtended = `in`.readByte().toInt() != 0x00,
             showsToolbar = `in`.readByte().toInt() != 0x00,
@@ -84,6 +88,7 @@ data class UiState(
         TextUtils.writeToParcel(fabText, dest, 0)
         dest.writeInt(toolBarMenu)
         dest.writeInt(navBarColor)
+        dest.writeByte((if (showsBottomNav) 0x01 else 0x00).toByte())
         dest.writeByte((if (showsFab) 0x01 else 0x00).toByte())
         dest.writeByte((if (fabExtended) 0x01 else 0x00).toByte())
         dest.writeByte((if (showsToolbar) 0x01 else 0x00).toByte())
@@ -98,6 +103,7 @@ data class UiState(
                     fabText = "",
                     toolBarMenu = 0,
                     navBarColor = Color.BLACK,
+                    showsBottomNav = true,
                     showsFab = true,
                     fabExtended = true,
                     showsToolbar = true,

@@ -4,6 +4,11 @@
     <string name="unknown_device">Unknown device</string>
     <string name="ble_not_supported">BLE is not supported</string>
 
+    <!-- Navigation tabs -->
+    <string name="core">Core</string>
+    <string name="recycler_view">RecyclerView</string>
+    <string name="communications">Communications</string>
+
     <!-- Route Descriptions -->
     <string name="route_doggo_list">A list of hints demonstrating delegation of shared element transitions to the calling fragment.</string>
     <string name="route_doggo_rank">A list of good boyes showing drag and drop functionality.</string>

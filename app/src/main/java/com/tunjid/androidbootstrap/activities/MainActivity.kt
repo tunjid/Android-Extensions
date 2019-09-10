@@ -6,6 +6,9 @@ import android.os.Bundle
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.view.WindowInsets
+import android.widget.FrameLayout
+import androidx.activity.addCallback
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -13,22 +16,22 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.children
 import androidx.core.view.postDelayed
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
-import com.tunjid.androidbootstrap.GlobalUiController
-import com.tunjid.androidbootstrap.R
-import com.tunjid.androidbootstrap.UiState
+import com.tunjid.androidbootstrap.*
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.core.components.FragmentStateViewModel
-import com.tunjid.androidbootstrap.core.components.fragmentStateViewModelFactory
 import com.tunjid.androidbootstrap.fragments.RouteFragment
-import com.tunjid.androidbootstrap.globalUiDriver
 import com.tunjid.androidbootstrap.view.util.ViewUtil.getLayoutParams
+import kotlin.math.max
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiController {
 
@@ -43,17 +46,20 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
 
     private lateinit var toolbar: Toolbar
     private lateinit var fab: MaterialButton
+    private lateinit var contentContainer: FrameLayout
     private lateinit var constraintLayout: ConstraintLayout
     private lateinit var coordinatorLayout: CoordinatorLayout
 
-    override var uiState: UiState by globalUiDriver()
+    private lateinit var multiStackNavigator: MultiStackNavigator
 
-    val fragmentStateViewModel: FragmentStateViewModel by fragmentStateViewModelFactory(R.id.main_fragment_container)
+    override var uiState: UiState by globalUiDriver { multiStackNavigator.currentFragment }
+
+    val fragmentStateViewModel: FragmentStateViewModel?
+        get() = multiStackNavigator.currentFragmentStateViewModel
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        uiState = savedInstanceState?.getParcelable(UI_STATE) ?: UiState.freshState()
         supportFragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
 
             override fun onFragmentPreAttached(fm: FragmentManager, f: Fragment, context: Context) =
@@ -61,9 +67,26 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
 
             override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) =
                     onFragmentViewCreated(v, f)
-        }, false)
+        }, true)
 
-        if (savedInstanceState == null) RouteFragment.newInstance().apply { fragmentStateViewModel.showFragment(this, stableTag) }
+
+        contentContainer = findViewById(R.id.content_container)
+        findViewById<BottomNavigationView>(R.id.bottom_navigation).apply {
+            multiStackNavigator = MultiStackNavigator(
+                    supportFragmentManager,
+                    menu.children.map { it.itemId }.toList().toIntArray(),
+                    R.id.content_container
+            ) { id -> RouteFragment.newInstance(id).let { it to it.stableTag } }
+
+            setOnApplyWindowInsetsListener { _: View?, windowInsets: WindowInsets? -> windowInsets }
+            setOnNavigationItemSelectedListener { multiStackNavigator.show(it.itemId).let { true } }
+        }
+
+        onBackPressedDispatcher.addCallback(this) {
+            if (!multiStackNavigator.pop()) finish()
+        }
+
+        uiState = savedInstanceState?.getParcelable(UI_STATE) ?: UiState.freshState()
     }
 
     override fun setContentView(@LayoutRes layoutResID: Int) {
@@ -91,7 +114,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
     override fun invalidateOptionsMenu() {
         super.invalidateOptionsMenu()
         toolbar.postDelayed(ANIMATION_DURATION.toLong()) {
-            fragmentStateViewModel.currentFragment?.onPrepareOptionsMenu(toolbar.menu)
+            fragmentStateViewModel?.currentFragment?.onPrepareOptionsMenu(toolbar.menu)
         }
     }
 
@@ -104,9 +127,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         snackbar.show()
     }
 
-    private fun isNotInMainFragmentContainer(view: View): Boolean {
-        val parent = view.parent as View
-        return parent.id != fragmentStateViewModel.idResource
+    private fun isNotInMainFragmentContainer(fragment: Fragment): Boolean {
+        return fragmentStateViewModel?.let { fragment.id != it.idResource } ?: true
     }
 
     private fun consumeSystemInsets(insets: WindowInsetsCompat): WindowInsetsCompat {
@@ -120,20 +142,27 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         topInsetView.layoutParams.height = topInset
         bottomInsetView.layoutParams.height = bottomInset
 
-        adjustInsetForFragment(fragmentStateViewModel.currentFragment)
+        adjustInsetForFragment(fragmentStateViewModel?.currentFragment)
 
         this.insetsApplied = true
         return insets
     }
 
     private fun consumeFragmentInsets(insets: WindowInsetsCompat): WindowInsetsCompat {
-        getLayoutParams(keyboardPadding).height = insets.systemWindowInsetBottom - bottomInset
+        var padding = insets.systemWindowInsetBottom - bottomInset
+        if (padding != bottomInset) padding -= resources.getDimensionPixelSize(R.dimen.triple_and_half_margin)
+
+        padding = max(padding, 1)
+
+        contentContainer.updatePadding(bottom = padding)
+        keyboardPadding.layoutParams.height = padding
+
         return insets
     }
 
     @SuppressLint("InlinedApi")
     private fun adjustInsetForFragment(fragment: Fragment?) {
-        if (fragment !is AppBaseFragment) return
+        if (fragment !is AppBaseFragment || isNotInMainFragmentContainer(fragment)) return
 
         val insetFlags = fragment.insetFlags
         getLayoutParams(toolbar).topMargin = if (insetFlags.hasTopInset()) 0 else topInset
@@ -141,8 +170,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
 
         TransitionManager.beginDelayedTransition(constraintLayout, AutoTransition()
                 .setDuration(ANIMATION_DURATION.toLong())
-                .addTarget(R.id.main_fragment_container)
-                .addTarget(R.id.coordinator_layout)
+                .addTarget(R.id.content_container)
         )
 
         topInsetView.visibility = if (insetFlags.hasTopInset()) VISIBLE else GONE
@@ -155,11 +183,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
                 0)
     }
 
-    private fun onFragmentViewCreated(v: View, f: Fragment) {
-        if (isNotInMainFragmentContainer(v)) return
-
-        val fragment = f as AppBaseFragment
-        if (fragment.restoredFromBackStack()) adjustInsetForFragment(f)
+    private fun onFragmentViewCreated(v: View, fragment: Fragment) {
+        if (fragment !is AppBaseFragment || isNotInMainFragmentContainer(fragment)) return
+        if (fragment.restoredFromBackStack()) adjustInsetForFragment(fragment)
 
         setOnApplyWindowInsetsListener(v) { _, insets -> consumeFragmentInsets(insets) }
     }
