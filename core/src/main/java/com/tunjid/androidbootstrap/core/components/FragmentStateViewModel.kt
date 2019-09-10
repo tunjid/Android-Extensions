@@ -139,17 +139,18 @@ class FragmentStateViewModel constructor(
     }
 
     /**
-     * Attempts to show the fragment provided, if the fragment does not already exist in the
-     * [FragmentManager] under the specified tag.
+     * Attempts to show the fragment provided, retrieving it from the back stack
+     * if an identical instance of it already exists in the [FragmentManager] under the specified
+     * tag.
      *
      * @param fragment    The fragment to show.
-     * @param transaction The fragment transaction to show the supplied fragment with.
      * @param tag         the value to supply to this fragment for it's backstack entry name and tag
+     * @param transaction The fragment transaction to show the supplied fragment with.
      * @return true if the a fragment provided will be shown, false if the fragment instance already
      * exists and will be restored instead.
      */
     @JvmOverloads
-    fun showFragment(
+    fun show(
             fragment: Fragment,
             tag: String,
             transaction: FragmentTransaction? = null
@@ -173,7 +174,19 @@ class FragmentStateViewModel constructor(
     }
 
     /**
-     * An interface to provide unique tags for [Fragments][Fragment]
+     * Attempts to show the fragment provided, retrieving it from the back stack
+     * if an identical instance of it already exists in the [FragmentManager] under the specified
+     * tag.
+     *
+     * @see show
+     */
+    @JvmOverloads
+    fun <T> show(item: T, transaction: FragmentTransaction? = null) where T : Fragment, T : FragmentTagProvider =
+            show(item, item.stableTag, transaction)
+
+    /**
+     * An interface to provide unique tags for [Fragment]. Fragment implementers typically delegate
+     * this to a hash string of their arguments.
      */
 
     interface FragmentTagProvider {

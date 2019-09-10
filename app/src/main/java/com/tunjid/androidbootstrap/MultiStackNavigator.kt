@@ -89,7 +89,7 @@ class MultiStackNavigator(
 
             val rootId = fragment.stackId
             if (savedInstanceState == null) rootFunction(rootId).apply {
-                fragment.fragmentStateViewModel.showFragment(first, second)
+                fragment.fragmentStateViewModel.show(first, second)
             }
         }
     }
