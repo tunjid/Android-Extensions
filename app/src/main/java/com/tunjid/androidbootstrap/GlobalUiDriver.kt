@@ -89,43 +89,34 @@ class GlobalUiDriver(
 
     // Lazy lookups because setContentView in the host will not have been called at delegation time.
 
-    private val fab: MaterialButton by lazy {
-        host.findViewById<MaterialButton>(fabId)
-    }
-
-    private val toolbar: Toolbar by lazy {
+    private val toolbarHider: ViewHider<Toolbar> by lazy {
         host.window.statusBarColor = ContextCompat.getColor(host, R.color.transparent)
         host.window.decorView.systemUiVisibility = DEFAULT_SYSTEM_UI_FLAGS
-        host.findViewById<Toolbar>(toolbarId).apply {
+        host.findViewById<Toolbar>(toolbarId).run {
             setOnMenuItemClickListener(this@GlobalUiDriver::onMenuItemClicked)
+            ViewHider.of(this).setDirection(ViewHider.TOP).build()
         }
     }
 
-    private val bottomNav: BottomNavigationView by lazy {
-        host.findViewById<BottomNavigationView>(bottomNavId)
+    private val fabHider: ViewHider<MaterialButton> by lazy {
+        host.findViewById<MaterialButton>(fabId).run {
+            ViewHider.of(this).setDirection(ViewHider.BOTTOM)
+                    .addEndRunnable { isVisible = true }
+                    .build()
+        }
     }
 
-    private val navBackgroundView: View by lazy {
-        host.findViewById<View>(navBackgroundId)
-    }
+    private val bottomNavHider: ViewHider<ImageView> by lazy {
+        val bottomNav = host.findViewById<BottomNavigationView>(bottomNavId)
+        val bottomNavSnapshot = host.findViewById<ImageView>(R.id.bottom_nav_snapshot)
 
-    private val toolbarHider: ViewHider by lazy {
-        ViewHider.of(toolbar).setDirection(ViewHider.TOP).build()
-    }
+        bottomNav.doOnLayout { bottomNavSnapshot.layoutParams.height = bottomNav.height }
 
-    private val fabHider: ViewHider by lazy {
-        ViewHider.of(fab).setDirection(ViewHider.BOTTOM).addEndRunnable { fab.visibility = View.VISIBLE }.build()
-    }
-
-    private val bottomBarHider: ViewHider by lazy {
-        val bottomBarSnapshot = host.findViewById<ImageView>(R.id.bottom_nav_snapshot)
-        bottomNav.doOnLayout { bottomBarSnapshot.layoutParams.height = bottomNav.height }
-
-        ViewHider.of(bottomBarSnapshot)
+        ViewHider.of(bottomNavSnapshot)
                 .setDirection(ViewHider.BOTTOM)
                 .addStartRunnable {
                     if (getCurrentFragment() == null) return@addStartRunnable
-                    if (bottomNav.isVisible) bottomBarSnapshot.setImageBitmap(bottomNav.drawToBitmap(Bitmap.Config.ARGB_8888))
+                    if (bottomNav.isVisible) bottomNavSnapshot.setImageBitmap(bottomNav.drawToBitmap(Bitmap.Config.ARGB_8888))
                     if (uiState.showsBottomNav) bottomNav.visibility = View.VISIBLE
 
                     bottomNav.isVisible = uiState.showsBottomNav
@@ -134,7 +125,11 @@ class GlobalUiDriver(
     }
 
     private val fabExtensionAnimator: FabExtensionAnimator by lazy {
-        FabExtensionAnimator(fab).apply { isExtended = true }
+        FabExtensionAnimator(fabHider.view).apply { isExtended = true }
+    }
+
+    private val navBackgroundView: View by lazy {
+        host.findViewById<View>(navBackgroundId)
     }
 
     private var state: UiState = UiState.freshState()
@@ -156,7 +151,7 @@ class GlobalUiDriver(
                     this::setFabClickListener
             )
 
-            bottomBarHider
+            bottomNavHider
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
 
             val isLight = ColorUtils.calculateLuminance(value.navBarColor) > 0.5
@@ -183,8 +178,8 @@ class GlobalUiDriver(
             else fabHider.hide()
 
     private fun toggleBottomNav(show: Boolean) =
-            if (show) bottomBarHider.show()
-            else bottomBarHider.hide()
+            if (show) bottomNavHider.show()
+            else bottomNavHider.hide()
 
     private fun setNavBarColor(color: Int) {
         navBackgroundView.background = GradientDrawable(
@@ -192,8 +187,10 @@ class GlobalUiDriver(
                 intArrayOf(color, Color.TRANSPARENT))
     }
 
-    private fun updateMainToolBar(menu: Int, title: CharSequence) = toolbar.update(title, menu).also {
-        getCurrentFragment()?.onPrepareOptionsMenu(toolbar.menu)
+    private fun updateMainToolBar(menu: Int, title: CharSequence) = toolbarHider.view.run {
+        update(title, menu)
+        getCurrentFragment()?.onPrepareOptionsMenu(this.menu)
+        Unit
     }
 
     private fun setFabIcon(@DrawableRes icon: Int, title: CharSequence) = host.runOnUiThread {
@@ -203,7 +200,7 @@ class GlobalUiDriver(
     }
 
     private fun setFabClickListener(onClickListener: View.OnClickListener?) =
-            fab.setOnClickListener(onClickListener)
+            fabHider.view.setOnClickListener(onClickListener)
 
     companion object {
         private const val DEFAULT_SYSTEM_UI_FLAGS = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or

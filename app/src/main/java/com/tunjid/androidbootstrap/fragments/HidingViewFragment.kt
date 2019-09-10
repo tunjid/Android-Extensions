@@ -21,10 +21,10 @@ class HidingViewFragment : AppBaseFragment(R.layout.fragment_hiding_view), Globa
 
     override var uiState: UiState by activityGlobalUiController()
 
-    private lateinit var leftHider: ViewHider
-    private lateinit var topHider: ViewHider
-    private lateinit var rightHider: ViewHider
-    private lateinit var bottomHider: ViewHider
+    private lateinit var leftHider: ViewHider<View>
+    private lateinit var topHider: ViewHider<View>
+    private lateinit var rightHider: ViewHider<View>
+    private lateinit var bottomHider: ViewHider<View>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
