@@ -14,7 +14,9 @@ import com.tunjid.androidbootstrap.view.util.InsetFlags
 
 abstract class AppBaseFragment(
         @LayoutRes contentLayoutId: Int = 0
-) : Fragment(contentLayoutId), FragmentStateViewModel.FragmentTagProvider {
+) : Fragment(contentLayoutId),
+        FragmentStateViewModel.FragmentTagProvider,
+        FragmentStateViewModel.FragmentTransactionProvider {
 
     open val insetFlags: InsetFlags = InsetFlags.ALL
 
@@ -33,7 +35,8 @@ abstract class AppBaseFragment(
     }
 
     fun showFragment(fragment: AppBaseFragment): Boolean =
-            hostingActivity.fragmentStateViewModel?.show(fragment, provideFragmentTransaction(fragment)) ?: false
+            hostingActivity.fragmentStateViewModel?.show(fragment, provideFragmentTransaction(fragment))
+                    ?: false
 
     protected fun showSnackbar(consumer: (Snackbar) -> Unit) =
             hostingActivity.showSnackBar(consumer)
@@ -46,7 +49,7 @@ abstract class AppBaseFragment(
             .setDuration(ANIMATION_DURATION.toLong())
 
     @SuppressLint("CommitTransaction")
-    open fun provideFragmentTransaction(fragmentTo: AppBaseFragment): FragmentTransaction? =
+    override fun provideFragmentTransaction(fragmentTo: Fragment): FragmentTransaction? =
             transitionFragmentManager.beginTransaction().setCustomAnimations(
                     android.R.anim.fade_in,
                     android.R.anim.fade_out,

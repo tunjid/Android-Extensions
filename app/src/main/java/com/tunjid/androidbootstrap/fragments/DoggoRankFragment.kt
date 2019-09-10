@@ -6,6 +6,7 @@ import android.text.TextUtils
 import android.util.Pair
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
@@ -14,6 +15,7 @@ import com.tunjid.androidbootstrap.*
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter
 import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
+import com.tunjid.androidbootstrap.core.components.FragmentStateViewModel
 import com.tunjid.androidbootstrap.fragments.AdoptDoggoFragment.Companion.ARG_DOGGO
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.recyclerview.ListManager
@@ -38,7 +40,7 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list), Global
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.watchDoggos().observe(this, this::onDiff)
+        viewModel.watchDoggos().observe(this) { listManager.onDiff(it) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -99,7 +101,8 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list), Global
     }
 
     @SuppressLint("CommitTransaction")
-    override fun provideFragmentTransaction(fragmentTo: AppBaseFragment): FragmentTransaction? {
+    override fun provideFragmentTransaction(fragmentTo: Fragment): FragmentTransaction? {
+        if (fragmentTo !is FragmentStateViewModel.FragmentTagProvider) return null
         if (!fragmentTo.stableTag.contains(AdoptDoggoFragment::class.java.simpleName)) return null
 
         val args = fragmentTo.arguments ?: return null
@@ -109,11 +112,6 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list), Global
         return transitionFragmentManager
                 .beginTransaction()
                 .addSharedElement(holder.thumbnail, ViewUtil.transitionName(doggo, holder.thumbnail))
-    }
-
-    private fun onDiff(diffResult: DiffUtil.DiffResult) {
-        listManager.onDiff(diffResult)
-//        togglePersistentUi()
     }
 
     private fun moveDoggo(start: DoggoViewHolder, end: DoggoViewHolder) {
@@ -135,9 +133,8 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list), Global
         listManager.notifyItemRangeChanged(minMax.first, minMax.second)
     }
 
-    private fun onSwipeOrDragStarted(holder: DoggoRankViewHolder, actionState: Int) {
-        viewModel.onActionStarted(Pair(holder.itemId, actionState))
-    }
+    private fun onSwipeOrDragStarted(holder: DoggoRankViewHolder, actionState: Int) =
+            viewModel.onActionStarted(Pair(holder.itemId, actionState))
 
     private fun onSwipeOrDragEnded(viewHolder: DoggoViewHolder, actionState: Int) {
         val message = viewModel.onActionEnded(Pair(viewHolder.itemId, actionState))

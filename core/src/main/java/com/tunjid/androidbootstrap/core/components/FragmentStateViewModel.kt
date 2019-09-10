@@ -181,16 +181,29 @@ class FragmentStateViewModel constructor(
      * @see show
      */
     @JvmOverloads
-    fun <T> show(item: T, transaction: FragmentTransaction? = null) where T : Fragment, T : FragmentTagProvider =
-            show(item, item.stableTag, transaction)
+    fun <T> show(fragment: T, transaction: FragmentTransaction? = null) where T : Fragment, T : FragmentTagProvider =
+            show(fragment, fragment.stableTag, transaction)
 
     /**
      * An interface to provide unique tags for [Fragment]. Fragment implementers typically delegate
      * this to a hash string of their arguments.
+     *
+     * It's convenient to let  Fragments implement this interface, among with [FragmentTransactionProvider].
      */
 
     interface FragmentTagProvider {
         val stableTag: String
+    }
+
+    /**
+     * An interface for delegating the provision  of a [FragmentTransaction] that will show
+     * the passed in Fragment. Implementers typically configure mappings for
+     * shared element transitions, or other kinds of animations.
+     *
+     * It's convenient to let  Fragments implement this interface, among with [FragmentTagProvider].
+     */
+    interface FragmentTransactionProvider {
+        fun provideFragmentTransaction(fragmentTo: Fragment): FragmentTransaction?
     }
 
     companion object {
