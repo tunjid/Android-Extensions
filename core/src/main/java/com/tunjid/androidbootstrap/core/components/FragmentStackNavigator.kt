@@ -146,6 +146,10 @@ class FragmentStackNavigator constructor(
     fun <T> show(fragment: T, transaction: FragmentTransaction? = null) where T : Fragment, T : FragmentTagProvider =
             show(fragment, fragment.stableTag, transaction)
 
+    fun pop(): Boolean =
+            if (fragmentManager.backStackEntryCount > 1) fragmentManager.popBackStack().let { true }
+            else false
+
     private fun onFragmentCreated(fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?) {
         // Not a fragment managed by this FragmentStackNavigator
         if (f.id != containerId) return

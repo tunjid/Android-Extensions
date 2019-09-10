@@ -43,9 +43,11 @@ class MultiStackNavigator(
 
     fun pop(): Boolean = when (val selected = selectedFragment) {
         is StackFragment -> when {
-            selected.childFragmentManager.backStackEntryCount > 1 -> selected.childFragmentManager.popBackStack().let { true }
-            navStack.run { remove(selected); isEmpty() } -> false
-            else -> showInternal(navStack.pop().stackId, false).let { true }
+            selected.fragmentStackNavigator.pop() -> true
+            else -> when {
+                navStack.run { remove(selected); isEmpty() } -> false
+                else -> showInternal(navStack.pop().stackId, false).let { true }
+            }
         }
         else -> false
     }

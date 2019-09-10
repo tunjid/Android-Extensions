@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
 
     override var uiState: UiState by globalUiDriver { multiStackNavigator.currentFragment }
 
-    val fragmentStackNavigator: FragmentStackNavigator?
+    val currentStackNavigator: FragmentStackNavigator?
         get() = multiStackNavigator.currentFragmentStackNavigator
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,9 +83,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
             setOnNavigationItemSelectedListener { multiStackNavigator.show(it.itemId).let { true } }
         }
 
-        onBackPressedDispatcher.addCallback(this) {
-            if (!multiStackNavigator.pop()) finish()
-        }
+        onBackPressedDispatcher.addCallback(this) { if (!multiStackNavigator.pop()) finish() }
 
         uiState = savedInstanceState?.getParcelable(UI_STATE) ?: UiState.freshState()
     }
@@ -116,7 +114,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
     override fun invalidateOptionsMenu() {
         super.invalidateOptionsMenu()
         toolbar.postDelayed(ANIMATION_DURATION.toLong()) {
-            fragmentStackNavigator?.currentFragment?.onPrepareOptionsMenu(toolbar.menu)
+            currentStackNavigator?.currentFragment?.onPrepareOptionsMenu(toolbar.menu)
         }
     }
 
@@ -129,9 +127,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         snackbar.show()
     }
 
-    private fun isNotInMainFragmentContainer(fragment: Fragment): Boolean {
-        return fragmentStackNavigator?.let { fragment.id != it.containerId } ?: true
-    }
+    private fun isNotInCurrentFragmentContainer(fragment: Fragment): Boolean =
+            currentStackNavigator?.run { fragment.id != containerId } ?: true
 
     private fun consumeSystemInsets(insets: WindowInsetsCompat): WindowInsetsCompat {
         if (this.insetsApplied) return insets
@@ -144,7 +141,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         topInsetView.layoutParams.height = topInset
         bottomInsetView.layoutParams.height = bottomInset
 
-        adjustInsetForFragment(fragmentStackNavigator?.currentFragment)
+        adjustInsetForFragment(currentStackNavigator?.currentFragment)
 
         this.insetsApplied = true
         return insets
@@ -164,7 +161,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
 
     @SuppressLint("InlinedApi")
     private fun adjustInsetForFragment(fragment: Fragment?) {
-        if (fragment !is AppBaseFragment || isNotInMainFragmentContainer(fragment)) return
+        if (fragment !is AppBaseFragment || isNotInCurrentFragmentContainer(fragment)) return
 
         val insetFlags = fragment.insetFlags
         getLayoutParams(toolbar).topMargin = if (insetFlags.hasTopInset()) 0 else topInset
@@ -186,7 +183,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
     }
 
     private fun onFragmentViewCreated(v: View, fragment: Fragment) {
-        if (fragment !is AppBaseFragment || isNotInMainFragmentContainer(fragment)) return
+        if (fragment !is AppBaseFragment || isNotInCurrentFragmentContainer(fragment)) return
         if (fragment.restoredFromBackStack()) adjustInsetForFragment(fragment)
 
         setOnApplyWindowInsetsListener(v) { _, insets -> consumeFragmentInsets(insets) }

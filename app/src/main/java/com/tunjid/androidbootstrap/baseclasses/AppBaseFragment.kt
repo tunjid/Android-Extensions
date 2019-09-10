@@ -35,7 +35,7 @@ abstract class AppBaseFragment(
     }
 
     fun showFragment(fragment: AppBaseFragment): Boolean =
-            hostingActivity.fragmentStackNavigator?.show(fragment, provideFragmentTransaction(fragment))
+            hostingActivity.currentStackNavigator?.show(fragment, provideFragmentTransaction(fragment))
                     ?: false
 
     protected fun showSnackbar(consumer: (Snackbar) -> Unit) =
