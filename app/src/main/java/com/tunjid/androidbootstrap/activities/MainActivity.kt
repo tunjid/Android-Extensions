@@ -70,7 +70,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         }, true)
 
 
-        contentContainer = findViewById(R.id.content_container)
         findViewById<BottomNavigationView>(R.id.bottom_navigation).apply bottomNav@{
             multiStackNavigator = MultiStackNavigator(
                     supportFragmentManager,
@@ -99,6 +98,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         bottomInsetView = findViewById(R.id.bottom_inset)
         keyboardPadding = findViewById(R.id.keyboard_padding)
         navBackgroundView = findViewById(R.id.nav_background)
+        contentContainer = findViewById(R.id.content_container)
         constraintLayout = findViewById(R.id.constraint_layout)
         coordinatorLayout = findViewById(R.id.coordinator_layout)
 
