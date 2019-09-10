@@ -24,13 +24,15 @@ import androidx.fragment.app.FragmentManager
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
-import com.tunjid.androidbootstrap.*
+import com.tunjid.androidbootstrap.GlobalUiController
+import com.tunjid.androidbootstrap.R
+import com.tunjid.androidbootstrap.UiState
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.core.components.FragmentStackNavigator
 import com.tunjid.androidbootstrap.core.components.MultiStackNavigator
 import com.tunjid.androidbootstrap.fragments.RouteFragment
+import com.tunjid.androidbootstrap.globalUiDriver
 import com.tunjid.androidbootstrap.view.util.ViewUtil.getLayoutParams
 import kotlin.math.max
 
@@ -46,7 +48,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
     private lateinit var navBackgroundView: View
 
     private lateinit var toolbar: Toolbar
-    private lateinit var fab: MaterialButton
     private lateinit var contentContainer: FrameLayout
     private lateinit var constraintLayout: ConstraintLayout
     private lateinit var coordinatorLayout: CoordinatorLayout
@@ -91,7 +92,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
     override fun setContentView(@LayoutRes layoutResID: Int) {
         super.setContentView(layoutResID)
 
-        fab = findViewById(R.id.fab)
         toolbar = findViewById(R.id.toolbar)
         topInsetView = findViewById(R.id.top_inset)
         bottomInsetView = findViewById(R.id.bottom_inset)
