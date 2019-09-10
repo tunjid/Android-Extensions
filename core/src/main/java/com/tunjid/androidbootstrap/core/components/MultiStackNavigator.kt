@@ -20,6 +20,7 @@ class MultiStackNavigator(
         val rootFunction: (Int) -> Pair<Fragment, String>) {
 
     var stackSelectedListener: ((Int) -> Unit)? = null
+
     private val navStack: Stack<StackFragment> = Stack()
     private val stackMap = mutableMapOf<Int, StackFragment>()
 
@@ -27,7 +28,7 @@ class MultiStackNavigator(
         get() = stackMap.values.firstOrNull { it.isVisible }
 
     val currentFragmentStackNavigator
-        get() = selectedFragment?.fragmentStackNavigator
+        get() = selectedFragment?.navigator
 
     val currentFragment: Fragment?
         get() = selectedFragment?.run { childFragmentManager.findFragmentById(stackId) }
@@ -43,7 +44,7 @@ class MultiStackNavigator(
 
     fun pop(): Boolean = when (val selected = selectedFragment) {
         is StackFragment -> when {
-            selected.fragmentStackNavigator.pop() -> true
+            selected.navigator.pop() -> true
             else -> when {
                 navStack.run { remove(selected); isEmpty() } -> false
                 else -> showInternal(navStack.pop().stackId, false).let { true }
@@ -85,11 +86,8 @@ class MultiStackNavigator(
         }
 
         override fun onFragmentViewCreated(fm: FragmentManager, fragment: Fragment, view: View, savedInstanceState: Bundle?) {
-            if (fragment !is StackFragment) return
-
-            val rootId = fragment.stackId
-            if (savedInstanceState == null) rootFunction(rootId).apply {
-                fragment.fragmentStackNavigator.show(first, second)
+            if (fragment is StackFragment && savedInstanceState == null) rootFunction(fragment.stackId).apply {
+                fragment.navigator.show(first, second)
             }
         }
     }
@@ -99,7 +97,7 @@ const val ID_KEY = "id"
 
 class StackFragment : Fragment() {
 
-    lateinit var fragmentStackNavigator: FragmentStackNavigator
+    lateinit var navigator: FragmentStackNavigator
 
     val stackId: Int
         get() = arguments?.getInt(ID_KEY)!!
@@ -108,7 +106,7 @@ class StackFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         val deferred: FragmentStackNavigator by childFragmentManagerNavigator(stackId)
-        fragmentStackNavigator = deferred
+        navigator = deferred
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
