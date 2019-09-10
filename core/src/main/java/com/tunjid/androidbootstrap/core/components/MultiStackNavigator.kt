@@ -21,19 +21,21 @@ fun FragmentActivity.multiStackNavigatorFor(
         @MenuRes stackMenu: Int,
         rootFunction: (Int) -> Pair<Fragment, String>
 ): Lazy<MultiStackNavigator> = lazy {
-
-    val popUp = PopupMenu(this, findViewById(containerId)).apply { inflate(stackMenu) }
-    val items = popUp.menu.children.map(MenuItem::getItemId).toList().toIntArray()
-    popUp.dismiss()
-
-    MultiStackNavigator(
-            stateContainerFor("$MULTI_STACK_NAVIGATOR-$containerId", this),
-            supportFragmentManager,
-            items,
-            containerId, rootFunction
-    )
+    PopupMenu(this, findViewById(containerId)).run {
+        inflate(stackMenu)
+        MultiStackNavigator(
+                stateContainerFor("$MULTI_STACK_NAVIGATOR-$containerId", this@multiStackNavigatorFor),
+                supportFragmentManager,
+                menu.children.map(MenuItem::getItemId).toList().toIntArray(),
+                containerId, rootFunction
+        ).apply { dismiss() }
+    }
 }
 
+/**
+ * Manages navigation for independent stacks of [Fragment]s, where each stack is managed by a
+ * [FragmentStackNavigator].
+ */
 class MultiStackNavigator(
         private val stateContainer: LifecycleSavedStateContainer,
         private val fragmentManager: FragmentManager,
