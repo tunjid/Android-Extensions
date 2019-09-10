@@ -16,7 +16,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.children
 import androidx.core.view.postDelayed
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
@@ -31,6 +30,7 @@ import com.tunjid.androidbootstrap.UiState
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.core.components.FragmentStackNavigator
 import com.tunjid.androidbootstrap.core.components.MultiStackNavigator
+import com.tunjid.androidbootstrap.core.components.multiStackNavigatorFor
 import com.tunjid.androidbootstrap.fragments.RouteFragment
 import com.tunjid.androidbootstrap.globalUiDriver
 import com.tunjid.androidbootstrap.view.util.ViewUtil.getLayoutParams
@@ -52,12 +52,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
     private lateinit var constraintLayout: ConstraintLayout
     private lateinit var coordinatorLayout: CoordinatorLayout
 
-    private lateinit var multiStackNavigator: MultiStackNavigator
-
     override var uiState: UiState by globalUiDriver { multiStackNavigator.currentFragment }
 
+    private val multiStackNavigator: MultiStackNavigator by multiStackNavigatorFor(
+            R.id.content_container,
+            R.menu.menu_navigation
+    ) { id -> RouteFragment.newInstance(id).let { it to it.stableTag } }
+
     val currentStackNavigator: FragmentStackNavigator?
-        get() = multiStackNavigator.currentFragmentStackNavigator
+        get() = multiStackNavigator.currentNavigator
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,14 +75,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         }, true)
 
 
-        findViewById<BottomNavigationView>(R.id.bottom_navigation).apply bottomNav@{
-            multiStackNavigator = MultiStackNavigator(
-                    supportFragmentManager,
-                    menu.children.map { it.itemId }.toList().toIntArray(),
-                    R.id.content_container
-            ) { id -> RouteFragment.newInstance(id).let { it to it.stableTag } }
-                    .apply { stackSelectedListener = { menu.findItem(it)?.isChecked = true } }
-
+        findViewById<BottomNavigationView>(R.id.bottom_navigation).apply {
+            multiStackNavigator.stackSelectedListener = { menu.findItem(it)?.isChecked = true }
             setOnApplyWindowInsetsListener { _: View?, windowInsets: WindowInsets? -> windowInsets }
             setOnNavigationItemSelectedListener { multiStackNavigator.show(it.itemId).let { true } }
         }

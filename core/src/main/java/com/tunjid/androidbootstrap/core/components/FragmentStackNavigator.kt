@@ -7,19 +7,26 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.savedstate.SavedStateRegistry
-import androidx.savedstate.SavedStateRegistryOwner
 import java.util.*
 
-fun Fragment.childFragmentManagerNavigator(@IdRes containerId: Int): Lazy<FragmentStackNavigator> =
-        lazy { FragmentStackNavigator(this, this, childFragmentManager, containerId) }
+const val STACK_NAVIGATOR = "com.tunjid.androidbootstrap.core.components.FragmentStackNavigator"
+
+fun Fragment.childFragmentStackNavigator(@IdRes containerId: Int): Lazy<FragmentStackNavigator> = lazy {
+    FragmentStackNavigator(
+            stateContainerFor("$STACK_NAVIGATOR-$containerId", this),
+            childFragmentManager,
+            containerId
+    )
+}
 
 @Suppress("unused")
-fun FragmentActivity.fragmentManagerNavigator(@IdRes containerId: Int): Lazy<FragmentStackNavigator> =
-        lazy { FragmentStackNavigator(this, this, supportFragmentManager, containerId) }
+fun FragmentActivity.fragmentStackNavigator(@IdRes containerId: Int): Lazy<FragmentStackNavigator> = lazy {
+    FragmentStackNavigator(
+            stateContainerFor("$STACK_NAVIGATOR-$containerId", this),
+            supportFragmentManager,
+            containerId
+    )
+}
 
 /**
  * A class that keeps track of the fragments [Fragment] in a [FragmentManager], and enforces that
@@ -32,18 +39,12 @@ fun FragmentActivity.fragmentManagerNavigator(@IdRes containerId: Int): Lazy<Fra
  */
 
 class FragmentStackNavigator constructor(
-        lifecycleOwner: LifecycleOwner,
-        private val savedStateRegistryOwner: SavedStateRegistryOwner,
+        private val stateContainer: LifecycleSavedStateContainer,
         internal val fragmentManager: FragmentManager,
         @param:IdRes @field:IdRes @get:IdRes val containerId: Int
-) : LifecycleEventObserver, SavedStateRegistry.SavedStateProvider {
+) {
 
     internal val fragmentTags = mutableSetOf<String>()
-
-    private val savedStateKey: String
-        get() = "$CURRENT_FRAGMENT_KEY-$containerId"
-
-    private val savedState: Bundle
 
     /**
      * Gets the last fragment added to the [FragmentManager]
@@ -56,7 +57,7 @@ class FragmentStackNavigator constructor(
     private var currentFragmentTag: String? = null
         set(value) {
             field = value
-            savedState.putString(CURRENT_FRAGMENT_KEY, value)
+            stateContainer.savedState.putString(CURRENT_FRAGMENT_KEY, value)
         }
 
     /**
@@ -74,14 +75,7 @@ class FragmentStackNavigator constructor(
     }
 
     init {
-        lifecycleOwner.lifecycle.addObserver(this)
-
-        savedStateRegistryOwner.savedStateRegistry.apply {
-            savedState = consumeRestoredStateForKey(savedStateKey) ?: Bundle()
-            registerSavedStateProvider(savedStateKey, this@FragmentStackNavigator)
-        }
-
-        currentFragmentTag = savedState.getString(CURRENT_FRAGMENT_KEY)
+        currentFragmentTag = stateContainer.savedState.getString(CURRENT_FRAGMENT_KEY)
 
         // Restore previous back stack entries in the Fragment manager
         for (i in 0 until fragmentManager.backStackEntryCount) fragmentTags.add(fragmentManager.getBackStackEntryAt(i).name
@@ -89,16 +83,6 @@ class FragmentStackNavigator constructor(
 
         fragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleCallbacks, false)
     }
-
-    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) = when (event) {
-        Lifecycle.Event.ON_DESTROY -> {
-            source.lifecycle.removeObserver(this)
-            savedStateRegistryOwner.savedStateRegistry.unregisterSavedStateProvider(savedStateKey)
-        }
-        else -> Unit
-    }
-
-    override fun saveState(): Bundle = savedState
 
     /**
      * Attempts to show the fragment provided, retrieving it from the back stack
