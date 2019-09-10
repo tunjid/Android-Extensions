@@ -71,7 +71,7 @@ abstract class AppBaseFragment(
         const val BACKGROUND_TINT_DURATION = 1200
         private const val VIEW_DESTROYED = "com.tunjid.androidbootstrap.core.abstractclasses.basefragment.view.destroyed"
 
-        val NO_BOTTOM: InsetFlags = InsetFlags.create(true, true, true, false)
+        val NO_BOTTOM: InsetFlags = InsetFlags(hasLeftInset = true, hasTopInset = true, hasRightInset = true, hasBottomInset = false)
     }
 
 }

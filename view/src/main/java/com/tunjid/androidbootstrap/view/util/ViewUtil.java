@@ -20,22 +20,5 @@ public class ViewUtil {
     public static String transitionName(Object object, View view) {
         return object.hashCode() + "-" + view.getId();
     }
-
-    /**
-     * Use ViewKt.doOnNextLayout instead
-     */
-    @Deprecated
-    public static void listenForLayout(View view, Runnable onLayout) {
-        ViewTreeObserver observer = view.getViewTreeObserver();
-        if (!observer.isAlive()) return;
-        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override public void onGlobalLayout() {
-                if (observer.isAlive()) observer.removeOnGlobalLayoutListener(this);
-                ViewTreeObserver current = view.getViewTreeObserver();
-                if (current.isAlive()) current.removeOnGlobalLayoutListener(this);
-                onLayout.run();
-            }
-        });
-    }
 }
 

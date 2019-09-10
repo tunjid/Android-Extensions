@@ -22,7 +22,7 @@ var Toolbar.animDuration: Long
     }
 
 fun Toolbar.update(title: CharSequence, @MenuRes menu: Int = 0) {
-    if (visibility != View.VISIBLE) {
+    if (visibility != View.VISIBLE || this.title == null) {
         setTitle(title)
         replaceMenu(menu)
     } else for (i in 0 until childCount) {
