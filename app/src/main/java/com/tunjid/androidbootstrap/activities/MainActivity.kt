@@ -129,7 +129,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
     }
 
     private fun isNotInMainFragmentContainer(fragment: Fragment): Boolean {
-        return fragmentStackNavigator?.let { fragment.id != it.idResource } ?: true
+        return fragmentStackNavigator?.let { fragment.id != it.containerId } ?: true
     }
 
     private fun consumeSystemInsets(insets: WindowInsetsCompat): WindowInsetsCompat {

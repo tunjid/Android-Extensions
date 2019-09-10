@@ -15,11 +15,11 @@ import androidx.savedstate.SavedStateRegistryOwner
 import java.util.*
 
 @Suppress("unused")
-fun Fragment.childFragmentStateViewModelFactory(@IdRes idResource: Int): Lazy<FragmentStackNavigator> =
-        lazy { FragmentStackNavigator(this, this, childFragmentManager, idResource) }
+fun Fragment.childFragmentStateViewModelFactory(@IdRes containerId: Int): Lazy<FragmentStackNavigator> =
+        lazy { FragmentStackNavigator(this, this, childFragmentManager, containerId) }
 
-fun FragmentActivity.fragmentStateViewModelFactory(@IdRes idResource: Int): Lazy<FragmentStackNavigator> =
-        lazy { FragmentStackNavigator(this, this, supportFragmentManager, idResource) }
+fun FragmentActivity.fragmentStateViewModelFactory(@IdRes containerId: Int): Lazy<FragmentStackNavigator> =
+        lazy { FragmentStackNavigator(this, this, supportFragmentManager, containerId) }
 
 /**
  * A class that keeps track of the fragments [Fragment] in a [FragmentManager], and enforces that
@@ -35,13 +35,13 @@ class FragmentStackNavigator constructor(
         lifecycleOwner: LifecycleOwner,
         private val savedStateRegistryOwner: SavedStateRegistryOwner,
         internal val fragmentManager: FragmentManager,
-        @param:IdRes @field:IdRes @get:IdRes val idResource: Int
+        @param:IdRes @field:IdRes @get:IdRes val containerId: Int
 ) : LifecycleEventObserver, SavedStateRegistry.SavedStateProvider {
 
     internal val fragmentTags = mutableSetOf<String>()
 
     private val savedStateKey: String
-        get() = "$CURRENT_FRAGMENT_KEY-$idResource"
+        get() = "$CURRENT_FRAGMENT_KEY-$containerId"
 
     private val savedState: Bundle
 
@@ -129,7 +129,7 @@ class FragmentStackNavigator constructor(
                 else fragment) ?: throw NullPointerException(MSG_DODGY_FRAGMENT)
 
         (transaction ?: fragmentManager.beginTransaction()).addToBackStack(tag)
-                .replace(idResource, fragmentToShow, tag)
+                .replace(containerId, fragmentToShow, tag)
                 .commit()
 
         return fragmentShown
@@ -148,7 +148,7 @@ class FragmentStackNavigator constructor(
 
     private fun onFragmentCreated(fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?) {
         // Not a fragment managed by this FragmentStackNavigator
-        if (f.id != idResource) return
+        if (f.id != containerId) return
 
         fragmentTags.add(f.tag ?: throw IllegalStateException(MSG_FRAGMENT_HAS_NO_TAG))
 
@@ -165,7 +165,7 @@ class FragmentStackNavigator constructor(
                     ?: throw IllegalStateException(MSG_FRAGMENT_MISMATCH)
 
             // Not a fragment managed by us, continue
-            if (shownFragment.id != idResource) continue
+            if (shownFragment.id != containerId) continue
 
             entryName ?: throw IllegalStateException(MSG_FRAGMENT_HAS_NO_TAG)
 
@@ -187,7 +187,7 @@ class FragmentStackNavigator constructor(
 
     private fun onFragmentViewCreated(f: Fragment) {
         // Not a fragment managed by this FragmentStackNavigator
-        if (f.id != idResource) return
+        if (f.id != containerId) return
         requireNotNull(f.tag) {
             ("Fragment instance "
                     + f.javaClass.name
@@ -199,7 +199,7 @@ class FragmentStackNavigator constructor(
     }
 
     private fun onFragmentDestroyed(f: Fragment) {
-        if (f.id == idResource) fragmentTags.remove(f.tag)
+        if (f.id == containerId) fragmentTags.remove(f.tag)
     }
 
     /**
