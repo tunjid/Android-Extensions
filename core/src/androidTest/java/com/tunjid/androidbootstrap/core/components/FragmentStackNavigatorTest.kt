@@ -22,17 +22,17 @@ import org.junit.runner.RunWith
 import java.util.concurrent.TimeUnit
 
 /**
- * Tests the [FragmentStateViewModel]
+ * Tests the [FragmentStackNavigator]
  *
  *
  * Created by tj.dahunsi on 4/29/17.
  */
 
 @RunWith(AndroidJUnit4::class)
-class FragmentStateViewModelTest {
+class FragmentStackNavigatorTest {
 
     private var activity: TestActivity? = null
-    private var fragmentStateViewModel: FragmentStateViewModel? = null
+    private var fragmentStackNavigator: FragmentStackNavigator? = null
     private var testIdler: TestIdler? = null
 
     @Rule
@@ -47,7 +47,7 @@ class FragmentStateViewModelTest {
     fun setUp() {
         testIdler = TestIdler(DEFAULT_TIME_OUT.toLong(), TimeUnit.SECONDS)
         activity = activityRule.activity as TestActivity
-        fragmentStateViewModel = FragmentStateViewModel(SavedStateHandle(), activity!!.supportFragmentManager, R.id.main_fragment_container)
+        fragmentStackNavigator = FragmentStackNavigator(SavedStateHandle(), activity!!.supportFragmentManager, R.id.main_fragment_container)
     }
 
     @After
@@ -74,14 +74,14 @@ class FragmentStateViewModelTest {
         val resource = FragmentVisibleIdlingResource(fragmentManager, TAG_A, true)
         testIdler!!.till(resource)
 
-        assertTrue(fragmentStateViewModel!!.fragmentTags.contains(TAG_A))
-        assertTrue(fragmentStateViewModel!!.fragmentTags.size == 1)
+        assertTrue(fragmentStackNavigator!!.fragmentTags.contains(TAG_A))
+        assertTrue(fragmentStackNavigator!!.fragmentTags.size == 1)
     }
 
     @Test
     @Throws(Throwable::class)
     fun testFragmentTagsRestored() {
-        val fragmentManager = fragmentStateViewModel!!.fragmentManager
+        val fragmentManager = fragmentStackNavigator!!.fragmentManager
         val testFragment = TestFragment.newInstance(TAG_A)
 
         fragmentManager.beginTransaction()
@@ -94,10 +94,10 @@ class FragmentStateViewModelTest {
 
         // create new instance of fragentStateManager and confirm all
         // the old tags are restored
-        fragmentStateViewModel = FragmentStateViewModel(SavedStateHandle(), activity!!.supportFragmentManager, R.id.main_fragment_container)
+        fragmentStackNavigator = FragmentStackNavigator(SavedStateHandle(), activity!!.supportFragmentManager, R.id.main_fragment_container)
 
-        assertTrue(fragmentStateViewModel!!.fragmentTags.contains(TAG_A))
-        assertTrue(fragmentStateViewModel!!.fragmentTags.size == 1)
+        assertTrue(fragmentStackNavigator!!.fragmentTags.contains(TAG_A))
+        assertTrue(fragmentStackNavigator!!.fragmentTags.size == 1)
     }
 
     @Test//(expected = IllegalStateException.class)
@@ -107,7 +107,7 @@ class FragmentStateViewModelTest {
         val testFragment = TestFragment.newInstance(TAG_A)
 
         expectedException.expect(IllegalStateException::class.java)
-        expectedException.expectMessage(FragmentStateViewModel.MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK)
+        expectedException.expectMessage(FragmentStackNavigator.MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK)
 
         fragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, testFragment, TAG_A)
@@ -165,7 +165,7 @@ class FragmentStateViewModelTest {
         testIdler!!.till(FragmentVisibleIdlingResource(activity, testFragmentA.stableTag, true))
 
         assertEquals(fragmentManager.backStackEntryCount, 1)
-        assertEquals(fragmentManager.backStackEntryCount, fragmentStateViewModel!!.fragmentTags.size)
+        assertEquals(fragmentManager.backStackEntryCount, fragmentStackNavigator!!.fragmentTags.size)
 
         fragmentManager.beginTransaction()
                 .replace(activity!!.ignoredLayoutId, testFragmentB, testFragmentB.stableTag)
@@ -175,7 +175,7 @@ class FragmentStateViewModelTest {
         testIdler!!.till(FragmentVisibleIdlingResource(activity, testFragmentB.stableTag, true))
 
         assertEquals(fragmentManager.backStackEntryCount, 2)
-        assertFalse(fragmentManager.backStackEntryCount == fragmentStateViewModel!!.fragmentTags.size)
+        assertFalse(fragmentManager.backStackEntryCount == fragmentStackNavigator!!.fragmentTags.size)
     }
 
     companion object {

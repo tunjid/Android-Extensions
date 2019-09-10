@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.annotation.VisibleForTesting
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import com.tunjid.androidbootstrap.core.components.FragmentStateViewModel
+import com.tunjid.androidbootstrap.core.components.FragmentStackNavigator
 
 /**
  * Test fragment
@@ -18,7 +18,7 @@ import com.tunjid.androidbootstrap.core.components.FragmentStateViewModel
  * Created by Shemanigans on 4/29/17.
  */
 @VisibleForTesting
-class TestFragment : Fragment(), FragmentStateViewModel.FragmentTagProvider {
+class TestFragment : Fragment(), FragmentStackNavigator.FragmentTagProvider {
 
     override val stableTag: String
         get() = arguments!!.getString(STRING_ARG_KEY)!!

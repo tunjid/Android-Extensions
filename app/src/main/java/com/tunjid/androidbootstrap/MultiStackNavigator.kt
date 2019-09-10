@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
-import com.tunjid.androidbootstrap.core.components.FragmentStateViewModel
+import com.tunjid.androidbootstrap.core.components.FragmentStackNavigator
 import com.tunjid.androidbootstrap.core.components.childFragmentStateViewModelFactory
 import java.util.*
 import kotlin.collections.set
@@ -28,14 +28,14 @@ class MultiStackNavigator(
     private val selectedFragment: StackFragment?
         get() = stackMap.values.firstOrNull { it.isVisible }
 
-    val currentFragmentStateViewModel
-        get() = selectedFragment?.fragmentStateViewModel
+    val currentFragmentStackNavigator
+        get() = selectedFragment?.fragmentStackNavigator
 
     val currentFragment: Fragment?
         get() = selectedFragment?.run { childFragmentManager.findFragmentById(stackId) }
 
     init {
-        fragmentManager.registerFragmentLifecycleCallbacks(TabLifecycleCallback(), false)
+        fragmentManager.registerFragmentLifecycleCallbacks(StackLifecycleCallback(), false)
         fragmentManager.commit {
             for ((index, id) in stackIds.withIndex()) add(containerId, StackFragment.newInstance(id), index.toString())
         }
@@ -74,7 +74,7 @@ class MultiStackNavigator(
         navStack.add(tab)
     }
 
-    inner class TabLifecycleCallback : FragmentManager.FragmentLifecycleCallbacks() {
+    inner class StackLifecycleCallback : FragmentManager.FragmentLifecycleCallbacks() {
         override fun onFragmentCreated(fm: FragmentManager, fragment: Fragment, savedInstanceState: Bundle?) {
             if (fragment !is StackFragment) return
 
@@ -89,7 +89,7 @@ class MultiStackNavigator(
 
             val rootId = fragment.stackId
             if (savedInstanceState == null) rootFunction(rootId).apply {
-                fragment.fragmentStateViewModel.show(first, second)
+                fragment.fragmentStackNavigator.show(first, second)
             }
         }
     }
@@ -99,7 +99,7 @@ const val ID_KEY = "id"
 
 class StackFragment : Fragment() {
 
-    lateinit var fragmentStateViewModel: FragmentStateViewModel
+    lateinit var fragmentStackNavigator: FragmentStackNavigator
 
     val stackId: Int
         get() = arguments?.getInt(ID_KEY)!!
@@ -107,8 +107,8 @@ class StackFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val deferred: FragmentStateViewModel by childFragmentStateViewModelFactory(stackId)
-        fragmentStateViewModel = deferred
+        val deferred: FragmentStackNavigator by childFragmentStateViewModelFactory(stackId)
+        fragmentStackNavigator = deferred
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =

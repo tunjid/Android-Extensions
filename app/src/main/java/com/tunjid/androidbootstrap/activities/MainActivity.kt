@@ -28,7 +28,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidbootstrap.*
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
-import com.tunjid.androidbootstrap.core.components.FragmentStateViewModel
+import com.tunjid.androidbootstrap.core.components.FragmentStackNavigator
 import com.tunjid.androidbootstrap.fragments.RouteFragment
 import com.tunjid.androidbootstrap.view.util.ViewUtil.getLayoutParams
 import kotlin.math.max
@@ -54,8 +54,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
 
     override var uiState: UiState by globalUiDriver { multiStackNavigator.currentFragment }
 
-    val fragmentStateViewModel: FragmentStateViewModel?
-        get() = multiStackNavigator.currentFragmentStateViewModel
+    val fragmentStackNavigator: FragmentStackNavigator?
+        get() = multiStackNavigator.currentFragmentStackNavigator
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
     override fun invalidateOptionsMenu() {
         super.invalidateOptionsMenu()
         toolbar.postDelayed(ANIMATION_DURATION.toLong()) {
-            fragmentStateViewModel?.currentFragment?.onPrepareOptionsMenu(toolbar.menu)
+            fragmentStackNavigator?.currentFragment?.onPrepareOptionsMenu(toolbar.menu)
         }
     }
 
@@ -129,7 +129,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
     }
 
     private fun isNotInMainFragmentContainer(fragment: Fragment): Boolean {
-        return fragmentStateViewModel?.let { fragment.id != it.idResource } ?: true
+        return fragmentStackNavigator?.let { fragment.id != it.idResource } ?: true
     }
 
     private fun consumeSystemInsets(insets: WindowInsetsCompat): WindowInsetsCompat {
@@ -143,7 +143,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         topInsetView.layoutParams.height = topInset
         bottomInsetView.layoutParams.height = bottomInset
 
-        adjustInsetForFragment(fragmentStateViewModel?.currentFragment)
+        adjustInsetForFragment(fragmentStackNavigator?.currentFragment)
 
         this.insetsApplied = true
         return insets

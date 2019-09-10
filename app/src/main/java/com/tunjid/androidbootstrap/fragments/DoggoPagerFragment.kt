@@ -21,7 +21,7 @@ import com.tunjid.androidbootstrap.activityGlobalUiController
 import com.tunjid.androidbootstrap.adapters.DoggoPagerAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.constraintlayout.animator.ViewPagerIndicatorAnimator
-import com.tunjid.androidbootstrap.core.components.FragmentStateViewModel
+import com.tunjid.androidbootstrap.core.components.FragmentStackNavigator
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.view.util.ViewUtil
@@ -117,7 +117,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager), Globa
 
     @SuppressLint("CommitTransaction")
     override fun provideFragmentTransaction(fragmentTo: Fragment): FragmentTransaction? {
-        if (fragmentTo !is FragmentStateViewModel.FragmentTagProvider) return null
+        if (fragmentTo !is FragmentStackNavigator.FragmentTagProvider) return null
         if (!fragmentTo.stableTag.contains(AdoptDoggoFragment::class.java.simpleName)) return null
 
         val root = view ?: return null
