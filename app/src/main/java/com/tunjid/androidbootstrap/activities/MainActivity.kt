@@ -71,12 +71,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
 
 
         contentContainer = findViewById(R.id.content_container)
-        findViewById<BottomNavigationView>(R.id.bottom_navigation).apply {
+        findViewById<BottomNavigationView>(R.id.bottom_navigation).apply bottomNav@{
             multiStackNavigator = MultiStackNavigator(
                     supportFragmentManager,
                     menu.children.map { it.itemId }.toList().toIntArray(),
                     R.id.content_container
             ) { id -> RouteFragment.newInstance(id).let { it to it.stableTag } }
+                    .apply { stackSelectedListener = { menu.findItem(it)?.isChecked = true } }
 
             setOnApplyWindowInsetsListener { _: View?, windowInsets: WindowInsets? -> windowInsets }
             setOnNavigationItemSelectedListener { multiStackNavigator.show(it.itemId).let { true } }

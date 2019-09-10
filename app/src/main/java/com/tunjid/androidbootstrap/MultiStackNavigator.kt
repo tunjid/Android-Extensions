@@ -6,7 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
 import androidx.core.os.bundleOf
-import androidx.fragment.app.*
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.commit
 import com.tunjid.androidbootstrap.core.components.FragmentStateViewModel
 import com.tunjid.androidbootstrap.core.components.childFragmentStateViewModelFactory
 import java.util.*
@@ -18,32 +21,33 @@ class MultiStackNavigator(
         @IdRes containerId: Int,
         val rootFunction: (Int) -> Pair<Fragment, String>) {
 
-    private val tapped: Deque<TabbedFragment> = ArrayDeque()
-    private val tabMap = mutableMapOf<Int, TabbedFragment>()
+    var stackSelectedListener: ((Int) -> Unit)? = null
+    private val navStack: Stack<StackFragment> = Stack()
+    private val stackMap = mutableMapOf<Int, StackFragment>()
 
-    private val selectedFragment: TabbedFragment?
-        get() = tabMap.values.firstOrNull { it.isVisible }
+    private val selectedFragment: StackFragment?
+        get() = stackMap.values.firstOrNull { it.isVisible }
 
     val currentFragmentStateViewModel
         get() = selectedFragment?.fragmentStateViewModel
 
     val currentFragment: Fragment?
-        get() = selectedFragment?.run { childFragmentManager.findFragmentById(rootId) }
+        get() = selectedFragment?.run { childFragmentManager.findFragmentById(stackId) }
 
     init {
         fragmentManager.registerFragmentLifecycleCallbacks(TabLifecycleCallback(), false)
         fragmentManager.commit {
-            for ((index, id) in stackIds.withIndex()) add(containerId, TabbedFragment.newInstance(id), index.toString())
+            for ((index, id) in stackIds.withIndex()) add(containerId, StackFragment.newInstance(id), index.toString())
         }
     }
 
     fun show(@IdRes toShow: Int) = showInternal(toShow, true)
 
     fun pop(): Boolean = when (val selected = selectedFragment) {
-        is TabbedFragment -> when {
+        is StackFragment -> when {
             selected.childFragmentManager.backStackEntryCount > 1 -> selected.childFragmentManager.popBackStack().let { true }
-            tapped.run { remove(selected); isEmpty() } -> false
-            else -> showInternal(tapped.remove().rootId, false).let { true }
+            navStack.run { remove(selected); isEmpty() } -> false
+            else -> showInternal(navStack.pop().stackId, false).let { true }
         }
         else -> false
     }
@@ -56,35 +60,34 @@ class MultiStackNavigator(
                     android.R.anim.fade_in,
                     android.R.anim.fade_out
             )
-            for ((id, fragment) in tabMap) when {
+            for ((id, fragment) in stackMap) when {
                 id == toShow && fragment.isVisible -> return@commit
                 id == toShow && fragment.isHidden -> fragment.apply { show(this); if (addTap) track(this) }
                 else -> hide(fragment)
             }
         }
+        stackSelectedListener?.invoke(toShow)
     }
 
-    private fun track(tab: TabbedFragment) {
-        if (tapped.contains(tab)) {
-            tapped.remove(tab)
-            tapped.addFirst(tab)
-        } else tapped.add(tab)
+    private fun track(tab: StackFragment) {
+        if (navStack.contains(tab)) navStack.remove(tab)
+        navStack.add(tab)
     }
 
     inner class TabLifecycleCallback : FragmentManager.FragmentLifecycleCallbacks() {
         override fun onFragmentCreated(fm: FragmentManager, fragment: Fragment, savedInstanceState: Bundle?) {
-            if (fragment !is TabbedFragment) return
+            if (fragment !is StackFragment) return
 
-            fragment.apply { tabMap[rootId] = this }
+            fragment.apply { stackMap[stackId] = this }
 
-            if (savedInstanceState == null && stackIds.indexOf(fragment.rootId) != 0) fm.beginTransaction().hide(fragment).commit()
-            else tapped.add(fragment)
+            if (savedInstanceState == null && stackIds.indexOf(fragment.stackId) != 0) fm.beginTransaction().hide(fragment).commit()
+            else navStack.add(fragment)
         }
 
         override fun onFragmentViewCreated(fm: FragmentManager, fragment: Fragment, view: View, savedInstanceState: Bundle?) {
-            if (fragment !is TabbedFragment) return
+            if (fragment !is StackFragment) return
 
-            val rootId = fragment.rootId
+            val rootId = fragment.stackId
             if (savedInstanceState == null) rootFunction(rootId).apply {
                 fragment.fragmentStateViewModel.showFragment(first, second)
             }
@@ -94,17 +97,17 @@ class MultiStackNavigator(
 
 const val ID_KEY = "id"
 
-class TabbedFragment : Fragment() {
+class StackFragment : Fragment() {
 
     lateinit var fragmentStateViewModel: FragmentStateViewModel
 
-    val rootId: Int
+    val stackId: Int
         get() = arguments?.getInt(ID_KEY)!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val deferred: FragmentStateViewModel by childFragmentStateViewModelFactory(rootId)
+        val deferred: FragmentStateViewModel by childFragmentStateViewModelFactory(stackId)
         fragmentStateViewModel = deferred
     }
 
@@ -112,7 +115,7 @@ class TabbedFragment : Fragment() {
             FragmentContainerView(inflater.context).apply { id = arguments!!.getInt(ID_KEY) }
 
     companion object {
-        fun newInstance(id: Int) = TabbedFragment().apply {
+        internal fun newInstance(id: Int) = StackFragment().apply {
             arguments = bundleOf(ID_KEY to id)
         }
     }
