@@ -21,19 +21,20 @@ class HidingViewFragment : AppBaseFragment(R.layout.fragment_hiding_view), Globa
 
     override var uiState: UiState by activityGlobalUiController()
 
-    private lateinit var leftHider: ViewHider
-    private lateinit var topHider: ViewHider
-    private lateinit var rightHider: ViewHider
-    private lateinit var bottomHider: ViewHider
+    private lateinit var leftHider: ViewHider<View>
+    private lateinit var topHider: ViewHider<View>
+    private lateinit var rightHider: ViewHider<View>
+    private lateinit var bottomHider: ViewHider<View>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
-                showsToolbar = true,
+                toolbarShows = true,
                 toolBarMenu = 0,
-                showsFab = false,
+                fabShows = false,
+                showsBottomNav = false,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
         )
 

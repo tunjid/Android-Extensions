@@ -28,6 +28,8 @@ buildscript {
         supportAnnotations = 'androidx.annotation:annotation:1.1.0'
         constraintLayout = 'androidx.constraintlayout:constraintlayout:1.1.3'
 
+        savedState = 'androidx.savedstate:savedstate:1.0.0'
+
         lifecycleSavedState = 'androidx.lifecycle:lifecycle-viewmodel-savedstate:1.0.0-alpha04'
         lifecycleViewModel = 'androidx.lifecycle:lifecycle-viewmodel:2.1.0'
         lifecycleExtensions = 'androidx.lifecycle:lifecycle-extensions:2.1.0'

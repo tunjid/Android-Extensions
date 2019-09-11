@@ -4,16 +4,19 @@ import android.annotation.SuppressLint
 import android.transition.*
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidbootstrap.activities.MainActivity
 import com.tunjid.androidbootstrap.activities.MainActivity.Companion.ANIMATION_DURATION
-import com.tunjid.androidbootstrap.core.components.FragmentStateViewModel
+import com.tunjid.androidbootstrap.core.components.FragmentStackNavigator
 import com.tunjid.androidbootstrap.view.util.InsetFlags
 
 abstract class AppBaseFragment(
         @LayoutRes contentLayoutId: Int = 0
-) : Fragment(contentLayoutId), FragmentStateViewModel.FragmentTagProvider {
+) : Fragment(contentLayoutId),
+        FragmentStackNavigator.FragmentTagProvider,
+        FragmentStackNavigator.FragmentTransactionProvider {
 
     open val insetFlags: InsetFlags = InsetFlags.ALL
 
@@ -23,13 +26,17 @@ abstract class AppBaseFragment(
     private val hostingActivity: MainActivity
         get() = requireActivity() as MainActivity
 
+    val transitionFragmentManager: FragmentManager
+        get() = parentFragment?.childFragmentManager ?: requireActivity().supportFragmentManager
+
     override fun onDestroyView() {
         super.onDestroyView()
         arguments?.putBoolean(VIEW_DESTROYED, true)
     }
 
     fun showFragment(fragment: AppBaseFragment): Boolean =
-            fragment.let { hostingActivity.fragmentStateViewModel.showFragment(it, it.stableTag, provideFragmentTransaction(it)) }
+            hostingActivity.currentStackNavigator?.show(fragment, provideFragmentTransaction(fragment))
+                    ?: false
 
     protected fun showSnackbar(consumer: (Snackbar) -> Unit) =
             hostingActivity.showSnackBar(consumer)
@@ -42,11 +49,13 @@ abstract class AppBaseFragment(
             .setDuration(ANIMATION_DURATION.toLong())
 
     @SuppressLint("CommitTransaction")
-    open fun provideFragmentTransaction(fragmentTo: AppBaseFragment): FragmentTransaction? =
-            requireActivity().supportFragmentManager
-                    .beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out,
-                            android.R.anim.fade_in, android.R.anim.fade_out)
+    override fun provideFragmentTransaction(fragmentTo: Fragment): FragmentTransaction? =
+            transitionFragmentManager.beginTransaction().setCustomAnimations(
+                    android.R.anim.fade_in,
+                    android.R.anim.fade_out,
+                    android.R.anim.fade_in,
+                    android.R.anim.fade_out
+            )
 
     /**
      * Checks whether this fragment was shown before and it's view subsequently
@@ -62,7 +71,7 @@ abstract class AppBaseFragment(
         const val BACKGROUND_TINT_DURATION = 1200
         private const val VIEW_DESTROYED = "com.tunjid.androidbootstrap.core.abstractclasses.basefragment.view.destroyed"
 
-        val NO_BOTTOM: InsetFlags = InsetFlags.create(true, true, true, false)
+        val NO_BOTTOM: InsetFlags = InsetFlags(hasLeftInset = true, hasTopInset = true, hasRightInset = true, hasBottomInset = false)
     }
 
 }

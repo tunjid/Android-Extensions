@@ -11,6 +11,7 @@ import android.widget.ImageView
 import androidx.core.app.SharedElementCallback
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getDrawable
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -20,6 +21,7 @@ import com.tunjid.androidbootstrap.adapters.DoggoAdapter
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter.ImageListAdapterListener
 import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
+import com.tunjid.androidbootstrap.core.components.FragmentStackNavigator
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.recyclerview.ListManager
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
@@ -33,7 +35,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalU
 
     override var uiState: UiState by activityGlobalUiController()
 
-    override val insetFlags: InsetFlags = NO_BOTTOM
+    override val insetFlags: InsetFlags = InsetFlags.ALL
 
     private lateinit var listManager: ListManager<DoggoViewHolder, PlaceHolder.State>
 
@@ -52,10 +54,11 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalU
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
                 toolBarMenu = 0,
-                showsToolbar = true,
+                toolbarShows = true,
                 fabIcon = R.drawable.ic_paw_24dp,
                 fabText = getString(R.string.collapse_prompt),
-                showsFab = true,
+                fabShows = true,
+                showsBottomNav = true,
                 fabExtended = !restoredFromBackStack(),
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),
                 fabClickListener = View.OnClickListener { uiState = uiState.copy(fabExtended = !uiState.fabExtended) }
@@ -122,7 +125,8 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalU
     }
 
     @SuppressLint("CommitTransaction")
-    override fun provideFragmentTransaction(fragmentTo: AppBaseFragment): FragmentTransaction? {
+    override fun provideFragmentTransaction(fragmentTo: Fragment): FragmentTransaction? {
+        if (fragmentTo !is FragmentStackNavigator.FragmentTagProvider) return null
         if (!fragmentTo.stableTag.contains(DoggoPagerFragment::class.java.simpleName)) return null
 
         val doggo = Doggo.transitionDoggo
@@ -144,8 +148,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalU
             }
         })
 
-        return requireActivity()
-                .supportFragmentManager
+        return transitionFragmentManager
                 .beginTransaction()
                 .setReorderingAllowed(true)
                 .addSharedElement(imageView, ViewUtil.transitionName(doggo, imageView))

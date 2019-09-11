@@ -17,8 +17,8 @@ import com.tunjid.androidbootstrap.view.util.spring
  *
  * Created by tj.dahunsi on 2/19/16.
  */
-class ViewHider private constructor(
-        private val view: View,
+class ViewHider<T : View> private constructor(
+        val view: T,
         private val listener: Listener,
         @param:HideDirection @field:HideDirection
         private val direction: Int,
@@ -78,22 +78,22 @@ class ViewHider private constructor(
         }
     }
 
-    class Builder internal constructor(private val view: View) {
+    class Builder<T : View> internal constructor(private val view: T) {
 
         @HideDirection
         private var direction = BOTTOM
         private var options: SpringAnimation.() -> Unit = {}
         private val listener = Listener()
 
-        fun setDirection(@HideDirection direction: Int): Builder = apply { this.direction = direction }
+        fun setDirection(@HideDirection direction: Int): Builder<T> = apply { this.direction = direction }
 
-        fun addOptions(options: SpringAnimation.() -> Unit): Builder = apply { this.options = options }
+        fun addOptions(options: SpringAnimation.() -> Unit): Builder<T> = apply { this.options = options }
 
-        fun addStartRunnable(runnable: () -> Unit): Builder = apply { listener.startRunnables.add(runnable) }
+        fun addStartRunnable(runnable: () -> Unit): Builder<T> = apply { listener.startRunnables.add(runnable) }
 
-        fun addEndRunnable(runnable: () -> Unit): Builder = apply { listener.endRunnables.add(runnable) }
+        fun addEndRunnable(runnable: () -> Unit): Builder<T> = apply { listener.endRunnables.add(runnable) }
 
-        fun build(): ViewHider = ViewHider(view, listener, direction, options).apply {
+        fun build(): ViewHider<T> = ViewHider(view, listener, direction, options).apply {
             listener.startRunnables.add(0, startRunnable)
             listener.endRunnables.add(0, endRunnable)
         }
@@ -120,6 +120,6 @@ class ViewHider private constructor(
         const val RIGHT = 2
         const val BOTTOM = 3
 
-        fun of(view: View): Builder = Builder(view)
+        fun <T : View> of(view: T): Builder<T> = Builder(view)
     }
 }

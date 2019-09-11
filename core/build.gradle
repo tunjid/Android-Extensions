@@ -6,9 +6,8 @@ dependencies {
     implementation parent.ext.kotlin
     implementation parent.ext.ktxCore
     implementation parent.ext.appCompat
+    implementation parent.ext.savedState
     implementation parent.ext.fragmentKtx
-    implementation parent.ext.lifecycleViewModel
-    implementation parent.ext.lifecycleSavedState
 
     testImplementation 'junit:junit:4.12'
 

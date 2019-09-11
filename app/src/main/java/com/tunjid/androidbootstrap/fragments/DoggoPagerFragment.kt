@@ -21,6 +21,7 @@ import com.tunjid.androidbootstrap.activityGlobalUiController
 import com.tunjid.androidbootstrap.adapters.DoggoPagerAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.constraintlayout.animator.ViewPagerIndicatorAnimator
+import com.tunjid.androidbootstrap.core.components.FragmentStackNavigator
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.view.util.ViewUtil
@@ -48,11 +49,12 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager), Globa
         super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
-                showsToolbar = false,
+                toolbarShows = false,
                 toolBarMenu = 0,
                 fabIcon = R.drawable.ic_hug_24dp,
-                showsFab = true,
+                fabShows = true,
                 fabExtended = !restoredFromBackStack(),
+                showsBottomNav = false,
                 navBarColor = Color.TRANSPARENT,
                 fabClickListener = View.OnClickListener { Doggo.transitionDoggo?.let { showFragment(AdoptDoggoFragment.newInstance(it)) } }
         )
@@ -100,6 +102,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager), Globa
             viewModel.onSwiped(position, fraction, toTheRight)
         }
 
+        onDoggoSwiped(viewPager.currentItem)
         prepareSharedElementTransition()
 
         if (savedInstanceState == null) postponeEnterTransition()
@@ -113,7 +116,8 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager), Globa
     }
 
     @SuppressLint("CommitTransaction")
-    override fun provideFragmentTransaction(fragmentTo: AppBaseFragment): FragmentTransaction? {
+    override fun provideFragmentTransaction(fragmentTo: Fragment): FragmentTransaction? {
+        if (fragmentTo !is FragmentStackNavigator.FragmentTagProvider) return null
         if (!fragmentTo.stableTag.contains(AdoptDoggoFragment::class.java.simpleName)) return null
 
         val root = view ?: return null
@@ -124,8 +128,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager), Globa
 
         val imageView = childRoot.findViewById<ImageView>(R.id.doggo_image) ?: return null
 
-        return requireActivity()
-                .supportFragmentManager
+        return transitionFragmentManager
                 .beginTransaction()
                 .setReorderingAllowed(true)
                 .addSharedElement(imageView, ViewUtil.transitionName(doggo, imageView))

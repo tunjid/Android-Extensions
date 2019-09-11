@@ -18,6 +18,7 @@ class TestActivity : AppCompatActivity() {
 
     @IdRes
     val ignoredLayoutId = View.generateViewId()
+    val containerId = View.generateViewId()
 
     private val contentView: ViewGroup
         get() {
@@ -26,7 +27,7 @@ class TestActivity : AppCompatActivity() {
             val inner = FrameLayout(this)
 
             ignored.id = ignoredLayoutId
-            inner.id = R.id.main_fragment_container
+            inner.id = containerId
 
             parent.addView(ignored)
             parent.addView(inner)

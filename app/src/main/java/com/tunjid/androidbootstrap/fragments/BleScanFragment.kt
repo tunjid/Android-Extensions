@@ -41,7 +41,7 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan), GlobalUiCon
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.devices.observe(this) { listManager.onDiff(it) }
-        viewModel.isScanning.observe(this) { activity?.invalidateOptionsMenu() }
+        viewModel.isScanning.observe(this) { uiState = uiState.copy(toolbarInvalidated = true) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,8 +50,9 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan), GlobalUiCon
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
                 toolBarMenu = R.menu.menu_ble_scan,
-                showsToolbar = true,
-                showsFab = false,
+                toolbarShows = true,
+                fabShows = false,
+                showsBottomNav = false,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
         )
 
