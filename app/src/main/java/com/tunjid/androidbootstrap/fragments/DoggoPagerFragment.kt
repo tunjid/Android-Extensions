@@ -116,7 +116,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager), Globa
     }
 
     @SuppressLint("CommitTransaction")
-    override fun provideFragmentTransaction(fragmentTo: Fragment): FragmentTransaction? {
+    override fun provideFragmentTransaction(fragmentTo: Fragment): FragmentTransaction? = fragmentManager?.run {
         if (fragmentTo !is FragmentStackNavigator.FragmentTagProvider) return null
         if (!fragmentTo.stableTag.contains(AdoptDoggoFragment::class.java.simpleName)) return null
 
@@ -128,8 +128,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager), Globa
 
         val imageView = childRoot.findViewById<ImageView>(R.id.doggo_image) ?: return null
 
-        return transitionFragmentManager
-                .beginTransaction()
+        beginTransaction()
                 .setReorderingAllowed(true)
                 .addSharedElement(imageView, ViewUtil.transitionName(doggo, imageView))
     }

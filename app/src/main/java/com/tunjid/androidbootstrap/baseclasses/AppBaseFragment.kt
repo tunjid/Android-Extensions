@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.transition.*
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidbootstrap.activities.MainActivity
@@ -25,9 +24,6 @@ abstract class AppBaseFragment(
 
     private val hostingActivity: MainActivity
         get() = requireActivity() as MainActivity
-
-    val transitionFragmentManager: FragmentManager
-        get() = parentFragment?.childFragmentManager ?: requireActivity().supportFragmentManager
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -50,7 +46,7 @@ abstract class AppBaseFragment(
 
     @SuppressLint("CommitTransaction")
     override fun provideFragmentTransaction(fragmentTo: Fragment): FragmentTransaction? =
-            transitionFragmentManager.beginTransaction().setCustomAnimations(
+            fragmentManager?.beginTransaction()?.setCustomAnimations(
                     android.R.anim.fade_in,
                     android.R.anim.fade_out,
                     android.R.anim.fade_in,
