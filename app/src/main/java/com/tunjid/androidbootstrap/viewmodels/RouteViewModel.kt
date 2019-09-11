@@ -28,7 +28,7 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
             )
     )
 
-    fun getRoutes(@IdRes id: Int): List<Route> = mapping[id] ?: mapping.values.flatten()
+    operator fun get(@IdRes id: Int): List<Route> = mapping[id] ?: mapping.values.flatten()
 
     private fun formatRoute(@StringRes stringRes: Int): CharSequence = getApplication<Application>().run {
         SpanBuilder.of(getString(stringRes))

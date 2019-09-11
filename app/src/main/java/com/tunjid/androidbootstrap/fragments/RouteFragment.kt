@@ -40,7 +40,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiControll
         ListManagerBuilder<RouteItemViewHolder, PlaceHolder.State>()
                 .withRecyclerView(view.findViewById(R.id.recycler_view))
                 .withLinearLayoutManager()
-                .withPaddedAdapter(RouteAdapter(viewModel.getRoutes(arguments?.getInt(ARG_MAPPING) ?: 0), this))
+                .withPaddedAdapter(RouteAdapter(viewModel[arguments?.getInt(ARG_MAPPING) ?: 0], this))
                 .build()
     }
 
