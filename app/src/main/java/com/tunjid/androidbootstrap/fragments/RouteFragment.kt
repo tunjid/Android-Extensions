@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
 import com.tunjid.androidbootstrap.*
 import com.tunjid.androidbootstrap.adapters.RouteAdapter
 import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
@@ -18,12 +18,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiControll
 
     override var uiState: UiState by activityGlobalUiController()
 
-    private lateinit var viewModel: RouteViewModel
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(RouteViewModel::class.java)
-    }
+    private val viewModel: RouteViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
