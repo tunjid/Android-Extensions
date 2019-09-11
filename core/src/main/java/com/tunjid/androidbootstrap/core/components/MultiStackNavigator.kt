@@ -50,21 +50,21 @@ class MultiStackNavigator(
     private val navStack: Stack<StackFragment> = Stack()
     private val stackMap = mutableMapOf<Int, StackFragment>()
 
-    private val selectedFragment: StackFragment?
-        get() = stackMap.values.firstOrNull(Fragment::isVisible)
+    private val selectedFragment: StackFragment
+        get() = stackMap.values.run { firstOrNull(Fragment::isVisible) ?: first() }
 
     val currentNavigator
-        get() = selectedFragment?.navigator
+        get() = selectedFragment.navigator
 
     val currentFragment: Fragment?
-        get() = currentNavigator?.currentFragment
+        get() = currentNavigator.currentFragment
 
     init {
         fragmentManager.registerFragmentLifecycleCallbacks(StackLifecycleCallback(), false)
         fragmentManager.addOnBackStackChangedListener { throw IllegalStateException("Fragments may not be added to the back stack of a FragmentManager managed by a MultiStackNavigator") }
 
         if (stateContainer.isFreshState) fragmentManager.commitNow {
-            for ((index, id) in stackIds.withIndex()) add(containerId, StackFragment.newInstance(id), index.toString())
+            stackIds.forEachIndexed { index, id -> add(containerId, StackFragment.newInstance(id), index.toString()) }
         }
         else fragmentManager.fragments.filterIsInstance(StackFragment::class.java).forEach {
             stackMap[it.stackId] = it
@@ -75,14 +75,13 @@ class MultiStackNavigator(
     fun show(@IdRes toShow: Int) = showInternal(toShow, true)
 
     fun pop(): Boolean = when (val selected = selectedFragment) {
-        is StackFragment -> when {
+        else -> when {
             selected.navigator.pop() -> true
             else -> when {
                 navStack.run { remove(selected); isEmpty() } -> false
                 else -> showInternal(navStack.peek().stackId, false).let { true }
             }
         }
-        else -> false
     }
 
     private fun showInternal(@IdRes toShow: Int, addTap: Boolean) {
