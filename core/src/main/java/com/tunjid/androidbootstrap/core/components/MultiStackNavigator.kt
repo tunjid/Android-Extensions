@@ -63,7 +63,7 @@ class MultiStackNavigator(
         fragmentManager.registerFragmentLifecycleCallbacks(StackLifecycleCallback(), false)
         fragmentManager.addOnBackStackChangedListener { throw IllegalStateException("Fragments may not be added to the back stack of a FragmentManager managed by a MultiStackNavigator") }
 
-        if (stateContainer.isFreshState) fragmentManager.commit {
+        if (stateContainer.isFreshState) fragmentManager.commitNow {
             for ((index, id) in stackIds.withIndex()) add(containerId, StackFragment.newInstance(id), index.toString())
         }
         else fragmentManager.fragments.filterIsInstance(StackFragment::class.java).forEach {
