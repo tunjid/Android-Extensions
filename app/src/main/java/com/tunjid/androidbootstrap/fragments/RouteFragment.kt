@@ -31,8 +31,8 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiControll
         uiState = uiState.copy(
                 toolbarTitle = getString(R.string.app_name),
                 toolBarMenu = 0,
-                showsToolbar = true,
-                showsFab = false,
+                toolbarShows = true,
+                fabShows = false,
                 showsBottomNav = true,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
         )

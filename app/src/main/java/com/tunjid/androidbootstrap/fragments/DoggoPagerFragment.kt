@@ -49,10 +49,10 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager), Globa
         super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
-                showsToolbar = false,
+                toolbarShows = false,
                 toolBarMenu = 0,
                 fabIcon = R.drawable.ic_hug_24dp,
-                showsFab = true,
+                fabShows = true,
                 fabExtended = !restoredFromBackStack(),
                 showsBottomNav = false,
                 navBarColor = Color.TRANSPARENT,

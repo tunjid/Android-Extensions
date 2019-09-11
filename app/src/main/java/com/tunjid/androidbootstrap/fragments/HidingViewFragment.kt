@@ -31,9 +31,9 @@ class HidingViewFragment : AppBaseFragment(R.layout.fragment_hiding_view), Globa
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
-                showsToolbar = true,
+                toolbarShows = true,
                 toolBarMenu = 0,
-                showsFab = false,
+                fabShows = false,
                 showsBottomNav = false,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
         )

@@ -10,15 +10,16 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
 
 data class UiState(
-        @DrawableRes val fabIcon: Int,
-        val fabText: CharSequence,
         @MenuRes val toolBarMenu: Int,
+        val toolbarShows: Boolean,
+        val toolbarInvalidated: Boolean,
+        val toolbarTitle: CharSequence,
+        @DrawableRes val fabIcon: Int,
+        val fabShows: Boolean,
+        val fabExtended: Boolean,
+        val fabText: CharSequence,
         @ColorInt val navBarColor: Int,
         val showsBottomNav: Boolean,
-        val showsFab: Boolean,
-        val fabExtended: Boolean,
-        val showsToolbar: Boolean,
-        val toolbarTitle: CharSequence,
         val fabClickListener: View.OnClickListener?
 ) : Parcelable {
 
@@ -29,88 +30,74 @@ data class UiState(
              navBarColorConsumer: (Int) -> Unit,
              fabStateConsumer: (Int, CharSequence) -> Unit,
              fabExtendedConsumer: (Boolean) -> Unit,
-             toolbarStateConsumer: (Int, CharSequence) -> Unit,
+             toolbarStateConsumer: (Int, Boolean, CharSequence) -> Unit,
              fabClickListenerConsumer: (View.OnClickListener?) -> Unit
     ): UiState {
-        either(newState, UiState::toolBarMenu, UiState::toolbarTitle, toolbarStateConsumer)
-        either(newState, UiState::fabIcon, UiState::fabText, fabStateConsumer)
 
-        only(newState, UiState::showsBottomNav, showsBottomNavConsumer)
-        only(newState, UiState::showsFab, showsFabConsumer)
-        only(newState, UiState::fabExtended, fabExtendedConsumer)
-        only(newState, UiState::showsToolbar, showsToolbarConsumer)
-        only(newState, UiState::navBarColor, navBarColorConsumer)
+        onChanged(newState, UiState::toolBarMenu, UiState::toolbarInvalidated, UiState::toolbarTitle) {
+            toolbarStateConsumer(toolBarMenu, toolbarInvalidated, toolbarTitle)
+        }
+
+        onChanged(newState, UiState::fabIcon, UiState::fabText) { fabStateConsumer(fabIcon, fabText) }
+        onChanged(newState, UiState::showsBottomNav) { showsBottomNavConsumer(showsBottomNav) }
+        onChanged(newState, UiState::fabShows) { showsFabConsumer(fabShows) }
+        onChanged(newState, UiState::fabExtended) { fabExtendedConsumer(fabExtended) }
+        onChanged(newState, UiState::toolbarShows) { showsToolbarConsumer(toolbarShows) }
+        onChanged(newState, UiState::navBarColor) { navBarColorConsumer(navBarColor) }
 
         fabClickListenerConsumer.invoke(newState.fabClickListener)
 
         return newState
     }
 
-    private fun <T> only(that: UiState, first: (UiState) -> T, consumer: (T) -> Unit) {
-        val thisFirst = first.invoke(this)
-        val thatFirst = first.invoke(that)
-
-        if (thisFirst != thatFirst) consumer.invoke(thatFirst)
-    }
-
-    private fun <S, T> either(that: UiState,
-                              first: (UiState) -> S,
-                              second: (UiState) -> T,
-                              biConsumer: (S, T) -> Unit) {
-        val thisFirst = first.invoke(this)
-        val thatFirst = first.invoke(that)
-        val thisSecond = second.invoke(this)
-        val thatSecond = second.invoke(that)
-
-        if (thisFirst != thatFirst || thisSecond != thatSecond)
-            biConsumer.invoke(thatFirst, thatSecond)
+    private inline fun onChanged(that: UiState, vararg selectors: (UiState) -> Any?, invocation: UiState.() -> Unit) {
+        if (selectors.map { it(this) != it(that) }.firstOrNull { it } != null) invocation.invoke(that)
     }
 
     private constructor(`in`: Parcel) : this(
-            fabIcon = `in`.readInt(),
-            fabText = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(`in`),
             toolBarMenu = `in`.readInt(),
+            toolbarShows = `in`.readByte().toInt() != 0x00,
+            toolbarInvalidated = `in`.readByte().toInt() != 0x00,
+            toolbarTitle = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(`in`),
+            fabIcon = `in`.readInt(),
+            fabShows = `in`.readByte().toInt() != 0x00,
+            fabExtended = `in`.readByte().toInt() != 0x00,
+            fabText = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(`in`),
             navBarColor = `in`.readInt(),
             showsBottomNav = `in`.readByte().toInt() != 0x00,
-            showsFab = `in`.readByte().toInt() != 0x00,
-            fabExtended = `in`.readByte().toInt() != 0x00,
-            showsToolbar = `in`.readByte().toInt() != 0x00,
-            toolbarTitle = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(`in`),
             fabClickListener = null
     )
 
-    override fun describeContents(): Int {
-        return 0
-    }
+    override fun describeContents(): Int = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeInt(fabIcon)
-        TextUtils.writeToParcel(fabText, dest, 0)
         dest.writeInt(toolBarMenu)
+        dest.writeByte((if (toolbarShows) 0x01 else 0x00).toByte())
+        dest.writeByte((if (toolbarInvalidated) 0x01 else 0x00).toByte())
+        TextUtils.writeToParcel(toolbarTitle, dest, 0)
+        dest.writeInt(fabIcon)
+        dest.writeByte((if (fabShows) 0x01 else 0x00).toByte())
+        dest.writeByte((if (fabExtended) 0x01 else 0x00).toByte())
+        TextUtils.writeToParcel(fabText, dest, 0)
         dest.writeInt(navBarColor)
         dest.writeByte((if (showsBottomNav) 0x01 else 0x00).toByte())
-        dest.writeByte((if (showsFab) 0x01 else 0x00).toByte())
-        dest.writeByte((if (fabExtended) 0x01 else 0x00).toByte())
-        dest.writeByte((if (showsToolbar) 0x01 else 0x00).toByte())
-        TextUtils.writeToParcel(toolbarTitle, dest, 0)
     }
 
     companion object {
 
-        fun freshState(): UiState {
-            return UiState(
-                    fabIcon = 0,
-                    fabText = "",
-                    toolBarMenu = 0,
-                    navBarColor = Color.BLACK,
-                    showsBottomNav = true,
-                    showsFab = true,
-                    fabExtended = true,
-                    showsToolbar = true,
-                    toolbarTitle = "",
-                    fabClickListener = null
-            )
-        }
+        fun freshState(): UiState = UiState(
+                fabIcon = 0,
+                fabText = "",
+                toolBarMenu = 0,
+                navBarColor = Color.BLACK,
+                showsBottomNav = true,
+                fabShows = true,
+                fabExtended = true,
+                toolbarShows = true,
+                toolbarInvalidated = false,
+                toolbarTitle = "",
+                fabClickListener = null
+        )
 
         @JvmField
         @Suppress("unused")

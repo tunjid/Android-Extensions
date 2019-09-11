@@ -44,11 +44,11 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo), Globa
         super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
-                showsToolbar = false,
+                toolbarShows = false,
                 toolBarMenu = 0,
                 fabText = getString(R.string.adopt),
                 fabIcon = R.drawable.ic_hug_24dp,
-                showsFab = true,
+                fabShows = true,
                 showsBottomNav = true,
                 fabExtended = !restoredFromBackStack(),
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),

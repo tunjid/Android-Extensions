@@ -7,8 +7,12 @@ import android.os.Build
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.annotation.DrawableRes
+import androidx.annotation.MenuRes
+import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
@@ -21,7 +25,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator
 import com.tunjid.androidbootstrap.view.animator.ViewHider
-import com.tunjid.androidbootstrap.view.util.update
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -138,7 +141,7 @@ class GlobalUiDriver(
         get() = state
         set(value) {
             val previous = state.copy()
-            state = value
+            state = value.copy(toolbarInvalidated = false) // Reset after firing once
             previous.diff(
                     value,
                     this::toggleBottomNav,
@@ -187,8 +190,8 @@ class GlobalUiDriver(
                 intArrayOf(color, Color.TRANSPARENT))
     }
 
-    private fun updateMainToolBar(menu: Int, title: CharSequence) = toolbarHider.view.run {
-        update(title, menu)
+    private fun updateMainToolBar(menu: Int, invalidatedAlone: Boolean, title: CharSequence) = toolbarHider.view.run {
+        update(menu, invalidatedAlone, title)
         getCurrentFragment()?.onPrepareOptionsMenu(this.menu)
         Unit
     }
@@ -202,7 +205,43 @@ class GlobalUiDriver(
     private fun setFabClickListener(onClickListener: View.OnClickListener?) =
             fabHider.view.setOnClickListener(onClickListener)
 
+    private fun Toolbar.update(@MenuRes menu: Int, invalidatedAlone: Boolean, title: CharSequence) {
+        when {
+            invalidatedAlone -> refreshMenu()
+            visibility != View.VISIBLE || this.title == null -> {
+                setTitle(title)
+                refreshMenu(menu)
+            }
+            else -> for (i in 0 until childCount) {
+                val child = getChildAt(i)
+                if (child is ImageView) continue
+
+                child.animate().alpha(0F).setDuration(TOOLBAR_ANIM_DELAY).withEndAction {
+                    if (child is TextView) setTitle(title)
+                    else if (child is ActionMenuView) refreshMenu(menu)
+
+                    child.animate()
+                            .setDuration(TOOLBAR_ANIM_DELAY)
+                            .setInterpolator(AccelerateDecelerateInterpolator())
+                            .alpha(1F)
+                            .start()
+                }.start()
+            }
+        }
+    }
+
+    private fun Toolbar.refreshMenu(menu: Int? = null) {
+        if(menu != null) {
+            this.menu.clear()
+            if (menu == 0) return
+
+            inflateMenu(menu)
+        }
+        getCurrentFragment()?.onPrepareOptionsMenu(this.menu)
+    }
+
     companion object {
+        private const val TOOLBAR_ANIM_DELAY = 200L
         private const val DEFAULT_SYSTEM_UI_FLAGS = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or

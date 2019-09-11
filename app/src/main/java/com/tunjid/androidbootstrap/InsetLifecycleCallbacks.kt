@@ -9,7 +9,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.postDelayed
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -40,12 +39,6 @@ class InsetLifecycleCallbacks(
 
     init {
         ViewCompat.setOnApplyWindowInsetsListener(this.parentContainer) { _, insets -> consumeSystemInsets(insets) }
-    }
-
-    fun invalidateToolbarMenu() {
-        toolbar.postDelayed(MainActivity.ANIMATION_DURATION.toLong()) {
-            stackNavigatorSource()?.currentFragment?.onPrepareOptionsMenu(toolbar.menu)
-        }
     }
 
     fun showSnackBar(consumer: (Snackbar) -> Unit) {

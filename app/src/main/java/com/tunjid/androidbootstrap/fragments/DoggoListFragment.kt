@@ -54,10 +54,10 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalU
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
                 toolBarMenu = 0,
-                showsToolbar = true,
+                toolbarShows = true,
                 fabIcon = R.drawable.ic_paw_24dp,
                 fabText = getString(R.string.collapse_prompt),
-                showsFab = true,
+                fabShows = true,
                 showsBottomNav = true,
                 fabExtended = !restoredFromBackStack(),
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),

@@ -58,8 +58,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         super.onSaveInstanceState(outState)
     }
 
-    override fun invalidateOptionsMenu() = insetLifecycleCallbacks.invalidateToolbarMenu()
-
     fun showSnackBar(consumer: (Snackbar) -> Unit) = insetLifecycleCallbacks.showSnackBar(consumer)
 
     companion object {

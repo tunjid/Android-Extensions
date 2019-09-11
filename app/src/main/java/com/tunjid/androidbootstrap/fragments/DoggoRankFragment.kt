@@ -48,10 +48,10 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list), Global
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
                 toolBarMenu = 0,
-                showsToolbar = true,
+                toolbarShows = true,
                 fabText = getString(R.string.reset_doggos),
                 fabIcon = R.drawable.ic_restore_24dp,
-                showsFab = true,
+                fabShows = true,
                 showsBottomNav = false,
                 fabExtended = !restoredFromBackStack(),
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),

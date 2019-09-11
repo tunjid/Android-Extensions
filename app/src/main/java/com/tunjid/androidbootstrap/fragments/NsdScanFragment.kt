@@ -39,7 +39,7 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan), GlobalUiCon
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         viewModel.scanChanges.observe(this) { listManager.onDiff(it) }
-        viewModel.isScanning.observe(this) { activity?.invalidateOptionsMenu() }
+        viewModel.isScanning.observe(this) { uiState = uiState.copy(toolbarInvalidated = true) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -47,9 +47,9 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan), GlobalUiCon
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
-                showsToolbar = true,
+                toolbarShows = true,
                 toolBarMenu = R.menu.menu_nsd_scan,
-                showsFab = false,
+                fabShows = false,
                 showsBottomNav = true,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
         )
