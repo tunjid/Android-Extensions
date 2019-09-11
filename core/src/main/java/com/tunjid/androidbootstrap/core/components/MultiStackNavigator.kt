@@ -40,7 +40,7 @@ class MultiStackNavigator(
         private val stateContainer: LifecycleSavedStateContainer,
         private val fragmentManager: FragmentManager,
         val stackIds: IntArray,
-        @IdRes containerId: Int,
+        @IdRes val containerId: Int,
         val rootFunction: (Int) -> Pair<Fragment, String>) {
 
     var stackSelectedListener: ((Int) -> Unit)? = null
@@ -59,9 +59,14 @@ class MultiStackNavigator(
 
     init {
         fragmentManager.registerFragmentLifecycleCallbacks(StackLifecycleCallback(), false)
-        fragmentManager.commit {
+
+        if (stateContainer.isFreshState) fragmentManager.commit {
             for ((index, id) in stackIds.withIndex()) add(containerId, StackFragment.newInstance(id), index.toString())
         }
+        else fragmentManager.fragments.filterIsInstance(StackFragment::class.java).forEach {
+            stackMap[it.stackId] = it
+            navStack.push(it)
+        }.apply { stateContainer.savedState.getIntArray(NAV_STACK_ORDER)?.apply { navStack.sortBy { indexOf(it.stackId) } } }
     }
 
     fun show(@IdRes toShow: Int) = showInternal(toShow, true)
@@ -96,13 +101,14 @@ class MultiStackNavigator(
 
     private fun track(tab: StackFragment) {
         if (navStack.contains(tab)) navStack.remove(tab)
-        navStack.add(tab)
-        stateContainer.savedState.putIntArray(NAV_STATE, navStack.map(StackFragment::stackId).toIntArray())
+        navStack.push(tab)
+        stateContainer.savedState.putIntArray(NAV_STACK_ORDER, navStack.map(StackFragment::stackId).toIntArray())
     }
 
     inner class StackLifecycleCallback : FragmentManager.FragmentLifecycleCallbacks() {
         override fun onFragmentCreated(fm: FragmentManager, fragment: Fragment, savedInstanceState: Bundle?) {
-            if (fragment !is StackFragment) return
+            if (fragment.id != containerId) return
+            check(fragment is StackFragment) { "Only Stack Fragments may be added to a container View managed by a MultiStackNavigator" }
 
             fragment.apply { stackMap[stackId] = this }
 
@@ -111,7 +117,10 @@ class MultiStackNavigator(
         }
 
         override fun onFragmentViewCreated(fm: FragmentManager, fragment: Fragment, view: View, savedInstanceState: Bundle?) {
-            if (fragment is StackFragment && savedInstanceState == null) rootFunction(fragment.stackId).apply {
+            if (fragment.id != containerId) return
+            check(fragment is StackFragment) { "Only Stack Fragments may be added to a container View managed by a MultiStackNavigator" }
+
+            if (stateContainer.isFreshState) rootFunction(fragment.stackId).apply {
                 fragment.navigator.show(first, second)
             }
         }
@@ -119,7 +128,7 @@ class MultiStackNavigator(
 }
 
 const val ID_KEY = "id"
-const val NAV_STATE = "navState"
+const val NAV_STACK_ORDER = "navState"
 
 class StackFragment : Fragment() {
 
