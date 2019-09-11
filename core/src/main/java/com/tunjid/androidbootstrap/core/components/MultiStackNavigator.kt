@@ -79,7 +79,7 @@ class MultiStackNavigator(
             selected.navigator.pop() -> true
             else -> when {
                 navStack.run { remove(selected); isEmpty() } -> false
-                else -> showInternal(navStack.pop().stackId, false).let { true }
+                else -> showInternal(navStack.peek().stackId, false).let { true }
             }
         }
         else -> false
