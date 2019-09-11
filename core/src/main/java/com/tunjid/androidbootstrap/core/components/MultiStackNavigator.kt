@@ -91,7 +91,7 @@ class MultiStackNavigator(
 
             for ((id, fragment) in stackMap) when {
                 id == toShow && fragment.isVisible -> return@commit
-                id == toShow && fragment.isHidden -> fragment.apply { show(this); if (addTap) track(this) }
+                id == toShow && fragment.isHidden -> show(fragment).also { if (addTap) track(fragment) }
                 else -> hide(fragment)
             }
         }
