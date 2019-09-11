@@ -231,11 +231,9 @@ class GlobalUiDriver(
     }
 
     private fun Toolbar.refreshMenu(menu: Int? = null) {
-        if(menu != null) {
-            this.menu.clear()
-            if (menu == 0) return
-
-            inflateMenu(menu)
+        if (menu != null) {
+            this.menu.clear();
+            if (menu != 0) inflateMenu(menu)
         }
         getCurrentFragment()?.onPrepareOptionsMenu(this.menu)
     }

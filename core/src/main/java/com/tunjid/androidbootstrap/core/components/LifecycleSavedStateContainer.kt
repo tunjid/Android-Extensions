@@ -21,12 +21,10 @@ class LifecycleSavedStateContainer(
 
     init {
         lifecycleOwner.lifecycle.addObserver(this)
-
         savedStateRegistryOwner.savedStateRegistry.apply {
-            var fresh = false
-            savedState = consumeRestoredStateForKey(key) ?: Bundle().apply { fresh = true }
-            isFreshState = fresh
-
+            val restoredState = consumeRestoredStateForKey(key)
+            isFreshState = restoredState == null
+            savedState = restoredState ?: Bundle()
             registerSavedStateProvider(key, this@LifecycleSavedStateContainer)
         }
     }
