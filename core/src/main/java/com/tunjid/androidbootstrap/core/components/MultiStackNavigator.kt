@@ -11,6 +11,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.core.view.children
 import androidx.fragment.app.*
+import java.lang.IllegalStateException
 import java.util.*
 import kotlin.collections.set
 
@@ -44,6 +45,7 @@ class MultiStackNavigator(
         val rootFunction: (Int) -> Pair<Fragment, String>) {
 
     var stackSelectedListener: ((Int) -> Unit)? = null
+    var stackTransactionModifier: (FragmentTransaction.(Int) -> Unit)? = null
 
     private val navStack: Stack<StackFragment> = Stack()
     private val stackMap = mutableMapOf<Int, StackFragment>()
@@ -59,6 +61,7 @@ class MultiStackNavigator(
 
     init {
         fragmentManager.registerFragmentLifecycleCallbacks(StackLifecycleCallback(), false)
+        fragmentManager.addOnBackStackChangedListener { throw IllegalStateException("Fragments may not be added to the back stack of a FragmentManager managed by a MultiStackNavigator") }
 
         if (stateContainer.isFreshState) fragmentManager.commit {
             for ((index, id) in stackIds.withIndex()) add(containerId, StackFragment.newInstance(id), index.toString())
@@ -84,12 +87,8 @@ class MultiStackNavigator(
 
     private fun showInternal(@IdRes toShow: Int, addTap: Boolean) {
         fragmentManager.commit {
-            setCustomAnimations(
-                    android.R.anim.fade_in,
-                    android.R.anim.fade_out,
-                    android.R.anim.fade_in,
-                    android.R.anim.fade_out
-            )
+            stackTransactionModifier?.invoke(this, toShow)
+
             for ((id, fragment) in stackMap) when {
                 id == toShow && fragment.isVisible -> return@commit
                 id == toShow && fragment.isHidden -> fragment.apply { show(this); if (addTap) track(this) }

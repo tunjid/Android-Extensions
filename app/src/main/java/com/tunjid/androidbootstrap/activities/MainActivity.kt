@@ -44,6 +44,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
 
         findViewById<BottomNavigationView>(R.id.bottom_navigation).apply {
             multiStackNavigator.stackSelectedListener = { menu.findItem(it)?.isChecked = true }
+            multiStackNavigator.stackTransactionModifier = {
+                setCustomAnimations(
+                        android.R.anim.fade_in,
+                        android.R.anim.fade_out,
+                        android.R.anim.fade_in,
+                        android.R.anim.fade_out
+                )
+            }
             setOnApplyWindowInsetsListener { _: View?, windowInsets: WindowInsets? -> windowInsets }
             setOnNavigationItemSelectedListener { multiStackNavigator.show(it.itemId).let { true } }
         }
