@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.annotation.IdRes
 import androidx.annotation.MenuRes
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.os.bundleOf
 import androidx.core.view.children
 import androidx.fragment.app.*
 import androidx.lifecycle.Lifecycle
@@ -150,15 +149,13 @@ class MultiStackNavigator(
     }
 }
 
-const val ID_KEY = "id"
 const val NAV_STACK_ORDER = "navState"
 
 class StackFragment : Fragment() {
 
-    lateinit var navigator: FragmentStackNavigator
+    internal lateinit var navigator: FragmentStackNavigator
 
-    val stackId: Int
-        get() = arguments?.getInt(ID_KEY)!!
+    internal var stackId: Int by args()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -168,11 +165,9 @@ class StackFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-            FragmentContainerView(inflater.context).apply { id = arguments!!.getInt(ID_KEY) }
+            FragmentContainerView(inflater.context).apply { id = stackId }
 
     companion object {
-        internal fun newInstance(id: Int) = StackFragment().apply {
-            arguments = bundleOf(ID_KEY to id)
-        }
+        internal fun newInstance(id: Int) = StackFragment().apply { stackId = id }
     }
 }

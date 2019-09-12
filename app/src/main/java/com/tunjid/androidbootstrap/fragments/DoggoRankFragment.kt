@@ -16,7 +16,6 @@ import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.core.components.FragmentStackNavigator
 import com.tunjid.androidbootstrap.core.components.activityNavigationController
-import com.tunjid.androidbootstrap.fragments.AdoptDoggoFragment.Companion.ARG_DOGGO
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.recyclerview.ListManager
 import com.tunjid.androidbootstrap.recyclerview.ListManager.SWIPE_DRAG_ALL_DIRECTIONS
@@ -107,11 +106,9 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
 
     @SuppressLint("CommitTransaction")
     override fun augmentTransaction(transaction: FragmentTransaction, incomingFragment: Fragment) {
-        if (incomingFragment !is FragmentStackNavigator.TagProvider) return
-        if (!incomingFragment.stableTag.contains(AdoptDoggoFragment::class.java.simpleName)) return
+        if (incomingFragment !is AdoptDoggoFragment) return
 
-        val args = incomingFragment.arguments ?: return
-        val doggo = args.getParcelable<Doggo>(ARG_DOGGO) ?: return
+        val doggo = incomingFragment.doggo
         val holder = listManager.findViewHolderForItemId(doggo.hashCode().toLong()) ?: return
 
         transaction.addSharedElement(holder.thumbnail, ViewUtil.transitionName(doggo, holder.thumbnail))

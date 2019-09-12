@@ -4,20 +4,15 @@ import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.View
 import android.widget.ImageView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
-import com.tunjid.androidbootstrap.GlobalUiController
-import com.tunjid.androidbootstrap.PlaceHolder
-import com.tunjid.androidbootstrap.R
-import com.tunjid.androidbootstrap.UiState
-import com.tunjid.androidbootstrap.activityGlobalUiController
+import com.tunjid.androidbootstrap.*
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter.ImageListAdapterListener
 import com.tunjid.androidbootstrap.adapters.InputAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
+import com.tunjid.androidbootstrap.core.components.args
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
 import com.tunjid.androidbootstrap.view.util.InsetFlags
@@ -28,17 +23,12 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo), Globa
 
     override var uiState: UiState by activityGlobalUiController()
 
-    private lateinit var doggo: Doggo
-
     override val insetFlags: InsetFlags = InsetFlags.NO_TOP
 
     override val stableTag: String
-        get() = super.stableTag + "-" + arguments!!.getParcelable<Parcelable>(ARG_DOGGO)!!.hashCode()
+        get() = super.stableTag + "-" + doggo.hashCode()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        doggo = arguments!!.getParcelable(ARG_DOGGO)!!
-    }
+    var doggo: Doggo by args()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -92,10 +82,9 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo), Globa
     }
 
     companion object {
-        internal const val ARG_DOGGO = "doggo"
 
         fun newInstance(doggo: Doggo): AdoptDoggoFragment = AdoptDoggoFragment().apply {
-            arguments = bundleOf(ARG_DOGGO to doggo)
+            this.doggo = doggo
             prepareSharedElementTransition()
         }
     }

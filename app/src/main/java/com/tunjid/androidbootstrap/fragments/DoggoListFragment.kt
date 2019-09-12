@@ -132,8 +132,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
 
     @SuppressLint("CommitTransaction")
     override fun augmentTransaction(transaction: FragmentTransaction, incomingFragment: Fragment) {
-        if (incomingFragment !is FragmentStackNavigator.TagProvider) return
-        if (!incomingFragment.stableTag.contains(DoggoPagerFragment::class.java.simpleName)) return
+        if (incomingFragment !is DoggoPagerFragment) return
 
         val doggo = Doggo.transitionDoggo
         val imageView = transitionImage

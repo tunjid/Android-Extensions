@@ -3,7 +3,6 @@ package com.tunjid.androidbootstrap.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import com.tunjid.androidbootstrap.*
 import com.tunjid.androidbootstrap.adapters.RouteAdapter
@@ -11,6 +10,7 @@ import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.core.components.FragmentStackNavigator
 import com.tunjid.androidbootstrap.core.components.activityNavigationController
+import com.tunjid.androidbootstrap.core.components.args
 import com.tunjid.androidbootstrap.model.Route
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
 import com.tunjid.androidbootstrap.viewholders.RouteItemViewHolder
@@ -23,6 +23,8 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiControll
     private val viewModel: RouteViewModel by viewModels()
 
     private val navigator: FragmentStackNavigator by activityNavigationController()
+
+    private var tabId: Int by args()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -39,7 +41,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiControll
         ListManagerBuilder<RouteItemViewHolder, PlaceHolder.State>()
                 .withRecyclerView(view.findViewById(R.id.recycler_view))
                 .withLinearLayoutManager()
-                .withPaddedAdapter(RouteAdapter(viewModel[arguments?.getInt(ARG_MAPPING) ?: 0], this))
+                .withPaddedAdapter(RouteAdapter(viewModel[tabId], this))
                 .build()
     }
 
@@ -53,12 +55,11 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiControll
             ShiftingTileFragment::class.java.simpleName -> ShiftingTileFragment.newInstance()
             EndlessTileFragment::class.java.simpleName -> EndlessTileFragment.newInstance()
             DoggoRankFragment::class.java.simpleName -> DoggoRankFragment.newInstance()
-            else -> newInstance(arguments?.getInt(ARG_MAPPING) ?: 0) // No-op, all RouteFragment instances have the same tag
+            else -> newInstance(tabId) // No-op, all RouteFragment instances have the same tag
         })
     }
 
     companion object {
-        private const val ARG_MAPPING = "mapping"
-        fun newInstance(id: Int): RouteFragment = RouteFragment().apply { arguments = bundleOf(ARG_MAPPING to id) }
+        fun newInstance(id: Int): RouteFragment = RouteFragment().apply { tabId = id }
     }
 }
