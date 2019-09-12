@@ -34,7 +34,7 @@ fun FragmentActivity.multiStackNavigatorFor(
 
 /**
  * Manages navigation for independent stacks of [Fragment]s, where each stack is managed by a
- * [FragmentStackNavigator].
+ * [StackNavigator].
  */
 class MultiStackNavigator(
         private val stateContainer: LifecycleSavedStateContainer,
@@ -96,7 +96,7 @@ class MultiStackNavigator(
      * Fragment is the only Fragment on it's stack, the stack that was active before the current
      * stack is switched to.
      *
-     * @see [FragmentStackNavigator.pop]
+     * @see [StackNavigator.pop]
      */
     fun pop(): Boolean = when {
         currentFragment.navigator.pop() -> true
@@ -153,14 +153,14 @@ const val NAV_STACK_ORDER = "navState"
 
 class StackFragment : Fragment() {
 
-    internal lateinit var navigator: FragmentStackNavigator
+    internal lateinit var navigator: StackNavigator
 
     internal var stackId: Int by args()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val deferred: FragmentStackNavigator by childFragmentStackNavigator(stackId)
+        val deferred: StackNavigator by childFragmentStackNavigator(stackId)
         navigator = deferred
     }
 

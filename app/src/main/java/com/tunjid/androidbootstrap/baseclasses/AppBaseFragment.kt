@@ -6,14 +6,13 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidbootstrap.activities.MainActivity
 import com.tunjid.androidbootstrap.activities.MainActivity.Companion.ANIMATION_DURATION
-import com.tunjid.androidbootstrap.core.components.FragmentStackNavigator
-import com.tunjid.androidbootstrap.core.components.activityNavigationController
+import com.tunjid.androidbootstrap.core.components.StackNavigator
 import com.tunjid.androidbootstrap.view.util.InsetFlags
 
 abstract class AppBaseFragment(
         @LayoutRes contentLayoutId: Int = 0
 ) : Fragment(contentLayoutId),
-        FragmentStackNavigator.TagProvider {
+        StackNavigator.TagProvider {
 
     open val insetFlags: InsetFlags = InsetFlags.ALL
 

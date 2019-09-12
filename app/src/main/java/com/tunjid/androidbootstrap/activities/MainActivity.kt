@@ -9,12 +9,12 @@ import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidbootstrap.*
-import com.tunjid.androidbootstrap.core.components.FragmentStackNavigator
+import com.tunjid.androidbootstrap.core.components.StackNavigator
 import com.tunjid.androidbootstrap.core.components.MultiStackNavigator
 import com.tunjid.androidbootstrap.core.components.multiStackNavigatorFor
 import com.tunjid.androidbootstrap.fragments.RouteFragment
 
-class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiController, FragmentStackNavigator.NavigationController {
+class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiController, StackNavigator.NavigationController {
 
     private lateinit var insetLifecycleCallbacks: InsetLifecycleCallbacks
 
@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
             R.menu.menu_navigation
     ) { id -> RouteFragment.newInstance(id).let { it to it.stableTag } }
 
-    override val navigator: FragmentStackNavigator
+    override val navigator: StackNavigator
         get() = multiStackNavigator.currentNavigator
 
     override var uiState: UiState by globalUiDriver { navigator.currentFragment }
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
             multiStackNavigator.stackSelectedListener = { menu.findItem(it)?.isChecked = true }
             multiStackNavigator.transactionModifier = { incomingFragment ->
                 val current = navigator.currentFragment
-                if (current is FragmentStackNavigator.TransactionModifier) current.augmentTransaction(this, incomingFragment)
+                if (current is StackNavigator.TransactionModifier) current.augmentTransaction(this, incomingFragment)
                 else crossFade()
             }
             multiStackNavigator.stackTransactionModifier = { crossFade() }

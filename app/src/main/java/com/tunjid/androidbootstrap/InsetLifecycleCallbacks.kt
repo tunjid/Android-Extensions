@@ -18,12 +18,12 @@ import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidbootstrap.activities.MainActivity
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
-import com.tunjid.androidbootstrap.core.components.FragmentStackNavigator
+import com.tunjid.androidbootstrap.core.components.StackNavigator
 import com.tunjid.androidbootstrap.view.util.ViewUtil
 import kotlin.math.max
 
 class InsetLifecycleCallbacks(
-        private val stackNavigatorSource: () -> FragmentStackNavigator?,
+        private val stackNavigatorSource: () -> StackNavigator?,
         private val parentContainer: ViewGroup,
         private val contentContainer: FragmentContainerView,
         private val coordinatorLayout: CoordinatorLayout,

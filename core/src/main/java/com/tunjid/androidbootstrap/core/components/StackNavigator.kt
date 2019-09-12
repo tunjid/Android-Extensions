@@ -11,21 +11,21 @@ import java.util.*
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
-const val STACK_NAVIGATOR = "com.tunjid.androidbootstrap.core.components.FragmentStackNavigator"
+const val STACK_NAVIGATOR = "com.tunjid.androidbootstrap.core.components.StackNavigator"
 
 /**
  * Convenience method for [Fragment] delegation to a [FragmentActivity] when implementing
- * [FragmentStackNavigator.NavigationController]
+ * [StackNavigator.NavigationController]
  */
-fun Fragment.activityNavigationController() = object : ReadOnlyProperty<Fragment, FragmentStackNavigator> {
+fun Fragment.activityNavigationController() = object : ReadOnlyProperty<Fragment, StackNavigator> {
 
-    override operator fun getValue(thisRef: Fragment, property: KProperty<*>): FragmentStackNavigator =
-            (activity as? FragmentStackNavigator.NavigationController)?.navigator
+    override operator fun getValue(thisRef: Fragment, property: KProperty<*>): StackNavigator =
+            (activity as? StackNavigator.NavigationController)?.navigator
                     ?: throw IllegalStateException("The hosting Activity is not a NavigationController")
 }
 
-fun Fragment.childFragmentStackNavigator(@IdRes containerId: Int): Lazy<FragmentStackNavigator> = lazy {
-    FragmentStackNavigator(
+fun Fragment.childFragmentStackNavigator(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
+    StackNavigator(
             stateContainerFor("$STACK_NAVIGATOR-$containerId", this),
             childFragmentManager,
             containerId
@@ -33,8 +33,8 @@ fun Fragment.childFragmentStackNavigator(@IdRes containerId: Int): Lazy<Fragment
 }
 
 @Suppress("unused")
-fun FragmentActivity.fragmentStackNavigator(@IdRes containerId: Int): Lazy<FragmentStackNavigator> = lazy {
-    FragmentStackNavigator(
+fun FragmentActivity.fragmentStackNavigator(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
+    StackNavigator(
             stateContainerFor("$STACK_NAVIGATOR-$containerId", this),
             supportFragmentManager,
             containerId
@@ -51,7 +51,7 @@ fun FragmentActivity.fragmentStackNavigator(@IdRes containerId: Int): Lazy<Fragm
  * Created by tj.dahunsi on 4/23/17.
  */
 
-class FragmentStackNavigator constructor(
+class StackNavigator constructor(
         private val stateContainer: LifecycleSavedStateContainer,
         internal val fragmentManager: FragmentManager,
         @param:IdRes @field:IdRes @get:IdRes val containerId: Int
@@ -82,13 +82,13 @@ class FragmentStackNavigator constructor(
      */
     private val fragmentLifecycleCallbacks = object : FragmentManager.FragmentLifecycleCallbacks() {
         override fun onFragmentCreated(fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?) =
-                this@FragmentStackNavigator.onFragmentCreated(fm, f, savedInstanceState)
+                this@StackNavigator.onFragmentCreated(fm, f, savedInstanceState)
 
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) =
-                this@FragmentStackNavigator.onFragmentViewCreated(f)
+                this@StackNavigator.onFragmentViewCreated(f)
 
         override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) =
-                this@FragmentStackNavigator.onFragmentDestroyed(f)
+                this@StackNavigator.onFragmentDestroyed(f)
     }
 
     init {
@@ -163,7 +163,7 @@ class FragmentStackNavigator constructor(
             else false
 
     private fun onFragmentCreated(fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?) {
-        // Not a fragment managed by this FragmentStackNavigator
+        // Not a fragment managed by this StackNavigator
         if (f.id != containerId) return
 
         fragmentTags.add(f.tag ?: throw IllegalStateException(MSG_FRAGMENT_HAS_NO_TAG))
@@ -202,13 +202,13 @@ class FragmentStackNavigator constructor(
     }
 
     private fun onFragmentViewCreated(f: Fragment) {
-        // Not a fragment managed by this FragmentStackNavigator
+        // Not a fragment managed by this StackNavigator
         if (f.id != containerId) return
         requireNotNull(f.tag) {
             ("Fragment instance "
                     + f.javaClass.name
                     + " with no tag cannot be added to the back stack with " +
-                    "a FragmentStackNavigator")
+                    "a StackNavigator")
         }
 
         currentFragmentTag = f.tag
@@ -241,18 +241,18 @@ class FragmentStackNavigator constructor(
     }
 
     /**
-     * Interface for a class that hosts a [FragmentStackNavigator]
+     * Interface for a class that hosts a [StackNavigator]
      */
     interface NavigationController {
-        val navigator: FragmentStackNavigator
+        val navigator: StackNavigator
     }
 
     companion object {
 
-        private const val CURRENT_FRAGMENT_KEY = "com.tunjid.androidbootstrap.core.components.FragmentStackNavigator.currentFragmentTag"
+        private const val CURRENT_FRAGMENT_KEY = "com.tunjid.androidbootstrap.core.components.StackNavigator.currentFragmentTag"
         private const val MSG_FRAGMENT_MISMATCH = "Fragment back stack entry name does not match a tag in the fragment manager"
-        internal const val MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK = "A fragment cannot be added to a FragmentManager managed by FragmentStackNavigator without adding it to the back stack"
-        internal const val MSG_FRAGMENT_HAS_NO_TAG = "A fragment cannot be added to a FragmentManager managed by FragmentStackNavigator without a Tag"
-        private const val MSG_DODGY_FRAGMENT = "Tag exists in FragmentStackNavigator but not in FragmentManager"
+        internal const val MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK = "A fragment cannot be added to a FragmentManager managed by StackNavigator without adding it to the back stack"
+        internal const val MSG_FRAGMENT_HAS_NO_TAG = "A fragment cannot be added to a FragmentManager managed by StackNavigator without a Tag"
+        private const val MSG_DODGY_FRAGMENT = "Tag exists in StackNavigator but not in FragmentManager"
     }
 }

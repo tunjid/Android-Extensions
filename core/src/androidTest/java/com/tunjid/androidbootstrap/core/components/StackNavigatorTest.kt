@@ -20,17 +20,17 @@ import org.junit.runner.RunWith
 import java.util.concurrent.TimeUnit
 
 /**
- * Tests the [FragmentStackNavigator]
+ * Tests the [StackNavigator]
  *
  *
  * Created by tj.dahunsi on 4/29/17.
  */
 
 @RunWith(AndroidJUnit4::class)
-class FragmentStackNavigatorTest {
+class StackNavigatorTest {
 
     private var activity: TestActivity? = null
-    private var fragmentStackNavigator: FragmentStackNavigator? = null
+    private var stackNavigator: StackNavigator? = null
     private var testIdler: TestIdler? = null
 
     @Rule
@@ -45,7 +45,7 @@ class FragmentStackNavigatorTest {
     fun setUp() {
         testIdler = TestIdler(DEFAULT_TIME_OUT.toLong(), TimeUnit.SECONDS)
         activity = activityRule.activity as TestActivity
-        fragmentStackNavigator = FragmentStackNavigator(stateContainerFor("TEST", activity!!), activity!!.supportFragmentManager, activity!!.containerId)
+        stackNavigator = StackNavigator(stateContainerFor("TEST", activity!!), activity!!.supportFragmentManager, activity!!.containerId)
     }
 
     @After
@@ -63,8 +63,8 @@ class FragmentStackNavigatorTest {
     fun testFragmentTagsAdded() {
         val testIdler = testIdler ?: throw IllegalStateException("testIdler not initialized")
         val activity = activity ?: throw IllegalStateException("Activity not initialized")
-        val fragmentStackNavigator = fragmentStackNavigator
-                ?: throw IllegalStateException("fragmentStackNavigator not initialized")
+        val fragmentStackNavigator = stackNavigator
+                ?: throw IllegalStateException("stackNavigator not initialized")
 
         val fragmentManager: FragmentManager = activity.supportFragmentManager
         val testFragment = TestFragment.newInstance(TAG_A)
@@ -86,8 +86,8 @@ class FragmentStackNavigatorTest {
     fun testFragmentTagsRestored() {
         val testIdler = testIdler ?: throw IllegalStateException("testIdler not initialized")
         val activity = activity ?: throw IllegalStateException("Activity not initialized")
-        val fragmentStackNavigator = fragmentStackNavigator
-                ?: throw IllegalStateException("fragmentStackNavigator not initialized")
+        val fragmentStackNavigator = stackNavigator
+                ?: throw IllegalStateException("stackNavigator not initialized")
 
         val fragmentManager = fragmentStackNavigator.fragmentManager
         val testFragment = TestFragment.newInstance(TAG_A)
@@ -102,7 +102,7 @@ class FragmentStackNavigatorTest {
 
         // create new instance of fragentStateManager and confirm all
         // the old tags are restored
-        val copy = FragmentStackNavigator(stateContainerFor("OTHER", activity), activity.supportFragmentManager, activity.containerId)
+        val copy = StackNavigator(stateContainerFor("OTHER", activity), activity.supportFragmentManager, activity.containerId)
 
         assertTrue(copy.fragmentTags.contains(TAG_A))
         assertTrue(copy.fragmentTags.size == 1)
@@ -117,7 +117,7 @@ class FragmentStackNavigatorTest {
         val testFragment = TestFragment.newInstance(TAG_A)
 
         expectedException.expect(IllegalStateException::class.java)
-        expectedException.expectMessage(FragmentStackNavigator.MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK)
+        expectedException.expectMessage(StackNavigator.MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK)
 
         fragmentManager.beginTransaction()
                 .replace(activity.containerId, testFragment, TAG_A)
@@ -168,8 +168,8 @@ class FragmentStackNavigatorTest {
     fun testIgnoredId() {
         val testIdler = testIdler ?: throw IllegalStateException("testIdler not initialized")
         val activity = activity ?: throw IllegalStateException("Activity not initialized")
-        val fragmentStackNavigator = fragmentStackNavigator
-                ?: throw IllegalStateException("fragmentStackNavigator not initialized")
+        val fragmentStackNavigator = stackNavigator
+                ?: throw IllegalStateException("stackNavigator not initialized")
 
         val fragmentManager: FragmentManager = activity.supportFragmentManager
         val testFragmentA = TestFragment.newInstance(TAG_A)
