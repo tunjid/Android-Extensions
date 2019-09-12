@@ -44,15 +44,28 @@ class MultiStackNavigator(
         @IdRes val containerId: Int,
         val rootFunction: (Int) -> Pair<Fragment, String>) {
 
+    /**
+     * A callback that will be invoked when a stack is selected, either by the user selecting it,
+     * or from popping another stack off.
+     */
     var stackSelectedListener: ((Int) -> Unit)? = null
+
+    /**
+     * Allows for the customization or augmentation of the [FragmentTransaction] that switches
+     * from one active stack to another
+     */
     var stackTransactionModifier: (FragmentTransaction.(Int) -> Unit)? = null
 
-    var transactionProvider: ((Fragment) -> FragmentTransaction?)? = null
+    /**
+     * Allows for the customization or augmentation of the [FragmentTransaction] that will show
+     * a [Fragment] inside the stack in focus
+     */
+    var transactionModifier: (FragmentTransaction.(Fragment) -> Unit)? = null
         set(value) {
             field = value
             stackMap.values
                     .filter { it.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) }
-                    .forEach { it.navigator.transactionProvider = value }
+                    .forEach { it.navigator.transactionModifier = value }
         }
 
     private val navStack: Stack<StackFragment> = Stack()
@@ -125,7 +138,7 @@ class MultiStackNavigator(
             if (fragment.id != containerId) return
             check(fragment is StackFragment) { "Only Stack Fragments may be added to a container View managed by a MultiStackNavigator" }
 
-            fragment.navigator.transactionProvider = this@MultiStackNavigator.transactionProvider
+            fragment.navigator.transactionModifier = this@MultiStackNavigator.transactionModifier
         }
     }
 }

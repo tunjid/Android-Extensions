@@ -100,16 +100,15 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list), Global
     }
 
     @SuppressLint("CommitTransaction")
-    override fun provideFragmentTransaction(fragmentTo: Fragment): FragmentTransaction? = fragmentManager?.run {
-        if (fragmentTo !is FragmentStackNavigator.TagProvider) return null
-        if (!fragmentTo.stableTag.contains(AdoptDoggoFragment::class.java.simpleName)) return null
+    override fun augmentTransaction(transaction: FragmentTransaction, incomingFragment: Fragment) {
+        if (incomingFragment !is FragmentStackNavigator.TagProvider) return
+        if (!incomingFragment.stableTag.contains(AdoptDoggoFragment::class.java.simpleName)) return
 
-        val args = fragmentTo.arguments ?: return null
-        val doggo = args.getParcelable<Doggo>(ARG_DOGGO) ?: return null
-        val holder = listManager.findViewHolderForItemId(doggo.hashCode().toLong()) ?: return null
+        val args = incomingFragment.arguments ?: return
+        val doggo = args.getParcelable<Doggo>(ARG_DOGGO) ?: return
+        val holder = listManager.findViewHolderForItemId(doggo.hashCode().toLong()) ?: return
 
-        beginTransaction()
-                .addSharedElement(holder.thumbnail, ViewUtil.transitionName(doggo, holder.thumbnail))
+        transaction.addSharedElement(holder.thumbnail, ViewUtil.transitionName(doggo, holder.thumbnail))
     }
 
     private fun moveDoggo(start: DoggoViewHolder, end: DoggoViewHolder) {

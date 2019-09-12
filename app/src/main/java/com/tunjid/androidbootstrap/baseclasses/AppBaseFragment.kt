@@ -16,7 +16,7 @@ abstract class AppBaseFragment(
         @LayoutRes contentLayoutId: Int = 0
 ) : Fragment(contentLayoutId),
         FragmentStackNavigator.TagProvider,
-        FragmentStackNavigator.TransactionProvider,
+        FragmentStackNavigator.TransactionModifier,
         FragmentStackNavigator.NavigationController {
 
     open val insetFlags: InsetFlags = InsetFlags.ALL
@@ -45,13 +45,14 @@ abstract class AppBaseFragment(
             .setDuration(ANIMATION_DURATION.toLong())
 
     @SuppressLint("CommitTransaction")
-    override fun provideFragmentTransaction(fragmentTo: Fragment): FragmentTransaction? =
-            fragmentManager?.beginTransaction()?.setCustomAnimations(
-                    android.R.anim.fade_in,
-                    android.R.anim.fade_out,
-                    android.R.anim.fade_in,
-                    android.R.anim.fade_out
-            )
+    override fun augmentTransaction(transaction: FragmentTransaction, incomingFragment: Fragment) {
+        transaction.setCustomAnimations(
+                android.R.anim.fade_in,
+                android.R.anim.fade_out,
+                android.R.anim.fade_in,
+                android.R.anim.fade_out
+        )
+    }
 
     /**
      * Checks whether this fragment was shown before and it's view subsequently

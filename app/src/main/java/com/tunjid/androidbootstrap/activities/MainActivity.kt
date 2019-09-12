@@ -44,10 +44,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
 
         findViewById<BottomNavigationView>(R.id.bottom_navigation).apply {
             multiStackNavigator.stackSelectedListener = { menu.findItem(it)?.isChecked = true }
-            multiStackNavigator.transactionProvider = {
+            multiStackNavigator.transactionModifier = { incomingFragment ->
                 val current = navigator.currentFragment
-                if (current is FragmentStackNavigator.TransactionProvider) current.provideFragmentTransaction(it)
-                else null
+                if (current is FragmentStackNavigator.TransactionModifier) current.augmentTransaction(this, incomingFragment)
             }
             multiStackNavigator.stackTransactionModifier = {
                 setCustomAnimations(

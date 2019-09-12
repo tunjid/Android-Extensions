@@ -59,7 +59,11 @@ class FragmentStackNavigator constructor(
 
     internal val fragmentTags = mutableSetOf<String>()
 
-    var transactionProvider: ((Fragment) -> FragmentTransaction?)? = null
+    /**
+     * Allows for the customization or augmentation of the [FragmentTransaction] that will show
+     * the [Fragment] passed in to it
+     */
+    var transactionModifier: (FragmentTransaction.(Fragment) -> Unit)? = null
 
     /**
      * Gets the last fragment added to the [FragmentManager]
@@ -107,7 +111,7 @@ class FragmentStackNavigator constructor(
      * @param fragment    The fragment to show.
      * @param tag         the value to supply to this fragment for it's backstack entry name and tag
      * @param transaction The fragment transaction to show the supplied fragment with.
-     * It takes precedence over that supplied by the [transactionProvider]
+     * It takes precedence over that supplied by the [transactionModifier]
      * @return true if the a fragment provided will be shown, false if the fragment instance already
      * exists and will be restored instead.
      */
@@ -129,8 +133,7 @@ class FragmentStackNavigator constructor(
                 else fragment) ?: throw NullPointerException(MSG_DODGY_FRAGMENT)
 
         val fragmentTransaction = transaction
-                ?: transactionProvider?.invoke(fragment)
-                ?: fragmentManager.beginTransaction()
+                ?: fragmentManager.beginTransaction().apply { transactionModifier?.invoke(this, fragment) }
 
         fragmentTransaction.addToBackStack(tag)
                 .replace(containerId, fragmentToShow, tag)
@@ -216,7 +219,7 @@ class FragmentStackNavigator constructor(
      * An interface to provide unique tags for [Fragment]. Fragment implementers typically delegate
      * this to a hash string of their arguments.
      *
-     * It's convenient to let  Fragments implement this interface, along with [TransactionProvider].
+     * It's convenient to let  Fragments implement this interface, along with [TransactionModifier].
      */
 
     interface TagProvider {
@@ -224,14 +227,14 @@ class FragmentStackNavigator constructor(
     }
 
     /**
-     * An interface for delegating the provision  of a [FragmentTransaction] that will show
-     * the passed in Fragment. Implementers typically configure mappings for
+     * An interface for augmenting the [FragmentTransaction] that will show
+     * the incoming Fragment. Implementers typically configure mappings for
      * shared element transitions, or other kinds of animations.
      *
      * It's convenient to let  Fragments implement this interface, along with [TagProvider].
      */
-    interface TransactionProvider {
-        fun provideFragmentTransaction(fragmentTo: Fragment): FragmentTransaction?
+    interface TransactionModifier {
+        fun augmentTransaction(transaction: FragmentTransaction, incomingFragment: Fragment)
     }
 
     /**

@@ -125,13 +125,13 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalU
     }
 
     @SuppressLint("CommitTransaction")
-    override fun provideFragmentTransaction(fragmentTo: Fragment): FragmentTransaction? = fragmentManager?.run {
-        if (fragmentTo !is FragmentStackNavigator.TagProvider) return null
-        if (!fragmentTo.stableTag.contains(DoggoPagerFragment::class.java.simpleName)) return null
+    override fun augmentTransaction(transaction: FragmentTransaction, incomingFragment: Fragment){
+        if (incomingFragment !is FragmentStackNavigator.TagProvider) return
+        if (!incomingFragment.stableTag.contains(DoggoPagerFragment::class.java.simpleName)) return
 
         val doggo = Doggo.transitionDoggo
         val imageView = transitionImage
-        if (doggo == null || imageView == null) return null
+        if (doggo == null || imageView == null) return
 
         exitTransition = TransitionSet()
                 .setDuration(375)
@@ -148,7 +148,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalU
             }
         })
 
-        beginTransaction()
+        transaction
                 .setReorderingAllowed(true)
                 .addSharedElement(imageView, ViewUtil.transitionName(doggo, imageView))
     }
