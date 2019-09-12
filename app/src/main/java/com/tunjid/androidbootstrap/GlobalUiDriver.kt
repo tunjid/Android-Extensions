@@ -144,9 +144,9 @@ class GlobalUiDriver(
             state = value.copy(toolbarInvalidated = false) // Reset after firing once
             previous.diff(
                     value,
-                    this::toggleBottomNav,
-                    this::toggleFab,
-                    this::toggleToolbar,
+                    bottomNavHider::set,
+                    fabHider::set,
+                    toolbarHider::set,
                     this::setNavBarColor,
                     this::setFabIcon,
                     fabExtensionAnimator::setExtended,
@@ -171,18 +171,6 @@ class GlobalUiDriver(
 
         return selected || host.onOptionsItemSelected(item)
     }
-
-    private fun toggleToolbar(show: Boolean) =
-            if (show) toolbarHider.show()
-            else toolbarHider.hide()
-
-    private fun toggleFab(show: Boolean) =
-            if (show) fabHider.show()
-            else fabHider.hide()
-
-    private fun toggleBottomNav(show: Boolean) =
-            if (show) bottomNavHider.show()
-            else bottomNavHider.hide()
 
     private fun setNavBarColor(color: Int) {
         navBackgroundView.background = GradientDrawable(
@@ -244,3 +232,7 @@ class GlobalUiDriver(
                 WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
     }
 }
+
+private fun ViewHider<*>.set(show: Boolean) =
+        if (show) show()
+        else hide()
