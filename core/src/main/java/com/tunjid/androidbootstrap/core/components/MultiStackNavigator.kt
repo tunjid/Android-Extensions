@@ -58,11 +58,11 @@ class MultiStackNavigator(
     private val navStack: Stack<StackFragment> = Stack()
     private val stackMap = mutableMapOf<Int, StackFragment>()
 
-    private val selectedFragment: StackFragment
+    private val currentFragment: StackFragment
         get() = stackMap.values.run { firstOrNull(Fragment::isVisible) ?: first() }
 
     val currentNavigator
-        get() = selectedFragment.navigator
+        get() = currentFragment.navigator
 
     init {
         fragmentManager.registerFragmentLifecycleCallbacks(StackLifecycleCallback(), false)
@@ -79,14 +79,10 @@ class MultiStackNavigator(
 
     fun show(@IdRes toShow: Int) = showInternal(toShow, true)
 
-    fun pop(): Boolean = when (val selected = selectedFragment) {
-        else -> when {
-            selected.navigator.pop() -> true
-            else -> when {
-                navStack.run { remove(selected); isEmpty() } -> false
-                else -> showInternal(navStack.peek().stackId, false).let { true }
-            }
-        }
+    fun pop(): Boolean = when {
+        currentFragment.navigator.pop() -> true
+        navStack.run { remove(currentFragment); isEmpty() } -> false
+        else -> showInternal(navStack.peek().stackId, false).let { true }
     }
 
     private fun showInternal(@IdRes toShow: Int, addTap: Boolean) {
