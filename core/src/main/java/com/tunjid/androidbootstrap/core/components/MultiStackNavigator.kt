@@ -109,19 +109,16 @@ class MultiStackNavigator(
             if (fragment.id != containerId) return
             check(fragment is StackFragment) { "Only Stack Fragments may be added to a container View managed by a MultiStackNavigator" }
 
-            fragment.apply { stackMap[stackId] = fragment }
+            stackMap[fragment.stackId] = fragment
 
-            if (savedInstanceState == null && stackIds.indexOf(fragment.stackId) != 0) fm.beginTransaction().hide(fragment).commit()
-            else navStack.add(fragment)
+            if (stateContainer.isFreshState && stackIds.indexOf(fragment.stackId) != 0) fm.beginTransaction().hide(fragment).commit()
         }
 
         override fun onFragmentViewCreated(fm: FragmentManager, fragment: Fragment, view: View, savedInstanceState: Bundle?) {
             if (fragment.id != containerId) return
             check(fragment is StackFragment) { "Only Stack Fragments may be added to a container View managed by a MultiStackNavigator" }
 
-            if (stateContainer.isFreshState) rootFunction(fragment.stackId).apply {
-                fragment.navigator.show(first, second)
-            }
+            if (stateContainer.isFreshState) rootFunction(fragment.stackId).apply { fragment.navigator.show(first, second) }
         }
 
         override fun onFragmentResumed(fm: FragmentManager, fragment: Fragment) {
