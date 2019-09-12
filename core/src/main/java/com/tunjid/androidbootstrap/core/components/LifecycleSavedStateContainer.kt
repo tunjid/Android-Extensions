@@ -7,7 +7,10 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryOwner
 
-internal fun <T> stateContainerFor(key: String, owner: T): LifecycleSavedStateContainer where T : LifecycleOwner, T : SavedStateRegistryOwner =
+internal fun <T> stateContainerFor(
+        key: String,
+        owner: T
+): LifecycleSavedStateContainer where T : LifecycleOwner, T : SavedStateRegistryOwner =
         LifecycleSavedStateContainer(key, owner, owner)
 
 class LifecycleSavedStateContainer(
