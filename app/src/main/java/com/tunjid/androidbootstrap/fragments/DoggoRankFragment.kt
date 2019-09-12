@@ -92,7 +92,7 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list), Global
 
     override fun onDoggoClicked(doggo: Doggo) {
         Doggo.transitionDoggo = doggo
-        showFragment(AdoptDoggoFragment.newInstance(doggo))
+        navigator.show(AdoptDoggoFragment.newInstance(doggo))
     }
 
     override fun onDoggoImageLoaded(doggo: Doggo) {
@@ -101,7 +101,7 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list), Global
 
     @SuppressLint("CommitTransaction")
     override fun provideFragmentTransaction(fragmentTo: Fragment): FragmentTransaction? = fragmentManager?.run {
-        if (fragmentTo !is FragmentStackNavigator.FragmentTagProvider) return null
+        if (fragmentTo !is FragmentStackNavigator.TagProvider) return null
         if (!fragmentTo.stableTag.contains(AdoptDoggoFragment::class.java.simpleName)) return null
 
         val args = fragmentTo.arguments ?: return null

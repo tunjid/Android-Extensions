@@ -8,8 +8,21 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import java.util.*
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
 
 const val STACK_NAVIGATOR = "com.tunjid.androidbootstrap.core.components.FragmentStackNavigator"
+
+/**
+ * Convenience method for [Fragment] delegation to a [FragmentActivity] when implementing
+ * [FragmentStackNavigator.NavigationController]
+ */
+fun Fragment.activityNavigationController() = object : ReadOnlyProperty<Fragment, FragmentStackNavigator> {
+
+    override operator fun getValue(thisRef: Fragment, property: KProperty<*>): FragmentStackNavigator =
+            (activity as? FragmentStackNavigator.NavigationController)?.navigator
+                    ?: throw IllegalStateException("The hosting Activity is not a NavigationController")
+}
 
 fun Fragment.childFragmentStackNavigator(@IdRes containerId: Int): Lazy<FragmentStackNavigator> = lazy {
     FragmentStackNavigator(
@@ -45,6 +58,8 @@ class FragmentStackNavigator constructor(
 ) {
 
     internal val fragmentTags = mutableSetOf<String>()
+
+    var transactionProvider: ((Fragment) -> FragmentTransaction?)? = null
 
     /**
      * Gets the last fragment added to the [FragmentManager]
@@ -92,6 +107,7 @@ class FragmentStackNavigator constructor(
      * @param fragment    The fragment to show.
      * @param tag         the value to supply to this fragment for it's backstack entry name and tag
      * @param transaction The fragment transaction to show the supplied fragment with.
+     * It takes precedence over that supplied by the [transactionProvider]
      * @return true if the a fragment provided will be shown, false if the fragment instance already
      * exists and will be restored instead.
      */
@@ -112,7 +128,11 @@ class FragmentStackNavigator constructor(
                 (if (fragmentAlreadyExists) fragmentManager.findFragmentByTag(tag)
                 else fragment) ?: throw NullPointerException(MSG_DODGY_FRAGMENT)
 
-        (transaction ?: fragmentManager.beginTransaction()).addToBackStack(tag)
+        val fragmentTransaction = transaction
+                ?: transactionProvider?.invoke(fragment)
+                ?: fragmentManager.beginTransaction()
+
+        fragmentTransaction.addToBackStack(tag)
                 .replace(containerId, fragmentToShow, tag)
                 .commit()
 
@@ -124,10 +144,12 @@ class FragmentStackNavigator constructor(
      * if an identical instance of it already exists in the [FragmentManager] under the specified
      * tag.
      *
+     * This is a convenience method for showing a [Fragment] that implements the [TagProvider]
+     * interface
      * @see show
      */
     @JvmOverloads
-    fun <T> show(fragment: T, transaction: FragmentTransaction? = null) where T : Fragment, T : FragmentTagProvider =
+    fun <T> show(fragment: T, transaction: FragmentTransaction? = null) where T : Fragment, T : TagProvider =
             show(fragment, fragment.stableTag, transaction)
 
     fun pop(): Boolean =
@@ -194,10 +216,10 @@ class FragmentStackNavigator constructor(
      * An interface to provide unique tags for [Fragment]. Fragment implementers typically delegate
      * this to a hash string of their arguments.
      *
-     * It's convenient to let  Fragments implement this interface, among with [FragmentTransactionProvider].
+     * It's convenient to let  Fragments implement this interface, along with [TransactionProvider].
      */
 
-    interface FragmentTagProvider {
+    interface TagProvider {
         val stableTag: String
     }
 
@@ -206,10 +228,17 @@ class FragmentStackNavigator constructor(
      * the passed in Fragment. Implementers typically configure mappings for
      * shared element transitions, or other kinds of animations.
      *
-     * It's convenient to let  Fragments implement this interface, among with [FragmentTagProvider].
+     * It's convenient to let  Fragments implement this interface, along with [TagProvider].
      */
-    interface FragmentTransactionProvider {
+    interface TransactionProvider {
         fun provideFragmentTransaction(fragmentTo: Fragment): FragmentTransaction?
+    }
+
+    /**
+     * Interface for a class that hosts a [FragmentStackNavigator]
+     */
+    interface NavigationController {
+        val navigator: FragmentStackNavigator
     }
 
     companion object {

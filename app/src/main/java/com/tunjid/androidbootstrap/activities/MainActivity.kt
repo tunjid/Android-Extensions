@@ -13,9 +13,7 @@ import com.tunjid.androidbootstrap.core.components.MultiStackNavigator
 import com.tunjid.androidbootstrap.core.components.multiStackNavigatorFor
 import com.tunjid.androidbootstrap.fragments.RouteFragment
 
-class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiController {
-
-    override var uiState: UiState by globalUiDriver { multiStackNavigator.currentFragment }
+class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiController, FragmentStackNavigator.NavigationController {
 
     private lateinit var insetLifecycleCallbacks: InsetLifecycleCallbacks
 
@@ -24,14 +22,16 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
             R.menu.menu_navigation
     ) { id -> RouteFragment.newInstance(id).let { it to it.stableTag } }
 
-    val currentStackNavigator: FragmentStackNavigator?
+    override var uiState: UiState by globalUiDriver { multiStackNavigator.currentFragment }
+
+    override val navigator: FragmentStackNavigator
         get() = multiStackNavigator.currentNavigator
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         supportFragmentManager.registerFragmentLifecycleCallbacks(InsetLifecycleCallbacks(
-                this::currentStackNavigator,
+                this::navigator,
                 findViewById(R.id.constraint_layout),
                 findViewById(R.id.content_container),
                 findViewById(R.id.coordinator_layout),
@@ -44,6 +44,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
 
         findViewById<BottomNavigationView>(R.id.bottom_navigation).apply {
             multiStackNavigator.stackSelectedListener = { menu.findItem(it)?.isChecked = true }
+            multiStackNavigator.transactionProvider = {
+                val current = multiStackNavigator.currentFragment
+                if (current is FragmentStackNavigator.TransactionProvider) current.provideFragmentTransaction(it)
+                else null
+            }
             multiStackNavigator.stackTransactionModifier = {
                 setCustomAnimations(
                         android.R.anim.fade_in,

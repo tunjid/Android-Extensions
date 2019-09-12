@@ -40,7 +40,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiControll
     }
 
     override fun onItemClicked(route: Route) {
-        showFragment(when (route.destination) {
+        navigator.show<AppBaseFragment>(when (route.destination) {
             DoggoListFragment::class.java.simpleName -> DoggoListFragment.newInstance()
             BleScanFragment::class.java.simpleName -> BleScanFragment.newInstance()
             NsdScanFragment::class.java.simpleName -> NsdScanFragment.newInstance()

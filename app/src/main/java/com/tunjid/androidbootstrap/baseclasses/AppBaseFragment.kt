@@ -9,18 +9,22 @@ import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidbootstrap.activities.MainActivity
 import com.tunjid.androidbootstrap.activities.MainActivity.Companion.ANIMATION_DURATION
 import com.tunjid.androidbootstrap.core.components.FragmentStackNavigator
+import com.tunjid.androidbootstrap.core.components.activityNavigationController
 import com.tunjid.androidbootstrap.view.util.InsetFlags
 
 abstract class AppBaseFragment(
         @LayoutRes contentLayoutId: Int = 0
 ) : Fragment(contentLayoutId),
-        FragmentStackNavigator.FragmentTagProvider,
-        FragmentStackNavigator.FragmentTransactionProvider {
+        FragmentStackNavigator.TagProvider,
+        FragmentStackNavigator.TransactionProvider,
+        FragmentStackNavigator.NavigationController {
 
     open val insetFlags: InsetFlags = InsetFlags.ALL
 
     override val stableTag: String
         get() = javaClass.simpleName
+
+    override val navigator: FragmentStackNavigator by activityNavigationController()
 
     private val hostingActivity: MainActivity
         get() = requireActivity() as MainActivity
@@ -29,10 +33,6 @@ abstract class AppBaseFragment(
         super.onDestroyView()
         arguments?.putBoolean(VIEW_DESTROYED, true)
     }
-
-    fun showFragment(fragment: AppBaseFragment): Boolean =
-            hostingActivity.currentStackNavigator?.show(fragment, provideFragmentTransaction(fragment))
-                    ?: false
 
     protected fun showSnackbar(consumer: (Snackbar) -> Unit) =
             hostingActivity.showSnackBar(consumer)

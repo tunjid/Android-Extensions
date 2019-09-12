@@ -89,7 +89,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalU
 
     override fun onDoggoClicked(doggo: Doggo) {
         Doggo.transitionDoggo = doggo
-        showFragment(DoggoPagerFragment.newInstance())
+        navigator.show(DoggoPagerFragment.newInstance())
     }
 
     override fun onDoggoImageLoaded(doggo: Doggo) {
@@ -126,7 +126,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalU
 
     @SuppressLint("CommitTransaction")
     override fun provideFragmentTransaction(fragmentTo: Fragment): FragmentTransaction? = fragmentManager?.run {
-        if (fragmentTo !is FragmentStackNavigator.FragmentTagProvider) return null
+        if (fragmentTo !is FragmentStackNavigator.TagProvider) return null
         if (!fragmentTo.stableTag.contains(DoggoPagerFragment::class.java.simpleName)) return null
 
         val doggo = Doggo.transitionDoggo

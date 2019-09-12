@@ -11,7 +11,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.core.view.children
 import androidx.fragment.app.*
-import java.lang.IllegalStateException
+import androidx.lifecycle.Lifecycle
 import java.util.*
 import kotlin.collections.set
 
@@ -47,6 +47,14 @@ class MultiStackNavigator(
     var stackSelectedListener: ((Int) -> Unit)? = null
     var stackTransactionModifier: (FragmentTransaction.(Int) -> Unit)? = null
 
+    var transactionProvider: ((Fragment) -> FragmentTransaction?)? = null
+        set(value) {
+            field = value
+            stackMap.values
+                    .filter { it.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) }
+                    .forEach { it.navigator.transactionProvider = value }
+        }
+
     private val navStack: Stack<StackFragment> = Stack()
     private val stackMap = mutableMapOf<Int, StackFragment>()
 
@@ -67,8 +75,8 @@ class MultiStackNavigator(
             stackIds.forEachIndexed { index, id -> add(containerId, StackFragment.newInstance(id), index.toString()) }
         }
         else fragmentManager.fragments.filterIsInstance(StackFragment::class.java).forEach {
-            stackMap[it.stackId] = it
             navStack.push(it)
+            stackMap[it.stackId] = it
         }.apply { stateContainer.savedState.getIntArray(NAV_STACK_ORDER)?.apply { navStack.sortBy { indexOf(it.stackId) } } }
     }
 
@@ -108,7 +116,7 @@ class MultiStackNavigator(
             if (fragment.id != containerId) return
             check(fragment is StackFragment) { "Only Stack Fragments may be added to a container View managed by a MultiStackNavigator" }
 
-            fragment.apply { stackMap[stackId] = this }
+            fragment.apply { stackMap[stackId] = fragment }
 
             if (savedInstanceState == null && stackIds.indexOf(fragment.stackId) != 0) fm.beginTransaction().hide(fragment).commit()
             else navStack.add(fragment)
@@ -121,6 +129,13 @@ class MultiStackNavigator(
             if (stateContainer.isFreshState) rootFunction(fragment.stackId).apply {
                 fragment.navigator.show(first, second)
             }
+        }
+
+        override fun onFragmentResumed(fm: FragmentManager, fragment: Fragment) {
+            if (fragment.id != containerId) return
+            check(fragment is StackFragment) { "Only Stack Fragments may be added to a container View managed by a MultiStackNavigator" }
+
+            fragment.navigator.transactionProvider = this@MultiStackNavigator.transactionProvider
         }
     }
 }

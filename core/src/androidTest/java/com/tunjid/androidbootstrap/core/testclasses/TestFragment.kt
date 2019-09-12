@@ -18,7 +18,7 @@ import com.tunjid.androidbootstrap.core.components.FragmentStackNavigator
  * Created by Shemanigans on 4/29/17.
  */
 @VisibleForTesting
-class TestFragment : Fragment(), FragmentStackNavigator.FragmentTagProvider {
+class TestFragment : Fragment(), FragmentStackNavigator.TagProvider {
 
     override val stableTag: String
         get() = arguments!!.getString(STRING_ARG_KEY)!!

@@ -56,7 +56,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager), Globa
                 fabExtended = !restoredFromBackStack(),
                 showsBottomNav = false,
                 navBarColor = Color.TRANSPARENT,
-                fabClickListener = View.OnClickListener { Doggo.transitionDoggo?.let { showFragment(AdoptDoggoFragment.newInstance(it)) } }
+                fabClickListener = View.OnClickListener { Doggo.transitionDoggo?.let { navigator.show(AdoptDoggoFragment.newInstance(it)) } }
         )
 
         val viewPager = view.findViewById<ViewPager>(R.id.view_pager)
@@ -117,7 +117,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager), Globa
 
     @SuppressLint("CommitTransaction")
     override fun provideFragmentTransaction(fragmentTo: Fragment): FragmentTransaction? = fragmentManager?.run {
-        if (fragmentTo !is FragmentStackNavigator.FragmentTagProvider) return null
+        if (fragmentTo !is FragmentStackNavigator.TagProvider) return null
         if (!fragmentTo.stableTag.contains(AdoptDoggoFragment::class.java.simpleName)) return null
 
         val root = view ?: return null
