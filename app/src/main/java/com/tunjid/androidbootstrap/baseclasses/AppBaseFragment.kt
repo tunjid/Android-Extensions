@@ -13,15 +13,12 @@ import com.tunjid.androidbootstrap.view.util.InsetFlags
 abstract class AppBaseFragment(
         @LayoutRes contentLayoutId: Int = 0
 ) : Fragment(contentLayoutId),
-        FragmentStackNavigator.TagProvider,
-        FragmentStackNavigator.NavigationController {
+        FragmentStackNavigator.TagProvider {
 
     open val insetFlags: InsetFlags = InsetFlags.ALL
 
     override val stableTag: String
         get() = javaClass.simpleName
-
-    override val navigator: FragmentStackNavigator by activityNavigationController()
 
     private val hostingActivity: MainActivity
         get() = requireActivity() as MainActivity

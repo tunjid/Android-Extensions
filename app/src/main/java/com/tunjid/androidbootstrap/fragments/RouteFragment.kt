@@ -9,6 +9,8 @@ import com.tunjid.androidbootstrap.*
 import com.tunjid.androidbootstrap.adapters.RouteAdapter
 import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
+import com.tunjid.androidbootstrap.core.components.FragmentStackNavigator
+import com.tunjid.androidbootstrap.core.components.activityNavigationController
 import com.tunjid.androidbootstrap.model.Route
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
 import com.tunjid.androidbootstrap.viewholders.RouteItemViewHolder
@@ -19,6 +21,8 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiControll
     override var uiState: UiState by activityGlobalUiController()
 
     private val viewModel: RouteViewModel by viewModels()
+
+    private val navigator: FragmentStackNavigator by activityNavigationController()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
