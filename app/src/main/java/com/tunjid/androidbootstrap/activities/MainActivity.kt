@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         super.onSaveInstanceState(outState)
     }
 
-    fun FragmentTransaction.crossFade() = setCustomAnimations(
+    private fun FragmentTransaction.crossFade() = setCustomAnimations(
             android.R.anim.fade_in,
             android.R.anim.fade_out,
             android.R.anim.fade_in,

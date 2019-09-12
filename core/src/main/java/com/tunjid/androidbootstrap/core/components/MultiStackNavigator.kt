@@ -92,6 +92,13 @@ class MultiStackNavigator(
 
     fun show(@IdRes toShow: Int) = showInternal(toShow, true)
 
+    /**
+     * Pops the current fragment off the stack in focus. If The current
+     * Fragment is the only Fragment on it's stack, the stack that was active before the current
+     * stack is switched to.
+     *
+     * @see [FragmentStackNavigator.pop]
+     */
     fun pop(): Boolean = when {
         currentFragment.navigator.pop() -> true
         navStack.run { remove(currentFragment); isEmpty() } -> false

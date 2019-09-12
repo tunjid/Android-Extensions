@@ -155,6 +155,11 @@ class FragmentStackNavigator constructor(
     fun <T> show(fragment: T, transaction: FragmentTransaction? = null) where T : Fragment, T : TagProvider =
             show(fragment, fragment.stableTag, transaction)
 
+    /**
+     * Pops the current fragment off the stack, up until the last fragment.
+     *
+     * @return true if a fragment was popped, false if the stack is down to the last fragment.
+     */
     fun pop(): Boolean =
             if (fragmentManager.backStackEntryCount > 1) fragmentManager.popBackStack().let { true }
             else false
