@@ -51,7 +51,7 @@ data class UiState(
     }
 
     private inline fun onChanged(that: UiState, vararg selectors: (UiState) -> Any?, invocation: UiState.() -> Unit) {
-        if (selectors.map { it(this) != it(that) }.firstOrNull { it } != null) invocation.invoke(that)
+        if (selectors.any { it(this) != it(that) }) invocation.invoke(that)
     }
 
     private constructor(`in`: Parcel) : this(
