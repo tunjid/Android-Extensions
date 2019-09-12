@@ -69,9 +69,7 @@ class FragmentStackNavigator constructor(
      * Gets the last fragment added to the [FragmentManager]
      */
     val currentFragment: Fragment?
-        get() =
-            if (currentFragmentTag == null) null
-            else fragmentManager.findFragmentByTag(currentFragmentTag)
+        get() = fragmentManager.findFragmentById(containerId)
 
     private var currentFragmentTag: String? = null
         set(value) {

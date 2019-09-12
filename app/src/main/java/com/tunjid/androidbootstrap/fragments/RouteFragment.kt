@@ -26,10 +26,13 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiControll
 
     private var tabId: Int by args()
 
+    override val stableTag: String
+        get() = "${super.stableTag}-$tabId"
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = uiState.copy(
+        if (navigator.currentFragment === this) uiState = uiState.copy(
                 toolbarTitle = getString(R.string.app_name),
                 toolBarMenu = 0,
                 toolbarShows = true,
