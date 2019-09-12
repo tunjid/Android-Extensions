@@ -64,9 +64,6 @@ class MultiStackNavigator(
     val currentNavigator
         get() = selectedFragment.navigator
 
-    val currentFragment: Fragment?
-        get() = currentNavigator.currentFragment
-
     init {
         fragmentManager.registerFragmentLifecycleCallbacks(StackLifecycleCallback(), false)
         fragmentManager.addOnBackStackChangedListener { throw IllegalStateException("Fragments may not be added to the back stack of a FragmentManager managed by a MultiStackNavigator") }

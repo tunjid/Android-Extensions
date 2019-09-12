@@ -22,10 +22,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
             R.menu.menu_navigation
     ) { id -> RouteFragment.newInstance(id).let { it to it.stableTag } }
 
-    override var uiState: UiState by globalUiDriver { multiStackNavigator.currentFragment }
-
     override val navigator: FragmentStackNavigator
         get() = multiStackNavigator.currentNavigator
+
+    override var uiState: UiState by globalUiDriver { navigator.currentFragment }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         findViewById<BottomNavigationView>(R.id.bottom_navigation).apply {
             multiStackNavigator.stackSelectedListener = { menu.findItem(it)?.isChecked = true }
             multiStackNavigator.transactionProvider = {
-                val current = multiStackNavigator.currentFragment
+                val current = navigator.currentFragment
                 if (current is FragmentStackNavigator.TransactionProvider) current.provideFragmentTransaction(it)
                 else null
             }
