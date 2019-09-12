@@ -27,7 +27,10 @@ import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 import com.tunjid.androidbootstrap.viewmodels.DoggoRankViewModel
 import kotlin.math.abs
 
-class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list), GlobalUiController, DoggoAdapter.ImageListAdapterListener {
+class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
+        GlobalUiController,
+        DoggoAdapter.ImageListAdapterListener,
+        FragmentStackNavigator.TransactionModifier {
 
     override var uiState: UiState by activityGlobalUiController()
 

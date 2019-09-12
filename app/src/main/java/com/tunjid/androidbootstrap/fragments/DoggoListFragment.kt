@@ -31,7 +31,10 @@ import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 import java.util.Objects.requireNonNull
 import kotlin.math.abs
 
-class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalUiController, ImageListAdapterListener {
+class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
+        GlobalUiController,
+        ImageListAdapterListener,
+        FragmentStackNavigator.TransactionModifier {
 
     override var uiState: UiState by activityGlobalUiController()
 
@@ -125,7 +128,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list), GlobalU
     }
 
     @SuppressLint("CommitTransaction")
-    override fun augmentTransaction(transaction: FragmentTransaction, incomingFragment: Fragment){
+    override fun augmentTransaction(transaction: FragmentTransaction, incomingFragment: Fragment) {
         if (incomingFragment !is FragmentStackNavigator.TagProvider) return
         if (!incomingFragment.stableTag.contains(DoggoPagerFragment::class.java.simpleName)) return
 

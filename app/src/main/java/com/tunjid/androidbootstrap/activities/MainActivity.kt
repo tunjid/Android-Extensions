@@ -5,6 +5,7 @@ import android.view.View
 import android.view.WindowInsets
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidbootstrap.*
@@ -47,15 +48,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
             multiStackNavigator.transactionModifier = { incomingFragment ->
                 val current = navigator.currentFragment
                 if (current is FragmentStackNavigator.TransactionModifier) current.augmentTransaction(this, incomingFragment)
+                else crossFade()
             }
-            multiStackNavigator.stackTransactionModifier = {
-                setCustomAnimations(
-                        android.R.anim.fade_in,
-                        android.R.anim.fade_out,
-                        android.R.anim.fade_in,
-                        android.R.anim.fade_out
-                )
-            }
+            multiStackNavigator.stackTransactionModifier = { crossFade() }
             setOnApplyWindowInsetsListener { _: View?, windowInsets: WindowInsets? -> windowInsets }
             setOnNavigationItemSelectedListener { multiStackNavigator.show(it.itemId).let { true } }
         }
@@ -69,6 +64,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         outState.putParcelable(UI_STATE, uiState)
         super.onSaveInstanceState(outState)
     }
+
+    fun FragmentTransaction.crossFade() = setCustomAnimations(
+            android.R.anim.fade_in,
+            android.R.anim.fade_out,
+            android.R.anim.fade_in,
+            android.R.anim.fade_out
+    )
 
     fun showSnackBar(consumer: (Snackbar) -> Unit) = insetLifecycleCallbacks.showSnackBar(consumer)
 

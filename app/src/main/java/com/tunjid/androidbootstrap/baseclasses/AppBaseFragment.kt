@@ -1,10 +1,8 @@
 package com.tunjid.androidbootstrap.baseclasses
 
-import android.annotation.SuppressLint
 import android.transition.*
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidbootstrap.activities.MainActivity
 import com.tunjid.androidbootstrap.activities.MainActivity.Companion.ANIMATION_DURATION
@@ -16,7 +14,6 @@ abstract class AppBaseFragment(
         @LayoutRes contentLayoutId: Int = 0
 ) : Fragment(contentLayoutId),
         FragmentStackNavigator.TagProvider,
-        FragmentStackNavigator.TransactionModifier,
         FragmentStackNavigator.NavigationController {
 
     open val insetFlags: InsetFlags = InsetFlags.ALL
@@ -43,16 +40,6 @@ abstract class AppBaseFragment(
             .addTransition(ChangeTransform())
             .addTransition(ChangeBounds())
             .setDuration(ANIMATION_DURATION.toLong())
-
-    @SuppressLint("CommitTransaction")
-    override fun augmentTransaction(transaction: FragmentTransaction, incomingFragment: Fragment) {
-        transaction.setCustomAnimations(
-                android.R.anim.fade_in,
-                android.R.anim.fade_out,
-                android.R.anim.fade_in,
-                android.R.anim.fade_out
-        )
-    }
 
     /**
      * Checks whether this fragment was shown before and it's view subsequently

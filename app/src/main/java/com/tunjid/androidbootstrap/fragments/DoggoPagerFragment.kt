@@ -32,7 +32,9 @@ import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.sin
 
-class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager), GlobalUiController {
+class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
+        GlobalUiController,
+        FragmentStackNavigator.TransactionModifier {
 
     override var uiState: UiState by activityGlobalUiController()
 
