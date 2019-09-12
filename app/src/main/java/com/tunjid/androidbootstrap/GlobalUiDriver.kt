@@ -205,34 +205,32 @@ class GlobalUiDriver(
     private fun setFabClickListener(onClickListener: View.OnClickListener?) =
             fabHider.view.setOnClickListener(onClickListener)
 
-    private fun Toolbar.update(@MenuRes menu: Int, invalidatedAlone: Boolean, title: CharSequence) {
-        when {
-            invalidatedAlone -> refreshMenu()
-            visibility != View.VISIBLE || this.title == null -> {
-                setTitle(title)
-                refreshMenu(menu)
-            }
-            else -> for (i in 0 until childCount) {
-                val child = getChildAt(i)
-                if (child is ImageView) continue
+    private fun Toolbar.update(@MenuRes menu: Int, invalidatedAlone: Boolean, title: CharSequence) = when {
+        invalidatedAlone -> refreshMenu()
+        visibility != View.VISIBLE || this.title == null -> {
+            setTitle(title)
+            refreshMenu(menu)
+        }
+        else -> for (i in 0 until childCount) {
+            val child = getChildAt(i)
+            if (child is ImageView) continue
 
-                child.animate().alpha(0F).setDuration(TOOLBAR_ANIM_DELAY).withEndAction {
-                    if (child is TextView) setTitle(title)
-                    else if (child is ActionMenuView) refreshMenu(menu)
+            child.animate().alpha(0F).setDuration(TOOLBAR_ANIM_DELAY).withEndAction {
+                if (child is TextView) setTitle(title)
+                else if (child is ActionMenuView) refreshMenu(menu)
 
-                    child.animate()
-                            .setDuration(TOOLBAR_ANIM_DELAY)
-                            .setInterpolator(AccelerateDecelerateInterpolator())
-                            .alpha(1F)
-                            .start()
-                }.start()
-            }
+                child.animate()
+                        .setDuration(TOOLBAR_ANIM_DELAY)
+                        .setInterpolator(AccelerateDecelerateInterpolator())
+                        .alpha(1F)
+                        .start()
+            }.start()
         }
     }
 
     private fun Toolbar.refreshMenu(menu: Int? = null) {
         if (menu != null) {
-            this.menu.clear();
+            this.menu.clear()
             if (menu != 0) inflateMenu(menu)
         }
         getCurrentFragment()?.onPrepareOptionsMenu(this.menu)
