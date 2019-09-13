@@ -18,6 +18,7 @@ import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.recyclerview.ListManager
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
 import com.tunjid.androidbootstrap.view.util.InsetFlags
+import com.tunjid.androidbootstrap.view.util.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidbootstrap.viewholders.TileViewHolder
 import com.tunjid.androidbootstrap.viewmodels.ShiftingTileViewModel
 
@@ -28,6 +29,7 @@ class ShiftingTileFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiC
     override val insetFlags: InsetFlags = NO_BOTTOM
 
     private val viewModel by viewModels<ShiftingTileViewModel>()
+
     private lateinit var listManager: ListManager<TileViewHolder, PlaceHolder.State>
 
     private val fabIconRes: Int

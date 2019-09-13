@@ -4,8 +4,8 @@ import android.transition.*
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
+import com.tunjid.androidbootstrap.InsetLifecycleCallbacks.Companion.ANIMATION_DURATION
 import com.tunjid.androidbootstrap.activities.MainActivity
-import com.tunjid.androidbootstrap.activities.MainActivity.Companion.ANIMATION_DURATION
 import com.tunjid.androidbootstrap.core.components.StackNavigator
 import com.tunjid.androidbootstrap.view.util.InsetFlags
 
@@ -51,7 +51,6 @@ abstract class AppBaseFragment(
         const val BACKGROUND_TINT_DURATION = 1200
         private const val VIEW_DESTROYED = "com.tunjid.androidbootstrap.core.abstractclasses.basefragment.view.destroyed"
 
-        val NO_BOTTOM: InsetFlags = InsetFlags(hasLeftInset = true, hasTopInset = true, hasRightInset = true, hasBottomInset = false)
     }
 
 }

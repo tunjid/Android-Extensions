@@ -9,6 +9,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.forEach
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -16,7 +17,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
-import com.tunjid.androidbootstrap.activities.MainActivity
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.core.components.StackNavigator
 import com.tunjid.androidbootstrap.view.util.ViewUtil
@@ -38,7 +38,7 @@ class InsetLifecycleCallbacks(
     private var rightInset: Int = 0
 
     init {
-        ViewCompat.setOnApplyWindowInsetsListener(this.parentContainer) { _, insets -> consumeSystemInsets(insets) }
+        ViewCompat.setOnApplyWindowInsetsListener(parentContainer) { _, insets -> consumeSystemInsets(insets) }
     }
 
     fun showSnackBar(consumer: (Snackbar) -> Unit) {
@@ -61,13 +61,13 @@ class InsetLifecycleCallbacks(
     private fun consumeSystemInsets(insets: WindowInsetsCompat): WindowInsetsCompat {
         if (this.insetsApplied) return insets
 
-        MainActivity.topInset = insets.systemWindowInsetTop
+        topInset = insets.systemWindowInsetTop
         leftInset = insets.systemWindowInsetLeft
         rightInset = insets.systemWindowInsetRight
-        MainActivity.bottomInset = insets.systemWindowInsetBottom
+        bottomInset = insets.systemWindowInsetBottom
 
-        topInsetView.layoutParams.height = MainActivity.topInset
-        bottomInsetView.layoutParams.height = MainActivity.bottomInset
+        topInsetView.layoutParams.height = topInset
+        bottomInsetView.layoutParams.height = bottomInset
 
         adjustInsetForFragment(stackNavigatorSource()?.currentFragment)
 
@@ -75,14 +75,28 @@ class InsetLifecycleCallbacks(
         return insets
     }
 
+    private fun onFragmentViewCreated(v: View, fragment: Fragment) {
+        if (fragment !is AppBaseFragment || isNotInCurrentFragmentContainer(fragment)) return
+        if (fragment.restoredFromBackStack()) adjustInsetForFragment(fragment)
+
+        ViewCompat.setOnApplyWindowInsetsListener(v) { _, insets -> consumeFragmentInsets(insets) }
+    }
+
     private fun consumeFragmentInsets(insets: WindowInsetsCompat): WindowInsetsCompat {
-        var padding = insets.systemWindowInsetBottom - MainActivity.bottomInset
-        if (padding != MainActivity.bottomInset) padding -= parentContainer.resources.getDimensionPixelSize(R.dimen.triple_and_half_margin)
+        val old = contentContainer.paddingBottom
+        var new = insets.systemWindowInsetBottom - bottomInset
+        if (new != bottomInset) new -= parentContainer.resources.getDimensionPixelSize(R.dimen.triple_and_half_margin)
 
-        padding = max(padding, 1)
+        new = max(new, 0)
 
-        contentContainer.updatePadding(bottom = padding)
-        keyboardPadding.layoutParams.height = padding
+        if (old != new) TransitionManager.beginDelayedTransition(parentContainer, AutoTransition().apply {
+            duration = ANIMATION_DURATION.toLong()
+            coordinatorLayout.forEach { addTarget(it) }
+            addTarget(coordinatorLayout) // Animate coordinator and its children, mainly the FAB
+        })
+
+        contentContainer.updatePadding(bottom = new)
+        keyboardPadding.layoutParams.height = if (new != 0) new else 1 // 0 breaks animations
 
         return insets
     }
@@ -92,12 +106,12 @@ class InsetLifecycleCallbacks(
         if (fragment !is AppBaseFragment || isNotInCurrentFragmentContainer(fragment)) return
 
         val insetFlags = fragment.insetFlags
-        ViewUtil.getLayoutParams(toolbar).topMargin = if (insetFlags.hasTopInset) 0 else MainActivity.topInset
-        ViewUtil.getLayoutParams(coordinatorLayout).bottomMargin = if (insetFlags.hasBottomInset) 0 else MainActivity.bottomInset
+        ViewUtil.getLayoutParams(toolbar).topMargin = if (insetFlags.hasTopInset) 0 else topInset
+        ViewUtil.getLayoutParams(coordinatorLayout).bottomMargin = if (insetFlags.hasBottomInset) 0 else bottomInset
 
         TransitionManager.beginDelayedTransition(parentContainer, AutoTransition()
-                .setDuration(MainActivity.ANIMATION_DURATION.toLong())
-                .addTarget(R.id.content_container)
+                .setDuration(ANIMATION_DURATION.toLong())
+                .addTarget(contentContainer) // Animate inset change
         )
 
         topInsetView.visibility = if (insetFlags.hasTopInset) View.VISIBLE else View.GONE
@@ -110,10 +124,10 @@ class InsetLifecycleCallbacks(
                 0)
     }
 
-    private fun onFragmentViewCreated(v: View, fragment: Fragment) {
-        if (fragment !is AppBaseFragment || isNotInCurrentFragmentContainer(fragment)) return
-        if (fragment.restoredFromBackStack()) adjustInsetForFragment(fragment)
+    companion object {
+        const val ANIMATION_DURATION = 300
 
-        ViewCompat.setOnApplyWindowInsetsListener(v) { _, insets -> consumeFragmentInsets(insets) }
+        var topInset: Int = 0
+        var bottomInset: Int = 0
     }
 }

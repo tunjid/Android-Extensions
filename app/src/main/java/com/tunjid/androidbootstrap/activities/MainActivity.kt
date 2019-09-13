@@ -68,9 +68,5 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
     companion object {
 
         private const val UI_STATE = "APP_UI_STATE"
-        const val ANIMATION_DURATION = 300
-
-        var topInset: Int = 0
-        var bottomInset: Int = 0
     }
 }

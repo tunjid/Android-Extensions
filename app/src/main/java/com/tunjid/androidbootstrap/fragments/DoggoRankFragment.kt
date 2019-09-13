@@ -21,6 +21,7 @@ import com.tunjid.androidbootstrap.recyclerview.ListManager
 import com.tunjid.androidbootstrap.recyclerview.ListManager.SWIPE_DRAG_ALL_DIRECTIONS
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
 import com.tunjid.androidbootstrap.view.util.InsetFlags
+import com.tunjid.androidbootstrap.view.util.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidbootstrap.view.util.ViewUtil
 import com.tunjid.androidbootstrap.viewholders.DoggoRankViewHolder
 import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
