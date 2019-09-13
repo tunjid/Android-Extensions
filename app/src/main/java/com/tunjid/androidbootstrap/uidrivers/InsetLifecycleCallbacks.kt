@@ -1,4 +1,4 @@
-package com.tunjid.androidbootstrap
+package com.tunjid.androidbootstrap.uidrivers
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
+import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.core.components.StackNavigator
 import com.tunjid.androidbootstrap.view.util.ViewUtil

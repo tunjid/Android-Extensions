@@ -1,6 +1,7 @@
-package com.tunjid.androidbootstrap
+package com.tunjid.androidbootstrap.uidrivers
 
 import androidx.fragment.app.FragmentTransaction
+import com.tunjid.androidbootstrap.R
 
 fun FragmentTransaction.crossFade() = setCustomAnimations(
         android.R.anim.fade_in,

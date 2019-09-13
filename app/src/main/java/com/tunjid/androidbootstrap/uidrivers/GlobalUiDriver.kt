@@ -1,4 +1,4 @@
-package com.tunjid.androidbootstrap
+package com.tunjid.androidbootstrap.uidrivers
 
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -23,13 +23,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
+import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator
 import com.tunjid.androidbootstrap.view.animator.ViewHider
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 /**
- * An interface for classes that host a [com.tunjid.androidbootstrap.UiState], usually a [FragmentActivity].
+ * An interface for classes that host a [UiState], usually a [FragmentActivity].
  * Implementations should delegate to an instance of [GlobalUiDriver]
  */
 interface GlobalUiController {
@@ -76,7 +77,7 @@ fun Fragment.activityGlobalUiController() = object : ReadWriteProperty<Fragment,
 }
 
 /**
- * Drives global UI that is common from screen to screen described by a [com.tunjid.androidbootstrap.UiState].
+ * Drives global UI that is common from screen to screen described by a [UiState].
  * This makes it so that these persistent UI elements aren't duplicated, and only animate themselves when they change.
  * This is the default implementation of [GlobalUiController] that other implementations of
  * the same interface should delegate to.

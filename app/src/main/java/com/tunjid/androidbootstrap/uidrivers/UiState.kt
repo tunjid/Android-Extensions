@@ -1,4 +1,4 @@
-package com.tunjid.androidbootstrap
+package com.tunjid.androidbootstrap.uidrivers
 
 import android.graphics.Color
 import android.os.Parcel

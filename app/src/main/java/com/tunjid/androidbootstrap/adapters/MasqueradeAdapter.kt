@@ -4,7 +4,7 @@ import android.view.View.*
 import android.view.ViewGroup
 import androidx.core.view.forEach
 import androidx.recyclerview.widget.RecyclerView
-import com.tunjid.androidbootstrap.InsetLifecycleCallbacks.Companion.bottomInset
+import com.tunjid.androidbootstrap.uidrivers.InsetLifecycleCallbacks.Companion.bottomInset
 import com.tunjid.androidbootstrap.recyclerview.AbstractListManagerBuilder
 import com.tunjid.androidbootstrap.recyclerview.ListManager
 
