@@ -2,13 +2,9 @@ package com.tunjid.androidbootstrap.core.components
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
-import androidx.annotation.MenuRes
-import androidx.appcompat.widget.PopupMenu
-import androidx.core.view.children
 import androidx.fragment.app.*
 import androidx.lifecycle.Lifecycle
 import java.util.*
@@ -16,20 +12,30 @@ import kotlin.collections.set
 
 const val MULTI_STACK_NAVIGATOR = "com.tunjid.androidbootstrap.core.components.MultiStackNavigator"
 
-fun FragmentActivity.multiStackNavigatorFor(
+fun Fragment.multipleStackNavigator(
         @IdRes containerId: Int,
-        @MenuRes stackMenu: Int,
+        stackIds: IntArray,
         rootFunction: (Int) -> Pair<Fragment, String>
 ): Lazy<MultiStackNavigator> = lazy {
-    PopupMenu(this, findViewById(containerId)).run {
-        inflate(stackMenu)
-        MultiStackNavigator(
-                stateContainerFor("$MULTI_STACK_NAVIGATOR-$containerId", this@multiStackNavigatorFor),
-                supportFragmentManager,
-                menu.children.map(MenuItem::getItemId).toList().toIntArray(),
-                containerId, rootFunction
-        ).apply { dismiss() }
-    }
+    MultiStackNavigator(
+            stateContainerFor("$MULTI_STACK_NAVIGATOR-$containerId", this@multipleStackNavigator),
+            childFragmentManager,
+            stackIds,
+            containerId, rootFunction
+    )
+}
+
+fun FragmentActivity.multipleStackNavigator(
+        @IdRes containerId: Int,
+        stackIds: IntArray,
+        rootFunction: (Int) -> Pair<Fragment, String>
+): Lazy<MultiStackNavigator> = lazy {
+    MultiStackNavigator(
+            stateContainerFor("$MULTI_STACK_NAVIGATOR-$containerId", this@multipleStackNavigator),
+            supportFragmentManager,
+            stackIds,
+            containerId, rootFunction
+    )
 }
 
 /**
@@ -39,9 +45,9 @@ fun FragmentActivity.multiStackNavigatorFor(
 class MultiStackNavigator(
         private val stateContainer: LifecycleSavedStateContainer,
         private val fragmentManager: FragmentManager,
-        val stackIds: IntArray,
+        private val stackIds: IntArray,
         @IdRes val containerId: Int,
-        val rootFunction: (Int) -> Pair<Fragment, String>) {
+        private val rootFunction: (Int) -> Pair<Fragment, String>) {
 
     /**
      * A callback that will be invoked when a stack is selected, either by the user selecting it,
@@ -123,7 +129,7 @@ class MultiStackNavigator(
         stateContainer.savedState.putIntArray(NAV_STACK_ORDER, navStack.map(StackFragment::stackId).toIntArray())
     }
 
-    inner class StackLifecycleCallback : FragmentManager.FragmentLifecycleCallbacks() {
+    private inner class StackLifecycleCallback : FragmentManager.FragmentLifecycleCallbacks() {
         override fun onFragmentCreated(fm: FragmentManager, fragment: Fragment, savedInstanceState: Bundle?) {
             if (fragment.id != containerId) return
             check(fragment is StackFragment) { "Only Stack Fragments may be added to a container View managed by a MultiStackNavigator" }
@@ -160,7 +166,7 @@ class StackFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val deferred: StackNavigator by childFragmentStackNavigator(stackId)
+        val deferred: StackNavigator by childStackNavigator(stackId)
         navigator = deferred
     }
 

@@ -5,22 +5,21 @@ import android.view.View
 import android.view.WindowInsets
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidbootstrap.*
-import com.tunjid.androidbootstrap.core.components.StackNavigator
 import com.tunjid.androidbootstrap.core.components.MultiStackNavigator
-import com.tunjid.androidbootstrap.core.components.multiStackNavigatorFor
+import com.tunjid.androidbootstrap.core.components.StackNavigator
+import com.tunjid.androidbootstrap.core.components.multipleStackNavigator
 import com.tunjid.androidbootstrap.fragments.RouteFragment
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiController, StackNavigator.NavigationController {
 
     private lateinit var insetLifecycleCallbacks: InsetLifecycleCallbacks
 
-    private val multiStackNavigator: MultiStackNavigator by multiStackNavigatorFor(
+    private val multiStackNavigator: MultiStackNavigator by multipleStackNavigator(
             R.id.content_container,
-            R.menu.menu_navigation
+            intArrayOf(R.id.menu_core, R.id.menu_recyclerview, R.id.menu_communications)
     ) { id -> RouteFragment.newInstance(id).let { it to it.stableTag } }
 
     override val navigator: StackNavigator
@@ -41,7 +40,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
                 findViewById(R.id.bottom_inset),
                 findViewById(R.id.keyboard_padding)
         ).apply { insetLifecycleCallbacks = this }, true)
-
 
         findViewById<BottomNavigationView>(R.id.bottom_navigation).apply {
             multiStackNavigator.stackSelectedListener = { menu.findItem(it)?.isChecked = true }
@@ -64,13 +62,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         outState.putParcelable(UI_STATE, uiState)
         super.onSaveInstanceState(outState)
     }
-
-    private fun FragmentTransaction.crossFade() = setCustomAnimations(
-            android.R.anim.fade_in,
-            android.R.anim.fade_out,
-            android.R.anim.fade_in,
-            android.R.anim.fade_out
-    )
 
     fun showSnackBar(consumer: (Snackbar) -> Unit) = insetLifecycleCallbacks.showSnackBar(consumer)
 
