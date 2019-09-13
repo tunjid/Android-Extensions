@@ -26,8 +26,30 @@ class ViewHider<T : View> private constructor(
 
     private var isVisible = true
 
-    private val startRunnable: () -> Unit = { if (isVisible) view.visibility = View.VISIBLE }
-    private val endRunnable: () -> Unit = { if (!isVisible) view.visibility = View.GONE }
+    private val startAction: () -> Unit = { if (isVisible) view.visibility = View.VISIBLE }
+    private val endAction: () -> Unit = { if (!isVisible) view.visibility = View.GONE }
+
+    // These calculations don't take the status bar into account, unlikely to matter however
+    private val displacement: Float
+        get() {
+            if (isVisible) return 0F
+
+            val location = IntArray(2).apply { view.getLocationInWindow(this) }
+            val displaySize = Point().apply {
+                (view.context.getSystemService(WINDOW_SERVICE) as? WindowManager)
+                        ?.defaultDisplay
+                        ?.getSize(this)
+                        ?: return 0F
+            }
+
+            return when (direction) {
+                LEFT -> -(location[0] + view.width)
+                TOP -> -(location[1] + view.height)
+                RIGHT -> displaySize.x - location[0]
+                BOTTOM -> displaySize.y - location[1]
+                else -> throw IllegalArgumentException("Invalid direction")
+            }.toFloat()
+        }
 
     @Retention(AnnotationRetention.SOURCE)
     @IntDef(LEFT, TOP, RIGHT, BOTTOM)
@@ -44,7 +66,6 @@ class ViewHider<T : View> private constructor(
         if (!view.isLaidOut) return view.doOnPreDraw { toggle(visible) }
 
         this.isVisible = visible
-        val displacement = (if (visible) 0 else getDistanceOffscreen()).toFloat()
 
         view.spring(
                 if (direction == LEFT || direction == RIGHT) SpringAnimation.TRANSLATION_X
@@ -52,30 +73,10 @@ class ViewHider<T : View> private constructor(
         )
                 .apply {
                     options.invoke(this)
-                    for (runnable in listener.startRunnables) runnable.invoke()
+                    for (runnable in listener.startActions) runnable.invoke()
                 }
-                .withOneShotEndListener { for (runnable in listener.endRunnables) runnable.invoke() }
+                .withOneShotEndListener { for (runnable in listener.endActions) runnable.invoke() }
                 .animateToFinalPosition(displacement)
-    }
-
-    // These calculations don't take the status bar into account, unlikely to matter however
-    private fun getDistanceOffscreen(): Int {
-        val location = IntArray(2)
-        val displaySize = Point()
-
-        val manager = view.context.getSystemService(WINDOW_SERVICE) as? WindowManager
-                ?: return 0
-
-        view.getLocationInWindow(location)
-        manager.defaultDisplay.getSize(displaySize)
-
-        return when (direction) {
-            LEFT -> -(location[0] + view.width)
-            TOP -> -(location[1] + view.height)
-            RIGHT -> displaySize.x - location[0]
-            BOTTOM -> displaySize.y - location[1]
-            else -> throw IllegalArgumentException("Invalid direction")
-        }
     }
 
     class Builder<T : View> internal constructor(private val view: T) {
@@ -89,19 +90,19 @@ class ViewHider<T : View> private constructor(
 
         fun addOptions(options: SpringAnimation.() -> Unit): Builder<T> = apply { this.options = options }
 
-        fun addStartRunnable(runnable: () -> Unit): Builder<T> = apply { listener.startRunnables.add(runnable) }
+        fun addStartAction(action: () -> Unit): Builder<T> = apply { listener.startActions.add(action) }
 
-        fun addEndRunnable(runnable: () -> Unit): Builder<T> = apply { listener.endRunnables.add(runnable) }
+        fun addEndAction(action: () -> Unit): Builder<T> = apply { listener.endActions.add(action) }
 
         fun build(): ViewHider<T> = ViewHider(view, listener, direction, options).apply {
-            listener.startRunnables.add(0, startRunnable)
-            listener.endRunnables.add(0, endRunnable)
+            listener.startActions.add(0, startAction)
+            listener.endActions.add(0, endAction)
         }
     }
 
     private class Listener internal constructor() {
-        val startRunnables = mutableListOf<() -> Unit>()
-        val endRunnables = mutableListOf<() -> Unit>()
+        val startActions = mutableListOf<() -> Unit>()
+        val endActions = mutableListOf<() -> Unit>()
     }
 
     private fun SpringAnimation.withOneShotEndListener(onEnd: (canceled: Boolean) -> Unit) = apply {

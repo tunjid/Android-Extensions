@@ -104,7 +104,7 @@ class GlobalUiDriver(
     private val fabHider: ViewHider<MaterialButton> by lazy {
         host.findViewById<MaterialButton>(fabId).run {
             ViewHider.of(this).setDirection(ViewHider.BOTTOM)
-                    .addEndRunnable { isVisible = true }
+                    .addEndAction { isVisible = true }
                     .build()
         }
     }
@@ -117,11 +117,15 @@ class GlobalUiDriver(
 
         ViewHider.of(bottomNavSnapshot)
                 .setDirection(ViewHider.BOTTOM)
-                .addStartRunnable {
-                    if (getCurrentFragment() == null) return@addStartRunnable
+                .addStartAction {
+                    if (getCurrentFragment() == null) return@addStartAction
                     if (bottomNav.isVisible) bottomNavSnapshot.setImageBitmap(bottomNav.drawToBitmap(Bitmap.Config.ARGB_8888))
-                    if (uiState.showsBottomNav) bottomNav.visibility = View.VISIBLE
 
+                    // Invisible so the snapshot can  be seen to animate in
+                    bottomNav.visibility = if (uiState.showsBottomNav) View.INVISIBLE else View.GONE
+                }
+                .addEndAction {
+                    // Finally show or hide the actual bottom bar
                     bottomNav.isVisible = uiState.showsBottomNav
                 }
                 .build()
