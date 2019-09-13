@@ -1,5 +1,6 @@
 package com.tunjid.androidbootstrap.uidrivers
 
+import android.transition.*
 import androidx.fragment.app.FragmentTransaction
 import com.tunjid.androidbootstrap.R
 
@@ -16,3 +17,10 @@ fun FragmentTransaction.slide(toTheRight: Boolean) = setCustomAnimations(
         if (toTheRight) R.anim.slide_in_left else R.anim.slide_in_right,
         if (toTheRight) R.anim.slide_out_right else R.anim.slide_out_left
 )
+
+fun baseSharedTransition(): Transition = TransitionSet()
+        .setOrdering(TransitionSet.ORDERING_TOGETHER)
+        .addTransition(ChangeImageTransform())
+        .addTransition(ChangeTransform())
+        .addTransition(ChangeBounds())
+        .setDuration(InsetLifecycleCallbacks.ANIMATION_DURATION.toLong())

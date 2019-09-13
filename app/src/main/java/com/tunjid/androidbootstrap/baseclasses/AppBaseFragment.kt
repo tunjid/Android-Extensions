@@ -1,10 +1,8 @@
 package com.tunjid.androidbootstrap.baseclasses
 
-import android.transition.*
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
-import com.tunjid.androidbootstrap.uidrivers.InsetLifecycleCallbacks.Companion.ANIMATION_DURATION
 import com.tunjid.androidbootstrap.activities.MainActivity
 import com.tunjid.androidbootstrap.core.components.StackNavigator
 import com.tunjid.androidbootstrap.uidrivers.InsetProvider
@@ -31,13 +29,6 @@ abstract class AppBaseFragment(
 
     protected fun showSnackbar(consumer: (Snackbar) -> Unit) =
             hostingActivity.showSnackBar(consumer)
-
-    protected fun baseSharedTransition(): Transition = TransitionSet()
-            .setOrdering(TransitionSet.ORDERING_TOGETHER)
-            .addTransition(ChangeImageTransform())
-            .addTransition(ChangeTransform())
-            .addTransition(ChangeBounds())
-            .setDuration(ANIMATION_DURATION.toLong())
 
     /**
      * Checks whether this fragment was shown before and it's view subsequently

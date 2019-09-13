@@ -18,6 +18,7 @@ import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
 import com.tunjid.androidbootstrap.uidrivers.GlobalUiController
 import com.tunjid.androidbootstrap.uidrivers.UiState
 import com.tunjid.androidbootstrap.uidrivers.activityGlobalUiController
+import com.tunjid.androidbootstrap.uidrivers.baseSharedTransition
 import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 import com.tunjid.androidbootstrap.viewholders.InputViewHolder
@@ -78,10 +79,8 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo), Globa
     }
 
     private fun prepareSharedElementTransition() {
-        val baseSharedTransition = baseSharedTransition()
-
-        sharedElementEnterTransition = baseSharedTransition
-        sharedElementReturnTransition = baseSharedTransition
+        sharedElementEnterTransition = baseSharedTransition()
+        sharedElementReturnTransition = baseSharedTransition()
     }
 
     companion object {

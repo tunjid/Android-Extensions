@@ -24,6 +24,7 @@ import com.tunjid.androidbootstrap.constraintlayout.animator.ViewPagerIndicatorA
 import com.tunjid.androidbootstrap.core.components.StackNavigator
 import com.tunjid.androidbootstrap.core.components.activityStackNavigator
 import com.tunjid.androidbootstrap.model.Doggo
+import com.tunjid.androidbootstrap.uidrivers.baseSharedTransition
 import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.view.util.ViewUtil
 import com.tunjid.androidbootstrap.viewmodels.DoggoViewModel
@@ -135,10 +136,8 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
     }
 
     private fun prepareSharedElementTransition() {
-        val baseSharedTransition = baseSharedTransition()
-
-        sharedElementEnterTransition = baseSharedTransition
-        sharedElementReturnTransition = baseSharedTransition
+        sharedElementEnterTransition = baseSharedTransition()
+        sharedElementReturnTransition = baseSharedTransition()
 
         setEnterSharedElementCallback(object : SharedElementCallback() {
             override fun onMapSharedElements(names: List<String>?, sharedElements: MutableMap<String, View>?) {
