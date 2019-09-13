@@ -97,7 +97,9 @@ class GlobalUiDriver(
         host.window.decorView.systemUiVisibility = DEFAULT_SYSTEM_UI_FLAGS
         host.findViewById<Toolbar>(toolbarId).run {
             setOnMenuItemClickListener(this@GlobalUiDriver::onMenuItemClicked)
-            ViewHider.of(this).setDirection(ViewHider.TOP).build()
+            ViewHider.of(this)
+                    .setDirection(ViewHider.TOP)
+                    .build()
         }
     }
 
