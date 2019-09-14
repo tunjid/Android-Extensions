@@ -53,17 +53,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         }
 
         onBackPressedDispatcher.addCallback(this) { if (!multiStackNavigator.pop()) finish() }
-
-        uiState = savedInstanceState?.getParcelable(UI_STATE) ?: UiState.freshState()
     }
 
-    public override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelable(UI_STATE, uiState)
-        super.onSaveInstanceState(outState)
-    }
-
-    companion object {
-
-        private const val UI_STATE = "APP_UI_STATE"
-    }
 }
