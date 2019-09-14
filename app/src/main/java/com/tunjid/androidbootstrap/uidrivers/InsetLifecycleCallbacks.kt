@@ -36,7 +36,7 @@ class InsetLifecycleCallbacks(
     private var leftInset: Int = 0
     private var rightInset: Int = 0
     private var insetsApplied: Boolean = false
-    private var lastInsetFlags: InsetFlags? = null
+    private var lastInsetDispatch: InsetDispatch? = InsetDispatch()
 
     init {
         ViewCompat.setOnApplyWindowInsetsListener(parentContainer) { _, insets -> consumeSystemInsets(insets) }
@@ -97,28 +97,32 @@ class InsetLifecycleCallbacks(
     private fun adjustInsetForFragment(fragment: Fragment?) {
         if (fragment !is InsetProvider || isNotInCurrentFragmentContainer(fragment)) return
 
-        val insetFlags = fragment.insetFlags
-        if (lastInsetFlags == insetFlags) return
+        fragment.insetFlags.dispatch {
+            if (insetFlags == null || lastInsetDispatch == this) return
 
-        ViewUtil.getLayoutParams(toolbar).topMargin = if (insetFlags.hasTopInset) 0 else topInset
-        ViewUtil.getLayoutParams(coordinatorLayout).bottomMargin = if (insetFlags.hasBottomInset) 0 else bottomInset
+            ViewUtil.getLayoutParams(toolbar).topMargin = if (insetFlags.hasTopInset) 0 else topInset
+            ViewUtil.getLayoutParams(coordinatorLayout).bottomMargin = if (insetFlags.hasBottomInset) 0 else bottomInset
 
-        TransitionManager.beginDelayedTransition(parentContainer, AutoTransition()
-                .setDuration(ANIMATION_DURATION.toLong())
-                .addTarget(contentContainer) // Animate inset change
-        )
+            TransitionManager.beginDelayedTransition(parentContainer, AutoTransition()
+                    .setDuration(ANIMATION_DURATION.toLong())
+                    .addTarget(contentContainer) // Animate inset change
+            )
 
-        topInsetView.visibility = if (insetFlags.hasTopInset) View.VISIBLE else View.GONE
-        bottomInsetView.visibility = if (insetFlags.hasBottomInset) View.VISIBLE else View.GONE
+            topInsetView.visibility = if (insetFlags.hasTopInset) View.VISIBLE else View.GONE
+            bottomInsetView.visibility = if (insetFlags.hasBottomInset) View.VISIBLE else View.GONE
 
-        parentContainer.setPadding(
-                if (insetFlags.hasLeftInset) this.leftInset else 0,
-                0,
-                if (insetFlags.hasRightInset) this.rightInset else 0,
-                0)
+            parentContainer.setPadding(
+                    if (insetFlags.hasLeftInset) this.leftInset else 0,
+                    0,
+                    if (insetFlags.hasRightInset) this.rightInset else 0,
+                    0)
 
-        lastInsetFlags = insetFlags
+            lastInsetDispatch = this
+        }
     }
+
+    private inline fun InsetFlags.dispatch(receiver: InsetDispatch.() -> Unit) =
+            receiver.invoke(InsetDispatch(leftInset, topInset, rightInset, bottomInset, this))
 
     companion object {
         const val ANIMATION_DURATION = 300
@@ -126,4 +130,12 @@ class InsetLifecycleCallbacks(
         var topInset: Int = 0
         var bottomInset: Int = 0
     }
+
+    private data class InsetDispatch(
+            val leftInset: Int = 0,
+            val topInset: Int = 0,
+            val rightInset: Int = 0,
+            val bottomInset: Int = 0,
+            val insetFlags: InsetFlags? = null
+    )
 }
