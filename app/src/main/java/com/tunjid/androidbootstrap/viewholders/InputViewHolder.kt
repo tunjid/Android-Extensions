@@ -16,7 +16,7 @@ import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.recyclerview.InteractiveViewHolder
 
 class InputViewHolder(itemView: View)
-    : InteractiveViewHolder<Unit>(itemView), TextWatcher {
+    : InteractiveViewHolder<Unit>(itemView, Unit), TextWatcher {
 
     private var lastLineCount = 1
 

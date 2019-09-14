@@ -37,7 +37,7 @@ open class DoggoViewHolder(itemView: View, adapterListener: DoggoAdapter.ImageLi
     }
 
     private fun onThumbnailLoaded() {
-        adapterListener.onDoggoImageLoaded(doggo)
+        delegate.onDoggoImageLoaded(doggo)
         fullSize?.postDelayed({
             getCreator(doggo).fit()
                     .into(fullSize, onSuccess { fullSize.visibility = View.VISIBLE })
@@ -56,7 +56,7 @@ open class DoggoViewHolder(itemView: View, adapterListener: DoggoAdapter.ImageLi
         }
     }
 
-    override fun onClick(v: View) = adapterListener.onDoggoClicked(doggo)
+    override fun onClick(v: View) = delegate.onDoggoClicked(doggo)
 
     companion object {
 

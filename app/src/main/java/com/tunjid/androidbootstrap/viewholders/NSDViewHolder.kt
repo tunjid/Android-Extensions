@@ -3,15 +3,13 @@ package com.tunjid.androidbootstrap.viewholders
 import android.net.nsd.NsdServiceInfo
 import android.view.View
 import android.widget.TextView
-
+import androidx.core.content.ContextCompat
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.adapters.NsdAdapter
 import com.tunjid.androidbootstrap.recyclerview.InteractiveViewHolder
 
-import androidx.core.content.ContextCompat
-
-class NSDViewHolder(itemView: View)
-    : InteractiveViewHolder<NsdAdapter.ServiceClickedListener>(itemView), View.OnClickListener {
+class NSDViewHolder(itemView: View, listener: NsdAdapter.ServiceClickedListener)
+    : InteractiveViewHolder<NsdAdapter.ServiceClickedListener>(itemView, listener), View.OnClickListener {
 
     private val textView: TextView = itemView as TextView
     private lateinit var serviceInfo: NsdServiceInfo
@@ -22,13 +20,13 @@ class NSDViewHolder(itemView: View)
 
     fun bind(info: NsdServiceInfo, listener: NsdAdapter.ServiceClickedListener) {
         serviceInfo = info
-        adapterListener = listener
+        delegate = listener
 
         val stringBuilder = StringBuilder()
         stringBuilder.append(info.serviceName).append("\n")
                 .append(if (info.host != null) info.host.hostAddress else "")
 
-        val isSelf = adapterListener.isSelf(info)
+        val isSelf = delegate.isSelf(info)
 
         if (isSelf) stringBuilder.append(" (SELF)")
 
@@ -40,5 +38,5 @@ class NSDViewHolder(itemView: View)
         textView.text = stringBuilder.toString()
     }
 
-    override fun onClick(v: View) = adapterListener.onServiceClicked(serviceInfo)
+    override fun onClick(v: View) = delegate.onServiceClicked(serviceInfo)
 }

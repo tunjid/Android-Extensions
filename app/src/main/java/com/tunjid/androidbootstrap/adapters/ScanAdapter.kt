@@ -16,7 +16,7 @@ class ScanAdapter(scanAdapterListener: ScanAdapterListener, private val scanResu
     : InteractiveAdapter<ScanViewHolder, ScanAdapter.ScanAdapterListener>(scanAdapterListener) {
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ScanViewHolder =
-            ScanViewHolder(viewGroup.inflate(R.layout.viewholder_scan), adapterDelegate)
+            ScanViewHolder(viewGroup.inflate(R.layout.viewholder_scan), delegate)
 
     override fun onBindViewHolder(viewHolder: ScanViewHolder, position: Int) =
             viewHolder.bind(scanResults[position])

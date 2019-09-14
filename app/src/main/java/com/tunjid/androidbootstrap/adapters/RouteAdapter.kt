@@ -22,7 +22,7 @@ class RouteAdapter(private val routes: List<Route>, listener: RouteAdapterListen
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RouteItemViewHolder =
-            RouteItemViewHolder(parent.inflate(R.layout.viewholder_route), adapterDelegate)
+            RouteItemViewHolder(parent.inflate(R.layout.viewholder_route), delegate)
 
     override fun onBindViewHolder(holder: RouteItemViewHolder, recyclerViewPosition: Int) =
             holder.bind(routes[recyclerViewPosition])

@@ -18,7 +18,7 @@ class DoggoAdapter<T : DoggoViewHolder>(private val doggos: List<Doggo>,
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): T =
-            viewHolderFactory.invoke(parent.inflate(layoutRes), adapterDelegate)
+            viewHolderFactory.invoke(parent.inflate(layoutRes), delegate)
 
     override fun onBindViewHolder(holder: T, recyclerViewPosition: Int) =
             holder.bind(doggos[recyclerViewPosition])

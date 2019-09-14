@@ -16,7 +16,7 @@ class TileAdapter(private val tiles: List<Tile>, listener: (tile: Tile) -> Unit)
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): TileViewHolder =
-            TileViewHolder(viewGroup.inflate(R.layout.viewholder_tile), adapterDelegate)
+            TileViewHolder(viewGroup.inflate(R.layout.viewholder_tile), delegate)
 
     override fun onBindViewHolder(viewHolder: TileViewHolder, position: Int) =
             viewHolder.bind(tiles[position])

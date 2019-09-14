@@ -45,7 +45,7 @@ class RouteItemViewHolder(itemView: View, listener: RouteAdapter.RouteAdapterLis
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.description -> adapterListener.onItemClicked(route!!)
+            R.id.description -> delegate.onItemClicked(route!!)
             else -> changeVisibility(routeDestination, routeDescription)
         }
     }

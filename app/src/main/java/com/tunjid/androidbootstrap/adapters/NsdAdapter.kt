@@ -19,10 +19,10 @@ class NsdAdapter(listener: ServiceClickedListener, private val infoList: List<Ns
     : InteractiveAdapter<NSDViewHolder, NsdAdapter.ServiceClickedListener>(listener) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NSDViewHolder =
-            NSDViewHolder(parent.inflate(R.layout.viewholder_nsd_list))
+            NSDViewHolder(parent.inflate(R.layout.viewholder_nsd_list), delegate)
 
     override fun onBindViewHolder(holder: NSDViewHolder, position: Int) =
-            holder.bind(infoList[position], adapterDelegate)
+            holder.bind(infoList[position], delegate)
 
     override fun getItemCount(): Int = infoList.size
 
