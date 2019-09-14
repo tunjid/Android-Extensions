@@ -5,6 +5,7 @@ import android.view.ViewGroup
 
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.recyclerview.InteractiveAdapter
+import com.tunjid.androidbootstrap.view.util.inflate
 import com.tunjid.androidbootstrap.viewholders.NSDViewHolder
 
 /**
@@ -18,14 +19,14 @@ class NsdAdapter(listener: ServiceClickedListener, private val infoList: List<Ns
     : InteractiveAdapter<NSDViewHolder, NsdAdapter.ServiceClickedListener>(listener) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NSDViewHolder =
-            NSDViewHolder(getItemView(R.layout.viewholder_nsd_list, parent))
+            NSDViewHolder(parent.inflate(R.layout.viewholder_nsd_list))
 
     override fun onBindViewHolder(holder: NSDViewHolder, position: Int) =
-            holder.bind(infoList[position], adapterListener)
+            holder.bind(infoList[position], adapterDelegate)
 
     override fun getItemCount(): Int = infoList.size
 
-    interface ServiceClickedListener : AdapterListener {
+    interface ServiceClickedListener {
         fun onServiceClicked(serviceInfo: NsdServiceInfo)
 
         fun isSelf(serviceInfo: NsdServiceInfo): Boolean

@@ -7,6 +7,7 @@ dependencies {
     implementation parent.ext.ktxCore
     implementation parent.ext.appCompat
     implementation parent.ext.recyclerView
+    implementation parent.ext.swipeRefreshLayout
 
     implementation project(':view')
     implementation project(':functions')

@@ -14,19 +14,19 @@ import androidx.lifecycle.observe
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener
-import com.tunjid.androidbootstrap.uidrivers.GlobalUiController
 import com.tunjid.androidbootstrap.R
-import com.tunjid.androidbootstrap.uidrivers.UiState
-import com.tunjid.androidbootstrap.uidrivers.activityGlobalUiController
 import com.tunjid.androidbootstrap.adapters.DoggoPagerAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.constraintlayout.animator.ViewPagerIndicatorAnimator
 import com.tunjid.androidbootstrap.core.components.StackNavigator
 import com.tunjid.androidbootstrap.core.components.activityStackNavigator
 import com.tunjid.androidbootstrap.model.Doggo
+import com.tunjid.androidbootstrap.uidrivers.GlobalUiController
+import com.tunjid.androidbootstrap.uidrivers.UiState
+import com.tunjid.androidbootstrap.uidrivers.activityGlobalUiController
 import com.tunjid.androidbootstrap.uidrivers.baseSharedTransition
 import com.tunjid.androidbootstrap.view.util.InsetFlags
-import com.tunjid.androidbootstrap.view.util.ViewUtil
+import com.tunjid.androidbootstrap.view.util.hashTransitionName
 import com.tunjid.androidbootstrap.viewmodels.DoggoViewModel
 import java.util.*
 import kotlin.math.abs
@@ -75,16 +75,16 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
             override fun onPageSelected(position: Int) = onDoggoSwiped(position)
         })
 
-        val indicatorAnimator = ViewPagerIndicatorAnimator.builder()
-                .setIndicatorWidth(indicatorSize)
-                .setIndicatorHeight(indicatorSize)
-                .setIndicatorPadding(resources.getDimensionPixelSize(R.dimen.half_margin))
-                .setInActiveDrawable(R.drawable.ic_circle_24dp)
-                .setActiveDrawable(R.drawable.ic_doggo_24dp)
-                .setGuideLine(view.findViewById(R.id.guide))
-                .setContainer(view as ConstraintLayout)
-                .setViewPager(viewPager)
-                .build()
+        val indicatorAnimator = ViewPagerIndicatorAnimator(
+                indicatorWidth = indicatorSize,
+                indicatorHeight = indicatorSize,
+                indicatorPadding = resources.getDimensionPixelSize(R.dimen.half_margin),
+                activeDrawable = R.drawable.ic_doggo_24dp,
+                inActiveDrawable = R.drawable.ic_circle_24dp,
+                guide = view.findViewById(R.id.guide),
+                container = view as ConstraintLayout,
+                viewPager = viewPager
+        )
 
         indicatorAnimator.addIndicatorWatcher { indicator, position, fraction, _ ->
             val radians = Math.PI * fraction
@@ -132,7 +132,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
 
         transaction
                 .setReorderingAllowed(true)
-                .addSharedElement(imageView, ViewUtil.transitionName(doggo, imageView))
+                .addSharedElement(imageView, imageView.hashTransitionName(doggo))
     }
 
     private fun prepareSharedElementTransition() {

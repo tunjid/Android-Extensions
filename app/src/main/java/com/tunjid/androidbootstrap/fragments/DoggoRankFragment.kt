@@ -27,7 +27,7 @@ import com.tunjid.androidbootstrap.uidrivers.UiState
 import com.tunjid.androidbootstrap.uidrivers.activityGlobalUiController
 import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.view.util.InsetFlags.Companion.NO_BOTTOM
-import com.tunjid.androidbootstrap.view.util.ViewUtil
+import com.tunjid.androidbootstrap.view.util.hashTransitionName
 import com.tunjid.androidbootstrap.viewholders.DoggoRankViewHolder
 import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 import com.tunjid.androidbootstrap.viewmodels.DoggoRankViewModel
@@ -119,7 +119,7 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
         val doggo = incomingFragment.doggo
         val holder = listManager.findViewHolderForItemId(doggo.hashCode().toLong()) ?: return
 
-        transaction.addSharedElement(holder.thumbnail, ViewUtil.transitionName(doggo, holder.thumbnail))
+        transaction.addSharedElement(holder.thumbnail, holder.thumbnail.hashTransitionName(doggo))
     }
 
     private fun moveDoggo(start: DoggoViewHolder, end: DoggoViewHolder) {

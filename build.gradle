@@ -27,6 +27,7 @@ buildscript {
         recyclerView = 'androidx.recyclerview:recyclerview:1.0.0'
         supportAnnotations = 'androidx.annotation:annotation:1.1.0'
         constraintLayout = 'androidx.constraintlayout:constraintlayout:1.1.3'
+        swipeRefreshLayout = 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
 
         savedState = 'androidx.savedstate:savedstate:1.0.0'
 

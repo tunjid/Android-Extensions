@@ -19,7 +19,7 @@ import androidx.transition.TransitionManager
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.core.components.StackNavigator
 import com.tunjid.androidbootstrap.view.util.InsetFlags
-import com.tunjid.androidbootstrap.view.util.ViewUtil
+import com.tunjid.androidbootstrap.view.util.marginLayoutParams
 import kotlin.math.max
 
 class InsetLifecycleCallbacks(
@@ -100,8 +100,8 @@ class InsetLifecycleCallbacks(
         fragment.insetFlags.dispatch {
             if (insetFlags == null || lastInsetDispatch == this) return
 
-            ViewUtil.getLayoutParams(toolbar).topMargin = if (insetFlags.hasTopInset) 0 else topInset
-            ViewUtil.getLayoutParams(coordinatorLayout).bottomMargin = if (insetFlags.hasBottomInset) 0 else bottomInset
+            toolbar.marginLayoutParams.topMargin = if (insetFlags.hasTopInset) 0 else topInset
+            coordinatorLayout.marginLayoutParams.bottomMargin = if (insetFlags.hasBottomInset) 0 else bottomInset
 
             TransitionManager.beginDelayedTransition(parentContainer, AutoTransition()
                     .setDuration(ANIMATION_DURATION.toLong())

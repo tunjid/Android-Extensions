@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.communications.bluetooth.ScanResultCompat
 import com.tunjid.androidbootstrap.recyclerview.InteractiveAdapter
+import com.tunjid.androidbootstrap.view.util.inflate
 import com.tunjid.androidbootstrap.viewholders.ScanViewHolder
 
 /**
@@ -15,7 +16,7 @@ class ScanAdapter(scanAdapterListener: ScanAdapterListener, private val scanResu
     : InteractiveAdapter<ScanViewHolder, ScanAdapter.ScanAdapterListener>(scanAdapterListener) {
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ScanViewHolder =
-            ScanViewHolder(getItemView(R.layout.viewholder_scan, viewGroup), adapterListener)
+            ScanViewHolder(viewGroup.inflate(R.layout.viewholder_scan), adapterDelegate)
 
     override fun onBindViewHolder(viewHolder: ScanViewHolder, position: Int) =
             viewHolder.bind(scanResults[position])
@@ -24,7 +25,7 @@ class ScanAdapter(scanAdapterListener: ScanAdapterListener, private val scanResu
 
     override fun getItemCount(): Int = scanResults.size
 
-    interface ScanAdapterListener : AdapterListener {
+    interface ScanAdapterListener {
         fun onBluetoothDeviceClicked(bluetoothDevice: BluetoothDevice)
     }
 

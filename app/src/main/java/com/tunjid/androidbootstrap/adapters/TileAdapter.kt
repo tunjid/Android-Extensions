@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.model.Tile
 import com.tunjid.androidbootstrap.recyclerview.InteractiveAdapter
+import com.tunjid.androidbootstrap.view.util.inflate
 import com.tunjid.androidbootstrap.viewholders.TileViewHolder
 
 class TileAdapter(private val tiles: List<Tile>, listener: (tile: Tile) -> Unit)
@@ -15,7 +16,7 @@ class TileAdapter(private val tiles: List<Tile>, listener: (tile: Tile) -> Unit)
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): TileViewHolder =
-            TileViewHolder(getItemView(R.layout.viewholder_tile, viewGroup), adapterListener)
+            TileViewHolder(viewGroup.inflate(R.layout.viewholder_tile), adapterDelegate)
 
     override fun onBindViewHolder(viewHolder: TileViewHolder, position: Int) =
             viewHolder.bind(tiles[position])

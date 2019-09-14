@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 
 import com.google.android.material.button.MaterialButton;
 import com.tunjid.androidbootstrap.view.R;
-import com.tunjid.androidbootstrap.view.util.ViewUtil;
 
 import java.util.Objects;
 
@@ -63,7 +62,7 @@ public class FabExtensionAnimator {
 
     @SuppressWarnings("WeakerAccess")
     public boolean isExtended() {
-        ViewGroup.MarginLayoutParams params = ViewUtil.getLayoutParams(button);
+        ViewGroup.LayoutParams params = button.getLayoutParams();
         return !(params.height == params.width && params.width == getCollapsedFabSize());
     }
 
@@ -82,7 +81,7 @@ public class FabExtensionAnimator {
         int width = extended ? ViewGroup.LayoutParams.WRAP_CONTENT : collapsedFabSize;
         int height = extended ? getExpandedFabHeight() : collapsedFabSize;
 
-        ViewGroup.LayoutParams params = ViewUtil.getLayoutParams(button);
+        ViewGroup.LayoutParams params = button.getLayoutParams();
         ViewGroup group = (ViewGroup) button.getParent();
 
         params.width = width;
