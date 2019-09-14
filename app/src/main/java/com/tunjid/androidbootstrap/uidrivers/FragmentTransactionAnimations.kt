@@ -4,6 +4,8 @@ import android.transition.*
 import androidx.fragment.app.FragmentTransaction
 import com.tunjid.androidbootstrap.R
 
+const val BACKGROUND_TINT_DURATION = 1200L
+
 fun FragmentTransaction.crossFade() = setCustomAnimations(
         android.R.anim.fade_in,
         android.R.anim.fade_out,

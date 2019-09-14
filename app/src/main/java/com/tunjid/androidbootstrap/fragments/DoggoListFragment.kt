@@ -68,7 +68,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
                 fabText = getString(R.string.collapse_prompt),
                 fabShows = true,
                 showsBottomNav = true,
-                fabExtended = !restoredFromBackStack(),
+                fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),
                 fabClickListener = View.OnClickListener { uiState = uiState.copy(fabExtended = !uiState.fabExtended) }
         )

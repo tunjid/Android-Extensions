@@ -16,10 +16,7 @@ import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.core.components.args
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
-import com.tunjid.androidbootstrap.uidrivers.GlobalUiController
-import com.tunjid.androidbootstrap.uidrivers.UiState
-import com.tunjid.androidbootstrap.uidrivers.activityGlobalUiController
-import com.tunjid.androidbootstrap.uidrivers.baseSharedTransition
+import com.tunjid.androidbootstrap.uidrivers.*
 import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 import com.tunjid.androidbootstrap.viewholders.InputViewHolder
@@ -45,7 +42,7 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo), Globa
                 fabIcon = R.drawable.ic_hug_24dp,
                 fabShows = true,
                 showsBottomNav = true,
-                fabExtended = !restoredFromBackStack(),
+                fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),
                 fabClickListener = View.OnClickListener {
                     uiState = uiState.copy(snackbarText = getString(R.string.adopted_doggo, doggo.name))
@@ -72,7 +69,7 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo), Globa
         val startColor = Color.TRANSPARENT
 
         val animator = ValueAnimator.ofObject(ArgbEvaluator(), startColor, endColor)
-        animator.duration = BACKGROUND_TINT_DURATION.toLong()
+        animator.duration = BACKGROUND_TINT_DURATION
         animator.addUpdateListener { animation ->
             (animation.animatedValue as? Int)?.let { biConsumer.invoke(it, this) }
         }

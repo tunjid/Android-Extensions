@@ -62,7 +62,7 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
                 fabIcon = R.drawable.ic_restore_24dp,
                 fabShows = true,
                 showsBottomNav = false,
-                fabExtended = !restoredFromBackStack(),
+                fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),
                 fabClickListener = View.OnClickListener { viewModel.resetList() }
         )

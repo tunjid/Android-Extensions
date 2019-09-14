@@ -10,9 +10,9 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.palette.graphics.Palette
 import com.tunjid.androidbootstrap.App
-import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment.Companion.BACKGROUND_TINT_DURATION
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.toLiveData
+import com.tunjid.androidbootstrap.uidrivers.BACKGROUND_TINT_DURATION
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -40,7 +40,7 @@ class DoggoViewModel(application: Application) : AndroidViewModel(application) {
                 val animator = ValueAnimator.ofObject(colorEvaluator, startColor, endColor)
                 animator.addUpdateListener { emitter.onNext(it.animatedValue as Int) }
                 animator.doOnEnd { emitter.onComplete() }
-                animator.duration = BACKGROUND_TINT_DURATION.toLong()
+                animator.duration = BACKGROUND_TINT_DURATION
 
                 animator.start()
             }, BackpressureStrategy.DROP)
