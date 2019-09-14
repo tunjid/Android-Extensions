@@ -6,8 +6,7 @@ import android.view.WindowInsets
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.snackbar.Snackbar
-import com.tunjid.androidbootstrap.*
+import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.core.components.MultiStackNavigator
 import com.tunjid.androidbootstrap.core.components.StackNavigator
 import com.tunjid.androidbootstrap.core.components.multipleStackNavigator
@@ -15,8 +14,6 @@ import com.tunjid.androidbootstrap.fragments.RouteFragment
 import com.tunjid.androidbootstrap.uidrivers.*
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiController, StackNavigator.NavigationController {
-
-    private lateinit var insetLifecycleCallbacks: InsetLifecycleCallbacks
 
     private val multiStackNavigator: MultiStackNavigator by multipleStackNavigator(
             R.id.content_container,
@@ -40,7 +37,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
                 findViewById(R.id.top_inset),
                 findViewById(R.id.bottom_inset),
                 findViewById(R.id.keyboard_padding)
-        ).apply { insetLifecycleCallbacks = this }, true)
+        ), true)
 
         findViewById<BottomNavigationView>(R.id.bottom_navigation).apply {
             multiStackNavigator.stackSelectedListener = { menu.findItem(it)?.isChecked = true }
@@ -63,8 +60,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         outState.putParcelable(UI_STATE, uiState)
         super.onSaveInstanceState(outState)
     }
-
-    fun showSnackBar(consumer: (Snackbar) -> Unit) = insetLifecycleCallbacks.showSnackBar(consumer)
 
     companion object {
 

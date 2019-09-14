@@ -144,8 +144,9 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan), GlobalUiCon
         listManager.clear()
     }
 
-    override fun onBluetoothDeviceClicked(bluetoothDevice: BluetoothDevice) =
-            showSnackbar { snackBar -> snackBar.setText(bluetoothDevice.address) }
+    override fun onBluetoothDeviceClicked(bluetoothDevice: BluetoothDevice) {
+        uiState = uiState.copy(snackbarText = bluetoothDevice.address)
+    }
 
     private fun scanDevices(enable: Boolean) =
             if (enable) viewModel.findDevices()

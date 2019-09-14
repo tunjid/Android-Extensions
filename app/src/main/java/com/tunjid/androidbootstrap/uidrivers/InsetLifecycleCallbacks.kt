@@ -16,7 +16,6 @@ import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentManager
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
-import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.core.components.StackNavigator
 import com.tunjid.androidbootstrap.view.util.InsetFlags
@@ -41,15 +40,6 @@ class InsetLifecycleCallbacks(
 
     init {
         ViewCompat.setOnApplyWindowInsetsListener(parentContainer) { _, insets -> consumeSystemInsets(insets) }
-    }
-
-    fun showSnackBar(consumer: (Snackbar) -> Unit) {
-        val snackbar = Snackbar.make(coordinatorLayout, "", Snackbar.LENGTH_SHORT)
-
-        // Necessary to remove snackbar padding for keyboard on older versions of Android
-        ViewCompat.setOnApplyWindowInsetsListener(snackbar.view) { _, insets -> insets }
-        consumer.invoke(snackbar)
-        snackbar.show()
     }
 
     override fun onFragmentPreAttached(fm: FragmentManager, f: Fragment, context: Context) = adjustInsetForFragment(f)

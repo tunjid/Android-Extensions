@@ -5,15 +5,15 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
-import com.tunjid.androidbootstrap.uidrivers.GlobalUiController
 import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
-import com.tunjid.androidbootstrap.uidrivers.UiState
-import com.tunjid.androidbootstrap.uidrivers.activityGlobalUiController
 import com.tunjid.androidbootstrap.adapters.TileAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.recyclerview.ListManager
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
+import com.tunjid.androidbootstrap.uidrivers.GlobalUiController
+import com.tunjid.androidbootstrap.uidrivers.UiState
+import com.tunjid.androidbootstrap.uidrivers.activityGlobalUiController
 import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.view.util.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidbootstrap.viewholders.TileViewHolder
@@ -49,7 +49,7 @@ class EndlessTileFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiCo
         listManager = ListManagerBuilder<TileViewHolder, PlaceHolder.State>()
                 .withRecyclerView(view.findViewById(R.id.recycler_view))
                 .withGridLayoutManager(3)
-                .withAdapter(TileAdapter(viewModel.tiles) { showSnackbar { snackBar -> snackBar.setText(it.toString()) } })
+                .withAdapter(TileAdapter(viewModel.tiles) { uiState = uiState.copy(snackbarText = it.toString()) })
                 .withEndlessScrollCallback(NUM_TILES) { viewModel.fetchMore() }
                 .build()
     }

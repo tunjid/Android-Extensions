@@ -6,17 +6,17 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.RecyclerView
-import com.tunjid.androidbootstrap.uidrivers.GlobalUiController
 import com.tunjid.androidbootstrap.PlaceHolder
 import com.tunjid.androidbootstrap.R
-import com.tunjid.androidbootstrap.uidrivers.SlideInItemAnimator
-import com.tunjid.androidbootstrap.uidrivers.UiState
-import com.tunjid.androidbootstrap.uidrivers.activityGlobalUiController
 import com.tunjid.androidbootstrap.adapters.TileAdapter
 import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.recyclerview.ListManager
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
+import com.tunjid.androidbootstrap.uidrivers.GlobalUiController
+import com.tunjid.androidbootstrap.uidrivers.SlideInItemAnimator
+import com.tunjid.androidbootstrap.uidrivers.UiState
+import com.tunjid.androidbootstrap.uidrivers.activityGlobalUiController
 import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.view.util.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidbootstrap.viewholders.TileViewHolder
@@ -66,7 +66,7 @@ class ShiftingTileFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiC
                         .apply { itemAnimator = SlideInItemAnimator() }
                 )
                 .withGridLayoutManager(4)
-                .withPaddedAdapter(TileAdapter(viewModel.tiles) { showSnackbar { bar -> bar.setText(it.id) } }, 4)
+                .withPaddedAdapter(TileAdapter(viewModel.tiles) { uiState = uiState.copy(snackbarText = it.id) }, 4)
                 .build()
     }
 

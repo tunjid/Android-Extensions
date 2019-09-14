@@ -142,7 +142,8 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
 
     private fun onSwipeOrDragEnded(viewHolder: DoggoViewHolder, actionState: Int) {
         val message = viewModel.onActionEnded(Pair(viewHolder.itemId, actionState))
-        if (!TextUtils.isEmpty(message)) showSnackbar { snackBar -> snackBar.setText(message) }
+        if (!TextUtils.isEmpty(message)) uiState = uiState.copy(snackbarText = message)
+
     }
 
     companion object {

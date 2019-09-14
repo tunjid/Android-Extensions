@@ -14,8 +14,10 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
 import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
+import androidx.core.view.ViewCompat
 import androidx.core.view.doOnLayout
 import androidx.core.view.drawToBitmap
 import androidx.core.view.isVisible
@@ -23,6 +25,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.material.animator.FabExtensionAnimator
 import com.tunjid.androidbootstrap.view.animator.ViewHider
@@ -46,10 +49,11 @@ fun FragmentActivity.globalUiDriver(
         fabId: Int = R.id.fab,
         bottomNavId: Int = R.id.bottom_navigation,
         navBackgroundId: Int = R.id.nav_background,
+        coordinatorLayoutId: Int = R.id.coordinator_layout,
         currentFragmentSource: () -> Fragment?
 ) = object : ReadWriteProperty<FragmentActivity, UiState> {
 
-    private val driver = GlobalUiDriver(this@globalUiDriver, toolbarId, fabId, bottomNavId, navBackgroundId, currentFragmentSource)
+    private val driver = GlobalUiDriver(this@globalUiDriver, toolbarId, fabId, bottomNavId, navBackgroundId, coordinatorLayoutId, currentFragmentSource)
 
     override operator fun getValue(thisRef: FragmentActivity, property: KProperty<*>): UiState =
             driver.uiState
@@ -88,6 +92,7 @@ class GlobalUiDriver(
         fabId: Int,
         bottomNavId: Int,
         navBackgroundId: Int,
+        coordinatorLayoutId: Int,
         private val getCurrentFragment: () -> Fragment?
 ) : GlobalUiController {
 
@@ -142,13 +147,17 @@ class GlobalUiDriver(
         host.findViewById<View>(navBackgroundId)
     }
 
+    private val coordinatorLayout: CoordinatorLayout by lazy {
+        host.findViewById<CoordinatorLayout>(coordinatorLayoutId)
+    }
+
     private var state: UiState = UiState.freshState()
 
     override var uiState: UiState
         get() = state
         set(value) {
             val previous = state.copy()
-            state = value.copy(toolbarInvalidated = false) // Reset after firing once
+            state = value.copy(toolbarInvalidated = false, snackbarText = "") // Reset after firing once
             previous.diff(
                     value,
                     bottomNavHider::set,
@@ -157,6 +166,7 @@ class GlobalUiDriver(
                     this::setNavBarColor,
                     this::setFabIcon,
                     fabExtensionAnimator::setExtended,
+                    this::showSnackBar,
                     this::updateMainToolBar,
                     this::setFabClickListener
             )
@@ -199,6 +209,12 @@ class GlobalUiDriver(
 
     private fun setFabClickListener(onClickListener: View.OnClickListener?) =
             fabHider.view.setOnClickListener(onClickListener)
+
+    private fun showSnackBar(message: CharSequence) = Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_SHORT).run {
+        // Necessary to remove snackbar padding for keyboard on older versions of Android
+        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets -> insets }
+        show()
+    }
 
     private fun Toolbar.update(@MenuRes menu: Int, invalidatedAlone: Boolean, title: CharSequence) = when {
         invalidatedAlone -> refreshMenu()

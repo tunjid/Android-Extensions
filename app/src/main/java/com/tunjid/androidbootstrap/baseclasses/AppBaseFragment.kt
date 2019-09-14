@@ -2,8 +2,6 @@ package com.tunjid.androidbootstrap.baseclasses
 
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
-import com.google.android.material.snackbar.Snackbar
-import com.tunjid.androidbootstrap.activities.MainActivity
 import com.tunjid.androidbootstrap.core.components.StackNavigator
 import com.tunjid.androidbootstrap.uidrivers.InsetProvider
 import com.tunjid.androidbootstrap.view.util.InsetFlags
@@ -19,16 +17,10 @@ abstract class AppBaseFragment(
     override val stableTag: String
         get() = javaClass.simpleName
 
-    private val hostingActivity: MainActivity
-        get() = requireActivity() as MainActivity
-
     override fun onDestroyView() {
         super.onDestroyView()
         arguments?.putBoolean(VIEW_DESTROYED, true)
     }
-
-    protected fun showSnackbar(consumer: (Snackbar) -> Unit) =
-            hostingActivity.showSnackBar(consumer)
 
     /**
      * Checks whether this fragment was shown before and it's view subsequently

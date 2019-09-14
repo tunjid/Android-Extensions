@@ -8,7 +8,8 @@ import android.view.View
 import android.widget.ImageView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
-import com.tunjid.androidbootstrap.*
+import com.tunjid.androidbootstrap.PlaceHolder
+import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter.ImageListAdapterListener
 import com.tunjid.androidbootstrap.adapters.InputAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
@@ -47,7 +48,7 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo), Globa
                 fabExtended = !restoredFromBackStack(),
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),
                 fabClickListener = View.OnClickListener {
-                    showSnackbar { it.setText(getString(R.string.adopted_doggo, doggo.name)) }
+                    uiState = uiState.copy(snackbarText = getString(R.string.adopted_doggo, doggo.name))
                 }
         )
 

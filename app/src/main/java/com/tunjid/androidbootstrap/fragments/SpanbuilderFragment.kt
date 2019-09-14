@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import com.tunjid.androidbootstrap.uidrivers.GlobalUiController
 import com.tunjid.androidbootstrap.R
-import com.tunjid.androidbootstrap.uidrivers.UiState
-import com.tunjid.androidbootstrap.uidrivers.activityGlobalUiController
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.core.text.SpanBuilder
+import com.tunjid.androidbootstrap.uidrivers.GlobalUiController
+import com.tunjid.androidbootstrap.uidrivers.UiState
+import com.tunjid.androidbootstrap.uidrivers.activityGlobalUiController
 
 /**
  * Fragment showing the use of a SpanBuilder
@@ -82,7 +82,7 @@ class SpanbuilderFragment : AppBaseFragment(R.layout.fragment_spanbuilder), Glob
                 .append(SpanBuilder.of("This is a clickable span")
                         .click(textView,
                                 { paint -> paint.isUnderlineText = true },
-                                { showSnackbar { snackBar -> snackBar.setText("Clicked text!") } })
+                                { uiState = uiState.copy(snackbarText = "Clicked text!") })
                         .build())
                 .appendNewLine()
                 .build()

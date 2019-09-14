@@ -18,6 +18,7 @@ data class UiState(
         val fabShows: Boolean,
         val fabExtended: Boolean,
         val fabText: CharSequence,
+        val snackbarText: CharSequence,
         @ColorInt val navBarColor: Int,
         val showsBottomNav: Boolean,
         val fabClickListener: View.OnClickListener?
@@ -30,6 +31,7 @@ data class UiState(
              navBarColorConsumer: (Int) -> Unit,
              fabStateConsumer: (Int, CharSequence) -> Unit,
              fabExtendedConsumer: (Boolean) -> Unit,
+             snackbarTextConsumer: (CharSequence) -> Unit,
              toolbarStateConsumer: (Int, Boolean, CharSequence) -> Unit,
              fabClickListenerConsumer: (View.OnClickListener?) -> Unit
     ): UiState {
@@ -42,6 +44,7 @@ data class UiState(
         onChanged(newState, UiState::showsBottomNav) { showsBottomNavConsumer(showsBottomNav) }
         onChanged(newState, UiState::fabShows) { showsFabConsumer(fabShows) }
         onChanged(newState, UiState::fabExtended) { fabExtendedConsumer(fabExtended) }
+        onChanged(newState, UiState::snackbarText) { snackbarTextConsumer(snackbarText) }
         onChanged(newState, UiState::toolbarShows) { showsToolbarConsumer(toolbarShows) }
         onChanged(newState, UiState::navBarColor) { navBarColorConsumer(navBarColor) }
 
@@ -63,6 +66,7 @@ data class UiState(
             fabShows = `in`.readByte().toInt() != 0x00,
             fabExtended = `in`.readByte().toInt() != 0x00,
             fabText = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(`in`),
+            snackbarText = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(`in`),
             navBarColor = `in`.readInt(),
             showsBottomNav = `in`.readByte().toInt() != 0x00,
             fabClickListener = null
@@ -79,6 +83,7 @@ data class UiState(
         dest.writeByte((if (fabShows) 0x01 else 0x00).toByte())
         dest.writeByte((if (fabExtended) 0x01 else 0x00).toByte())
         TextUtils.writeToParcel(fabText, dest, 0)
+        TextUtils.writeToParcel(snackbarText, dest, 0)
         dest.writeInt(navBarColor)
         dest.writeByte((if (showsBottomNav) 0x01 else 0x00).toByte())
     }
@@ -94,6 +99,7 @@ data class UiState(
                 fabShows = true,
                 fabExtended = true,
                 toolbarShows = true,
+                snackbarText = "",
                 toolbarInvalidated = false,
                 toolbarTitle = "",
                 fabClickListener = null
