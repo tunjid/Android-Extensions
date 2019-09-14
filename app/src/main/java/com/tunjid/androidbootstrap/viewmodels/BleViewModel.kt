@@ -19,10 +19,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
-import java.util.ArrayList
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.Comparator
+import kotlin.collections.ArrayList
 
 class BleViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -104,12 +103,12 @@ class BleViewModel(application: Application) : AndroidViewModel(application) {
             ) { result -> Differentiable.fromCharSequence { result.device.address } })
     }
 
-    private fun addServices(currentServices: MutableList<ScanResultCompat>, foundServices: List<ScanResultCompat>): List<ScanResultCompat> {
+    private fun addServices(currentServices: List<ScanResultCompat>, foundServices: List<ScanResultCompat>): List<ScanResultCompat> {
         val equalityMapper = { result: ScanResultCompat -> result.device.address }
         val union = Lists.union<ScanResultCompat, String>(currentServices, foundServices, equalityMapper)
         Lists.replace(currentServices, union)
-        currentServices.sortWith(Comparator { a, b -> equalityMapper.invoke(a).compareTo(equalityMapper.invoke(b)) })
-        return currentServices
+
+        return union.sortedBy(equalityMapper)
     }
 
     companion object {

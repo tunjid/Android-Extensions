@@ -15,9 +15,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
-import java.util.ArrayList
+import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.Comparator
 
 class NsdViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -94,11 +93,9 @@ class NsdViewModel(application: Application) : AndroidViewModel(application) {
         ) { info -> Differentiable.fromCharSequence { info.serviceName } })
     }
 
-    private fun addServices(currentServices: MutableList<NsdServiceInfo>, foundServices: List<NsdServiceInfo>): List<NsdServiceInfo> {
+    private fun addServices(currentServices: List<NsdServiceInfo>, foundServices: List<NsdServiceInfo>): List<NsdServiceInfo> {
         val union = Lists.union<NsdServiceInfo, String>(currentServices, foundServices) { it.serviceName }
-        Lists.replace(currentServices, union)
-        currentServices.sortWith(Comparator { a, b -> a.serviceName.compareTo(b.serviceName) })
-        return currentServices
+        return union.sortedBy { it.serviceName }
     }
 
     companion object {

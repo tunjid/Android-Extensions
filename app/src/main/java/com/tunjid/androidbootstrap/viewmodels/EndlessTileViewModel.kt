@@ -30,10 +30,7 @@ class EndlessTileViewModel(application: Application) : AndroidViewModel(applicat
 
     fun fetchMore() {
         disposables.add(Single.fromCallable {
-            Diff.calculate(tiles, generateTiles()) { oldTiles, addedTiles ->
-                oldTiles.addAll(addedTiles)
-                oldTiles
-            }
+            Diff.calculate(tiles, generateTiles()) { oldTiles, addedTiles -> oldTiles + addedTiles}
         }
                 .subscribeOn(io())
                 .observeOn(mainThread())

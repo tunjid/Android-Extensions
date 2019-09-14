@@ -56,7 +56,10 @@ public class Lists {
         Set<Mask<T, R>> set = new HashSet<>(transform(additions, maskFunction));
         set.addAll(transform(source, maskFunction));
 
-        return transform(new ArrayList<>(set), Mask::getItem);
+        ArrayList<T> result = new ArrayList<>(set.size());
+        for (Mask<T, R> mask : set) result.add(mask.getItem());
+
+        return result;
     }
 
 }
