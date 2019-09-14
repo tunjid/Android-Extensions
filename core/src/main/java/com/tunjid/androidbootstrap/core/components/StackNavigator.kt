@@ -56,7 +56,7 @@ class StackNavigator constructor(
         @param:IdRes @field:IdRes @get:IdRes val containerId: Int
 ) {
 
-    internal val fragmentTags = mutableSetOf<String>()
+    internal val fragmentTags = linkedSetOf<String>()
 
     /**
      * Allows for the customization or augmentation of the [FragmentTransaction] that will show
@@ -160,6 +160,15 @@ class StackNavigator constructor(
     fun pop(): Boolean =
             if (fragmentManager.backStackEntryCount > 1) fragmentManager.popBackStack().let { true }
             else false
+
+    /**
+     * Pops the stack up to, but not including the [upToTag] value. If null is passed as the value,
+     * the stack will be popped up to the root [Fragment]
+     */
+    fun clear(upToTag: String? = null) {
+        val tag = upToTag ?: fragmentTags.first()
+        fragmentManager.popBackStack(tag, 0)
+    }
 
     private fun onFragmentCreated(fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?) {
         // Not a fragment managed by this StackNavigator

@@ -49,6 +49,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
             multiStackNavigator.stackTransactionModifier = { crossFade() }
             setOnApplyWindowInsetsListener { _: View?, windowInsets: WindowInsets? -> windowInsets }
             setOnNavigationItemSelectedListener { multiStackNavigator.show(it.itemId).let { true } }
+            setOnNavigationItemReselectedListener { multiStackNavigator.currentNavigator.clear() }
         }
 
         onBackPressedDispatcher.addCallback(this) { if (!multiStackNavigator.pop()) finish() }
