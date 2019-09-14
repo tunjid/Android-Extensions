@@ -34,10 +34,9 @@ class InsetLifecycleCallbacks(
         private val keyboardPadding: View
 ) : FragmentManager.FragmentLifecycleCallbacks() {
 
-    private var insetsApplied: Boolean = false
     private var leftInset: Int = 0
     private var rightInset: Int = 0
-
+    private var insetsApplied: Boolean = false
     private var lastInsetFlags: InsetFlags? = null
 
     init {
