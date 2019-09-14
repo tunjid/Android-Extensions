@@ -18,8 +18,8 @@ import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidbootstrap.R
-import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.core.components.StackNavigator
+import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.view.util.ViewUtil
 import kotlin.math.max
 
@@ -37,6 +37,8 @@ class InsetLifecycleCallbacks(
     private var insetsApplied: Boolean = false
     private var leftInset: Int = 0
     private var rightInset: Int = 0
+
+    private var lastInsetFlags: InsetFlags? = null
 
     init {
         ViewCompat.setOnApplyWindowInsetsListener(parentContainer) { _, insets -> consumeSystemInsets(insets) }
@@ -77,8 +79,8 @@ class InsetLifecycleCallbacks(
     }
 
     private fun onFragmentViewCreated(v: View, fragment: Fragment) {
-        if (fragment !is AppBaseFragment || isNotInCurrentFragmentContainer(fragment)) return
-        if (fragment.restoredFromBackStack()) adjustInsetForFragment(fragment)
+        if (fragment !is InsetProvider || isNotInCurrentFragmentContainer(fragment)) return
+        adjustInsetForFragment(fragment)
 
         ViewCompat.setOnApplyWindowInsetsListener(v) { _, insets -> consumeFragmentInsets(insets) }
     }
@@ -104,9 +106,11 @@ class InsetLifecycleCallbacks(
 
     @SuppressLint("InlinedApi")
     private fun adjustInsetForFragment(fragment: Fragment?) {
-        if (fragment !is AppBaseFragment || isNotInCurrentFragmentContainer(fragment)) return
+        if (fragment !is InsetProvider || isNotInCurrentFragmentContainer(fragment)) return
 
         val insetFlags = fragment.insetFlags
+        if (lastInsetFlags == insetFlags) return
+
         ViewUtil.getLayoutParams(toolbar).topMargin = if (insetFlags.hasTopInset) 0 else topInset
         ViewUtil.getLayoutParams(coordinatorLayout).bottomMargin = if (insetFlags.hasBottomInset) 0 else bottomInset
 
@@ -123,6 +127,8 @@ class InsetLifecycleCallbacks(
                 0,
                 if (insetFlags.hasRightInset) this.rightInset else 0,
                 0)
+
+        lastInsetFlags = insetFlags
     }
 
     companion object {
