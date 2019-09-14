@@ -49,7 +49,7 @@ class BleViewModel(application: Application) : AndroidViewModel(application) {
                 .addFilter(ScanFilterCompat.getBuilder()
                         .setServiceUuid(ParcelUuid(UUID.fromString(CUSTOM_SERVICE_UUID)))
                         .build())
-                .withCallBack { this.onDeviceFound(it) }
+                .withCallBack(this::onDeviceFound)
                 .build()
         else null
 
@@ -100,8 +100,8 @@ class BleViewModel(application: Application) : AndroidViewModel(application) {
             processor.onNext(Diff.calculate(
                     scanResults,
                     mutableListOf(scanResult),
-                    { currentServices, foundServices -> this.addServices(currentServices, foundServices) },
-                    { result -> Differentiable.fromCharSequence { result.device.address } }))
+                    this::addServices
+            ) { result -> Differentiable.fromCharSequence { result.device.address } })
     }
 
     private fun addServices(currentServices: MutableList<ScanResultCompat>, foundServices: List<ScanResultCompat>): List<ScanResultCompat> {
