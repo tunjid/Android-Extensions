@@ -19,7 +19,7 @@ class TileViewHolder(itemView: View, scanAdapterListener: (tile: Tile) -> Unit)
 
     init {
         animator.duration = COLOR_CHANGE_DURATION.toLong()
-        itemView.setOnClickListener { adapterListener.invoke(tile) }
+        itemView.setOnClickListener { delegate.invoke(tile) }
     }
 
     fun bind(tile: Tile) {

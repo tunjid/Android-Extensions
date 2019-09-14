@@ -4,19 +4,21 @@ import android.view.View
 import android.view.ViewGroup
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.recyclerview.InteractiveAdapter
+import com.tunjid.androidbootstrap.view.util.inflate
 import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 
 class DoggoAdapter<T : DoggoViewHolder>(private val doggos: List<Doggo>,
                                         private val layoutRes: Int,
                                         private val viewHolderFactory: (View, ImageListAdapterListener) -> T,
-                                        listener: ImageListAdapterListener) : InteractiveAdapter<T, DoggoAdapter.ImageListAdapterListener>(listener) {
+                                        listener: ImageListAdapterListener
+) : InteractiveAdapter<T, DoggoAdapter.ImageListAdapterListener>(listener) {
 
     init {
         setHasStableIds(true)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): T =
-            viewHolderFactory.invoke(getItemView(layoutRes, parent), adapterListener)
+            viewHolderFactory.invoke(parent.inflate(layoutRes), delegate)
 
     override fun onBindViewHolder(holder: T, recyclerViewPosition: Int) =
             holder.bind(doggos[recyclerViewPosition])
@@ -25,10 +27,10 @@ class DoggoAdapter<T : DoggoViewHolder>(private val doggos: List<Doggo>,
 
     override fun getItemId(position: Int): Long = doggos[position].hashCode().toLong()
 
-    interface ImageListAdapterListener : AdapterListener {
-        fun onDoggoClicked(doggo: Doggo) {}
+    interface ImageListAdapterListener {
+        fun onDoggoClicked(doggo: Doggo) = Unit
 
-        fun onDoggoImageLoaded(doggo: Doggo) {}
+        fun onDoggoImageLoaded(doggo: Doggo) = Unit
     }
 
 }

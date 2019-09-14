@@ -30,7 +30,7 @@ import com.tunjid.androidbootstrap.uidrivers.GlobalUiController
 import com.tunjid.androidbootstrap.uidrivers.UiState
 import com.tunjid.androidbootstrap.uidrivers.activityGlobalUiController
 import com.tunjid.androidbootstrap.view.util.InsetFlags
-import com.tunjid.androidbootstrap.view.util.ViewUtil
+import com.tunjid.androidbootstrap.view.util.hashTransitionName
 import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 import java.util.Objects.requireNonNull
 import kotlin.math.abs
@@ -158,7 +158,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
 
         transaction
                 .setReorderingAllowed(true)
-                .addSharedElement(imageView, ViewUtil.transitionName(doggo, imageView))
+                .addSharedElement(imageView, imageView.hashTransitionName(doggo))
     }
 
     companion object {

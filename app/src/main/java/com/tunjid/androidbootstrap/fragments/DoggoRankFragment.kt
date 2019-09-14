@@ -10,7 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
-import com.tunjid.androidbootstrap.*
+import com.tunjid.androidbootstrap.PlaceHolder
+import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter
 import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
@@ -18,14 +19,15 @@ import com.tunjid.androidbootstrap.core.components.StackNavigator
 import com.tunjid.androidbootstrap.core.components.activityStackNavigator
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.recyclerview.ListManager
-import com.tunjid.androidbootstrap.recyclerview.ListManager.SWIPE_DRAG_ALL_DIRECTIONS
+import com.tunjid.androidbootstrap.recyclerview.ListManager.Companion.SWIPE_DRAG_ALL_DIRECTIONS
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
+import com.tunjid.androidbootstrap.recyclerview.SwipeDragOptions
 import com.tunjid.androidbootstrap.uidrivers.GlobalUiController
 import com.tunjid.androidbootstrap.uidrivers.UiState
 import com.tunjid.androidbootstrap.uidrivers.activityGlobalUiController
 import com.tunjid.androidbootstrap.view.util.InsetFlags
 import com.tunjid.androidbootstrap.view.util.InsetFlags.Companion.NO_BOTTOM
-import com.tunjid.androidbootstrap.view.util.ViewUtil
+import com.tunjid.androidbootstrap.view.util.hashTransitionName
 import com.tunjid.androidbootstrap.viewholders.DoggoRankViewHolder
 import com.tunjid.androidbootstrap.viewholders.DoggoViewHolder
 import com.tunjid.androidbootstrap.viewmodels.DoggoRankViewModel
@@ -79,16 +81,18 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
                 .addScrollListener { _, dy -> if (abs(dy) > 4) uiState = uiState.copy(fabExtended = dy < 0) }
                 .withPlaceholder(placeHolder)
                 .withLinearLayoutManager()
-                .withSwipeDragOptions(ListManager.swipeDragOptionsBuilder<DoggoRankViewHolder>()
-                        .setMovementFlagsFunction { SWIPE_DRAG_ALL_DIRECTIONS }
-                        .setSwipeConsumer { holder, _ -> removeDoggo(holder) }
-                        .setDragHandleFunction { it.dragView }
-                        .setSwipeDragStartConsumer { holder, actionState -> this.onSwipeOrDragStarted(holder, actionState) }
-                        .setSwipeDragEndConsumer { viewHolder, actionState -> this.onSwipeOrDragEnded(viewHolder, actionState) }
-                        .setLongPressDragEnabledSupplier { false }
-                        .setItemViewSwipeSupplier { true }
-                        .setDragConsumer { start, end -> this.moveDoggo(start, end) }
-                        .build())
+                .withSwipeDragOptions(
+                        SwipeDragOptions(
+                                itemViewSwipeSupplier = { true },
+                                longPressDragSupplier = { true },
+                                swipeConsumer = { holder, _ -> removeDoggo(holder) },
+                                dragConsumer = this::moveDoggo,
+                                dragHandleFunction = DoggoRankViewHolder::dragView,
+                                movementFlagFunction = { SWIPE_DRAG_ALL_DIRECTIONS },
+                                swipeDragStartConsumer = { holder, actionState -> this.onSwipeOrDragStarted(holder, actionState) },
+                                swipeDragEndConsumer = { viewHolder, actionState -> this.onSwipeOrDragEnded(viewHolder, actionState) }
+                        )
+                )
                 .build()
 
         postponeEnterTransition()
@@ -115,7 +119,7 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
         val doggo = incomingFragment.doggo
         val holder = listManager.findViewHolderForItemId(doggo.hashCode().toLong()) ?: return
 
-        transaction.addSharedElement(holder.thumbnail, ViewUtil.transitionName(doggo, holder.thumbnail))
+        transaction.addSharedElement(holder.thumbnail, holder.thumbnail.hashTransitionName(doggo))
     }
 
     private fun moveDoggo(start: DoggoViewHolder, end: DoggoViewHolder) {

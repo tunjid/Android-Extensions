@@ -11,7 +11,7 @@ import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.recyclerview.InteractiveViewHolder
-import com.tunjid.androidbootstrap.view.util.ViewUtil
+import com.tunjid.androidbootstrap.view.util.hashTransitionName
 
 open class DoggoViewHolder(itemView: View, adapterListener: DoggoAdapter.ImageListAdapterListener)
     : InteractiveViewHolder<DoggoAdapter.ImageListAdapterListener>(itemView, adapterListener), View.OnClickListener {
@@ -28,7 +28,7 @@ open class DoggoViewHolder(itemView: View, adapterListener: DoggoAdapter.ImageLi
     open fun bind(doggo: Doggo) {
         this.doggo = doggo
 
-        setTransitionName(thumbnail, ViewUtil.transitionName(doggo, thumbnail))
+        setTransitionName(thumbnail, thumbnail.hashTransitionName(doggo))
         getCreator(doggo)
                 .resize(THUMBNAIL_SIZE, THUMBNAIL_SIZE)
                 .into(thumbnail, onSuccess(this::onThumbnailLoaded))
@@ -37,7 +37,7 @@ open class DoggoViewHolder(itemView: View, adapterListener: DoggoAdapter.ImageLi
     }
 
     private fun onThumbnailLoaded() {
-        adapterListener.onDoggoImageLoaded(doggo)
+        delegate.onDoggoImageLoaded(doggo)
         fullSize?.postDelayed({
             getCreator(doggo).fit()
                     .into(fullSize, onSuccess { fullSize.visibility = View.VISIBLE })
@@ -56,7 +56,7 @@ open class DoggoViewHolder(itemView: View, adapterListener: DoggoAdapter.ImageLi
         }
     }
 
-    override fun onClick(v: View) = adapterListener.onDoggoClicked(doggo)
+    override fun onClick(v: View) = delegate.onDoggoClicked(doggo)
 
     companion object {
 

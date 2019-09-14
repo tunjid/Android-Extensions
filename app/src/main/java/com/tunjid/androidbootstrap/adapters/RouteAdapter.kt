@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.model.Route
 import com.tunjid.androidbootstrap.recyclerview.InteractiveAdapter
+import com.tunjid.androidbootstrap.view.util.inflate
 import com.tunjid.androidbootstrap.viewholders.RouteItemViewHolder
 
 /**
@@ -21,7 +22,7 @@ class RouteAdapter(private val routes: List<Route>, listener: RouteAdapterListen
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RouteItemViewHolder =
-            RouteItemViewHolder(getItemView(R.layout.viewholder_route, parent), adapterListener)
+            RouteItemViewHolder(parent.inflate(R.layout.viewholder_route), delegate)
 
     override fun onBindViewHolder(holder: RouteItemViewHolder, recyclerViewPosition: Int) =
             holder.bind(routes[recyclerViewPosition])
@@ -31,7 +32,7 @@ class RouteAdapter(private val routes: List<Route>, listener: RouteAdapterListen
     override fun getItemId(position: Int): Long = routes[position].hashCode().toLong()
 
 
-    interface RouteAdapterListener : AdapterListener {
+    interface RouteAdapterListener {
         fun onItemClicked(route: Route)
     }
 
