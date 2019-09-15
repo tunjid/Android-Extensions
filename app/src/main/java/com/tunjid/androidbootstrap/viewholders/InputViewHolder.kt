@@ -37,11 +37,9 @@ class InputViewHolder(itemView: View)
         hint.doOnNextLayout { scaleHint(isEmpty(text.text)) }
     }
 
-    override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {/* Nothing */
-    }
+    override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) = Unit
 
-    override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {/* Nothing */
-    }
+    override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) = Unit
 
     override fun afterTextChanged(editable: Editable) {
         val currentLineCount = text.lineCount

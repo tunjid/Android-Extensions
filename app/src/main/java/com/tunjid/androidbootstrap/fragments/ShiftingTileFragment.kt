@@ -66,7 +66,7 @@ class ShiftingTileFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiC
                         .apply { itemAnimator = SlideInItemAnimator() }
                 )
                 .withGridLayoutManager(4)
-                .withPaddedAdapter(TileAdapter(viewModel.tiles) { uiState = uiState.copy(snackbarText = it.id) }, 4)
+                .withPaddedAdapter(TileAdapter(viewModel.tiles) { uiState = uiState.copy(snackbarText = it.diffId) }, 4)
                 .build()
     }
 

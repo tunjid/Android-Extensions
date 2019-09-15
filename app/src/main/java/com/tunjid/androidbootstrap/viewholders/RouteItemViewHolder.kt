@@ -22,14 +22,10 @@ class RouteItemViewHolder(itemView: View, listener: RouteAdapter.RouteAdapterLis
 
     private var route: Route? = null
 
-    private val routeDestination: TextView
-    private val routeDescription: TextView
+    private val routeDestination: TextView = itemView.findViewById(R.id.destination)
+    private val routeDescription: TextView = itemView.findViewById(R.id.description)
 
     init {
-
-        routeDestination = itemView.findViewById(R.id.destination)
-        routeDescription = itemView.findViewById(R.id.description)
-
         itemView.setOnClickListener(this)
         routeDescription.setOnClickListener(this)
 
@@ -45,7 +41,7 @@ class RouteItemViewHolder(itemView: View, listener: RouteAdapter.RouteAdapterLis
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.description -> delegate.onItemClicked(route!!)
+            R.id.description -> delegate?.onItemClicked(route!!)
             else -> changeVisibility(routeDestination, routeDescription)
         }
     }

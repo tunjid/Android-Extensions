@@ -10,15 +10,15 @@ class Tile private constructor(
         val number: Int,
         @field:ColorInt @get:ColorInt val color: Int) : Differentiable {
 
-    override val id
+    override val diffId
         get() = number.toString()
 
     override fun areContentsTheSame(other: Differentiable): Boolean =
-            if (other !is Tile) false else id == other.id && color == other.color
+            if (other !is Tile) false else diffId == other.diffId && color == other.color
 
     override fun getChangePayload(other: Differentiable): Any = other
 
-    override fun toString(): String = id
+    override fun toString(): String = diffId
 
     companion object {
 

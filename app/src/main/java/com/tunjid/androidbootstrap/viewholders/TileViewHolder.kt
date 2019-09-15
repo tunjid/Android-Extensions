@@ -19,12 +19,12 @@ class TileViewHolder(itemView: View, scanAdapterListener: (tile: Tile) -> Unit)
 
     init {
         animator.duration = COLOR_CHANGE_DURATION.toLong()
-        itemView.setOnClickListener { delegate.invoke(tile) }
+        itemView.setOnClickListener { delegate?.invoke(tile) }
     }
 
     fun bind(tile: Tile) {
         this.tile = tile
-        text.text = tile.id
+        text.text = tile.diffId
 
         animator.setIntValues(text.currentTextColor, tile.color)
         animator.addUpdateListener(listener)

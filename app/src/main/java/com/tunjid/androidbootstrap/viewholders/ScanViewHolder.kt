@@ -29,8 +29,6 @@ class ScanViewHolder(itemView: View, scanAdapterListener: ScanAdapter.ScanAdapte
     }
 
     override fun onClick(v: View) {
-        when (v.id) {
-            R.id.row_parent -> delegate.onBluetoothDeviceClicked(result.device)
-        }
+        if (v.id == R.id.row_parent) delegate?.onBluetoothDeviceClicked(result.device)
     }
 }

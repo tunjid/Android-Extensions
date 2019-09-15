@@ -5,5 +5,5 @@ import android.view.View
 
 abstract class InteractiveViewHolder<T>(
         itemView: View,
-        protected var delegate: T
+        protected var delegate: T?
 ) : RecyclerView.ViewHolder(itemView)

@@ -41,6 +41,15 @@ android {
             outputFileName = "${project.getName()}-${project.version}.aar"
         }
     }
+
+    afterEvaluate {
+        def debugFile = file("$buildDir/outputs/aar/${project.getName()}-release.aar")
+        tasks.named("assembleRelease").configure {
+            doLast {
+                debugFile.renameTo("$buildDir/outputs/aar/${project.getName()}-${project.version}.aar")
+            }
+        }
+    }
 }
 
 bintray {

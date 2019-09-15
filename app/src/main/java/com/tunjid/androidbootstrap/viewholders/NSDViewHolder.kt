@@ -26,7 +26,7 @@ class NSDViewHolder(itemView: View, listener: NsdAdapter.ServiceClickedListener)
         stringBuilder.append(info.serviceName).append("\n")
                 .append(if (info.host != null) info.host.hostAddress else "")
 
-        val isSelf = delegate.isSelf(info)
+        val isSelf = delegate?.isSelf(info) ?: return
 
         if (isSelf) stringBuilder.append(" (SELF)")
 
@@ -38,5 +38,5 @@ class NSDViewHolder(itemView: View, listener: NsdAdapter.ServiceClickedListener)
         textView.text = stringBuilder.toString()
     }
 
-    override fun onClick(v: View) = delegate.onServiceClicked(serviceInfo)
+    override fun onClick(v: View) = delegate?.onServiceClicked(serviceInfo) ?: Unit
 }

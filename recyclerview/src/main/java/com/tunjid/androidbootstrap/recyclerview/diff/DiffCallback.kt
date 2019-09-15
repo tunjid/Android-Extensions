@@ -13,7 +13,7 @@ internal class DiffCallback<T>(
     override fun getNewListSize(): Int = updated.size
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-            using(oldItemPosition, newItemPosition) { stale, current -> stale.id == current.id }
+            using(oldItemPosition, newItemPosition) { stale, current -> stale.diffId == current.diffId }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
             using(oldItemPosition, newItemPosition, Differentiable::areContentsTheSame)
