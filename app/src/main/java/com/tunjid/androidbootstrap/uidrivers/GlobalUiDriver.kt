@@ -53,7 +53,17 @@ fun FragmentActivity.globalUiDriver(
         currentFragmentSource: () -> Fragment?
 ) = object : ReadWriteProperty<FragmentActivity, UiState> {
 
-    private val driver = GlobalUiDriver(this@globalUiDriver, toolbarId, fabId, bottomNavId, navBackgroundId, coordinatorLayoutId, currentFragmentSource)
+    private val driver by lazy {
+        GlobalUiDriver(
+                this@globalUiDriver,
+                toolbarId,
+                fabId,
+                bottomNavId,
+                navBackgroundId,
+                coordinatorLayoutId,
+                currentFragmentSource
+        )
+    }
 
     override operator fun getValue(thisRef: FragmentActivity, property: KProperty<*>): UiState =
             driver.uiState
@@ -96,60 +106,52 @@ class GlobalUiDriver(
         private val getCurrentFragment: () -> Fragment?
 ) : GlobalUiController {
 
-    // Lazy lookups because setContentView in the host will not have been called at delegation time.
-
-    private val toolbarHider: ViewHider<Toolbar> by lazy {
+    init {
         host.window.statusBarColor = ContextCompat.getColor(host, R.color.transparent)
         host.window.decorView.systemUiVisibility = DEFAULT_SYSTEM_UI_FLAGS
-        host.findViewById<Toolbar>(toolbarId).run {
-            setOnMenuItemClickListener(this@GlobalUiDriver::onMenuItemClicked)
-            ViewHider.of(this)
-                    .setDirection(ViewHider.TOP)
-                    .build()
-        }
     }
 
-    private val fabHider: ViewHider<MaterialButton> by lazy {
-        host.findViewById<MaterialButton>(fabId).run {
-            ViewHider.of(this).setDirection(ViewHider.BOTTOM)
-                    .addEndAction { isVisible = true }
-                    .build()
-        }
+    private val toolbarHider: ViewHider<Toolbar> = host.findViewById<Toolbar>(toolbarId).run {
+        setOnMenuItemClickListener(this@GlobalUiDriver::onMenuItemClicked)
+        ViewHider.of(this)
+                .setDirection(ViewHider.TOP)
+                .build()
     }
 
-    private val bottomNavHider: ViewHider<ImageView> by lazy {
-        val bottomNav = host.findViewById<BottomNavigationView>(bottomNavId)
+    private val fabHider: ViewHider<MaterialButton> = host.findViewById<MaterialButton>(fabId).run {
+        ViewHider.of(this).setDirection(ViewHider.BOTTOM)
+                .addEndAction { isVisible = true }
+                .build()
+    }
+
+    private val bottomNavHider: ViewHider<ImageView> = host.findViewById<BottomNavigationView>(bottomNavId).run {
         val bottomNavSnapshot = host.findViewById<ImageView>(R.id.bottom_nav_snapshot)
-
-        bottomNav.doOnLayout { bottomNavSnapshot.layoutParams.height = bottomNav.height }
+        doOnLayout { bottomNavSnapshot.layoutParams.height = height }
 
         ViewHider.of(bottomNavSnapshot)
                 .setDirection(ViewHider.BOTTOM)
                 .addStartAction {
                     if (getCurrentFragment() == null) return@addStartAction
-                    if (bottomNav.isVisible) bottomNavSnapshot.setImageBitmap(bottomNav.drawToBitmap(Bitmap.Config.ARGB_8888))
+                    if (isVisible) bottomNavSnapshot.setImageBitmap(drawToBitmap(Bitmap.Config.ARGB_8888))
 
                     // Invisible so the snapshot can  be seen to animate in
-                    bottomNav.visibility = if (uiState.showsBottomNav) View.INVISIBLE else View.GONE
+                    visibility = if (uiState.showsBottomNav) View.INVISIBLE else View.GONE
                 }
                 .addEndAction {
                     // Finally show or hide the actual bottom bar
-                    bottomNav.isVisible = uiState.showsBottomNav
+                    isVisible = uiState.showsBottomNav
                 }
                 .build()
     }
 
-    private val fabExtensionAnimator: FabExtensionAnimator by lazy {
-        FabExtensionAnimator(fabHider.view).apply { isExtended = true }
-    }
+    private val fabExtensionAnimator: FabExtensionAnimator =
+            FabExtensionAnimator(fabHider.view).apply { isExtended = true }
 
-    private val navBackgroundView: View by lazy {
-        host.findViewById<View>(navBackgroundId)
-    }
+    private val navBackgroundView: View =
+            host.findViewById<View>(navBackgroundId)
 
-    private val coordinatorLayout: CoordinatorLayout by lazy {
-        host.findViewById<CoordinatorLayout>(coordinatorLayoutId)
-    }
+    private val coordinatorLayout: CoordinatorLayout =
+            host.findViewById(coordinatorLayoutId)
 
     private var state: UiState = UiState.freshState()
 
@@ -171,7 +173,6 @@ class GlobalUiDriver(
                     this::setFabClickListener
             )
 
-            bottomNavHider
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
 
             val isLight = ColorUtils.calculateLuminance(value.navBarColor) > 0.5
