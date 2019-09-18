@@ -53,6 +53,7 @@
     <!-- Tiles -->
     <string name="static_tiles">Constant tile count</string>
     <string name="dynamic_tiles">Dynamic tile count</string>
+    <string name="tile_info">Tile Info</string>
 
     <!-- InnerStack -->
     <string name="first">First</string>

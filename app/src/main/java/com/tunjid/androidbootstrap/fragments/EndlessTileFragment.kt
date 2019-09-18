@@ -19,6 +19,7 @@ import com.tunjid.androidbootstrap.view.util.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidbootstrap.viewholders.TileViewHolder
 import com.tunjid.androidbootstrap.viewmodels.EndlessTileViewModel
 import com.tunjid.androidbootstrap.viewmodels.EndlessTileViewModel.Companion.NUM_TILES
+import kotlin.math.abs
 
 class EndlessTileFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiController {
 
@@ -41,9 +42,14 @@ class EndlessTileFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiCo
                 toolbarTitle = this::class.java.simpleName,
                 toolbarShows = true,
                 toolBarMenu = 0,
-                fabShows = false,
+                fabShows = true,
+                fabIcon = R.drawable.ic_info_outline_24dp,
+                fabText = getString(R.string.tile_info),
                 showsBottomNav = false,
-                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
+                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),
+                fabClickListener = View.OnClickListener {
+                    uiState = uiState.copy(snackbarText = "There are ${viewModel.tiles.size} tiles")
+                }
         )
 
         listManager = ListManagerBuilder<TileViewHolder, PlaceHolder.State>()
@@ -51,6 +57,7 @@ class EndlessTileFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiCo
                 .withGridLayoutManager(3)
                 .withAdapter(TileAdapter(viewModel.tiles) { uiState = uiState.copy(snackbarText = it.toString()) })
                 .withEndlessScrollCallback(NUM_TILES) { viewModel.fetchMore() }
+                .addScrollListener { _, dy -> if (abs(dy) > 3) uiState = uiState.copy(fabShows = dy < 0) }
                 .build()
     }
 

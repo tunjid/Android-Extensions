@@ -71,7 +71,7 @@ class DoggoViewModel(application: Application) : AndroidViewModel(application) {
                 height = metrics.heightPixels / 4,
                 config = Bitmap.Config.ARGB_8888) ?: return@fromCallable Color.BLACK
 
-        Palette.from(bitmap).generate().getDarkVibrantColor(Color.BLACK)
+        Palette.from(bitmap).generate().getLightVibrantColor(Color.BLACK)
     }.cache()
 
     override fun onCleared() {
