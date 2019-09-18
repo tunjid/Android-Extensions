@@ -162,12 +162,14 @@ class StackNavigator constructor(
             else false
 
     /**
-     * Pops the stack up to, but not including the [upToTag] value. If null is passed as the value,
-     * the stack will be popped up to the root [Fragment]
+     * Pops the stack up to the [upToTag] value. If null is passed as the value,
+     * the stack will be popped to the root [Fragment].
+     * By default it doesn't pop the Fragment matching the [upToTag]; to do so, pass true for the
+     * [includeMatch] parameter.
      */
-    fun clear(upToTag: String? = null) {
+    fun clear(upToTag: String? = null, includeMatch: Boolean = false) {
         val tag = upToTag ?: fragmentTags.first()
-        fragmentManager.popBackStack(tag, 0)
+        fragmentManager.popBackStack(tag, if (includeMatch) FragmentManager.POP_BACK_STACK_INCLUSIVE else 0)
     }
 
     private fun onFragmentCreated(fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?) {
