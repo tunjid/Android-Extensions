@@ -45,7 +45,7 @@ class StackNavigatorTest {
     fun setUp() {
         testIdler = TestIdler(DEFAULT_TIME_OUT.toLong(), TimeUnit.SECONDS)
         activity = activityRule.activity as TestActivity
-        stackNavigator = StackNavigator(stateContainerFor("TEST", activity!!), activity!!.supportFragmentManager, activity!!.containerId)
+        stackNavigator = StackNavigator(savedStateFor(activity!!, "TEST"), activity!!.supportFragmentManager, activity!!.containerId)
     }
 
     @After
@@ -102,7 +102,7 @@ class StackNavigatorTest {
 
         // create new instance of fragentStateManager and confirm all
         // the old tags are restored
-        val copy = StackNavigator(stateContainerFor("OTHER", activity), activity.supportFragmentManager, activity.containerId)
+        val copy = StackNavigator(savedStateFor(activity, "OTHER"), activity.supportFragmentManager, activity.containerId)
 
         assertTrue(copy.fragmentTags.contains(TAG_A))
         assertTrue(copy.fragmentTags.size == 1)

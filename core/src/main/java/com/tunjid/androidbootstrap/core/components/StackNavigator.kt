@@ -25,7 +25,7 @@ fun Fragment.activityStackNavigator() = object : ReadOnlyProperty<Fragment, Stac
 
 fun Fragment.childStackNavigator(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
     StackNavigator(
-            stateContainerFor("$STACK_NAVIGATOR-$containerId", this),
+            savedStateFor(this, "$STACK_NAVIGATOR-$containerId"),
             childFragmentManager,
             containerId
     )
@@ -34,7 +34,7 @@ fun Fragment.childStackNavigator(@IdRes containerId: Int): Lazy<StackNavigator> 
 @Suppress("unused")
 fun FragmentActivity.stackNavigator(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
     StackNavigator(
-            stateContainerFor("$STACK_NAVIGATOR-$containerId", this),
+            savedStateFor(this, "$STACK_NAVIGATOR-$containerId"),
             supportFragmentManager,
             containerId
     )

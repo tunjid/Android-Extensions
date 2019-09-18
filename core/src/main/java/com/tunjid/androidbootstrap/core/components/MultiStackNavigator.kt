@@ -18,7 +18,7 @@ fun Fragment.multipleStackNavigator(
         rootFunction: (Int) -> Pair<Fragment, String>
 ): Lazy<MultiStackNavigator> = lazy {
     MultiStackNavigator(
-            stateContainerFor("$MULTI_STACK_NAVIGATOR-$containerId", this@multipleStackNavigator),
+            savedStateFor(this@multipleStackNavigator, "$MULTI_STACK_NAVIGATOR-$containerId"),
             childFragmentManager,
             stackIds,
             containerId, rootFunction
@@ -31,7 +31,7 @@ fun FragmentActivity.multipleStackNavigator(
         rootFunction: (Int) -> Pair<Fragment, String>
 ): Lazy<MultiStackNavigator> = lazy {
     MultiStackNavigator(
-            stateContainerFor("$MULTI_STACK_NAVIGATOR-$containerId", this@multipleStackNavigator),
+            savedStateFor(this@multipleStackNavigator, "$MULTI_STACK_NAVIGATOR-$containerId"),
             supportFragmentManager,
             stackIds,
             containerId, rootFunction
