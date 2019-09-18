@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
 apply from: "${project.rootDir}/version.gradle"
@@ -31,9 +32,22 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
     libraryVariants.all { variant ->
         variant.outputs.all {
             outputFileName = "${project.getName()}-${project.version}.aar"
+        }
+    }
+
+    afterEvaluate {
+        def debugFile = file("$buildDir/outputs/aar/${project.getName()}-release.aar")
+        tasks.named("assembleRelease").configure {
+            doLast {
+                debugFile.renameTo("$buildDir/outputs/aar/${project.getName()}-${project.version}.aar")
+            }
         }
     }
 }
@@ -71,9 +85,11 @@ publishing {
             artifact("$buildDir/outputs/aar/${project.getName()}-${project.version}.aar")
 
             // Add sources too
-            artifact(sourcesJar) {
-                classifier = 'sources'
-                extension = 'jar'
+            afterEvaluate {
+                artifact(sourcesJar) {
+                    classifier = 'sources'
+                    extension = 'jar'
+                }
             }
 
             //The publication doesn't know about our dependencies, so we have to manually add them to the pom
@@ -101,7 +117,7 @@ publishing {
 
 // Gradle task to generate sources after building a release aar
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
+    archiveClassifier = 'sources'
     from android.sourceSets.main.java.srcDirs
 }
 

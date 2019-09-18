@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 buildscript {
     repositories {
@@ -16,13 +17,25 @@ android {
     defaultConfig {
         minSdkVersion parent.ext.minSdkVersion
         targetSdkVersion parent.ext.targetSdkVersion
-        applicationId "com.tunjid.andoidbootstrap.sample"
+        applicationId 'com.tunjid.andoidbootstrap.sample'
         versionCode 1
-        versionName "1.0"
+        versionName '1.0'
         multiDexEnabled true  //add this line
         vectorDrawables.useSupportLibrary = true
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    }
+    signingConfigs {
+        debug {
+            if (file('debugKeystore.properties').exists()) {
+                Properties props = new Properties()
+                props.load(new FileInputStream(file('debugKeystore.properties')))
+                storeFile file(props['keystore'])
+                storePassword props['keystore.password']
+                keyAlias props['keyAlias']
+                keyPassword props['keyPassword']
+            }
+        }
     }
     buildTypes {
         debug {
@@ -39,6 +52,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 }
 
 dependencies {
@@ -47,24 +64,35 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Android support libraries
+    implementation parent.ext.kotlin
+    implementation parent.ext.ktxCore
+    implementation parent.ext.palette
     implementation parent.ext.material
     implementation parent.ext.appCompat
     implementation parent.ext.cardView
     implementation parent.ext.recyclerView
     implementation parent.ext.constraintLayout
 
-    implementation 'androidx.multidex:multidex:2.0.1'
-    implementation "androidx.lifecycle:lifecycle-viewmodel:2.0.0"
-    implementation "androidx.lifecycle:lifecycle-extensions:2.0.0"
+    implementation parent.ext.fragment
+    implementation parent.ext.fragmentKtx
+
+    implementation parent.ext.dynamicAnimations
+    implementation parent.ext.dynamicAnimationsKtx
+
+    implementation parent.ext.lifecycleSavedState
+    implementation parent.ext.lifecycleViewModel
+    implementation parent.ext.lifecycleExtensions
+    implementation parent.ext.lifeCycleReactiveStreams
 
     // other dependencies
-    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'jp.wasabeef:picasso-transformations:2.1.2'
 
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.7'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.10'
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.4.0'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
-    implementation "com.andkulikov:transitionseverywhere:2.0.0-alpha01"
+    implementation 'com.andkulikov:transitionseverywhere:2.0.0-alpha01'
 
     testImplementation parent.ext.material
     testImplementation parent.ext.supportAnnotations

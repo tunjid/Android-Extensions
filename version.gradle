@@ -3,7 +3,9 @@ allprojects {
     group = parent.ext.libProps['groupId']
     version = parent.ext.libProps[versionKey]
 
-    task printProjectVersion << {
-        println ">> " + project.name + " version is " + version
+    task printProjectVersion {
+        doLast {
+            println ">> " + project.name + " version is " + version
+        }
     }
 }

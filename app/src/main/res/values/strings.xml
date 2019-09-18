@@ -1,11 +1,18 @@
 <resources>
     <string name="app_name">Android Bootstrap</string>
+    <string name="empty_string" />
     <string name="unknown_device">Unknown device</string>
     <string name="ble_not_supported">BLE is not supported</string>
+
+    <!-- Navigation tabs -->
+    <string name="core">Core</string>
+    <string name="recycler_view">RecyclerView</string>
+    <string name="communications">Communications</string>
 
     <!-- Route Descriptions -->
     <string name="route_doggo_list">A list of hints demonstrating delegation of shared element transitions to the calling fragment.</string>
     <string name="route_doggo_rank">A list of good boyes showing drag and drop functionality.</string>
+    <string name="route_inner_stack">A demo of the MultiStackNavigator, while being a child of a MultiStackNavigator; Stack-ception.</string>
     <string name="route_shifting_tile">A grid of shifting colorful tiles demonstrating the Diffable interface.</string>
     <string name="route_endless_tile">A grid of colorful tiles demonstrating endless scrolling with the Diffable interface.</string>
     <string name="route_ble_scan">A fragment demonstrating the use of the BLEScanner from the Communications module.</string>
@@ -46,5 +53,12 @@
     <!-- Tiles -->
     <string name="static_tiles">Constant tile count</string>
     <string name="dynamic_tiles">Dynamic tile count</string>
+
+    <!-- InnerStack -->
+    <string name="first">First</string>
+    <string name="second">Second</string>
+    <string name="third">Third</string>
+    <string name="slide">Slide in/out</string>
+    <string name="cross_fade">Cross Fade</string>
 
 </resources>
