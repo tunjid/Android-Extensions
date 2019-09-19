@@ -12,26 +12,26 @@ import kotlin.collections.set
 
 const val MULTI_STACK_NAVIGATOR = "com.tunjid.androidbootstrap.core.components.MultiStackNavigator"
 
-fun Fragment.multipleStackNavigator(
+fun Fragment.childMultiStackNavigator(
         @IdRes containerId: Int,
         stackIds: IntArray,
         rootFunction: (Int) -> Pair<Fragment, String>
 ): Lazy<MultiStackNavigator> = lazy {
     MultiStackNavigator(
-            savedStateFor(this@multipleStackNavigator, "$MULTI_STACK_NAVIGATOR-$containerId"),
+            savedStateFor(this@childMultiStackNavigator, "$MULTI_STACK_NAVIGATOR-$containerId"),
             childFragmentManager,
             stackIds,
             containerId, rootFunction
     )
 }
 
-fun FragmentActivity.multipleStackNavigator(
+fun FragmentActivity.multiStackNavigator(
         @IdRes containerId: Int,
         stackIds: IntArray,
         rootFunction: (Int) -> Pair<Fragment, String>
 ): Lazy<MultiStackNavigator> = lazy {
     MultiStackNavigator(
-            savedStateFor(this@multipleStackNavigator, "$MULTI_STACK_NAVIGATOR-$containerId"),
+            savedStateFor(this@multiStackNavigator, "$MULTI_STACK_NAVIGATOR-$containerId"),
             supportFragmentManager,
             stackIds,
             containerId, rootFunction
@@ -166,7 +166,7 @@ class StackFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val deferred: StackNavigator by childStackNavigator(stackId)
+        val deferred: StackNavigator by childNavigationController(stackId)
         navigator = deferred
     }
 

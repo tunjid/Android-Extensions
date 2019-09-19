@@ -17,13 +17,13 @@ const val STACK_NAVIGATOR = "com.tunjid.androidbootstrap.core.components.StackNa
  * Convenience method for [Fragment] delegation to a [FragmentActivity] when implementing
  * [StackNavigator.NavigationController]
  */
-fun Fragment.activityStackNavigator() = object : ReadOnlyProperty<Fragment, StackNavigator> {
+fun Fragment.activityNavigationController() = object : ReadOnlyProperty<Fragment, StackNavigator> {
     override operator fun getValue(thisRef: Fragment, property: KProperty<*>): StackNavigator =
             (activity as? StackNavigator.NavigationController)?.navigator
                     ?: throw IllegalStateException("The hosting Activity is not a NavigationController")
 }
 
-fun Fragment.childStackNavigator(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
+fun Fragment.childNavigationController(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
     StackNavigator(
             savedStateFor(this, "$STACK_NAVIGATOR-$containerId"),
             childFragmentManager,
@@ -32,7 +32,7 @@ fun Fragment.childStackNavigator(@IdRes containerId: Int): Lazy<StackNavigator> 
 }
 
 @Suppress("unused")
-fun FragmentActivity.stackNavigator(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
+fun FragmentActivity.stackNavigationController(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
     StackNavigator(
             savedStateFor(this, "$STACK_NAVIGATOR-$containerId"),
             supportFragmentManager,

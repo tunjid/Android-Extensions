@@ -22,7 +22,7 @@ import com.tunjid.androidbootstrap.adapters.DoggoAdapter.ImageListAdapterListene
 import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.core.components.StackNavigator
-import com.tunjid.androidbootstrap.core.components.activityStackNavigator
+import com.tunjid.androidbootstrap.core.components.activityNavigationController
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.recyclerview.ListManager
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
@@ -44,7 +44,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
 
     override val insetFlags: InsetFlags = InsetFlags.ALL
 
-    private val navigator: StackNavigator by activityStackNavigator()
+    private val navigator: StackNavigator by activityNavigationController()
 
     private lateinit var listManager: ListManager<DoggoViewHolder, PlaceHolder.State>
 

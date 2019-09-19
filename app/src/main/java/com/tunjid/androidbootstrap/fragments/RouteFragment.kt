@@ -9,7 +9,7 @@ import com.tunjid.androidbootstrap.adapters.RouteAdapter
 import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.core.components.StackNavigator
-import com.tunjid.androidbootstrap.core.components.activityStackNavigator
+import com.tunjid.androidbootstrap.core.components.activityNavigationController
 import com.tunjid.androidbootstrap.core.components.args
 import com.tunjid.androidbootstrap.model.Route
 import com.tunjid.androidbootstrap.recyclerview.ListManagerBuilder
@@ -25,7 +25,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiControll
 
     private val viewModel: RouteViewModel by viewModels()
 
-    private val navigator: StackNavigator by activityStackNavigator()
+    private val navigator: StackNavigator by activityNavigationController()
 
     private var tabId: Int by args()
 

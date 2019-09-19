@@ -13,7 +13,7 @@ import com.tunjid.androidbootstrap.*
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.core.components.MultiStackNavigator
 import com.tunjid.androidbootstrap.core.components.args
-import com.tunjid.androidbootstrap.core.components.multipleStackNavigator
+import com.tunjid.androidbootstrap.core.components.childMultiStackNavigator
 import com.tunjid.androidbootstrap.uidrivers.*
 import com.tunjid.androidbootstrap.view.util.InsetFlags
 
@@ -24,9 +24,9 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack),
 
     override var uiState: UiState by activityGlobalUiController()
 
-    private var transitionOption: Int = 0
+    private var transitionOption: Int = R.id.slide
 
-    private val innerNavigator: MultiStackNavigator by multipleStackNavigator(
+    private val innerNavigator: MultiStackNavigator by childMultiStackNavigator(
             R.id.inner_container,
             DESTINATIONS
     ) { InnerFragment.newInstance(resources.getResourceEntryName(it)) to it.toString() }
