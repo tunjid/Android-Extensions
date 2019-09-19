@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_core"
+        android:icon="@drawable/ic_core_24dp"
+        android:title="@string/core" />
+    <item
+        android:id="@+id/menu_recyclerview"
+        android:icon="@drawable/ic_list_24dp"
+        android:title="@string/recycler_view" />
+    <item
+        android:id="@+id/menu_communications"
+        android:icon="@drawable/ic_communication_24dp"
+        android:title="@string/communications" />
+</menu>

@@ -2,26 +2,19 @@ package com.tunjid.androidbootstrap.material.animator;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.annotation.SuppressLint;
-import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.RippleDrawable;
 import android.transition.AutoTransition;
 import android.transition.Transition;
 import android.transition.Transition.TransitionListener;
 import android.transition.TransitionManager;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.ripple.RippleUtils;
 import com.tunjid.androidbootstrap.view.R;
-import com.tunjid.androidbootstrap.view.util.ViewUtil;
 
 import java.util.Objects;
-
-import androidx.annotation.NonNull;
 
 public class FabExtensionAnimator {
 
@@ -54,7 +47,7 @@ public class FabExtensionAnimator {
         this.button = button;
         collapsedFabSize = button.getResources().getDimensionPixelSize(R.dimen.collapsed_fab_size);
         extendedFabHeight = button.getResources().getDimensionPixelSize(R.dimen.extended_fab_height);
-        button.setBackground(getDrawable());
+        button.setCornerRadius(collapsedFabSize);
     }
 
     public static GlyphState newState(CharSequence text, Drawable icon) { return new SimpleGlyphState(text, icon);}
@@ -69,7 +62,7 @@ public class FabExtensionAnimator {
 
     @SuppressWarnings("WeakerAccess")
     public boolean isExtended() {
-        ViewGroup.MarginLayoutParams params = ViewUtil.getLayoutParams(button);
+        ViewGroup.LayoutParams params = button.getLayoutParams();
         return !(params.height == params.width && params.width == getCollapsedFabSize());
     }
 
@@ -88,7 +81,7 @@ public class FabExtensionAnimator {
         int width = extended ? ViewGroup.LayoutParams.WRAP_CONTENT : collapsedFabSize;
         int height = extended ? getExpandedFabHeight() : collapsedFabSize;
 
-        ViewGroup.LayoutParams params = ViewUtil.getLayoutParams(button);
+        ViewGroup.LayoutParams params = button.getLayoutParams();
         ViewGroup group = (ViewGroup) button.getParent();
 
         params.width = width;
@@ -122,30 +115,6 @@ public class FabExtensionAnimator {
     @NonNull
     private ObjectAnimator animateProperty(float start, float end) {
         return ObjectAnimator.ofFloat(button, ROTATION_Y_PROPERTY, start, end).setDuration(TWITCH_DURATION);
-    }
-
-    @SuppressLint("RestrictedApi")
-    private Drawable getDrawable() {
-        int cornerRadius = getCollapsedFabSize();
-        int strokeWidth = button.getStrokeWidth();
-        ColorStateList rippleColor = button.getRippleColor();
-        ColorStateList strokeColor = button.getStrokeColor();
-
-        GradientDrawable backgroundDrawable = new GradientDrawable();
-        backgroundDrawable.setCornerRadius(cornerRadius);
-        backgroundDrawable.setColor(-1);
-
-        GradientDrawable strokeDrawable = new GradientDrawable();
-        strokeDrawable.setStroke(strokeWidth, strokeColor);
-        strokeDrawable.setCornerRadius(cornerRadius);
-        strokeDrawable.setColor(0);
-
-        GradientDrawable maskDrawable = new GradientDrawable();
-        maskDrawable.setCornerRadius(cornerRadius);
-        maskDrawable.setColor(-1);
-
-        LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{backgroundDrawable, strokeDrawable});
-        return new RippleDrawable(RippleUtils.convertToRippleDrawableColor(rippleColor), layerDrawable, maskDrawable);
     }
 
     public static abstract class GlyphState {

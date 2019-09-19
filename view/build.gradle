@@ -3,7 +3,11 @@ apply from: "${project.rootDir}/androidLib.gradle"
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    implementation parent.ext.kotlin
+    implementation parent.ext.ktxCore
     implementation parent.ext.appCompat
+    implementation parent.ext.dynamicAnimations
+    implementation parent.ext.dynamicAnimationsKtx
 
     testImplementation 'junit:junit:4.12'
 }

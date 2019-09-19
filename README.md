@@ -8,13 +8,14 @@
 This repository is a collection of modules intending to help bootstrap an Android Application.
 There are 4 modules:
 
-1. Core: A module that hosts classes related to ```Activities```, ```Fragments``` and other ```Android``` core components.
-2. View: A module containing UI building blocks, like animators and helper methods for views.
-3. RecyclerView: Utility classes for the ```RecyclerView``` ```ViewGroup``` like drag and drop, swipe gestures, endless scrolling and much more.
-4. ConstraintLayout: Utility classes for the ```ConstraintLayout``` ```ViewGroup```.
-5. Material: Utility classes around Google's Material Design components including an expandable floating action button.
-6. Communications: Utility classes for Near Service Discovery (NSD) and Bluetooth Low Energy (BLE) communication.
-7. Test: Testing utilities built mostly around Espresso.
+1. App: A sample app demoing the modules in the repository. 
+2. Core: A module that hosts classes related to ```Activities```, ```Fragments``` and other ```Android``` core components.
+3. View: A module containing UI building blocks, like animators and helper methods for views.
+4. RecyclerView: Utility classes for the ```RecyclerView``` ```ViewGroup``` like drag and drop, swipe gestures, endless scrolling and much more.
+5. ConstraintLayout: Utility classes for the ```ConstraintLayout``` ```ViewGroup```.
+6. Material: Utility classes around Google's Material Design components including an expandable floating action button.
+7. Communications: Utility classes for Near Service Discovery (NSD) and Bluetooth Low Energy (BLE) communication.
+8. Test: Testing utilities built mostly around Espresso.
 
 build.gradle lines
 
@@ -64,3 +65,6 @@ A project using it can be seen [here](https://github.com/tunjid/BluetoothRcSwitc
 Warning, here be dragons, I haven't updated this in a bit; move fast, break things and all that.
 I mean, yeah I could test more, but thank Heavens for QA, amirite? 🙃
 You can read more about the testing module and classes [here](https://github.com/tunjid/android-bootstrap/blob/master/test/README.md).
+
+Image attribution
+App icon made by [Freepik](https://www.freepik.com/?__hstc=57440181.7a5d7d3cc018b38de5851a6c095932c9.1558869007278.1558869007278.1558869007278.1&__hssc=57440181.5.1558869007279&__hsfp=1983466168 "Freepik") from [www.flaticon.com](https://www.flaticon.com/ "Flaticon") is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/ "Creative Commons BY 3.0"
