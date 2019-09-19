@@ -16,7 +16,7 @@ bi function applied to the ```Lists``` to diff.
 
 ## InteractiveAdapter
 
-A ```RecyclerViewAdapter``` that hosts a ```ViewHolder``` with a typed interaction listener;
+A ```RecyclerViewAdapter``` that hosts a ```ViewHolder``` with a typed interaction delegate;
 Implementations could be ClickListeners, LongClickListeners, both combined or what have you.
 
 ## ListManager
