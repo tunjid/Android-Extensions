@@ -7,6 +7,9 @@ import androidx.fragment.app.FragmentTransaction
 
 interface Navigator {
 
+    /**
+     * The id of the container this [Navigator] shows [Fragment]s in
+     */
     @get:IdRes
     val containerId: Int
 
