@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         super.onCreate(savedInstanceState)
 
         supportFragmentManager.registerFragmentLifecycleCallbacks(InsetLifecycleCallbacks(
-                this.navigator::currentNavigator,
+                this.navigator::activeNavigator,
                 findViewById(R.id.constraint_layout),
                 findViewById(R.id.content_container),
                 findViewById(R.id.coordinator_layout),
@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
             navigator.stackTransactionModifier = { crossFade() }
             setOnApplyWindowInsetsListener { _: View?, windowInsets: WindowInsets? -> windowInsets }
             setOnNavigationItemSelectedListener { navigator.show(it.itemId).let { true } }
-            setOnNavigationItemReselectedListener { navigator.currentNavigator.clear() }
+            setOnNavigationItemReselectedListener { navigator.activeNavigator.clear() }
         }
 
         onBackPressedDispatcher.addCallback(this) { if (!navigator.pop()) finish() }

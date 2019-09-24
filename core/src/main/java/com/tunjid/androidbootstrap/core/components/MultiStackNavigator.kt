@@ -85,11 +85,11 @@ class MultiStackNavigator(
     private val activeStack: StackFragment
         get() = stackMap.values.run { firstOrNull(Fragment::isVisible) ?: first() }
 
-    val currentNavigator
+    val activeNavigator
         get() = activeStack.navigator
 
     override val currentFragment: Fragment?
-        get() = currentNavigator.currentFragment
+        get() = activeNavigator.currentFragment
 
     init {
         fragmentManager.registerFragmentLifecycleCallbacks(StackLifecycleCallback(), false)
@@ -120,10 +120,10 @@ class MultiStackNavigator(
     }
 
     override fun clear(upToTag: String?, includeMatch: Boolean) =
-            currentNavigator.clear(upToTag, includeMatch)
+            activeNavigator.clear(upToTag, includeMatch)
 
     override fun show(fragment: Fragment, tag: String, transaction: FragmentTransaction?): Boolean =
-            currentNavigator.show(fragment, tag, transaction)
+            activeNavigator.show(fragment, tag, transaction)
 
     private fun showInternal(@IdRes toShow: Int, addTap: Boolean) {
         fragmentManager.commit {
