@@ -18,7 +18,7 @@ import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.adapters.DoggoPagerAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
 import com.tunjid.androidbootstrap.constraintlayout.animator.ViewPagerIndicatorAnimator
-import com.tunjid.androidbootstrap.core.components.StackNavigator
+import com.tunjid.androidbootstrap.core.components.Navigator
 import com.tunjid.androidbootstrap.core.components.activityNavigationController
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.uidrivers.GlobalUiController
@@ -36,7 +36,7 @@ import kotlin.math.sin
 
 class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
         GlobalUiController,
-        StackNavigator.TransactionModifier {
+        Navigator.TransactionModifier {
 
     override var uiState: UiState by activityGlobalUiController()
 
@@ -44,7 +44,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
 
     private val viewModel by viewModels<DoggoViewModel>()
 
-    private val navigator: StackNavigator by activityNavigationController()
+    private val navigator: Navigator by activityNavigationController()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

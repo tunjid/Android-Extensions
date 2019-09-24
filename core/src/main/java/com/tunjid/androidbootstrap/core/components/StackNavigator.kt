@@ -15,15 +15,15 @@ const val STACK_NAVIGATOR = "com.tunjid.androidbootstrap.core.components.StackNa
 
 /**
  * Convenience method for [Fragment] delegation to a [FragmentActivity] when implementing
- * [StackNavigator.NavigationController]
+ * [Navigator.NavigationController]
  */
-fun Fragment.activityNavigationController() = object : ReadOnlyProperty<Fragment, StackNavigator> {
-    override operator fun getValue(thisRef: Fragment, property: KProperty<*>): StackNavigator =
-            (activity as? StackNavigator.NavigationController)?.navigator
+fun Fragment.activityNavigationController() = object : ReadOnlyProperty<Fragment, Navigator> {
+    override operator fun getValue(thisRef: Fragment, property: KProperty<*>): Navigator =
+            (activity as? Navigator.NavigationController)?.navigator
                     ?: throw IllegalStateException("The hosting Activity is not a NavigationController")
 }
 
-fun Fragment.childNavigationController(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
+fun Fragment.childStackNavigator(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
     StackNavigator(
             savedStateFor(this, "$STACK_NAVIGATOR-$containerId"),
             childFragmentManager,
@@ -32,7 +32,7 @@ fun Fragment.childNavigationController(@IdRes containerId: Int): Lazy<StackNavig
 }
 
 @Suppress("unused")
-fun FragmentActivity.stackNavigationController(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
+fun FragmentActivity.stackNavigator(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
     StackNavigator(
             savedStateFor(this, "$STACK_NAVIGATOR-$containerId"),
             supportFragmentManager,
@@ -53,8 +53,8 @@ fun FragmentActivity.stackNavigationController(@IdRes containerId: Int): Lazy<St
 class StackNavigator constructor(
         private val stateContainer: LifecycleSavedStateContainer,
         internal val fragmentManager: FragmentManager,
-        @param:IdRes @field:IdRes @get:IdRes val containerId: Int
-) {
+        @param:IdRes @field:IdRes @get:IdRes override val containerId: Int
+) : Navigator {
 
     internal val fragmentTags = linkedSetOf<String>()
 
@@ -67,7 +67,7 @@ class StackNavigator constructor(
     /**
      * Gets the last fragment added to the [FragmentManager]
      */
-    val currentFragment: Fragment?
+    override val currentFragment: Fragment?
         get() = fragmentManager.findFragmentById(containerId)
 
     private var currentFragmentTag: String? = null
@@ -112,11 +112,10 @@ class StackNavigator constructor(
      * @return true if the a fragment provided will be shown, false if the fragment instance already
      * exists and will be restored instead.
      */
-    @JvmOverloads
-    fun show(
+    override fun show(
             fragment: Fragment,
             tag: String,
-            transaction: FragmentTransaction? = null
+            transaction: FragmentTransaction?
     ): Boolean {
         val fragmentShown: Boolean
         if (currentFragmentTag != null && currentFragmentTag == tag) return false
@@ -139,35 +138,11 @@ class StackNavigator constructor(
         return fragmentShown
     }
 
-    /**
-     * Attempts to show the fragment provided, retrieving it from the back stack
-     * if an identical instance of it already exists in the [FragmentManager] under the specified
-     * tag.
-     *
-     * This is a convenience method for showing a [Fragment] that implements the [TagProvider]
-     * interface
-     * @see show
-     */
-    @JvmOverloads
-    fun <T> show(fragment: T, transaction: FragmentTransaction? = null) where T : Fragment, T : TagProvider =
-            show(fragment, fragment.stableTag, transaction)
-
-    /**
-     * Pops the current fragment off the stack, up until the last fragment.
-     *
-     * @return true if a fragment was popped, false if the stack is down to the last fragment.
-     */
-    fun pop(): Boolean =
+    override fun pop(): Boolean =
             if (fragmentManager.backStackEntryCount > 1) fragmentManager.popBackStack().let { true }
             else false
 
-    /**
-     * Pops the stack up to the [upToTag] value. If null is passed as the value,
-     * the stack will be popped to the root [Fragment].
-     * By default it doesn't pop the Fragment matching the [upToTag]; to do so, pass true for the
-     * [includeMatch] parameter.
-     */
-    fun clear(upToTag: String? = null, includeMatch: Boolean = false) {
+    override fun clear(upToTag: String?, includeMatch: Boolean) {
         val tag = upToTag ?: fragmentTags.first()
         fragmentManager.popBackStack(tag, if (includeMatch) FragmentManager.POP_BACK_STACK_INCLUSIVE else 0)
     }
@@ -226,35 +201,6 @@ class StackNavigator constructor(
 
     private fun onFragmentDestroyed(f: Fragment) {
         if (f.id == containerId) fragmentTags.remove(f.tag)
-    }
-
-    /**
-     * An interface to provide unique tags for [Fragment]. Fragment implementers typically delegate
-     * this to a hash string of their arguments.
-     *
-     * It's convenient to let  Fragments implement this interface, along with [TransactionModifier].
-     */
-
-    interface TagProvider {
-        val stableTag: String
-    }
-
-    /**
-     * An interface for augmenting the [FragmentTransaction] that will show
-     * the incoming Fragment. Implementers typically configure mappings for
-     * shared element transitions, or other kinds of animations.
-     *
-     * It's convenient to let  Fragments implement this interface, along with [TagProvider].
-     */
-    interface TransactionModifier {
-        fun augmentTransaction(transaction: FragmentTransaction, incomingFragment: Fragment)
-    }
-
-    /**
-     * Interface for a class that hosts a [StackNavigator]
-     */
-    interface NavigationController {
-        val navigator: StackNavigator
     }
 
     companion object {

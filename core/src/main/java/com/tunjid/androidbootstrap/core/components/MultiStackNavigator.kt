@@ -5,7 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
-import androidx.fragment.app.*
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.commit
+import androidx.fragment.app.commitNow
 import androidx.lifecycle.Lifecycle
 import java.util.*
 import kotlin.collections.set
@@ -46,8 +52,8 @@ class MultiStackNavigator(
         private val stateContainer: LifecycleSavedStateContainer,
         private val fragmentManager: FragmentManager,
         private val stackIds: IntArray,
-        @IdRes val containerId: Int,
-        private val rootFunction: (Int) -> Pair<Fragment, String>) {
+        @IdRes override val containerId: Int,
+        private val rootFunction: (Int) -> Pair<Fragment, String>) : Navigator {
 
     /**
      * A callback that will be invoked when a stack is selected, either by the user selecting it,
@@ -76,11 +82,14 @@ class MultiStackNavigator(
     private val navStack: Stack<StackFragment> = Stack()
     private val stackMap = mutableMapOf<Int, StackFragment>()
 
-    private val currentFragment: StackFragment
+    private val activeStack: StackFragment
         get() = stackMap.values.run { firstOrNull(Fragment::isVisible) ?: first() }
 
     val currentNavigator
-        get() = currentFragment.navigator
+        get() = activeStack.navigator
+
+    override val currentFragment: Fragment?
+        get() = currentNavigator.currentFragment
 
     init {
         fragmentManager.registerFragmentLifecycleCallbacks(StackLifecycleCallback(), false)
@@ -104,11 +113,17 @@ class MultiStackNavigator(
      *
      * @see [StackNavigator.pop]
      */
-    fun pop(): Boolean = when {
-        currentFragment.navigator.pop() -> true
-        navStack.run { remove(currentFragment); isEmpty() } -> false
+    override fun pop(): Boolean = when {
+        activeStack.navigator.pop() -> true
+        navStack.run { remove(activeStack); isEmpty() } -> false
         else -> showInternal(navStack.peek().stackId, false).let { true }
     }
+
+    override fun clear(upToTag: String?, includeMatch: Boolean) =
+            currentNavigator.clear(upToTag, includeMatch)
+
+    override fun show(fragment: Fragment, tag: String, transaction: FragmentTransaction?): Boolean =
+            currentNavigator.show(fragment, tag, transaction)
 
     private fun showInternal(@IdRes toShow: Int, addTap: Boolean) {
         fragmentManager.commit {
@@ -166,7 +181,7 @@ class StackFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val deferred: StackNavigator by childNavigationController(stackId)
+        val deferred: StackNavigator by childStackNavigator(stackId)
         navigator = deferred
     }
 

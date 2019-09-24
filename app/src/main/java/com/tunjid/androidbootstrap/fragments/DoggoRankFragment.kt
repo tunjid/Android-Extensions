@@ -15,7 +15,7 @@ import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter
 import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
-import com.tunjid.androidbootstrap.core.components.StackNavigator
+import com.tunjid.androidbootstrap.core.components.Navigator
 import com.tunjid.androidbootstrap.core.components.activityNavigationController
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.recyclerview.ListManager
@@ -36,7 +36,7 @@ import kotlin.math.abs
 class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
         GlobalUiController,
         DoggoAdapter.ImageListAdapterListener,
-        StackNavigator.TransactionModifier {
+        Navigator.TransactionModifier {
 
     override var uiState: UiState by activityGlobalUiController()
 
@@ -44,7 +44,7 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
 
     private val viewModel by viewModels<DoggoRankViewModel>()
 
-    private val navigator: StackNavigator by activityNavigationController()
+    private val navigator: Navigator by activityNavigationController()
 
     private lateinit var listManager: ListManager<DoggoRankViewHolder, PlaceHolder.State>
 
