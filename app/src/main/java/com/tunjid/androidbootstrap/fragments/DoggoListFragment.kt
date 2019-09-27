@@ -16,12 +16,13 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import com.tunjid.androidbootstrap.*
+import com.tunjid.androidbootstrap.PlaceHolder
+import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter
 import com.tunjid.androidbootstrap.adapters.DoggoAdapter.ImageListAdapterListener
 import com.tunjid.androidbootstrap.adapters.withPaddedAdapter
 import com.tunjid.androidbootstrap.baseclasses.AppBaseFragment
-import com.tunjid.androidbootstrap.core.components.StackNavigator
+import com.tunjid.androidbootstrap.core.components.Navigator
 import com.tunjid.androidbootstrap.core.components.activityNavigationController
 import com.tunjid.androidbootstrap.model.Doggo
 import com.tunjid.androidbootstrap.recyclerview.ListManager
@@ -38,13 +39,13 @@ import kotlin.math.abs
 class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
         GlobalUiController,
         ImageListAdapterListener,
-        StackNavigator.TransactionModifier {
+        Navigator.TransactionModifier {
 
     override var uiState: UiState by activityGlobalUiController()
 
     override val insetFlags: InsetFlags = InsetFlags.ALL
 
-    private val navigator: StackNavigator by activityNavigationController()
+    private val navigator: Navigator by activityNavigationController()
 
     private lateinit var listManager: ListManager<DoggoViewHolder, PlaceHolder.State>
 

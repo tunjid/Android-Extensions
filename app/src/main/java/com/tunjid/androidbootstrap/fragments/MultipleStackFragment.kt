@@ -37,7 +37,7 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack),
         innerNavigator.stackTransactionModifier = { selectedId ->
             when (transitionOption) {
                 R.id.slide -> slide(
-                        DESTINATIONS.indexOf(selectedId) > DESTINATIONS.indexOf(innerNavigator.currentNavigator.containerId)
+                        DESTINATIONS.indexOf(selectedId) > DESTINATIONS.indexOf(innerNavigator.activeNavigator.containerId)
                 )
                 R.id.cross_fade -> crossFade()
             }

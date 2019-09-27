@@ -8,20 +8,21 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tunjid.androidbootstrap.R
 import com.tunjid.androidbootstrap.core.components.MultiStackNavigator
-import com.tunjid.androidbootstrap.core.components.StackNavigator
+import com.tunjid.androidbootstrap.core.components.Navigator
 import com.tunjid.androidbootstrap.core.components.multiStackNavigator
 import com.tunjid.androidbootstrap.fragments.RouteFragment
-import com.tunjid.androidbootstrap.uidrivers.*
+import com.tunjid.androidbootstrap.uidrivers.GlobalUiController
+import com.tunjid.androidbootstrap.uidrivers.InsetLifecycleCallbacks
+import com.tunjid.androidbootstrap.uidrivers.UiState
+import com.tunjid.androidbootstrap.uidrivers.crossFade
+import com.tunjid.androidbootstrap.uidrivers.globalUiDriver
 
-class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiController, StackNavigator.NavigationController {
+class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiController, Navigator.NavigationController {
 
-    private val multiStackNavigator: MultiStackNavigator by multiStackNavigator(
+    override val navigator: MultiStackNavigator by multiStackNavigator(
             R.id.content_container,
             intArrayOf(R.id.menu_core, R.id.menu_recyclerview, R.id.menu_communications)
     ) { id -> RouteFragment.newInstance(id).let { it to it.stableTag } }
-
-    override val navigator: StackNavigator
-        get() = multiStackNavigator.currentNavigator
 
     override var uiState: UiState by globalUiDriver { navigator.currentFragment }
 
@@ -29,7 +30,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         super.onCreate(savedInstanceState)
 
         supportFragmentManager.registerFragmentLifecycleCallbacks(InsetLifecycleCallbacks(
-                this::navigator,
+                this.navigator::activeNavigator,
                 findViewById(R.id.constraint_layout),
                 findViewById(R.id.content_container),
                 findViewById(R.id.coordinator_layout),
@@ -40,19 +41,19 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         ), true)
 
         findViewById<BottomNavigationView>(R.id.bottom_navigation).apply {
-            multiStackNavigator.stackSelectedListener = { menu.findItem(it)?.isChecked = true }
-            multiStackNavigator.transactionModifier = { incomingFragment ->
+            navigator.stackSelectedListener = { menu.findItem(it)?.isChecked = true }
+            navigator.transactionModifier = { incomingFragment ->
                 val current = navigator.currentFragment
-                if (current is StackNavigator.TransactionModifier) current.augmentTransaction(this, incomingFragment)
+                if (current is Navigator.TransactionModifier) current.augmentTransaction(this, incomingFragment)
                 else crossFade()
             }
-            multiStackNavigator.stackTransactionModifier = { crossFade() }
+            navigator.stackTransactionModifier = { crossFade() }
             setOnApplyWindowInsetsListener { _: View?, windowInsets: WindowInsets? -> windowInsets }
-            setOnNavigationItemSelectedListener { multiStackNavigator.show(it.itemId).let { true } }
-            setOnNavigationItemReselectedListener { multiStackNavigator.currentNavigator.clear() }
+            setOnNavigationItemSelectedListener { navigator.show(it.itemId).let { true } }
+            setOnNavigationItemReselectedListener { navigator.activeNavigator.clear() }
         }
 
-        onBackPressedDispatcher.addCallback(this) { if (!multiStackNavigator.pop()) finish() }
+        onBackPressedDispatcher.addCallback(this) { if (!navigator.pop()) finish() }
     }
 
 }
