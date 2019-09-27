@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_IDLE
 import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE
 import com.tunjid.androidx.R
-import com.tunjid.androidx.functions.collections.Lists
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.recyclerview.diff.Diff
 import com.tunjid.androidx.recyclerview.diff.Differentiable
@@ -32,7 +31,7 @@ class DoggoRankViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun onActionStarted(doggoIdActionPair: Pair<Long, Int>) {
         val id = doggoIdActionPair.first
-        val currentIndex = Lists.transform(doggos) { it.hashCode() }.indexOf(id.toInt())
+        val currentIndex = doggos.map(Doggo::hashCode).indexOf(id.toInt())
         doggoIdPositionPair = Pair(id, currentIndex)
     }
 
@@ -57,7 +56,7 @@ class DoggoRankViewModel(application: Application) : AndroidViewModel(applicatio
         if (action == ACTION_STATE_IDLE || startId != endId) return ""
 
         val isRemoving = action == ACTION_STATE_SWIPE
-        val ids = Lists.transform(if (isRemoving) Doggo.doggos else doggos) { it.hashCode() }
+        val ids = (if (isRemoving) Doggo.doggos else doggos).map { it.hashCode() }
         val endPosition = ids.indexOf(endId.toInt())
 
         if (endPosition < 0) return ""

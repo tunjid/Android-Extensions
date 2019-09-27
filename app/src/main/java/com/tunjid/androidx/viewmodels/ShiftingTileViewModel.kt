@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.DiffUtil
-import com.tunjid.androidx.functions.collections.Lists
+import com.tunjid.androidx.functions.collections.replace
 import com.tunjid.androidx.model.Tile
 import com.tunjid.androidx.recyclerview.diff.Diff
 import com.tunjid.androidx.toLiveData
@@ -19,7 +19,7 @@ import kotlin.math.max
 
 class ShiftingTileViewModel(application: Application) : AndroidViewModel(application) {
 
-    val tiles: List<Tile> = ArrayList(generateTiles(NUM_TILES))
+    val tiles: MutableList<Tile> = ArrayList(generateTiles(NUM_TILES))
     private var changes: Boolean = false
     private val disposables: CompositeDisposable = CompositeDisposable()
     private val processor: PublishProcessor<DiffUtil.DiffResult> = PublishProcessor.create<DiffUtil.DiffResult>()
@@ -42,7 +42,7 @@ class ShiftingTileViewModel(application: Application) : AndroidViewModel(applica
                 .map { newTiles -> Diff.calculate(tiles, newTiles) { _, newTilesCopy -> newTilesCopy } }
                 .observeOn(mainThread())
                 .subscribe({ diff ->
-                    Lists.replace(tiles, diff.items)
+                    tiles.replace(diff.items)
                     processor.onNext(diff.result)
                 }, processor::onError))
     }

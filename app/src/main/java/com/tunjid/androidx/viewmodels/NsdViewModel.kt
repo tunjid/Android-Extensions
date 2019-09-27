@@ -7,7 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import com.tunjid.androidx.communications.nsd.NsdHelper
-import com.tunjid.androidx.functions.collections.Lists
+import com.tunjid.androidx.functions.collections.replace
 import com.tunjid.androidx.recyclerview.diff.Diff
 import com.tunjid.androidx.recyclerview.diff.Differentiable
 import io.reactivex.Flowable
@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit
 
 class NsdViewModel(application: Application) : AndroidViewModel(application) {
 
-    val services: List<NsdServiceInfo>
+    val services: MutableList<NsdServiceInfo>
 
     private val nsdHelper: NsdHelper
     private val disposables = CompositeDisposable()
@@ -64,7 +64,7 @@ class NsdViewModel(application: Application) : AndroidViewModel(application) {
                 .doOnTerminate { isScanning.postValue(false) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(mainThread()).subscribe { diff ->
-                    Lists.replace(services, diff.items)
+                    services.replace(diff.items)
                     scanChanges.value = diff.result
                 })
     }
@@ -94,7 +94,7 @@ class NsdViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun addServices(currentServices: List<NsdServiceInfo>, foundServices: List<NsdServiceInfo>): List<NsdServiceInfo> {
-        val union = Lists.union<NsdServiceInfo, String>(currentServices, foundServices) { it.serviceName }
+        val union = (foundServices + currentServices).distinctBy { it.serviceName }
         return union.sortedBy { it.serviceName }
     }
 

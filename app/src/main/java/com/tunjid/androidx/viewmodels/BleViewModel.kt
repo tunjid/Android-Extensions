@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.tunjid.androidx.communications.bluetooth.BLEScanner
 import com.tunjid.androidx.communications.bluetooth.ScanFilterCompat
 import com.tunjid.androidx.communications.bluetooth.ScanResultCompat
-import com.tunjid.androidx.functions.collections.Lists
+import com.tunjid.androidx.functions.collections.replace
 import com.tunjid.androidx.recyclerview.diff.Diff
 import com.tunjid.androidx.recyclerview.diff.Differentiable
 import io.reactivex.Flowable
@@ -25,7 +25,7 @@ import kotlin.collections.ArrayList
 
 class BleViewModel(application: Application) : AndroidViewModel(application) {
 
-    val scanResults: List<ScanResultCompat>
+    val scanResults: MutableList<ScanResultCompat>
 
     private val scanner: BLEScanner?
     private val disposables = CompositeDisposable()
@@ -84,7 +84,7 @@ class BleViewModel(application: Application) : AndroidViewModel(application) {
                 .doOnTerminate { isScanning.postValue(false) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(mainThread()).subscribe { diff ->
-                    Lists.replace(scanResults, diff.items)
+                    scanResults.replace(diff.items)
                     devices.value = diff.result
                 })
     }
@@ -103,13 +103,8 @@ class BleViewModel(application: Application) : AndroidViewModel(application) {
             ) { result -> Differentiable.fromCharSequence { result.device.address } })
     }
 
-    private fun addServices(currentServices: List<ScanResultCompat>, foundServices: List<ScanResultCompat>): List<ScanResultCompat> {
-        val equalityMapper = { result: ScanResultCompat -> result.device.address }
-        val union = Lists.union<ScanResultCompat, String>(currentServices, foundServices, equalityMapper)
-        Lists.replace(currentServices, union)
-
-        return union.sortedBy(equalityMapper)
-    }
+    private fun addServices(currentServices: List<ScanResultCompat>, foundServices: List<ScanResultCompat>): List<ScanResultCompat> =
+            (foundServices + currentServices).distinctBy { scanResult -> scanResult.device.address }
 
     companion object {
 
