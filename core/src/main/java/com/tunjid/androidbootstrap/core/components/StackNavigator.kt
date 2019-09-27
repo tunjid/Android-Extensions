@@ -107,16 +107,11 @@ class StackNavigator constructor(
      *
      * @param fragment    The fragment to show.
      * @param tag         the value to supply to this fragment for it's backstack entry name and tag
-     * @param transaction The fragment transaction to show the supplied fragment with.
      * It takes precedence over that supplied by the [transactionModifier]
      * @return true if the a fragment provided will be shown, false if the fragment instance already
      * exists and will be restored instead.
      */
-    override fun show(
-            fragment: Fragment,
-            tag: String,
-            transaction: FragmentTransaction?
-    ): Boolean {
+    override fun show(fragment: Fragment, tag: String): Boolean {
         val fragmentShown: Boolean
         if (currentFragmentTag != null && currentFragmentTag == tag) return false
 
@@ -128,10 +123,8 @@ class StackNavigator constructor(
                 (if (fragmentAlreadyExists) fragmentManager.findFragmentByTag(tag)
                 else fragment) ?: throw NullPointerException(MSG_DODGY_FRAGMENT)
 
-        val fragmentTransaction = transaction
-                ?: fragmentManager.beginTransaction().apply { transactionModifier?.invoke(this, fragment) }
-
-        fragmentTransaction.addToBackStack(tag)
+        fragmentManager.beginTransaction().apply { transactionModifier?.invoke(this, fragment) }
+                .addToBackStack(tag)
                 .replace(containerId, fragmentToShow, tag)
                 .commit()
 
@@ -143,7 +136,7 @@ class StackNavigator constructor(
             else false
 
     override fun clear(upToTag: String?, includeMatch: Boolean) {
-        val tag = upToTag ?: fragmentTags.first()
+        val tag = upToTag ?: "NonExistentTagToClearAllFragments"
         fragmentManager.popBackStack(tag, if (includeMatch) FragmentManager.POP_BACK_STACK_INCLUSIVE else 0)
     }
 
