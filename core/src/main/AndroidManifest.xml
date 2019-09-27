@@ -1,4 +1,4 @@
-<manifest package="com.tunjid.androidbootstrap.core">
+<manifest package="com.tunjid.androidx.core">
 
     <application />
 </manifest>
