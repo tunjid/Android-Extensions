@@ -36,7 +36,7 @@ import kotlin.math.sin
 
 class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
         GlobalUiController,
-        com.tunjid.androidx.navigation.Navigator.TransactionModifier {
+        Navigator.TransactionModifier {
 
     override var uiState: UiState by activityGlobalUiController()
 
@@ -44,7 +44,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
 
     private val viewModel by viewModels<DoggoViewModel>()
 
-    private val navigator: com.tunjid.androidx.navigation.Navigator by activityNavigationController()
+    private val navigator: Navigator by activityNavigationController()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -10,7 +10,7 @@ abstract class AppBaseFragment(
         @LayoutRes contentLayoutId: Int = 0
 ) : Fragment(contentLayoutId),
         InsetProvider,
-        com.tunjid.androidx.navigation.Navigator.TagProvider {
+        Navigator.TagProvider {
 
     override val insetFlags: InsetFlags = InsetFlags.ALL
 

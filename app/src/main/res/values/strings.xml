@@ -59,6 +59,11 @@
     <string name="first">First</string>
     <string name="second">Second</string>
     <string name="third">Third</string>
+    <string name="go_deeper">Go Deeper</string>
+    <plurals name="stack_depth">
+        <item quantity="one">%1$d stack deep</item>
+        <item quantity="other">%1$d stacks deep</item>
+    </plurals>
     <string name="slide">Slide in/out</string>
     <string name="cross_fade">Cross Fade</string>
 

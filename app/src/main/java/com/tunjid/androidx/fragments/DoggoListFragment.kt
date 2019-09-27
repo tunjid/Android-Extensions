@@ -39,13 +39,13 @@ import kotlin.math.abs
 class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
         GlobalUiController,
         ImageListAdapterListener,
-        com.tunjid.androidx.navigation.Navigator.TransactionModifier {
+        Navigator.TransactionModifier {
 
     override var uiState: UiState by activityGlobalUiController()
 
     override val insetFlags: InsetFlags = InsetFlags.ALL
 
-    private val navigator: com.tunjid.androidx.navigation.Navigator by activityNavigationController()
+    private val navigator: Navigator by activityNavigationController()
 
     private lateinit var listManager: ListManager<DoggoViewHolder, PlaceHolder.State>
 

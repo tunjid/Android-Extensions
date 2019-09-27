@@ -15,9 +15,9 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.adapters.DoggoAdapter
 import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
+import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.activityNavigationController
-import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManager.Companion.SWIPE_DRAG_ALL_DIRECTIONS
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
@@ -26,7 +26,6 @@ import com.tunjid.androidx.uidrivers.GlobalUiController
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.view.util.InsetFlags
-import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.androidx.viewholders.DoggoRankViewHolder
 import com.tunjid.androidx.viewholders.DoggoViewHolder
@@ -35,16 +34,16 @@ import kotlin.math.abs
 
 class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
         GlobalUiController,
-        DoggoAdapter.ImageListAdapterListener,
-        com.tunjid.androidx.navigation.Navigator.TransactionModifier {
+        Navigator.TransactionModifier,
+        DoggoAdapter.ImageListAdapterListener {
 
     override var uiState: UiState by activityGlobalUiController()
 
-    override val insetFlags: InsetFlags = NO_BOTTOM
+    override val insetFlags: InsetFlags = InsetFlags.ALL
 
     private val viewModel by viewModels<DoggoRankViewModel>()
 
-    private val navigator: com.tunjid.androidx.navigation.Navigator by activityNavigationController()
+    private val navigator: Navigator by activityNavigationController()
 
     private lateinit var listManager: ListManager<DoggoRankViewHolder, PlaceHolder.State>
 
@@ -63,7 +62,7 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
                 fabText = getString(R.string.reset_doggos),
                 fabIcon = R.drawable.ic_restore_24dp,
                 fabShows = true,
-                showsBottomNav = false,
+                showsBottomNav = true,
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),
                 fabClickListener = View.OnClickListener { viewModel.resetList() }

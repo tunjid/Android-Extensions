@@ -9,10 +9,10 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.adapters.RouteAdapter
 import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
-import com.tunjid.androidx.navigation.Navigator
-import com.tunjid.androidx.navigation.activityNavigationController
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.model.Route
+import com.tunjid.androidx.navigation.Navigator
+import com.tunjid.androidx.navigation.activityNavigationController
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
 import com.tunjid.androidx.uidrivers.GlobalUiController
 import com.tunjid.androidx.uidrivers.UiState
@@ -26,7 +26,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiControll
 
     private val viewModel: RouteViewModel by viewModels()
 
-    private val navigator: com.tunjid.androidx.navigation.Navigator by activityNavigationController()
+    private val navigator: Navigator by activityNavigationController()
 
     private var tabId: Int by args()
 

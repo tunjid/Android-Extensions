@@ -1,5 +1,6 @@
 package com.tunjid.androidx.uidrivers
 
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
@@ -119,6 +120,7 @@ class GlobalUiDriver(
     }
 
     private val fabHider: ViewHider<MaterialButton> = host.findViewById<MaterialButton>(fabId).run {
+        backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorAccent))
         ViewHider.of(this).setDirection(ViewHider.BOTTOM)
                 .addEndAction { isVisible = true }
                 .build()
