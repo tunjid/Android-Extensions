@@ -137,8 +137,9 @@ class MultiStackNavigator(
                 id == toShow && fragment.isHidden -> show(fragment).also { if (addTap) track(fragment) }
                 else -> hide(fragment)
             }
+
+            runOnCommit { stackSelectedListener?.invoke(toShow) }
         }
-        stackSelectedListener?.invoke(toShow)
     }
 
     private fun track(tab: StackFragment) {
