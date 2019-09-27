@@ -104,6 +104,7 @@ dependencies {
     implementation project(':core')
     implementation project(':material')
     implementation project(':functions')
+    implementation project(':navigation')
     implementation project(':recyclerview')
     implementation project(':communications')
     implementation project(':constraintlayout')
