@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -26,6 +27,8 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
 
     override val insetFlags: InsetFlags = InsetFlags.NO_TOP
 
+    private var backPressedCallback: OnBackPressedCallback? = null
+
     private var transitionOption: Int = R.id.slide
 
     private val innerNavigator: MultiStackNavigator by childMultiStackNavigator(
@@ -36,8 +39,11 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        activity?.onBackPressedDispatcher?.addCallback(this) {
-            isEnabled = innerNavigator.pop()
+        backPressedCallback = activity?.onBackPressedDispatcher?.addCallback(this) {
+            isEnabled =
+                    if (navigator.currentFragment !== this@MultipleStackFragment) false
+                    else innerNavigator.pop()
+
             if (!isEnabled) activity?.onBackPressed()
         }
     }
@@ -84,34 +90,9 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
         view?.apply { transitionOption = findViewById<ChipGroup>(R.id.options).checkedChipId }
     }
 
-    class InnerFragment : Fragment(), Navigator.TagProvider {
-
-        override val stableTag: String
-            get() = "${javaClass.simpleName}-$name-$depth"
-
-        var name: String by args()
-
-        var depth: Int by args()
-
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = TextView(inflater.context).apply {
-            text = SpanBuilder.of(name)
-                    .appendNewLine()
-                    .append(SpanBuilder.of(resources.getQuantityString(R.plurals.stack_depth, depth, depth))
-                            .resize(0.6F)
-                            .build())
-                    .build()
-            gravity = Gravity.CENTER
-            textSize = resources.getDimensionPixelSize(R.dimen.large_text).toFloat()
-            setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
-            setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
-        }
-
-        companion object {
-            fun newInstance(name: String, depth: Int): InnerFragment = InnerFragment().apply {
-                this.name = name
-                this.depth = depth
-            }
-        }
+    override fun onStackChanged() {
+        super.onStackChanged()
+        backPressedCallback?.isEnabled = true
     }
 
     companion object {
@@ -121,4 +102,34 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
         fun newInstance(): MultipleStackFragment = MultipleStackFragment().apply { arguments = Bundle() }
     }
 
+}
+
+class InnerFragment : Fragment(), Navigator.TagProvider {
+
+    override val stableTag: String
+        get() = "${javaClass.simpleName}-$name-$depth"
+
+    var name: String by args()
+
+    var depth: Int by args()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = TextView(inflater.context).apply {
+        text = SpanBuilder.of(name)
+                .appendNewLine()
+                .append(SpanBuilder.of(resources.getQuantityString(R.plurals.stack_depth, depth, depth))
+                        .resize(0.6F)
+                        .build())
+                .build()
+        gravity = Gravity.CENTER
+        textSize = resources.getDimensionPixelSize(R.dimen.large_text).toFloat()
+        setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+        setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
+    }
+
+    companion object {
+        fun newInstance(name: String, depth: Int): InnerFragment = InnerFragment().apply {
+            this.name = name
+            this.depth = depth
+        }
+    }
 }

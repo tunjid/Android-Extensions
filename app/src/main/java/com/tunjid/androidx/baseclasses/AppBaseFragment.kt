@@ -35,7 +35,5 @@ abstract class AppBaseFragment(
             if (navigator.currentFragment === this) activityUiState = value
         }
 
-    fun onStackChanged() {
-        lastSetUiState?.apply { uiState = this }
-    }
+    open fun onStackChanged() = lastSetUiState?.apply { uiState = this } ?: Unit
 }
