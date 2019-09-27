@@ -104,7 +104,9 @@ class MultiStackNavigator(
         else fragmentManager.fragments.filterIsInstance(StackFragment::class.java).forEach {
             navStack.push(it)
             stackMap[it.stackId] = it
-        }.apply { stateContainer.savedState.getIntArray(NAV_STACK_ORDER)?.apply { navStack.sortBy { indexOf(it.stackId) } } }
+        }.apply {
+            stateContainer.savedState.getIntArray(NAV_STACK_ORDER)?.apply { navStack.sortBy { indexOf(it.stackId) } }
+        }
     }
 
     fun show(@IdRes toShow: Int) = showInternal(toShow, true)
@@ -157,7 +159,7 @@ class MultiStackNavigator(
 
             if (!stateContainer.isFreshState) return
 
-            if (stackIds.indexOf(fragment.stackId) == 0) navStack.push(fragment)
+            if (stackIds.indexOf(fragment.stackId) == 0) track(fragment)
             else fm.beginTransaction().hide(fragment).commit()
         }
 
