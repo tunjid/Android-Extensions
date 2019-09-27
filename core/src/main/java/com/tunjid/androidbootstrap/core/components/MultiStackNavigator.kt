@@ -106,6 +106,8 @@ class MultiStackNavigator(
 
     fun show(@IdRes toShow: Int) = showInternal(toShow, true)
 
+    fun navigatorAt(index: Int) = stackMap[stackIds[index]]?.navigator
+
     /**
      * Pops the current fragment off the stack in focus. If The current
      * Fragment is the only Fragment on it's stack, the stack that was active before the current
@@ -119,11 +121,9 @@ class MultiStackNavigator(
         else -> showInternal(navStack.peek().stackId, false).let { true }
     }
 
-    override fun clear(upToTag: String?, includeMatch: Boolean) =
-            activeNavigator.clear(upToTag, includeMatch)
+    override fun clear(upToTag: String?, includeMatch: Boolean) = activeNavigator.clear(upToTag, includeMatch)
 
-    override fun show(fragment: Fragment, tag: String, transaction: FragmentTransaction?): Boolean =
-            activeNavigator.show(fragment, tag, transaction)
+    override fun show(fragment: Fragment, tag: String): Boolean = activeNavigator.show(fragment, tag)
 
     private fun showInternal(@IdRes toShow: Int, addTap: Boolean) {
         fragmentManager.commit {
