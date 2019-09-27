@@ -1,4 +1,4 @@
-package com.tunjid.androidx.core.components
+package com.tunjid.androidx.navigation
 
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment

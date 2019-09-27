@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.annotation.VisibleForTesting
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import com.tunjid.androidx.core.components.Navigator
+import com.tunjid.androidx.navigation.Navigator
 
 /**
  * Test fragment
@@ -18,7 +18,7 @@ import com.tunjid.androidx.core.components.Navigator
  * Created by Shemanigans on 4/29/17.
  */
 @VisibleForTesting
-class TestFragment : Fragment(), Navigator.TagProvider {
+class TestFragment : Fragment(), com.tunjid.androidx.navigation.Navigator.TagProvider {
 
     override val stableTag: String
         get() = arguments!!.getString(STRING_ARG_KEY)!!

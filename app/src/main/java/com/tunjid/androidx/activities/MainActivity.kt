@@ -7,15 +7,11 @@ import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tunjid.androidx.R
-import com.tunjid.androidx.core.components.MultiStackNavigator
-import com.tunjid.androidx.core.components.Navigator
-import com.tunjid.androidx.core.components.multiStackNavigator
+import com.tunjid.androidx.navigation.MultiStackNavigator
+import com.tunjid.androidx.navigation.Navigator
+import com.tunjid.androidx.navigation.multiStackNavigator
 import com.tunjid.androidx.fragments.RouteFragment
-import com.tunjid.androidx.uidrivers.GlobalUiController
-import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
-import com.tunjid.androidx.uidrivers.UiState
-import com.tunjid.androidx.uidrivers.crossFade
-import com.tunjid.androidx.uidrivers.globalUiDriver
+import com.tunjid.androidx.uidrivers.*
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiController, Navigator.NavigationController {
 

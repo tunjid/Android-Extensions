@@ -1,4 +1,4 @@
-package com.tunjid.androidx.core.components
+package com.tunjid.androidx.navigation
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,10 +13,13 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import androidx.fragment.app.commitNow
 import androidx.lifecycle.Lifecycle
+import com.tunjid.androidx.core.components.args
+import com.tunjid.androidx.savedstate.LifecycleSavedStateContainer
+import com.tunjid.androidx.savedstate.savedStateFor
 import java.util.*
 import kotlin.collections.set
 
-const val MULTI_STACK_NAVIGATOR = "com.tunjid.androidx.core.components.MultiStackNavigator"
+const val MULTI_STACK_NAVIGATOR = "com.tunjid.androidx.navigation.MultiStackNavigator"
 
 fun Fragment.childMultiStackNavigator(
         @IdRes containerId: Int,

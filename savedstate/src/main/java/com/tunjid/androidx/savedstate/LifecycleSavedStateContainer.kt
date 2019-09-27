@@ -1,4 +1,4 @@
-package com.tunjid.androidx.core.components
+package com.tunjid.androidx.savedstate
 
 import android.os.Bundle
 import androidx.lifecycle.Lifecycle

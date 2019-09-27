@@ -1,4 +1,4 @@
-package com.tunjid.androidx.core.components
+package com.tunjid.androidx.navigation
 
 import android.os.Bundle
 import android.view.View
@@ -7,11 +7,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import com.tunjid.androidx.savedstate.LifecycleSavedStateContainer
+import com.tunjid.androidx.savedstate.savedStateFor
 import java.util.*
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
-const val STACK_NAVIGATOR = "com.tunjid.androidx.core.components.StackNavigator"
+const val STACK_NAVIGATOR = "com.tunjid.androidx.navigation.StackNavigator"
 
 /**
  * Convenience method for [Fragment] delegation to a [FragmentActivity] when implementing
@@ -198,7 +200,7 @@ class StackNavigator constructor(
 
     companion object {
 
-        private const val CURRENT_FRAGMENT_KEY = "com.tunjid.androidx.core.components.StackNavigator.currentFragmentTag"
+        private const val CURRENT_FRAGMENT_KEY = "com.tunjid.androidx.navigation.StackNavigator.currentFragmentTag"
         private const val MSG_FRAGMENT_MISMATCH = "Fragment back stack entry name does not match a tag in the fragment manager"
         internal const val MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK = "A fragment cannot be added to a FragmentManager managed by StackNavigator without adding it to the back stack"
         internal const val MSG_FRAGMENT_HAS_NO_TAG = "A fragment cannot be added to a FragmentManager managed by StackNavigator without a Tag"

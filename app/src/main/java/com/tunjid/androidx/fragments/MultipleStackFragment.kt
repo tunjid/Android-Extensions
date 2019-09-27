@@ -11,9 +11,9 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.chip.ChipGroup
 import com.tunjid.androidx.*
 import com.tunjid.androidx.baseclasses.AppBaseFragment
-import com.tunjid.androidx.core.components.MultiStackNavigator
+import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.core.components.args
-import com.tunjid.androidx.core.components.childMultiStackNavigator
+import com.tunjid.androidx.navigation.childMultiStackNavigator
 import com.tunjid.androidx.uidrivers.*
 import com.tunjid.androidx.view.util.InsetFlags
 
@@ -26,7 +26,7 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack),
 
     private var transitionOption: Int = R.id.slide
 
-    private val innerNavigator: MultiStackNavigator by childMultiStackNavigator(
+    private val innerNavigator: com.tunjid.androidx.navigation.MultiStackNavigator by childMultiStackNavigator(
             R.id.inner_container,
             DESTINATIONS
     ) { InnerFragment.newInstance(resources.getResourceEntryName(it)) to it.toString() }

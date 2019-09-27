@@ -15,8 +15,8 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.adapters.DoggoAdapter
 import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
-import com.tunjid.androidx.core.components.Navigator
-import com.tunjid.androidx.core.components.activityNavigationController
+import com.tunjid.androidx.navigation.Navigator
+import com.tunjid.androidx.navigation.activityNavigationController
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManager.Companion.SWIPE_DRAG_ALL_DIRECTIONS
@@ -36,7 +36,7 @@ import kotlin.math.abs
 class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
         GlobalUiController,
         DoggoAdapter.ImageListAdapterListener,
-        Navigator.TransactionModifier {
+        com.tunjid.androidx.navigation.Navigator.TransactionModifier {
 
     override var uiState: UiState by activityGlobalUiController()
 
@@ -44,7 +44,7 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
 
     private val viewModel by viewModels<DoggoRankViewModel>()
 
-    private val navigator: Navigator by activityNavigationController()
+    private val navigator: com.tunjid.androidx.navigation.Navigator by activityNavigationController()
 
     private lateinit var listManager: ListManager<DoggoRankViewHolder, PlaceHolder.State>
 

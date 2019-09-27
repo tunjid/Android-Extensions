@@ -17,13 +17,13 @@ import androidx.fragment.app.FragmentManager
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.tunjid.androidx.R
-import com.tunjid.androidx.core.components.Navigator
+import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.marginLayoutParams
 import kotlin.math.max
 
 class InsetLifecycleCallbacks(
-        private val stackNavigatorSource: () -> Navigator?,
+        private val stackNavigatorSource: () -> com.tunjid.androidx.navigation.Navigator?,
         private val parentContainer: ViewGroup,
         private val contentContainer: FragmentContainerView,
         private val coordinatorLayout: CoordinatorLayout,

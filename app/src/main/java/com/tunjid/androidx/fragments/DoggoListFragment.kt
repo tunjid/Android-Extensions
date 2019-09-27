@@ -22,8 +22,8 @@ import com.tunjid.androidx.adapters.DoggoAdapter
 import com.tunjid.androidx.adapters.DoggoAdapter.ImageListAdapterListener
 import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
-import com.tunjid.androidx.core.components.Navigator
-import com.tunjid.androidx.core.components.activityNavigationController
+import com.tunjid.androidx.navigation.Navigator
+import com.tunjid.androidx.navigation.activityNavigationController
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
@@ -39,13 +39,13 @@ import kotlin.math.abs
 class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
         GlobalUiController,
         ImageListAdapterListener,
-        Navigator.TransactionModifier {
+        com.tunjid.androidx.navigation.Navigator.TransactionModifier {
 
     override var uiState: UiState by activityGlobalUiController()
 
     override val insetFlags: InsetFlags = InsetFlags.ALL
 
-    private val navigator: Navigator by activityNavigationController()
+    private val navigator: com.tunjid.androidx.navigation.Navigator by activityNavigationController()
 
     private lateinit var listManager: ListManager<DoggoViewHolder, PlaceHolder.State>
 
