@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        supportFragmentManager.registerFragmentLifecycleCallbacks(InsetLifecycleCallbacks(
+        val insetLifecycleCallbacks = InsetLifecycleCallbacks(
                 this.navigator::activeNavigator,
                 findViewById(R.id.constraint_layout),
                 findViewById(R.id.content_container),
@@ -35,12 +35,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
                 findViewById(R.id.top_inset),
                 findViewById(R.id.bottom_inset),
                 findViewById(R.id.keyboard_padding)
-        ), true)
+        )
+
+        supportFragmentManager.registerFragmentLifecycleCallbacks(insetLifecycleCallbacks, true)
 
         findViewById<BottomNavigationView>(R.id.bottom_navigation).apply {
             navigator.stackSelectedListener = {
                 menu.findItem(it)?.isChecked = true
-                (navigator.currentFragment as? AppBaseFragment)?.onStackChanged()
+                (navigator.currentFragment as? AppBaseFragment)?.apply {
+                    insetLifecycleCallbacks.adjustInsetForFragment(this)
+                    onStackChanged()
+                }
             }
             navigator.transactionModifier = { incomingFragment ->
                 val current = navigator.currentFragment
@@ -48,6 +53,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
                 else crossFade()
             }
             navigator.stackTransactionModifier = { crossFade() }
+
             setOnApplyWindowInsetsListener { _: View?, windowInsets: WindowInsets? -> windowInsets }
             setOnNavigationItemSelectedListener { navigator.show(it.itemId).let { true } }
             setOnNavigationItemReselectedListener { navigator.activeNavigator.clear() }

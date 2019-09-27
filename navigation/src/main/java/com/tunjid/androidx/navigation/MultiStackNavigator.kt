@@ -155,7 +155,10 @@ class MultiStackNavigator(
 
             stackMap[fragment.stackId] = fragment
 
-            if (stateContainer.isFreshState && stackIds.indexOf(fragment.stackId) != 0) fm.beginTransaction().hide(fragment).commit()
+            if (!stateContainer.isFreshState) return
+
+            if (stackIds.indexOf(fragment.stackId) == 0) navStack.push(fragment)
+            else fm.beginTransaction().hide(fragment).commit()
         }
 
         override fun onFragmentViewCreated(fm: FragmentManager, fragment: Fragment, view: View, savedInstanceState: Bundle?) {

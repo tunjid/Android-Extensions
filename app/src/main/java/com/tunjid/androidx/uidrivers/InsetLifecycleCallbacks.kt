@@ -17,7 +17,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.tunjid.androidx.R
-import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.marginLayoutParams
 import kotlin.math.max
@@ -94,7 +93,7 @@ class InsetLifecycleCallbacks(
     }
 
     @SuppressLint("InlinedApi")
-    private fun adjustInsetForFragment(fragment: Fragment?) {
+    fun adjustInsetForFragment(fragment: Fragment?) {
         if (fragment !is InsetProvider || isNotInCurrentFragmentContainer(fragment)) return
 
         fragment.insetFlags.dispatch {
