@@ -13,18 +13,13 @@ import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
-import com.tunjid.androidx.uidrivers.GlobalUiController
 import com.tunjid.androidx.uidrivers.SlideInItemAnimator
-import com.tunjid.androidx.uidrivers.UiState
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidx.viewholders.TileViewHolder
 import com.tunjid.androidx.viewmodels.ShiftingTileViewModel
 
-class ShiftingTileFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiController {
-
-    override var uiState: UiState by activityGlobalUiController()
+class ShiftingTileFragment : AppBaseFragment(R.layout.fragment_route) {
 
     override val insetFlags: InsetFlags = NO_BOTTOM
 

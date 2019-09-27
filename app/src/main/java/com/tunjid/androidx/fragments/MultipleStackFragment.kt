@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.chip.ChipGroup
@@ -16,15 +17,14 @@ import com.tunjid.androidx.core.text.SpanBuilder
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.childMultiStackNavigator
-import com.tunjid.androidx.uidrivers.*
+import com.tunjid.androidx.uidrivers.crossFade
+import com.tunjid.androidx.uidrivers.slide
 import com.tunjid.androidx.view.util.InsetFlags
 
 
-class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack), GlobalUiController {
+class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) {
 
     override val insetFlags: InsetFlags = InsetFlags.NO_TOP
-
-    override var uiState: UiState by activityGlobalUiController()
 
     private var transitionOption: Int = R.id.slide
 
@@ -32,6 +32,15 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack),
             R.id.inner_container,
             DESTINATIONS
     ) { InnerFragment.newInstance(resources.getResourceEntryName(it), 1) to it.toString() }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        activity?.onBackPressedDispatcher?.addCallback(this) {
+            isEnabled = innerNavigator.pop()
+            if (!isEnabled) activity?.onBackPressed()
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

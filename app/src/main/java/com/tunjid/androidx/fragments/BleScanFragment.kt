@@ -18,11 +18,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
-import com.tunjid.androidx.uidrivers.GlobalUiController
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
-import com.tunjid.androidx.uidrivers.UiState
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.adapters.ScanAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.recyclerview.ListManager
@@ -30,9 +27,8 @@ import com.tunjid.androidx.recyclerview.ListManagerBuilder
 import com.tunjid.androidx.viewholders.ScanViewHolder
 import com.tunjid.androidx.viewmodels.BleViewModel
 
-class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan), GlobalUiController, ScanAdapter.ScanAdapterListener {
-
-    override var uiState: UiState by activityGlobalUiController()
+class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan),
+        ScanAdapter.ScanAdapterListener {
 
     private val viewModel by viewModels<BleViewModel>()
 

@@ -11,22 +11,14 @@ import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.model.Route
-import com.tunjid.androidx.navigation.Navigator
-import com.tunjid.androidx.navigation.activityNavigationController
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
-import com.tunjid.androidx.uidrivers.GlobalUiController
-import com.tunjid.androidx.uidrivers.UiState
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.viewholders.RouteItemViewHolder
 import com.tunjid.androidx.viewmodels.RouteViewModel
 
-class RouteFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiController, RouteAdapter.RouteAdapterListener {
-
-    override var uiState: UiState by activityGlobalUiController()
+class RouteFragment : AppBaseFragment(R.layout.fragment_route),
+        RouteAdapter.RouteAdapterListener {
 
     private val viewModel: RouteViewModel by viewModels()
-
-    private val navigator: Navigator by activityNavigationController()
 
     private var tabId: Int by args()
 
@@ -36,7 +28,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiControll
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (navigator.currentFragment === this) uiState = uiState.copy(
+        uiState = uiState.copy(
                 toolbarTitle = getString(R.string.app_name),
                 toolBarMenu = 0,
                 toolbarShows = true,
@@ -53,7 +45,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiControll
     }
 
     override fun onItemClicked(route: Route) {
-        navigator.show<AppBaseFragment>(when (route.destination) {
+        navigator.show(when (route.destination) {
             DoggoListFragment::class.java.simpleName -> DoggoListFragment.newInstance()
             BleScanFragment::class.java.simpleName -> BleScanFragment.newInstance()
             NsdScanFragment::class.java.simpleName -> NsdScanFragment.newInstance()

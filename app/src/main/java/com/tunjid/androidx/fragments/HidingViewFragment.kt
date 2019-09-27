@@ -3,10 +3,7 @@ package com.tunjid.androidx.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
-import com.tunjid.androidx.uidrivers.GlobalUiController
 import com.tunjid.androidx.R
-import com.tunjid.androidx.uidrivers.UiState
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.view.animator.ViewHider
 
@@ -17,9 +14,7 @@ import com.tunjid.androidx.view.animator.ViewHider
  * Created by tj.dahunsi on 5/6/17.
  */
 
-class HidingViewFragment : AppBaseFragment(R.layout.fragment_hiding_view), GlobalUiController {
-
-    override var uiState: UiState by activityGlobalUiController()
+class HidingViewFragment : AppBaseFragment(R.layout.fragment_hiding_view) {
 
     private lateinit var leftHider: ViewHider<View>
     private lateinit var topHider: ViewHider<View>

@@ -7,6 +7,7 @@ import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tunjid.androidx.R
+import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.multiStackNavigator
@@ -37,7 +38,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         ), true)
 
         findViewById<BottomNavigationView>(R.id.bottom_navigation).apply {
-            navigator.stackSelectedListener = { menu.findItem(it)?.isChecked = true }
+            navigator.stackSelectedListener = {
+                menu.findItem(it)?.isChecked = true
+                (navigator.currentFragment as? AppBaseFragment)?.onStackChanged()
+            }
             navigator.transactionModifier = { incomingFragment ->
                 val current = navigator.currentFragment
                 if (current is Navigator.TransactionModifier) current.augmentTransaction(this, incomingFragment)

@@ -7,9 +7,6 @@ import androidx.core.content.ContextCompat
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.text.SpanBuilder
-import com.tunjid.androidx.uidrivers.GlobalUiController
-import com.tunjid.androidx.uidrivers.UiState
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
 
 /**
  * Fragment showing the use of a SpanBuilder
@@ -17,9 +14,7 @@ import com.tunjid.androidx.uidrivers.activityGlobalUiController
  * Created by tj.dahunsi on 5/6/17.
  */
 
-class SpanbuilderFragment : AppBaseFragment(R.layout.fragment_spanbuilder), GlobalUiController {
-
-    override var uiState: UiState by activityGlobalUiController()
+class SpanbuilderFragment : AppBaseFragment(R.layout.fragment_spanbuilder) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

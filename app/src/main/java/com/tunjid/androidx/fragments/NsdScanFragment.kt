@@ -12,11 +12,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
-import com.tunjid.androidx.uidrivers.GlobalUiController
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
-import com.tunjid.androidx.uidrivers.UiState
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.adapters.NsdAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.recyclerview.ListManager
@@ -27,9 +24,8 @@ import com.tunjid.androidx.viewmodels.NsdViewModel
 /**
  * A [Fragment] listing supported NSD servers
  */
-class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan), GlobalUiController, NsdAdapter.ServiceClickedListener {
-
-    override var uiState: UiState by activityGlobalUiController()
+class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan),
+        NsdAdapter.ServiceClickedListener {
 
     private val viewModel by viewModels<NsdViewModel>()
 

@@ -11,9 +11,6 @@ import com.tunjid.androidx.adapters.TileAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
-import com.tunjid.androidx.uidrivers.GlobalUiController
-import com.tunjid.androidx.uidrivers.UiState
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidx.viewholders.TileViewHolder
@@ -21,9 +18,7 @@ import com.tunjid.androidx.viewmodels.EndlessTileViewModel
 import com.tunjid.androidx.viewmodels.EndlessTileViewModel.Companion.NUM_TILES
 import kotlin.math.abs
 
-class EndlessTileFragment : AppBaseFragment(R.layout.fragment_route), GlobalUiController {
-
-    override var uiState: UiState by activityGlobalUiController()
+class EndlessTileFragment : AppBaseFragment(R.layout.fragment_route) {
 
     private val viewModel by viewModels<EndlessTileViewModel>()
     private lateinit var listManager: ListManager<TileViewHolder, PlaceHolder.State>

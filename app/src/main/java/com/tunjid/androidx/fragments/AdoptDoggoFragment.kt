@@ -21,14 +21,13 @@ import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewholders.DoggoViewHolder
 import com.tunjid.androidx.viewholders.InputViewHolder
 
-class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo), GlobalUiController, ImageListAdapterListener {
-
-    override var uiState: UiState by activityGlobalUiController()
+class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo),
+        ImageListAdapterListener {
 
     override val insetFlags: InsetFlags = InsetFlags.NO_TOP
 
     override val stableTag: String
-        get() = super.stableTag + "-" + doggo.hashCode()
+        get() = "${super.stableTag}-${doggo.hashCode()}"
 
     var doggo: Doggo by args()
 
