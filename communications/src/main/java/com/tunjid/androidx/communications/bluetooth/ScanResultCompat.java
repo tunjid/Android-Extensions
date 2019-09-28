@@ -136,7 +136,7 @@ public final class ScanResultCompat implements Parcelable {
     @Override
     public String toString() {
         return "ScanEvent{" + "mDevice=" + mDevice + ", mScanRecord="
-                + String.valueOf(mScanRecordCompat) + ", mRssi=" + mRssi + ", mTimestampNanos="
+                + mScanRecordCompat + ", mRssi=" + mRssi + ", mTimestampNanos="
                 + mTimestampNanos + '}';
     }
 
