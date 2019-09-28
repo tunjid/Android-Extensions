@@ -101,10 +101,13 @@ class MultiStackNavigator(
         if (stateContainer.isFreshState) fragmentManager.commitNow {
             stackIds.forEachIndexed { index, id -> add(containerId, StackFragment.newInstance(id), index.toString()) }
         }
-        else fragmentManager.fragments.filterIsInstance(StackFragment::class.java).forEach {
-            navStack.push(it)
-            stackMap[it.stackId] = it
-        }.apply { stateContainer.savedState.getIntArray(NAV_STACK_ORDER)?.apply { navStack.sortBy { indexOf(it.stackId) } } }
+        else fragmentManager.fragments.filterIsInstance(StackFragment::class.java).forEachIndexed { index, stackFragment ->
+            navStack.push(stackFragment)
+            stackMap[stackFragment.stackId] = stackFragment
+            if (index == stackIds.lastIndex) stateContainer.savedState.getIntArray(NAV_STACK_ORDER)?.apply {
+                navStack.sortBy { indexOf(it.stackId) }
+            }
+        }
     }
 
     fun show(@IdRes toShow: Int) = showInternal(toShow, true)
@@ -128,18 +131,16 @@ class MultiStackNavigator(
 
     override fun show(fragment: Fragment, tag: String): Boolean = activeNavigator.show(fragment, tag)
 
-    private fun showInternal(@IdRes toShow: Int, addTap: Boolean) {
-        fragmentManager.commit {
-            stackTransactionModifier?.invoke(this, toShow)
+    private fun showInternal(@IdRes toShow: Int, addTap: Boolean) = fragmentManager.commit {
+        stackTransactionModifier?.invoke(this, toShow)
 
-            for ((id, fragment) in stackMap) when {
-                id == toShow && fragment.isVisible -> return@commit
-                id == toShow && fragment.isHidden -> show(fragment).also { if (addTap) track(fragment) }
-                else -> hide(fragment)
-            }
-
-            runOnCommit { stackSelectedListener?.invoke(toShow) }
+        for ((id, fragment) in stackMap) when {
+            id == toShow && !fragment.isHidden -> return@commit
+            id == toShow && fragment.isHidden -> show(fragment).also { if (addTap) track(fragment) }
+            else -> hide(fragment)
         }
+
+        runOnCommit { stackSelectedListener?.invoke(toShow) }
     }
 
     private fun track(tab: StackFragment) {
@@ -157,7 +158,7 @@ class MultiStackNavigator(
 
             if (!stateContainer.isFreshState) return
 
-            if (stackIds.indexOf(fragment.stackId) == 0) navStack.push(fragment)
+            if (stackIds.indexOf(fragment.stackId) == 0) track(fragment)
             else fm.beginTransaction().hide(fragment).commit()
         }
 

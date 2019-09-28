@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.tunjid.androidx.core.testclasses.TestActivity
 import com.tunjid.androidx.core.testclasses.TestFragment
+import com.tunjid.androidx.savedstate.savedStateFor
 import com.tunjid.androidx.test.TestUtils
 import com.tunjid.androidx.test.idlingresources.FragmentGoneIdlingResource
 import com.tunjid.androidx.test.idlingresources.FragmentVisibleIdlingResource
@@ -30,7 +31,7 @@ import java.util.concurrent.TimeUnit
 class StackNavigatorTest {
 
     private var activity: TestActivity? = null
-    private var stackNavigator: com.tunjid.androidx.navigation.StackNavigator? = null
+    private var stackNavigator: StackNavigator? = null
     private var testIdler: TestIdler? = null
 
     @Rule
@@ -45,7 +46,7 @@ class StackNavigatorTest {
     fun setUp() {
         testIdler = TestIdler(DEFAULT_TIME_OUT.toLong(), TimeUnit.SECONDS)
         activity = activityRule.activity as TestActivity
-        stackNavigator = com.tunjid.androidx.navigation.StackNavigator(savedStateFor(activity!!, "TEST"), activity!!.supportFragmentManager, activity!!.containerId)
+        stackNavigator = StackNavigator(savedStateFor(activity!!, "TEST"), activity!!.supportFragmentManager, activity!!.containerId)
     }
 
     @After
@@ -102,7 +103,7 @@ class StackNavigatorTest {
 
         // create new instance of fragentStateManager and confirm all
         // the old tags are restored
-        val copy = com.tunjid.androidx.navigation.StackNavigator(savedStateFor(activity, "OTHER"), activity.supportFragmentManager, activity.containerId)
+        val copy = StackNavigator(savedStateFor(activity, "OTHER"), activity.supportFragmentManager, activity.containerId)
 
         assertTrue(copy.fragmentTags.contains(TAG_A))
         assertTrue(copy.fragmentTags.size == 1)
@@ -117,7 +118,7 @@ class StackNavigatorTest {
         val testFragment = TestFragment.newInstance(TAG_A)
 
         expectedException.expect(IllegalStateException::class.java)
-        expectedException.expectMessage(com.tunjid.androidx.navigation.StackNavigator.MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK)
+        expectedException.expectMessage(StackNavigator.MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK)
 
         fragmentManager.beginTransaction()
                 .replace(activity.containerId, testFragment, TAG_A)

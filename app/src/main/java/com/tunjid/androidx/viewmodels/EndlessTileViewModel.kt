@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
-import com.tunjid.androidx.functions.collections.Lists
+import com.tunjid.androidx.functions.collections.replace
 import com.tunjid.androidx.model.Tile
 import com.tunjid.androidx.recyclerview.diff.Diff
 import io.reactivex.Single
@@ -35,7 +35,7 @@ class EndlessTileViewModel(application: Application) : AndroidViewModel(applicat
                 .subscribeOn(io())
                 .observeOn(mainThread())
                 .map { diff ->
-                    Lists.replace(tiles, diff.items)
+                    tiles.replace(diff.items)
                     diff.result
                 }.subscribe(moreTiles::setValue))
     }

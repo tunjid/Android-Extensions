@@ -301,10 +301,8 @@ public final class ScanFilterCompat implements Parcelable {
 
         // Manufacturer data match.
         if (mManufacturerId >= 0) {
-            if (!matchesPartialData(mManufacturerData, mManufacturerDataMask,
-                    scanRecordCompat.getManufacturerSpecificData(mManufacturerId))) {
-                return false;
-            }
+            return matchesPartialData(mManufacturerData, mManufacturerDataMask,
+                    scanRecordCompat.getManufacturerSpecificData(mManufacturerId));
         }
         // All filters match.
         return true;
@@ -369,7 +367,7 @@ public final class ScanFilterCompat implements Parcelable {
         return "BluetoothLeScanFilter [mDeviceName=" + mDeviceName + ", mDeviceAddress="
                 + mDeviceAddress
                 + ", mUuid=" + mServiceUuid + ", mUuidMask=" + mServiceUuidMask
-                + ", mServiceDataUuid=" + String.valueOf(mServiceDataUuid) + ", mServiceData="
+                + ", mServiceDataUuid=" + mServiceDataUuid + ", mServiceData="
                 + Arrays.toString(mServiceData) + ", mServiceDataMask="
                 + Arrays.toString(mServiceDataMask) + ", mManufacturerId=" + mManufacturerId
                 + ", mManufacturerData=" + Arrays.toString(mManufacturerData)

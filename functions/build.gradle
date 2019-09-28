@@ -1,7 +1,8 @@
-apply from: "${project.rootDir}/javaLib.gradle"
+apply from: "${project.rootDir}/kotlinLib.gradle"
 
 dependencies {
     implementation 'org.jetbrains:annotations:15.0'
+    implementation parent.ext.kotlin
 }
 
 //noinspection GroovyUnusedAssignment
