@@ -1,11 +1,11 @@
-# Android Bootstrap
+# Android Extensions
 
 
 .             |  .
 :-------------------------:|:-------------------------:
 ![](https://cdn-images-1.medium.com/max/1600/1*sxTblN6YkLnGSoNjuEfGaw.gif)  |  ![](https://cdn-images-1.medium.com/max/1600/1*5tbALvA4vm5S00g7TMsQ6A.gif)
 
-This repository is a collection of modules intending to help bootstrap an Android Application.
+This repository is a collection of modules to help bootstrap an Android Application.
 There are 4 modules:
 
 1. App: A sample app demoing the modules in the repository. 
@@ -21,15 +21,14 @@ There are 4 modules:
 
 build.gradle lines
 
-    implementation 'com.tunjid.androidx:constraintlayout:6.0.0-alpha-02'
-    implementation 'com.tunjid.androidx:communications:6.0.0-alpha-02'
-    implementation 'com.tunjid.androidx:recyclerview:6.0.0-alpha-02'
-    implementation 'com.tunjid.androidx:functions:1.0.4'
-    implementation 'com.tunjid.androidx:material:6.0.0-alpha-02'
-    implementation 'com.tunjid.androidx:core:6.0.0-alpha-02'
-    implementation 'com.tunjid.androidx:view:6.0.0-alpha-02'
-    implementation 'com.tunjid.androidx:test:6.0.0-alpha-02'
-
+    implementation 'com.tunjid.androidx:constraintlayout:1.0.0-alpha01'
+    implementation 'com.tunjid.androidx:communications:1.0.0-alpha01'
+    implementation 'com.tunjid.androidx:recyclerview:1.0.0-alpha01'
+    implementation 'com.tunjid.androidx:functions:1.0.0-alpha01'
+    implementation 'com.tunjid.androidx:material:1.0.0-alpha01'
+    implementation 'com.tunjid.androidx:core:1.0.0-alpha01'
+    implementation 'com.tunjid.androidx:view:1.0.0-alpha01'
+    implementation 'com.tunjid.androidx:test:1.0.0-alpha01'
 
 Projects that use This library include:
 

@@ -14,14 +14,14 @@ bintray {
     // Package info for BinTray
     pkg {
         repo = 'maven'
-        name = 'android-bootstrap'
+        name = 'android-extensions'
         userOrg = user
         licenses = ['MIT']
         vcsUrl = 'https://github.com/tunjid/android-bootstrap.git'
         version {
             name = project.version
             desc = 'An suite of libraries to bootstrap an Android application.'
-            vcsTag = '4.0.2'
+            vcsTag = 'vx1.0.0-alpha01'
         }
     }
 }
