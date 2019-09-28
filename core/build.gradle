@@ -6,8 +6,6 @@ dependencies {
     implementation parent.ext.kotlin
     implementation parent.ext.ktxCore
     implementation parent.ext.appCompat
-    implementation parent.ext.savedState
-    implementation parent.ext.fragmentKtx
 
     testImplementation 'junit:junit:4.12'
 
@@ -50,17 +48,6 @@ dependencies {
     androidTestExclusions('androidx.test.espresso:espresso-contrib:3.3.0-alpha02', exclusions)
     androidTestExclusions('androidx.test.espresso:espresso-intents:3.3.0-alpha02', exclusions)
 
-//    androidTestImplementation('androidx.test.espresso:espresso-intents:3.3.0-alpha02') {
-//        exclude group: 'androidx.appcompat', module: 'appcompat'
-//        exclude group: 'androidx.fragment', module: 'fragment'
-//        exclude group: 'androidx.recyclerview', module: 'recyclerview'
-//        exclude group: 'androidx.viewpager2', module: 'viewpager2'
-//        exclude group: 'androidx.lifecycle', module: 'lifecycle-common'
-//        exclude group: 'androidx.lifecycle', module: 'lifecycle-viewmodel'
-//        exclude group: 'androidx.lifecycle', module: 'lifecycle-livedata-core'
-//        exclude group: 'androidx.arch.core', module: 'core-runtime'
-//        exclude group: 'com.google.android.material', module: 'material'
-//    }
 
 }
 

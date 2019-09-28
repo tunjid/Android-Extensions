@@ -1,1 +1,1 @@
-include ':app', ':core', ':test', ':communications', ':view', ':recyclerview', ':functions', ':constraintlayout', ':material'
+include ':app', ':core', ':test', ':communications', ':view', ':recyclerview', ':functions', ':constraintlayout', ':material', ':navigation', ':savedstate'

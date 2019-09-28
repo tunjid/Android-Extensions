@@ -1,0 +1,71 @@
+apply plugin: 'kotlin'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+apply from: "${project.rootDir}/version.gradle"
+
+bintray {
+    user = parent.ext.bintrayUser
+    key = parent.ext.bintrayApiKey
+
+    // jFrog plugin must be declared for this line to work
+    configurations = ['archives']
+    publications = ['lib']
+    // Package info for BinTray
+    pkg {
+        repo = 'maven'
+        name = 'android-extensions'
+        userOrg = user
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/tunjid/android-bootstrap.git'
+        version {
+            name = project.version
+            desc = 'An suite of libraries to bootstrap an Android application.'
+            vcsTag = 'vx1.0.0-alpha01'
+        }
+    }
+}
+
+publishing {
+    publications {
+        lib(MavenPublication) {
+            version = project.version
+            groupId parent.ext.groupId
+            artifactId project.getName()
+
+            from components.java
+
+            afterEvaluate {
+                artifact sourcesJar
+                artifact javadocJar
+            }
+        }
+    }
+    repositories {
+        maven {
+            url parent.ext.artifactoryUrl
+        }
+    }
+}
+
+// Gradle task to generate sources after building a release aar
+task sourcesJar(type: Jar) {
+    archiveClassifier = 'sources'
+    from sourceSets.main.allJava
+}
+
+task javadocJar(type: Jar) {
+    archiveClassifier = 'javadoc'
+    from javadoc
+}
+
+//signing {
+//    sign publishing.publications.mavenJava
+//}
+
+
+javadoc {
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
