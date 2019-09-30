@@ -25,7 +25,7 @@ fun Fragment.activityNavigationController() = object : ReadOnlyProperty<Fragment
                     ?: throw IllegalStateException("The hosting Activity is not a NavigationController")
 }
 
-fun Fragment.childStackNavigator(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
+fun Fragment.childStackNavigationController(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
     StackNavigator(
             savedStateFor(this, "$STACK_NAVIGATOR-$containerId"),
             childFragmentManager,
@@ -34,7 +34,7 @@ fun Fragment.childStackNavigator(@IdRes containerId: Int): Lazy<StackNavigator> 
 }
 
 @Suppress("unused")
-fun FragmentActivity.stackNavigator(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
+fun FragmentActivity.stackNavigationController(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
     StackNavigator(
             savedStateFor(this, "$STACK_NAVIGATOR-$containerId"),
             supportFragmentManager,

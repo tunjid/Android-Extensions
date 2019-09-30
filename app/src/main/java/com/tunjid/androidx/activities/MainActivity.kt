@@ -10,13 +10,13 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
-import com.tunjid.androidx.navigation.multiStackNavigator
+import com.tunjid.androidx.navigation.multiStackNavigationController
 import com.tunjid.androidx.fragments.RouteFragment
 import com.tunjid.androidx.uidrivers.*
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiController, Navigator.NavigationController {
 
-    override val navigator: MultiStackNavigator by multiStackNavigator(
+    override val navigator: MultiStackNavigator by multiStackNavigationController(
             R.id.content_container,
             intArrayOf(R.id.menu_core, R.id.menu_recyclerview, R.id.menu_communications)
     ) { id -> RouteFragment.newInstance(id).let { it to it.stableTag } }
