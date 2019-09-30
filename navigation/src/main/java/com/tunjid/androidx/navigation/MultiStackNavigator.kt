@@ -5,19 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentContainerView
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
-import androidx.fragment.app.commit
-import androidx.fragment.app.commitNow
+import androidx.fragment.app.*
 import androidx.lifecycle.Lifecycle
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.savedstate.LifecycleSavedStateContainer
 import com.tunjid.androidx.savedstate.savedStateFor
 import java.util.*
-import kotlin.collections.set
 
 const val MULTI_STACK_NAVIGATOR = "com.tunjid.androidx.navigation.MultiStackNavigator"
 
@@ -78,42 +71,48 @@ class MultiStackNavigator(
     var transactionModifier: (FragmentTransaction.(Fragment) -> Unit)? = null
         set(value) {
             field = value
-            stackMap.values
+            stackFragments
                     .filter { it.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) }
                     .forEach { it.navigator.transactionModifier = value }
         }
 
-    private val navStack: Stack<StackFragment> = Stack()
-    private val stackMap = mutableMapOf<Int, StackFragment>()
+    private val backStack: Stack<Int> = Stack()
+    private val stackFragments: List<StackFragment>
 
-    private val activeStack: StackFragment
-        get() = stackMap.values.run { firstOrNull(Fragment::isVisible) ?: first() }
+    private val activeFragment: StackFragment
+        get() = stackFragments.run { firstOrNull(Fragment::isVisible) ?: first() }
 
     val activeNavigator
-        get() = activeStack.navigator
+        get() = activeFragment.navigator
 
     override val currentFragment: Fragment?
         get() = activeNavigator.currentFragment
+
+    private val StackFragment.index
+        get() = stackIds.indexOf(stackId)
 
     init {
         fragmentManager.registerFragmentLifecycleCallbacks(StackLifecycleCallback(), false)
         fragmentManager.addOnBackStackChangedListener { throw IllegalStateException("Fragments may not be added to the back stack of a FragmentManager managed by a MultiStackNavigator") }
 
+        val stack = Stack<StackFragment>()
+
         if (stateContainer.isFreshState) fragmentManager.commitNow {
-            stackIds.forEachIndexed { index, id -> add(containerId, StackFragment.newInstance(id), index.toString()) }
+            stackIds.forEachIndexed { index, id -> add(containerId, stack.push(StackFragment.newInstance(id)), index.toString()) }
+            track(stack.firstElement())
         }
-        else fragmentManager.fragments.filterIsInstance(StackFragment::class.java).forEachIndexed { index, stackFragment ->
-            navStack.push(stackFragment)
-            stackMap[stackFragment.stackId] = stackFragment
-            if (index == stackIds.lastIndex) stateContainer.savedState.getIntArray(NAV_STACK_ORDER)?.apply {
-                navStack.sortBy { indexOf(it.stackId) }
-            }
+        else fragmentManager.fragments.filterIsInstance(StackFragment::class.java).forEach { stackFragment ->
+            backStack.push(stackFragment.stackId)
+            stack.push(stackFragment)
         }
+
+        stackFragments = stack.sortedBy { it.index }
+        stateContainer.savedState.getIntArray(NAV_STACK_ORDER)?.apply { backStack.sortBy { indexOf(it) } }
     }
 
     fun show(@IdRes toShow: Int) = showInternal(toShow, true)
 
-    fun navigatorAt(index: Int) = stackMap[stackIds[index]]?.navigator
+    fun navigatorAt(index: Int) = stackFragments[index].navigator
 
     /**
      * Pops the current fragment off the stack in focus. If The current
@@ -123,9 +122,9 @@ class MultiStackNavigator(
      * @see [StackNavigator.pop]
      */
     override fun pop(): Boolean = when {
-        activeStack.navigator.pop() -> true
-        navStack.run { remove(activeStack); isEmpty() } -> false
-        else -> showInternal(navStack.peek().stackId, false).let { true }
+        activeFragment.navigator.pop() -> true
+        backStack.run { remove(activeFragment.stackId); isEmpty() } -> false
+        else -> showInternal(backStack.peek(), false).let { true }
     }
 
     override fun clear(upToTag: String?, includeMatch: Boolean) = activeNavigator.clear(upToTag, includeMatch)
@@ -135,39 +134,41 @@ class MultiStackNavigator(
     private fun showInternal(@IdRes toShow: Int, addTap: Boolean) = fragmentManager.commit {
         stackTransactionModifier?.invoke(this, toShow)
 
-        for ((id, fragment) in stackMap) when {
-            id == toShow && !fragment.isHidden -> return@commit
-            id == toShow && fragment.isHidden -> show(fragment).also { if (addTap) track(fragment) }
-            else -> hide(fragment)
+        transactions@ for (fragment in stackFragments) when {
+            fragment.stackId == toShow && !fragment.isDetached -> continue@transactions
+            fragment.stackId == toShow && fragment.isDetached -> attach(fragment).also { if (addTap) track(fragment) }
+            else -> if (!fragment.isDetached) detach(fragment)
         }
 
         runOnCommit { stackSelectedListener?.invoke(toShow) }
     }
 
-    private fun track(tab: StackFragment) {
-        if (navStack.contains(tab)) navStack.remove(tab)
-        navStack.push(tab)
-        stateContainer.savedState.putIntArray(NAV_STACK_ORDER, navStack.map(StackFragment::stackId).toIntArray())
+    private fun track(tab: StackFragment) = tab.run {
+        if (backStack.contains(stackId)) backStack.remove(stackId)
+        backStack.push(stackId)
+        stateContainer.savedState.putIntArray(NAV_STACK_ORDER, backStack.toIntArray())
     }
 
     private inner class StackLifecycleCallback : FragmentManager.FragmentLifecycleCallbacks() {
+        val seenMap = BooleanArray(stackIds.size) { false }
+
         override fun onFragmentCreated(fm: FragmentManager, fragment: Fragment, savedInstanceState: Bundle?) {
             if (fragment.id != containerId) return
             check(fragment is StackFragment) { "Only Stack Fragments may be added to a container View managed by a MultiStackNavigator" }
 
-            stackMap[fragment.stackId] = fragment
-
             if (!stateContainer.isFreshState) return
 
-            if (stackIds.indexOf(fragment.stackId) == 0) track(fragment)
-            else fm.beginTransaction().hide(fragment).commit()
+            if (stackIds.indexOf(fragment.stackId) != 0) fm.beginTransaction().detach(fragment).commit()
         }
 
         override fun onFragmentViewCreated(fm: FragmentManager, fragment: Fragment, view: View, savedInstanceState: Bundle?) {
             if (fragment.id != containerId) return
             check(fragment is StackFragment) { "Only Stack Fragments may be added to a container View managed by a MultiStackNavigator" }
 
-            if (stateContainer.isFreshState) rootFunction(fragment.stackId).apply { fragment.navigator.show(first, second) }
+            fragment.index.let {
+                if (!seenMap[it]) rootFunction(fragment.stackId).apply { fragment.navigator.show(first, second) }
+                seenMap[it] = true
+            }
         }
 
         override fun onFragmentResumed(fm: FragmentManager, fragment: Fragment) {

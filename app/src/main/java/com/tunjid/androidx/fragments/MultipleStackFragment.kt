@@ -90,11 +90,6 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
         view?.apply { transitionOption = findViewById<ChipGroup>(R.id.options).checkedChipId }
     }
 
-    override fun onStackChanged() {
-        super.onStackChanged()
-        backPressedCallback?.isEnabled = true
-    }
-
     companion object {
 
         private val DESTINATIONS = intArrayOf(R.id.first, R.id.second, R.id.third)

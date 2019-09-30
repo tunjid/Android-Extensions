@@ -40,13 +40,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         supportFragmentManager.registerFragmentLifecycleCallbacks(insetLifecycleCallbacks, true)
 
         findViewById<BottomNavigationView>(R.id.bottom_navigation).apply {
-            navigator.stackSelectedListener = {
-                menu.findItem(it)?.isChecked = true
-                (navigator.currentFragment as? AppBaseFragment)?.apply {
-                    insetLifecycleCallbacks.adjustInsetForFragment(this)
-                    onStackChanged()
-                }
-            }
+            navigator.stackSelectedListener = { menu.findItem(it)?.isChecked = true }
             navigator.transactionModifier = { incomingFragment ->
                 val current = navigator.currentFragment
                 if (current is Navigator.TransactionModifier) current.augmentTransaction(this, incomingFragment)
