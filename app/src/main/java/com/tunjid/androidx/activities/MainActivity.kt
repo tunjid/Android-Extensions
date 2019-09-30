@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val insetLifecycleCallbacks = InsetLifecycleCallbacks(
+        supportFragmentManager.registerFragmentLifecycleCallbacks(InsetLifecycleCallbacks(
                 this.navigator::activeNavigator,
                 findViewById(R.id.constraint_layout),
                 findViewById(R.id.content_container),
@@ -34,9 +34,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
                 findViewById(R.id.top_inset),
                 findViewById(R.id.bottom_inset),
                 findViewById(R.id.keyboard_padding)
-        )
-
-        supportFragmentManager.registerFragmentLifecycleCallbacks(insetLifecycleCallbacks, true)
+        ), true)
 
         findViewById<BottomNavigationView>(R.id.bottom_navigation).apply {
             navigator.stackSelectedListener = { menu.findItem(it)?.isChecked = true }
