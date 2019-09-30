@@ -18,8 +18,6 @@ abstract class AppBaseFragment(
         Navigator.TagProvider,
         Navigator.NavigationController {
 
-    private var lastSetUiState: UiState? = null
-
     private var activityUiState by activityGlobalUiController()
 
     override val insetFlags: InsetFlags = InsetFlags.ALL
@@ -31,9 +29,7 @@ abstract class AppBaseFragment(
     override var uiState: UiState
         get() = activityUiState
         set(value) {
-            lastSetUiState = value
             if (navigator.currentFragment === this) activityUiState = value
         }
 
-    open fun onStackChanged() = lastSetUiState?.apply { uiState = this } ?: Unit
 }

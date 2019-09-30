@@ -138,7 +138,7 @@ class StackNavigator constructor(
             else false
 
     override fun clear(upToTag: String?, includeMatch: Boolean) {
-        val tag = upToTag ?: "NonExistentTagToClearAllFragments"
+        val tag = upToTag ?: fragmentTags.firstOrNull() ?: "" // Empty string will be treated as a no-op internally
         fragmentManager.popBackStack(tag, if (includeMatch) FragmentManager.POP_BACK_STACK_INCLUSIVE else 0)
     }
 
