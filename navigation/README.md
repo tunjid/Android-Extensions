@@ -55,7 +55,7 @@ It also provides:
 ```
 class MainActivity : AppCompatActivity(R.layout.activity_main), StackNavigator.NavigationController {
 
-    private val multiStackNavigator: MultiStackNavigator by multiStackNavigator(
+    private val multiStackNavigator: MultiStackNavigator by multiStackNavigationController(
             R.id.content_container,
             intArrayOf(R.id.menu_core, R.id.menu_recyclerview, R.id.menu_communications)
     ) { id -> RouteFragment.newInstance(id).let { it to it.stableTag } }
