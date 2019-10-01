@@ -25,7 +25,7 @@ fun Fragment.activityNavigationController() = object : ReadOnlyProperty<Fragment
                     ?: throw IllegalStateException("The hosting Activity is not a NavigationController")
 }
 
-fun Fragment.childStackNavigator(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
+fun Fragment.childStackNavigationController(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
     StackNavigator(
             savedStateFor(this, "$STACK_NAVIGATOR-$containerId"),
             childFragmentManager,
@@ -34,7 +34,7 @@ fun Fragment.childStackNavigator(@IdRes containerId: Int): Lazy<StackNavigator> 
 }
 
 @Suppress("unused")
-fun FragmentActivity.stackNavigator(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
+fun FragmentActivity.stackNavigationController(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
     StackNavigator(
             savedStateFor(this, "$STACK_NAVIGATOR-$containerId"),
             supportFragmentManager,
@@ -138,7 +138,7 @@ class StackNavigator constructor(
             else false
 
     override fun clear(upToTag: String?, includeMatch: Boolean) {
-        val tag = upToTag ?: "NonExistentTagToClearAllFragments"
+        val tag = upToTag ?: fragmentTags.firstOrNull() ?: "" // Empty string will be treated as a no-op internally
         fragmentManager.popBackStack(tag, if (includeMatch) FragmentManager.POP_BACK_STACK_INCLUSIVE else 0)
     }
 

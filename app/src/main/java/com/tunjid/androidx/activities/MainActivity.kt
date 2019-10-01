@@ -7,16 +7,15 @@ import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
+import com.tunjid.androidx.fragments.RouteFragment
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
-import com.tunjid.androidx.navigation.multiStackNavigator
-import com.tunjid.androidx.fragments.RouteFragment
+import com.tunjid.androidx.navigation.multiStackNavigationController
 import com.tunjid.androidx.uidrivers.*
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiController, Navigator.NavigationController {
 
-    override val navigator: MultiStackNavigator by multiStackNavigator(
+    override val navigator: MultiStackNavigator by multiStackNavigationController(
             R.id.content_container,
             intArrayOf(R.id.menu_core, R.id.menu_recyclerview, R.id.menu_communications)
     ) { id -> RouteFragment.newInstance(id).let { it to it.stableTag } }
@@ -26,7 +25,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val insetLifecycleCallbacks = InsetLifecycleCallbacks(
+        supportFragmentManager.registerFragmentLifecycleCallbacks(InsetLifecycleCallbacks(
                 this.navigator::activeNavigator,
                 findViewById(R.id.constraint_layout),
                 findViewById(R.id.content_container),
@@ -35,18 +34,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
                 findViewById(R.id.top_inset),
                 findViewById(R.id.bottom_inset),
                 findViewById(R.id.keyboard_padding)
-        )
-
-        supportFragmentManager.registerFragmentLifecycleCallbacks(insetLifecycleCallbacks, true)
+        ), true)
 
         findViewById<BottomNavigationView>(R.id.bottom_navigation).apply {
-            navigator.stackSelectedListener = {
-                menu.findItem(it)?.isChecked = true
-                (navigator.currentFragment as? AppBaseFragment)?.apply {
-                    insetLifecycleCallbacks.adjustInsetForFragment(this)
-                    onStackChanged()
-                }
-            }
+            navigator.stackSelectedListener = { menu.findItem(it)?.isChecked = true }
             navigator.transactionModifier = { incomingFragment ->
                 val current = navigator.currentFragment
                 if (current is Navigator.TransactionModifier) current.augmentTransaction(this, incomingFragment)
