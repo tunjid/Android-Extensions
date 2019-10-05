@@ -57,7 +57,7 @@ class SpanBuilder {
     fun color(context: Context, @ColorRes color: Int): SpanBuilder = apply { this.content = color(ContextCompat.getColor(context, color), content) }
 
     fun click(textView: TextView,
-              paintConsumer: (TextPaint) -> Unit,
+              paintConsumer: (TextPaint) -> Unit = {},
               clickAction: () -> Unit): SpanBuilder {
         this.content = click(textView, paintConsumer, clickAction, content)
         textView.movementMethod = LinkMovementMethod.getInstance()

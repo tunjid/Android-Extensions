@@ -31,10 +31,10 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
 
     private var transitionOption: Int = R.id.slide
 
-    private val innerNavigator: MultiStackNavigator by childMultiStackNavigationController(
+    internal val innerNavigator: MultiStackNavigator by childMultiStackNavigationController(
             R.id.inner_container,
             DESTINATIONS
-    ) { InnerFragment.newInstance(resources.getResourceEntryName(it), 1) to it.toString() }
+    ) { MultipleStackChildFragment.newInstance(resources.getResourceEntryName(it), 1).run { this to stableTag }}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,8 +77,8 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
                 fabIcon = R.drawable.ic_bullseye_24dp,
                 fabShows = true,
                 fabClickListener = View.OnClickListener {
-                    val current = innerNavigator.currentFragment as? InnerFragment
-                    if (current != null) innerNavigator.show(InnerFragment.newInstance(current.name, current.depth + 1))
+                    val current = innerNavigator.currentFragment as? MultipleStackChildFragment
+                    if (current != null) innerNavigator.show(MultipleStackChildFragment.newInstance(current.name, current.depth + 1))
                 },
                 showsBottomNav = true,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.transparent)
@@ -99,7 +99,7 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
 
 }
 
-class InnerFragment : Fragment(), Navigator.TagProvider {
+class MultipleStackChildFragment : Fragment(), Navigator.TagProvider {
 
     override val stableTag: String
         get() = "${javaClass.simpleName}-$name-$depth"
@@ -114,6 +114,16 @@ class InnerFragment : Fragment(), Navigator.TagProvider {
                 .append(SpanBuilder.of(resources.getQuantityString(R.plurals.stack_depth, depth, depth))
                         .resize(0.6F)
                         .build())
+                .appendNewLine()
+                .append(SpanBuilder.of(resources.getString(R.string.clear))
+                        .resize(0.6F)
+                        .underline()
+                        .italic()
+                        .bold()
+                        .click(this) { (parentFragment?.parentFragment as? MultipleStackFragment)?.apply {
+                            innerNavigator.clear()
+                        } }
+                        .build())
                 .build()
         gravity = Gravity.CENTER
         textSize = resources.getDimensionPixelSize(R.dimen.large_text).toFloat()
@@ -122,7 +132,7 @@ class InnerFragment : Fragment(), Navigator.TagProvider {
     }
 
     companion object {
-        fun newInstance(name: String, depth: Int): InnerFragment = InnerFragment().apply {
+        fun newInstance(name: String, depth: Int): MultipleStackChildFragment = MultipleStackChildFragment().apply {
             this.name = name
             this.depth = depth
         }
