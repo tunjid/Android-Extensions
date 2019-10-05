@@ -5,9 +5,10 @@
     <string name="ble_not_supported">BLE is not supported</string>
 
     <!-- Navigation tabs -->
-    <string name="core">Core</string>
-    <string name="recycler_view">RecyclerView</string>
-    <string name="communications">Communications</string>
+    <string name="navigation">Nav</string>
+    <string name="recycler_view">Lists</string>
+    <string name="communications">Comms</string>
+    <string name="misc">Misc</string>
 
     <!-- Route Descriptions -->
     <string name="route_doggo_list">A list of hints demonstrating delegation of shared element transitions to the calling fragment.</string>
