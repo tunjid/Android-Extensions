@@ -60,6 +60,7 @@
     <string name="second">Second</string>
     <string name="third">Third</string>
     <string name="go_deeper">Go Deeper</string>
+    <string name="clear">CLEAR</string>
     <plurals name="stack_depth">
         <item quantity="one">%1$d stack deep</item>
         <item quantity="other">%1$d stacks deep</item>

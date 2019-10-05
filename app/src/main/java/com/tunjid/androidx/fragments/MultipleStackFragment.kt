@@ -31,10 +31,10 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
 
     private var transitionOption: Int = R.id.slide
 
-    private val innerNavigator: MultiStackNavigator by childMultiStackNavigationController(
+    internal val innerNavigator: MultiStackNavigator by childMultiStackNavigationController(
             R.id.inner_container,
             DESTINATIONS
-    ) { InnerFragment.newInstance(resources.getResourceEntryName(it), 1) to it.toString() }
+    ) { InnerFragment.newInstance(resources.getResourceEntryName(it), 1).run { this to stableTag }}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,6 +113,16 @@ class InnerFragment : Fragment(), Navigator.TagProvider {
                 .appendNewLine()
                 .append(SpanBuilder.of(resources.getQuantityString(R.plurals.stack_depth, depth, depth))
                         .resize(0.6F)
+                        .build())
+                .appendNewLine()
+                .append(SpanBuilder.of(resources.getString(R.string.clear))
+                        .resize(0.6F)
+                        .underline()
+                        .italic()
+                        .bold()
+                        .click(this) { (parentFragment?.parentFragment as? MultipleStackFragment)?.apply {
+                            innerNavigator.clear()
+                        } }
                         .build())
                 .build()
         gravity = Gravity.CENTER
