@@ -1,7 +1,6 @@
 package com.tunjid.androidx.navigation
 
 import android.os.Bundle
-import android.util.Log
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -75,8 +74,7 @@ class StackNavigator constructor(
 
     init {
         fragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
-            override fun onFragmentCreated(fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?) =
-                    this@StackNavigator.auditFragment(f)
+            override fun onFragmentCreated(fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?) = auditFragment(f)
         }, false)
     }
 
@@ -128,9 +126,7 @@ class StackNavigator constructor(
 
         f.tag ?: throw IllegalStateException(MSG_FRAGMENT_HAS_NO_TAG)
 
-        Log.i("TEST", "Auditing ${f.tag}")
-
-        // Make sure every fragment shown managed by us is added to the back stack
+        // Make sure every fragment created is added to the back stack
         check(fragmentTags.contains(f.tag)) {
             (MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK
                     + "\n Fragment Attached: " + f.toString()
