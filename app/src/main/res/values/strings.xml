@@ -5,14 +5,16 @@
     <string name="ble_not_supported">BLE is not supported</string>
 
     <!-- Navigation tabs -->
-    <string name="core">Core</string>
-    <string name="recycler_view">RecyclerView</string>
-    <string name="communications">Communications</string>
+    <string name="navigation">Nav</string>
+    <string name="recycler_view">Lists</string>
+    <string name="communications">Comms</string>
+    <string name="misc">Misc</string>
 
     <!-- Route Descriptions -->
     <string name="route_doggo_list">A list of hints demonstrating delegation of shared element transitions to the calling fragment.</string>
     <string name="route_doggo_rank">A list of good boyes showing drag and drop functionality.</string>
-    <string name="route_inner_stack">A demo of the MultiStackNavigator, while being a child of a MultiStackNavigator; Stack-ception.</string>
+    <string name="route_independent_stack">A demo of the StackNavigator using independent stacks within the same FragmentManager.</string>
+    <string name="route_multiple_inner_stack">A demo of the MultiStackNavigator, while being a child of a MultiStackNavigator; Stack-ception.</string>
     <string name="route_shifting_tile">A grid of shifting colorful tiles demonstrating the Diffable interface.</string>
     <string name="route_endless_tile">A grid of colorful tiles demonstrating endless scrolling with the Diffable interface.</string>
     <string name="route_ble_scan">A fragment demonstrating the use of the BLEScanner from the Communications module.</string>
@@ -60,9 +62,10 @@
     <string name="second">Second</string>
     <string name="third">Third</string>
     <string name="go_deeper">Go Deeper</string>
+    <string name="clear">CLEAR</string>
     <plurals name="stack_depth">
-        <item quantity="one">%1$d stack deep</item>
-        <item quantity="other">%1$d stacks deep</item>
+        <item quantity="one">%1$d fragment deep</item>
+        <item quantity="other">%1$d fragments deep</item>
     </plurals>
     <string name="slide">Slide in/out</string>
     <string name="cross_fade">Cross Fade</string>

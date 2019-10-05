@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
 
     override val navigator: MultiStackNavigator by multiStackNavigationController(
             R.id.content_container,
-            intArrayOf(R.id.menu_core, R.id.menu_recyclerview, R.id.menu_communications)
+            intArrayOf(R.id.menu_navigation, R.id.menu_recyclerview, R.id.menu_communications, R.id.menu_misc)
     ) { id -> RouteFragment.newInstance(id).let { it to it.stableTag } }
 
     override var uiState: UiState by globalUiDriver { navigator.currentFragment }

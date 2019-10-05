@@ -54,6 +54,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route),
             ShiftingTileFragment::class.java.simpleName -> ShiftingTileFragment.newInstance()
             EndlessTileFragment::class.java.simpleName -> EndlessTileFragment.newInstance()
             DoggoRankFragment::class.java.simpleName -> DoggoRankFragment.newInstance()
+            IndependentStackFragment::class.java.simpleName -> IndependentStackFragment.newInstance()
             MultipleStackFragment::class.java.simpleName -> MultipleStackFragment.newInstance()
             else -> newInstance(tabId) // No-op, all RouteFragment instances have the same tag
         })
