@@ -67,11 +67,11 @@ class StackNavigator constructor(
     private val FragmentManager.BackStackEntry.tag
         get() = name?.run { this.removePrefix(split("-").first() + "-") }
 
-    private val entries
+    private val baskStackEntries
         get() = fragmentManager.run { (0 until backStackEntryCount).map(this::getBackStackEntryAt).filter { it.inContainer } }
 
     private val fragmentTags
-        get() = entries.map { it.tag }
+        get() = baskStackEntries.map { it.tag }
 
     init {
         fragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
@@ -119,7 +119,7 @@ class StackNavigator constructor(
 
     override fun clear(upToTag: String?, includeMatch: Boolean) {
         // Empty string will be treated as a no-op internally
-        val tag = upToTag?.toEntry ?: entries.firstOrNull()?.name ?: ""
+        val tag = upToTag?.toEntry ?: baskStackEntries.firstOrNull()?.name ?: ""
         fragmentManager.popBackStack(tag, if (includeMatch) FragmentManager.POP_BACK_STACK_INCLUSIVE else 0)
     }
 
@@ -135,7 +135,7 @@ class StackNavigator constructor(
             (MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK
                     + "\n Fragment Attached: " + f.toString()
                     + "\n Fragment Tag: " + f.tag
-                    + "\n Backstack Entry Count: " + entries.size
+                    + "\n Backstack Entry Count: " + baskStackEntries.size
                     + "\n Tracked Fragments: " + fragmentTags)
         }
     }
