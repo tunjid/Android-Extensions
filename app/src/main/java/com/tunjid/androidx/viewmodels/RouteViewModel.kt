@@ -14,7 +14,8 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
     private val mapping = mutableMapOf(
             R.id.menu_core to listOf(
                     Route(DoggoListFragment::class.java.simpleName, formatRoute(R.string.route_doggo_list)),
-                    Route(MultipleStackFragment::class.java.simpleName, formatRoute(R.string.route_inner_stack)),
+                    Route(IndependentStackFragment::class.java.simpleName, formatRoute(R.string.route_independent_stack)),
+                    Route(MultipleStackFragment::class.java.simpleName, formatRoute(R.string.route_multiple_inner_stack)),
                     Route(HidingViewFragment::class.java.simpleName, formatRoute(R.string.route_hiding_view)),
                     Route(SpanbuilderFragment::class.java.simpleName, formatRoute(R.string.route_span_builder))
             ),
