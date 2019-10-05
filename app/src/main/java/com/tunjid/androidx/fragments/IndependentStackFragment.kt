@@ -24,13 +24,14 @@ import com.tunjid.androidx.core.text.SpanBuilder
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.StackNavigator
 import com.tunjid.androidx.navigation.childStackNavigationController
+import com.tunjid.androidx.uidrivers.crossFade
 
 
 class IndependentStackFragment : AppBaseFragment(R.layout.fragment_independent_stack) {
 
     private var backPressedCallback: OnBackPressedCallback? = null
 
-    private val containerIds = intArrayOf(R.id.quad_1, R.id.quad_2, R.id.quad_3, R.id.quad_4)
+    private val containerIds = intArrayOf(R.id.stack_1, R.id.stack_2, R.id.stack_3, R.id.stack_4)
     private val navigators = mutableMapOf<Int, StackNavigator>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,8 +49,9 @@ class IndependentStackFragment : AppBaseFragment(R.layout.fragment_independent_s
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (savedInstanceState == null) for (it in containerIds)
-            navigatorFor(it).apply { show(IndependentStackChildFragment.newInstance(resources.getResourceEntryName(containerId), 1)) }
+        if (navigators.isEmpty()) for (id in containerIds) navigatorFor(id).apply {
+            if (currentFragment == null) show(IndependentStackChildFragment.newInstance(resources.getResourceEntryName(containerId).replace("_", " "), 1))
+        }
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
@@ -64,7 +66,7 @@ class IndependentStackFragment : AppBaseFragment(R.layout.fragment_independent_s
 
     internal fun navigatorFor(id: Int) = navigators.getOrPut(id) {
         val stackNavigator by childStackNavigationController(id)
-        stackNavigator
+        stackNavigator.apply { transactionModifier = { crossFade() } }
     }
 
     companion object {

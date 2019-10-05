@@ -8,38 +8,38 @@
     android:background="@color/colorPrimary">
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/quad_1"
+        android:id="@+id/stack_1"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/quad_3"
+        app:layout_constraintBottom_toTopOf="@+id/stack_3"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/quad_2"
+        app:layout_constraintRight_toLeftOf="@+id/stack_2"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/quad_2"
+        android:id="@+id/stack_2"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/quad_4"
-        app:layout_constraintLeft_toRightOf="@+id/quad_1"
+        app:layout_constraintBottom_toTopOf="@+id/stack_4"
+        app:layout_constraintLeft_toRightOf="@+id/stack_1"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/quad_3"
+        android:id="@+id/stack_3"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/quad_4"
-        app:layout_constraintTop_toBottomOf="@+id/quad_1" />
+        app:layout_constraintRight_toLeftOf="@+id/stack_4"
+        app:layout_constraintTop_toBottomOf="@+id/stack_1" />
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/quad_4"
+        android:id="@+id/stack_4"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@+id/quad_3"
+        app:layout_constraintLeft_toRightOf="@+id/stack_3"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/quad_2" />
+        app:layout_constraintTop_toBottomOf="@+id/stack_2" />
 </androidx.constraintlayout.widget.ConstraintLayout>
