@@ -113,7 +113,7 @@ class IndependentStackChildFragment : Fragment(), Navigator.TagProvider {
         }
 
         setPadding(spacing)
-        setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+        setTextColor(ContextCompat.getColor(context, R.color.white))
         setOnClickListener {
             val parent = parentFragment as? IndependentStackFragment
             parent?.navigatorFor(this@IndependentStackChildFragment.id)?.show(newInstance(name, depth + 1))
