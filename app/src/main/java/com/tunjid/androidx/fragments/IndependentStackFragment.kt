@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import android.widget.TextView
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
@@ -29,15 +28,13 @@ import com.tunjid.androidx.uidrivers.crossFade
 
 class IndependentStackFragment : AppBaseFragment(R.layout.fragment_independent_stack) {
 
-    private var backPressedCallback: OnBackPressedCallback? = null
-
     private val containerIds = intArrayOf(R.id.stack_1, R.id.stack_2, R.id.stack_3, R.id.stack_4)
     private val navigators = mutableMapOf<Int, StackNavigator>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        backPressedCallback = activity?.onBackPressedDispatcher?.addCallback(this) {
+        activity?.onBackPressedDispatcher?.addCallback(this) {
             isEnabled =
                     if (navigator.currentFragment !== this@IndependentStackFragment) false
                     else navigators.values.asSequence().map { it.pop() }.firstOrNull { it } ?: false
@@ -116,7 +113,7 @@ class IndependentStackChildFragment : Fragment(), Navigator.TagProvider {
         }
 
         setPadding(spacing)
-        setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+        setTextColor(ContextCompat.getColor(context, R.color.white))
         setOnClickListener {
             val parent = parentFragment as? IndependentStackFragment
             parent?.navigatorFor(this@IndependentStackChildFragment.id)?.show(newInstance(name, depth + 1))

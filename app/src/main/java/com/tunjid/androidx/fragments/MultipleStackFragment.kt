@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -27,19 +26,17 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
 
     override val insetFlags: InsetFlags = InsetFlags.NO_TOP
 
-    private var backPressedCallback: OnBackPressedCallback? = null
-
     private var transitionOption: Int = R.id.slide
 
     internal val innerNavigator: MultiStackNavigator by childMultiStackNavigationController(
-            R.id.inner_container,
-            DESTINATIONS
-    ) { MultipleStackChildFragment.newInstance(resources.getResourceEntryName(it), 1).run { this to stableTag }}
+            DESTINATIONS.size,
+            R.id.inner_container
+    ) { MultipleStackChildFragment.newInstance(resources.getResourceEntryName(DESTINATIONS[it]), 1).run { this to stableTag } }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        backPressedCallback = activity?.onBackPressedDispatcher?.addCallback(this) {
+        activity?.onBackPressedDispatcher?.addCallback(this) {
             isEnabled =
                     if (navigator.currentFragment !== this@MultipleStackFragment) false
                     else innerNavigator.pop()
@@ -52,17 +49,15 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
         super.onViewCreated(view, savedInstanceState)
 
         innerNavigator.transactionModifier = { crossFade() }
-        innerNavigator.stackTransactionModifier = { selectedId ->
+        innerNavigator.stackTransactionModifier = { index ->
             when (transitionOption) {
-                R.id.slide -> slide(
-                        DESTINATIONS.indexOf(selectedId) > DESTINATIONS.indexOf(innerNavigator.activeNavigator.containerId)
-                )
+                R.id.slide -> slide(index > innerNavigator.activeIndex)
                 R.id.cross_fade -> crossFade()
             }
         }
 
         view.findViewById<ChipGroup>(R.id.tabs).setOnCheckedChangeListener { _, checkedId ->
-            if (checkedId != -1) innerNavigator.show(checkedId)
+            if (checkedId != -1) innerNavigator.show(DESTINATIONS.indexOf(checkedId))
         }
 
         view.findViewById<ChipGroup>(R.id.options).setOnCheckedChangeListener { _, checkedId ->
@@ -120,9 +115,11 @@ class MultipleStackChildFragment : Fragment(), Navigator.TagProvider {
                         .underline()
                         .italic()
                         .bold()
-                        .click(this) { (parentFragment?.parentFragment as? MultipleStackFragment)?.apply {
-                            innerNavigator.clear()
-                        } }
+                        .click(this) {
+                            (parentFragment?.parentFragment as? MultipleStackFragment)?.apply {
+                                innerNavigator.clear()
+                            }
+                        }
                         .build())
                 .build()
         gravity = Gravity.CENTER

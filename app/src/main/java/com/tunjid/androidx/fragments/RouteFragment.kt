@@ -20,10 +20,10 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route),
 
     private val viewModel: RouteViewModel by viewModels()
 
-    private var tabId: Int by args()
+    private var tabIndex: Int by args()
 
     override val stableTag: String
-        get() = "${super.stableTag}-$tabId"
+        get() = "${super.stableTag}-$tabIndex"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -40,7 +40,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route),
         ListManagerBuilder<RouteItemViewHolder, PlaceHolder.State>()
                 .withRecyclerView(view.findViewById(R.id.recycler_view))
                 .withLinearLayoutManager()
-                .withPaddedAdapter(RouteAdapter(viewModel[tabId], this))
+                .withPaddedAdapter(RouteAdapter(viewModel[tabIndex], this))
                 .build()
     }
 
@@ -56,11 +56,11 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route),
             DoggoRankFragment::class.java.simpleName -> DoggoRankFragment.newInstance()
             IndependentStackFragment::class.java.simpleName -> IndependentStackFragment.newInstance()
             MultipleStackFragment::class.java.simpleName -> MultipleStackFragment.newInstance()
-            else -> newInstance(tabId) // No-op, all RouteFragment instances have the same tag
+            else -> newInstance(tabIndex) // No-op, all RouteFragment instances have the same tag
         })
     }
 
     companion object {
-        fun newInstance(id: Int): RouteFragment = RouteFragment().apply { tabId = id }
+        fun newInstance(tabIndex: Int): RouteFragment = RouteFragment().apply { this.tabIndex = tabIndex }
     }
 }
