@@ -5,7 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
-import androidx.fragment.app.*
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.commit
+import androidx.fragment.app.commitNow
 import androidx.lifecycle.Lifecycle
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.savedstate.LifecycleSavedStateContainer
@@ -78,9 +84,10 @@ class MultiStackNavigator(
 
     private val backStack: Stack<Int> = Stack()
     private val stackFragments: List<StackFragment>
+    private val tabVisitedLookUp = BooleanArray(stackIds.size) { false }
 
     private val activeFragment: StackFragment
-        get() = stackFragments.run { firstOrNull(Fragment::isVisible) ?: first() }
+        get() = stackFragments.run { firstOrNull(Fragment::isAttached) ?: first() }
 
     val activeNavigator
         get() = activeFragment.navigator
@@ -95,22 +102,24 @@ class MultiStackNavigator(
         fragmentManager.registerFragmentLifecycleCallbacks(StackLifecycleCallback(), false)
         fragmentManager.addOnBackStackChangedListener { throw IllegalStateException("Fragments may not be added to the back stack of a FragmentManager managed by a MultiStackNavigator") }
 
-        val stack = Stack<StackFragment>()
+        val freshState = stateContainer.isFreshState
 
-        if (stateContainer.isFreshState) fragmentManager.commitNow {
-            stackIds.forEachIndexed { index, id -> add(containerId, stack.push(StackFragment.newInstance(id)), index.toString()) }
-            track(stack.firstElement())
+        if (freshState) fragmentManager.commitNow {
+            stackIds.forEach { stackId -> add(containerId, StackFragment.newInstance(stackId), stackId.toString()) }
         }
-        else fragmentManager.fragments.filterIsInstance(StackFragment::class.java).forEach { stackFragment ->
+        else fragmentManager.addedStackFragments(stackIds).forEach { stackFragment ->
             backStack.push(stackFragment.stackId)
-            stack.push(stackFragment)
         }
 
-        stackFragments = stack.sortedBy { it.index }
         stateContainer.savedState.getIntArray(NAV_STACK_ORDER)?.apply { backStack.sortBy { indexOf(it) } }
+        stateContainer.savedState.getBooleanArray(TAB_VISITED_LOOKUP)?.apply { copyInto(tabVisitedLookUp) }
+
+        stackFragments = fragmentManager.addedStackFragments(stackIds).sortedBy { it.index }
+
+        if (freshState) show(stackIds.first())
     }
 
-    fun show(@IdRes toShow: Int) = showInternal(toShow, true)
+    fun show(@IdRes stackId: Int) = showInternal(stackId, true)
 
     fun navigatorAt(index: Int) = stackFragments[index].navigator
 
@@ -131,16 +140,22 @@ class MultiStackNavigator(
 
     override fun show(fragment: Fragment, tag: String): Boolean = activeNavigator.show(fragment, tag)
 
-    private fun showInternal(@IdRes toShow: Int, addTap: Boolean) = fragmentManager.commit {
-        stackTransactionModifier?.invoke(this, toShow)
+    private fun showInternal(@IdRes stackId: Int, addTap: Boolean) = fragmentManager.commit {
+        val index = stackIds.indexOf(stackId)
+        val toShow = stackFragments[index]
+
+        if (!tabVisitedLookUp[index]) toShow.showRoot()
+        if (addTap) track(toShow)
+
+        stackTransactionModifier?.invoke(this, stackId)
 
         transactions@ for (fragment in stackFragments) when {
-            fragment.stackId == toShow && !fragment.isDetached -> continue@transactions
-            fragment.stackId == toShow && fragment.isDetached -> attach(fragment).also { if (addTap) track(fragment) }
+            fragment.stackId == stackId && !fragment.isDetached -> continue@transactions
+            fragment.stackId == stackId && fragment.isDetached -> attach(fragment)
             else -> if (!fragment.isDetached) detach(fragment)
         }
 
-        runOnCommit { stackSelectedListener?.invoke(toShow) }
+        runOnCommit { stackSelectedListener?.invoke(stackId) }
     }
 
     private fun track(tab: StackFragment) = tab.run {
@@ -149,8 +164,13 @@ class MultiStackNavigator(
         stateContainer.savedState.putIntArray(NAV_STACK_ORDER, backStack.toIntArray())
     }
 
+    private fun StackFragment.showRoot() = index.let {
+        if (!tabVisitedLookUp[it]) rootFunction(stackId).apply { navigator.show(first, second) }
+        tabVisitedLookUp[it] = true
+        stateContainer.savedState.putBooleanArray(TAB_VISITED_LOOKUP, tabVisitedLookUp)
+    }
+
     private inner class StackLifecycleCallback : FragmentManager.FragmentLifecycleCallbacks() {
-        val seenMap = BooleanArray(stackIds.size) { false }
 
         override fun onFragmentCreated(fm: FragmentManager, fragment: Fragment, savedInstanceState: Bundle?) {
             if (fragment.id != containerId) return
@@ -164,11 +184,6 @@ class MultiStackNavigator(
         override fun onFragmentViewCreated(fm: FragmentManager, fragment: Fragment, view: View, savedInstanceState: Bundle?) {
             if (fragment.id != containerId) return
             check(fragment is StackFragment) { "Only Stack Fragments may be added to a container View managed by a MultiStackNavigator" }
-
-            fragment.index.let {
-                if (!seenMap[it]) rootFunction(fragment.stackId).apply { fragment.navigator.show(first, second) }
-                seenMap[it] = true
-            }
         }
 
         override fun onFragmentResumed(fm: FragmentManager, fragment: Fragment) {
@@ -181,6 +196,7 @@ class MultiStackNavigator(
 }
 
 const val NAV_STACK_ORDER = "navState"
+const val TAB_VISITED_LOOKUP = "tabVisitedLookup"
 
 class StackFragment : Fragment() {
 
@@ -202,3 +218,10 @@ class StackFragment : Fragment() {
         internal fun newInstance(id: Int) = StackFragment().apply { stackId = id }
     }
 }
+
+private val Fragment.isAttached get() = !isDetached
+
+private fun FragmentManager.addedStackFragments(stackIds: IntArray) = stackIds
+        .map(Int::toString)
+        .map(::findFragmentByTag)
+        .filterIsInstance(StackFragment::class.java)
