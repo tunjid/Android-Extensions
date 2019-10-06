@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -27,8 +26,6 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
 
     override val insetFlags: InsetFlags = InsetFlags.NO_TOP
 
-    private var backPressedCallback: OnBackPressedCallback? = null
-
     private var transitionOption: Int = R.id.slide
 
     internal val innerNavigator: MultiStackNavigator by childMultiStackNavigationController(
@@ -39,7 +36,7 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        backPressedCallback = activity?.onBackPressedDispatcher?.addCallback(this) {
+        activity?.onBackPressedDispatcher?.addCallback(this) {
             isEnabled =
                     if (navigator.currentFragment !== this@MultipleStackFragment) false
                     else innerNavigator.pop()
