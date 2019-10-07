@@ -8,14 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
-import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
-import com.google.android.material.shape.CornerFamily
-import com.google.android.material.shape.MaterialShapeDrawable
-import com.google.android.material.shape.ShapeAppearanceModel
+import com.google.android.material.button.MaterialButton
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
@@ -81,28 +78,23 @@ class IndependentStackChildFragment : Fragment(), Navigator.TagProvider {
 
     var depth: Int by args()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = TextView(inflater.context).apply {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = MaterialButton(inflater.context).apply {
         val spacing = context.resources.getDimensionPixelSize(R.dimen.single_margin)
 
-        gravity = Gravity.CENTER
-
+        backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorPrimaryDark))
+        strokeColor = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.white))
+        strokeWidth = context.resources.getDimensionPixelSize(R.dimen.eigth_margin)
         textSize = resources.getDimensionPixelSize(R.dimen.small_text).toFloat()
+        transformationMethod = null
+        gravity = Gravity.CENTER
+        cornerRadius = spacing
 
         text = SpanBuilder.of(name)
                 .appendNewLine()
                 .append(SpanBuilder.of(resources.getQuantityString(R.plurals.stack_depth, depth, depth))
-                        .resize(0.6F)
+                        .resize(0.5F)
                         .build())
                 .build()
-
-        background = MaterialShapeDrawable.createWithElevationOverlay(context, elevation).apply {
-            setTint(ContextCompat.getColor(context, R.color.colorPrimary))
-            strokeColor = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.white))
-            strokeWidth = context.resources.getDimensionPixelSize(R.dimen.eigth_margin).toFloat()
-            shapeAppearanceModel = ShapeAppearanceModel.builder()
-                    .setAllCorners(CornerFamily.ROUNDED, spacing)
-                    .build()
-        }
 
         layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT).apply {
             gravity = Gravity.CENTER

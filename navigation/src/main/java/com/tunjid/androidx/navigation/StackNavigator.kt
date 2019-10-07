@@ -2,10 +2,7 @@ package com.tunjid.androidx.navigation
 
 import android.os.Bundle
 import androidx.annotation.IdRes
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.*
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -42,8 +39,6 @@ class StackNavigator constructor(
         internal val fragmentManager: FragmentManager,
         @param:IdRes @field:IdRes @get:IdRes override val containerId: Int
 ) : Navigator {
-
-//    internal val fragmentTags = Stack<String>()
 
     /**
      * Allows for the customization or augmentation of the [FragmentTransaction] that will show
@@ -90,22 +85,23 @@ class StackNavigator constructor(
      * exists and will be restored instead.
      */
     override fun show(fragment: Fragment, tag: String): Boolean {
-        val fragmentShown: Boolean
-        val currentFragmentTag = fragmentTags.lastOrNull()
+        val tags = fragmentTags
+        val currentFragmentTag = tags.lastOrNull()
         if (currentFragmentTag != null && currentFragmentTag == tag) return false
 
-        val fragmentAlreadyExists = fragmentTags.contains(tag)
+        val fragmentAlreadyExists = tags.contains(tag)
 
-        fragmentShown = !fragmentAlreadyExists
+        val fragmentShown = !fragmentAlreadyExists
 
         val fragmentToShow =
                 (if (fragmentAlreadyExists) fragmentManager.findFragmentByTag(tag)
                 else fragment) ?: throw NullPointerException(MSG_DODGY_FRAGMENT)
 
-        fragmentManager.beginTransaction().apply { transactionModifier?.invoke(this, fragment) }
-                .addToBackStack(tag.toEntry)
-                .replace(containerId, fragmentToShow, tag)
-                .commit()
+        fragmentManager.commit {
+            transactionModifier?.invoke(this, fragment)
+            replace(containerId, fragmentToShow, tag)
+            addToBackStack(tag.toEntry)
+        }
 
         return fragmentShown
     }

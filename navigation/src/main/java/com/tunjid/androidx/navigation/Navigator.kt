@@ -64,14 +64,14 @@ interface Navigator {
      * the incoming Fragment. Implementers typically configure mappings for
      * shared element transitions, or other kinds of animations.
      *
-     * It's convenient to let  Fragments implement this interface, along with [TagProvider].
+     * It's convenient to let Fragments implement this interface, along with [TagProvider].
      */
     interface TransactionModifier {
         fun augmentTransaction(transaction: FragmentTransaction, incomingFragment: Fragment)
     }
 
     /**
-     * Interface for a class that hosts a [StackNavigator]
+     * Interface for a class that hosts a [Navigator]
      */
     interface NavigationController {
         val navigator: Navigator
