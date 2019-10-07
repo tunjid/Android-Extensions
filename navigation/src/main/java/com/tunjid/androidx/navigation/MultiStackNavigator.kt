@@ -85,7 +85,6 @@ class MultiStackNavigator(
     private val indices = 0 until stackCount
     private val backStack: Stack<Int> = Stack()
     private val stackFragments: List<StackFragment>
-    private val tabVisitedLookUp = BooleanArray(stackCount) { false }
 
     private val activeFragment: StackFragment
         get() = stackFragments.run { firstOrNull(Fragment::isAttached) ?: first() }
@@ -113,8 +112,6 @@ class MultiStackNavigator(
         }
 
         stateContainer.savedState.getIntArray(NAV_STACK_ORDER)?.apply { backStack.sortBy { indexOf(it) } }
-        stateContainer.savedState.getBooleanArray(TAB_VISITED_LOOKUP)?.apply { copyInto(tabVisitedLookUp) }
-
         stackFragments = fragmentManager.addedStackFragments(indices)
 
         if (freshState) show(0)
@@ -143,8 +140,6 @@ class MultiStackNavigator(
 
     private fun showInternal(index: Int, addTap: Boolean) = fragmentManager.commit {
         val toShow = stackFragments[index]
-
-        if (!tabVisitedLookUp[index]) toShow.showRoot()
         if (addTap) track(toShow)
 
         stackTransactionModifier?.invoke(this, index)
@@ -164,39 +159,28 @@ class MultiStackNavigator(
         stateContainer.savedState.putIntArray(NAV_STACK_ORDER, backStack.toIntArray())
     }
 
-    private fun StackFragment.showRoot() = index.let {
-        if (!tabVisitedLookUp[it]) rootFunction(index).apply { navigator.show(first, second) }
-        tabVisitedLookUp[it] = true
-        stateContainer.savedState.putBooleanArray(TAB_VISITED_LOOKUP, tabVisitedLookUp)
-    }
+    private fun StackFragment.showRoot() = rootFunction(index).apply { navigator.show(first, second) }
 
     private inner class StackLifecycleCallback : FragmentManager.FragmentLifecycleCallbacks() {
 
-        override fun onFragmentCreated(fm: FragmentManager, fragment: Fragment, savedInstanceState: Bundle?) {
-            if (fragment.id != containerId) return
-            check(fragment is StackFragment) { "Only Stack Fragments may be added to a container View managed by a MultiStackNavigator" }
+        override fun onFragmentCreated(fm: FragmentManager, fragment: Fragment, savedInstanceState: Bundle?) = fragment.run {
+            if (id != this@MultiStackNavigator.containerId) return
+            check(this is StackFragment) { "Only Stack Fragments may be added to a container View managed by a MultiStackNavigator" }
 
             if (!stateContainer.isFreshState) return
 
-            if (fragment.index != 0) fm.beginTransaction().detach(fragment).commit()
+            if (index != 0) fm.commit { detach(this@run) }
         }
 
-        override fun onFragmentViewCreated(fm: FragmentManager, fragment: Fragment, view: View, savedInstanceState: Bundle?) {
-            if (fragment.id != containerId) return
-            check(fragment is StackFragment) { "Only Stack Fragments may be added to a container View managed by a MultiStackNavigator" }
-        }
+        override fun onFragmentResumed(fm: FragmentManager, fragment: Fragment) = fragment.run {
+            if (id != this@MultiStackNavigator.containerId) return
+            check(this is StackFragment) { "Only Stack Fragments may be added to a container View managed by a MultiStackNavigator" }
 
-        override fun onFragmentResumed(fm: FragmentManager, fragment: Fragment) {
-            if (fragment.id != containerId) return
-            check(fragment is StackFragment) { "Only Stack Fragments may be added to a container View managed by a MultiStackNavigator" }
-
-            fragment.navigator.transactionModifier = this@MultiStackNavigator.transactionModifier
+            navigator.transactionModifier = this@MultiStackNavigator.transactionModifier
+            if (hasNoRoot) showRoot()
         }
     }
 }
-
-const val NAV_STACK_ORDER = "navState"
-const val TAB_VISITED_LOOKUP = "tabVisitedLookup"
 
 class StackFragment : Fragment() {
 
@@ -204,6 +188,8 @@ class StackFragment : Fragment() {
 
     internal var index: Int by args()
     private var containerId: Int by args()
+
+    internal val hasNoRoot get() = navigator.currentFragment == null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -219,6 +205,8 @@ class StackFragment : Fragment() {
         internal fun newInstance(index: Int) = StackFragment().apply { this.index = index; containerId = View.generateViewId() }
     }
 }
+
+const val NAV_STACK_ORDER = "navState"
 
 private val Fragment.isAttached get() = !isDetached
 
