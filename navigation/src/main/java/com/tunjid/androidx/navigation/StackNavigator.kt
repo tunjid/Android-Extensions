@@ -78,13 +78,13 @@ class StackNavigator constructor(
      * if an identical instance of it already exists in the [FragmentManager] under the specified
      * tag.
      *
-     * @param fragment    The fragment to show.
+     * @param fragment    The fragment to push.
      * @param tag         the value to supply to this fragment for it's backstack entry name and tag
      * It takes precedence over that supplied by the [transactionModifier]
      * @return true if the a fragment provided will be shown, false if the fragment instance already
      * exists and will be restored instead.
      */
-    override fun show(fragment: Fragment, tag: String): Boolean {
+    override fun push(fragment: Fragment, tag: String): Boolean {
         val tags = fragmentTags
         val currentFragmentTag = tags.lastOrNull()
         if (currentFragmentTag != null && currentFragmentTag == tag) return false

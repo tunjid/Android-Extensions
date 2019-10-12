@@ -95,7 +95,7 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
 
     override fun onDoggoClicked(doggo: Doggo) {
         Doggo.transitionDoggo = doggo
-        navigator.show(AdoptDoggoFragment.newInstance(doggo))
+        navigator.push(AdoptDoggoFragment.newInstance(doggo))
     }
 
     override fun onDoggoImageLoaded(doggo: Doggo) {

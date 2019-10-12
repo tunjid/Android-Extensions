@@ -36,7 +36,7 @@ interface Navigator {
     /**
      * Show the specified fragment
      */
-    fun show(fragment: Fragment, tag: String): Boolean
+    fun push(fragment: Fragment, tag: String): Boolean
 
     /**
      * Attempts to show the fragment provided, retrieving it from the back stack
@@ -45,9 +45,9 @@ interface Navigator {
      *
      * This is a convenience method for showing a [Fragment] that implements the [Navigator.TagProvider]
      * interface
-     * @see show
+     * @see push
      */
-    fun <T> show(fragment: T) where T : Fragment, T : TagProvider = show(fragment, fragment.stableTag)
+    fun <T> push(fragment: T) where T : Fragment, T : TagProvider = push(fragment, fragment.stableTag)
 
     /**
      * An interface to provide unique tags for [Fragment]. Fragment implementers typically delegate
