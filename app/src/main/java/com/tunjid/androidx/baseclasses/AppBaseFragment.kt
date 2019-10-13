@@ -24,7 +24,7 @@ abstract class AppBaseFragment(
 
     override val stableTag: String = javaClass.simpleName
 
-    override val navigator by activityNavigationController()
+    override val navigator by activityNavigationController<Navigator>()
 
     override var uiState: UiState
         get() = activityUiState

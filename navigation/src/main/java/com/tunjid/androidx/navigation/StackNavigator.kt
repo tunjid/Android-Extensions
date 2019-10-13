@@ -2,19 +2,11 @@ package com.tunjid.androidx.navigation
 
 import android.os.Bundle
 import androidx.annotation.IdRes
-import androidx.fragment.app.*
-import kotlin.properties.ReadOnlyProperty
-import kotlin.reflect.KProperty
-
-/**
- * Convenience method for [Fragment] delegation to a [FragmentActivity] when implementing
- * [Navigator.NavigationController]
- */
-fun Fragment.activityNavigationController() = object : ReadOnlyProperty<Fragment, Navigator> {
-    override operator fun getValue(thisRef: Fragment, property: KProperty<*>): Navigator =
-            (activity as? Navigator.NavigationController)?.navigator
-                    ?: throw IllegalStateException("The hosting Activity is not a NavigationController")
-}
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.commit
 
 fun Fragment.childStackNavigationController(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
     StackNavigator(childFragmentManager, containerId)
