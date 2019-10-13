@@ -10,12 +10,12 @@ import kotlin.reflect.KProperty
 
 /**
  * Convenience method for [Fragment] delegation to a [FragmentActivity] when implementing
- * [Navigator.NavigationController]
+ * [Navigator.Controller]
  */
-inline fun <reified T : Navigator> Fragment.activityNavigationController() = object : ReadOnlyProperty<Fragment, T> {
+inline fun <reified T : Navigator> Fragment.activityNavigatorController() = object : ReadOnlyProperty<Fragment, T> {
     override operator fun getValue(thisRef: Fragment, property: KProperty<*>): T =
-            (activity as? Navigator.NavigationController)?.navigator as? T
-                    ?: throw IllegalStateException("The hosting Activity is not a NavigationController")
+            (activity as? Navigator.Controller)?.navigator as? T
+                    ?: throw IllegalStateException("The hosting Activity is not a Navigator Controller")
 }
 
 interface Navigator {
@@ -30,6 +30,8 @@ interface Navigator {
      * Returns the current visible Fragment the User can interact with
      */
     val currentFragment: Fragment?
+
+    fun peek() : Fragment?
 
     /**
      * Pops the current fragment off the stack, up until the last fragment.
@@ -86,7 +88,7 @@ interface Navigator {
     /**
      * Interface for a class that hosts a [Navigator]
      */
-    interface NavigationController {
+    interface Controller {
         val navigator: Navigator
     }
 }

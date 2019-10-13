@@ -98,6 +98,10 @@ class StackNavigator constructor(
         return fragmentShown
     }
 
+    override fun peek(): Fragment? = fragmentTags.run {
+        elementAtOrNull(lastIndex - 1).let(fragmentManager::findFragmentByTag)
+    }
+
     override fun pop(): Boolean = fragmentTags.run {
         if (size > 1) clear(last(), true).let { true }
         else false

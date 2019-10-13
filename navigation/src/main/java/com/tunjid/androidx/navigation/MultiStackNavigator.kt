@@ -119,6 +119,13 @@ class MultiStackNavigator(
 
     fun show(index: Int) = showInternal(index, true)
 
+    override fun peek(): Fragment? = when (val peeked = activeNavigator.peek()) {
+        is Fragment -> peeked
+        else -> visitStack.run { elementAtOrNull(lastIndex - 1) }?.let { penultimate ->
+            stackFragments.elementAtOrNull(penultimate)?.navigator?.currentFragment
+        }
+    }
+
     /**
      * Pops the current fragment off the stack in focus. If The current
      * Fragment is the only Fragment on it's stack, the stack that was active before the current
