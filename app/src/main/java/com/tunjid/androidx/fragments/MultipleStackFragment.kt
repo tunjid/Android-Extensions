@@ -55,7 +55,7 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
         innerNavigator.stackTransactionModifier = { index ->
             when (transitionOption) {
                 R.id.slide -> slide(index > innerNavigator.activeIndex)
-                R.id.cross_fade -> crossFade()te
+                R.id.cross_fade -> crossFade()
             }
         }
 
