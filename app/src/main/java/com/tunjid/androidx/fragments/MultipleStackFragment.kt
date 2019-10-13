@@ -48,15 +48,18 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val tabs = view.findViewById<ChipGroup>(R.id.tabs)
+
+        innerNavigator.stackSelectedListener = { tabs.check(DESTINATIONS[it]) }
         innerNavigator.transactionModifier = { crossFade() }
         innerNavigator.stackTransactionModifier = { index ->
             when (transitionOption) {
                 R.id.slide -> slide(index > innerNavigator.activeIndex)
-                R.id.cross_fade -> crossFade()
+                R.id.cross_fade -> crossFade()te
             }
         }
 
-        view.findViewById<ChipGroup>(R.id.tabs).setOnCheckedChangeListener { _, checkedId ->
+        tabs.setOnCheckedChangeListener { _, checkedId ->
             if (checkedId != -1) innerNavigator.show(DESTINATIONS.indexOf(checkedId))
         }
 
