@@ -48,7 +48,7 @@ class IndependentStackFragment : AppBaseFragment(R.layout.fragment_independent_s
         super.onViewCreated(view, savedInstanceState)
 
         if (navigators.isEmpty()) for (id in CONTAINER_IDS) navigatorFor(id).apply {
-            if (currentFragment == null) show(IndependentStackChildFragment.newInstance(name(containerId), 1))
+            if (currentFragment == null) push(IndependentStackChildFragment.newInstance(name(containerId), 1))
         }
 
         uiState = uiState.copy(
@@ -75,7 +75,7 @@ class IndependentStackFragment : AppBaseFragment(R.layout.fragment_independent_s
     internal fun addTosStack(id: Int, depth: Int, name: String) {
         visitOrder.remove(id)
         visitOrder.addFirst(id)
-        navigatorFor(id).show(IndependentStackChildFragment.newInstance(name, depth))
+        navigatorFor(id).push(IndependentStackChildFragment.newInstance(name, depth))
     }
 
     private fun name(@IdRes containerId: Int) =

@@ -45,7 +45,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route),
     }
 
     override fun onItemClicked(route: Route) {
-        navigator.show(when (route.destination) {
+        navigator.push(when (route.destination) {
             DoggoListFragment::class.java.simpleName -> DoggoListFragment.newInstance()
             BleScanFragment::class.java.simpleName -> BleScanFragment.newInstance()
             NsdScanFragment::class.java.simpleName -> NsdScanFragment.newInstance()

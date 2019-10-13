@@ -83,7 +83,7 @@ class MultiStackNavigator(
         }
 
     private val indices = 0 until stackCount
-    private val backStack: Stack<Int> = Stack()
+    private val visitStack: Stack<Int> = Stack()
     private val stackFragments: List<StackFragment>
 
     private val activeFragment: StackFragment
@@ -108,18 +108,16 @@ class MultiStackNavigator(
             indices.forEach { index -> add(containerId, StackFragment.newInstance(index), index.toString()) }
         }
         else fragmentManager.addedStackFragments(indices).forEach { stackFragment ->
-            backStack.push(stackFragment.index)
+            visitStack.push(stackFragment.index)
         }
 
-        stateContainer.savedState.getIntArray(NAV_STACK_ORDER)?.apply { backStack.sortBy { indexOf(it) } }
+        stateContainer.savedState.getIntArray(NAV_STACK_ORDER)?.apply { visitStack.sortBy { indexOf(it) } }
         stackFragments = fragmentManager.addedStackFragments(indices)
 
         if (freshState) show(0)
     }
 
     fun show(index: Int) = showInternal(index, true)
-
-    fun navigatorAt(index: Int) = stackFragments[index].navigator
 
     /**
      * Pops the current fragment off the stack in focus. If The current
@@ -130,13 +128,13 @@ class MultiStackNavigator(
      */
     override fun pop(): Boolean = when {
         activeFragment.navigator.pop() -> true
-        backStack.run { remove(activeFragment.index); isEmpty() } -> false
-        else -> showInternal(backStack.peek(), false).let { true }
+        visitStack.run { remove(activeFragment.index); isEmpty() } -> false
+        else -> showInternal(visitStack.peek(), false).let { true }
     }
 
     override fun clear(upToTag: String?, includeMatch: Boolean) = activeNavigator.clear(upToTag, includeMatch)
 
-    override fun show(fragment: Fragment, tag: String): Boolean = activeNavigator.show(fragment, tag)
+    override fun push(fragment: Fragment, tag: String): Boolean = activeNavigator.push(fragment, tag)
 
     private fun showInternal(index: Int, addTap: Boolean) = fragmentManager.commit {
         val toShow = stackFragments[index]
@@ -154,12 +152,12 @@ class MultiStackNavigator(
     }
 
     private fun track(tab: StackFragment) = tab.run {
-        if (backStack.contains(index)) backStack.remove(index)
-        backStack.push(index)
-        stateContainer.savedState.putIntArray(NAV_STACK_ORDER, backStack.toIntArray())
+        if (visitStack.contains(index)) visitStack.remove(index)
+        visitStack.push(index)
+        stateContainer.savedState.putIntArray(NAV_STACK_ORDER, visitStack.toIntArray())
     }
 
-    private fun StackFragment.showRoot() = rootFunction(index).apply { navigator.show(first, second) }
+    private fun StackFragment.showRoot() = rootFunction(index).apply { navigator.push(first, second) }
 
     private inner class StackLifecycleCallback : FragmentManager.FragmentLifecycleCallbacks() {
 
