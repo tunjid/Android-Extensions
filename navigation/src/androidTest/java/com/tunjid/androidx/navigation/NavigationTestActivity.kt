@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.test.platform.app.InstrumentationRegistry
 
 /**
  * Test Activity
@@ -38,4 +39,9 @@ class NavigationTestActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(contentView)
     }
+}
+
+fun <T: Navigator> T.waitForIdleSyncAfter(action: T.() -> Unit) {
+    action(this)
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync()
 }

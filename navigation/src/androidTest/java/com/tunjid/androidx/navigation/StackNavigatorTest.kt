@@ -57,8 +57,7 @@ class StackNavigatorTest {
     fun testFragmentTagsAdded() {
         val testFragment = NavigationTestFragment.newInstance(TAG_A)
 
-       assertTrue( stackNavigator.push(testFragment))
-        getInstrumentation().waitForIdleSync()
+        stackNavigator.waitForIdleSyncAfter { assertTrue(push(testFragment)) }
 
         assertTrue(stackNavigator.fragmentTags.contains(testFragment.stableTag))
         assertTrue(stackNavigator.fragmentTags.size == 1)
@@ -69,8 +68,7 @@ class StackNavigatorTest {
     fun testFragmentTagsRestored() {
         val testFragment = NavigationTestFragment.newInstance(TAG_A)
 
-       assertTrue( stackNavigator.push(testFragment))
-        getInstrumentation().waitForIdleSync()
+        stackNavigator.waitForIdleSyncAfter { assertTrue(push(testFragment)) }
 
         // create new instance of fragentStateManager and confirm all
         // the old tags are restored
@@ -100,8 +98,7 @@ class StackNavigatorTest {
         val testFragmentA = NavigationTestFragment.newInstance(TAG_A)
         val testFragmentB = NavigationTestFragment.newInstance(TAG_B)
 
-        assertTrue(stackNavigator.push(testFragmentA))
-        getInstrumentation().waitForIdleSync()
+        stackNavigator.waitForIdleSyncAfter { assertTrue(push(testFragmentA)) }
         fragmentManager.beginTransaction()
                 .replace(activity.ignoredLayoutId, testFragmentB, testFragmentB.stableTag)
                 .commit()
@@ -110,24 +107,20 @@ class StackNavigatorTest {
         assertEquals(1, stackNavigator.fragmentTags.size)
         assertEquals(listOf(TAG_A), stackNavigator.fragmentTags)
     }
-    
+
     @Test
     @Throws(Throwable::class)
     fun testAddAndRemove() {
         val testFragmentA = NavigationTestFragment.newInstance(TAG_A)
         val testFragmentB = NavigationTestFragment.newInstance(TAG_B)
 
-        assertTrue(stackNavigator.push(testFragmentA))
-        getInstrumentation().waitForIdleSync()
-
-        assertTrue(stackNavigator.push(testFragmentB))
-        getInstrumentation().waitForIdleSync()
+        stackNavigator.waitForIdleSyncAfter { assertTrue(push(testFragmentA)) }
+        stackNavigator.waitForIdleSyncAfter { assertTrue(push(testFragmentB)) }
 
         assertEquals(2, stackNavigator.fragmentTags.size)
         assertSame(testFragmentA, stackNavigator.peek())
 
-        stackNavigator.pop()
-        getInstrumentation().waitForIdleSync()
+        stackNavigator.waitForIdleSyncAfter { pop() }
 
         assertEquals(1, stackNavigator.fragmentTags.size)
         assertFalse(stackNavigator.pop())
@@ -139,15 +132,11 @@ class StackNavigatorTest {
         val testFragmentA = NavigationTestFragment.newInstance(TAG_A)
         val testFragmentDuplicateA = NavigationTestFragment.newInstance(TAG_A)
 
-        assertTrue(stackNavigator.push(testFragmentA))
-
-        getInstrumentation().waitForIdleSync()
+        stackNavigator.waitForIdleSyncAfter { assertTrue(push(testFragmentA)) }
 
         assertEquals(1, stackNavigator.fragmentTags.size)
 
-        assertFalse(stackNavigator.push(testFragmentDuplicateA))
-
-        getInstrumentation().waitForIdleSync()
+        stackNavigator.waitForIdleSyncAfter { push(testFragmentDuplicateA) }
 
         assertEquals(1, stackNavigator.fragmentTags.size)
     }
@@ -161,33 +150,26 @@ class StackNavigatorTest {
         val testFragmentD = NavigationTestFragment.newInstance(TAG_D)
         val testFragmentE = NavigationTestFragment.newInstance(TAG_E)
 
-        assertTrue(stackNavigator.push(testFragmentA))
-        getInstrumentation().waitForIdleSync()
+        stackNavigator.waitForIdleSyncAfter { assertTrue(push(testFragmentA)) }
 
         assertEquals(1, stackNavigator.fragmentTags.size)
 
-        assertTrue(stackNavigator.push(testFragmentB))
-        getInstrumentation().waitForIdleSync()
+        stackNavigator.waitForIdleSyncAfter { assertTrue(push(testFragmentB)) }
 
         assertEquals(2, stackNavigator.fragmentTags.size)
 
-        stackNavigator.clear(includeMatch = true)
-        getInstrumentation().waitForIdleSync()
+        stackNavigator.waitForIdleSyncAfter { clear(includeMatch = true) }
 
         assertEquals(0, stackNavigator.fragmentTags.size)
 
-        assertTrue(stackNavigator.push(testFragmentC))
-        getInstrumentation().waitForIdleSync()
-        assertTrue(stackNavigator.push(testFragmentD))
-        getInstrumentation().waitForIdleSync()
-        assertTrue(stackNavigator.push(testFragmentE))
-        getInstrumentation().waitForIdleSync()
+        stackNavigator.waitForIdleSyncAfter { assertTrue(push(testFragmentC)) }
+        stackNavigator.waitForIdleSyncAfter { assertTrue(push(testFragmentD)) }
+        stackNavigator.waitForIdleSyncAfter { assertTrue(push(testFragmentE)) }
 
         assertEquals(3, stackNavigator.fragmentTags.size)
         assertEquals(listOf(TAG_C, TAG_D, TAG_E), stackNavigator.fragmentTags)
 
-        stackNavigator.clear(TAG_C)
-        getInstrumentation().waitForIdleSync()
+        stackNavigator.waitForIdleSyncAfter { stackNavigator.clear(TAG_C) }
 
         assertEquals(1, stackNavigator.fragmentTags.size)
         assertEquals(listOf(TAG_C), stackNavigator.fragmentTags)
