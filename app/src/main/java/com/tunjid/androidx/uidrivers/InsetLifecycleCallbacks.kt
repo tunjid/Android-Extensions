@@ -60,7 +60,7 @@ class InsetLifecycleCallbacks(
         topInsetView.layoutParams.height = topInset
         bottomInsetView.layoutParams.height = bottomInset
 
-        adjustInsetForFragment(stackNavigatorSource()?.currentFragment)
+        adjustInsetForFragment(stackNavigatorSource()?.current)
 
         this.insetsApplied = true
         return insets

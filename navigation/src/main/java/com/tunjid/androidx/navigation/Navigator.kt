@@ -27,11 +27,14 @@ interface Navigator {
     val containerId: Int
 
     /**
-     * Returns the current visible Fragment the User can interact with
+     * The current visible [Fragment] the User can interact with
      */
-    val currentFragment: Fragment?
+    val current: Fragment?
 
-    fun peek() : Fragment?
+    /**
+     * The [Fragment] that will become the [current] following a [pop]
+     */
+    val previous: Fragment?
 
     /**
      * Pops the current fragment off the stack, up until the last fragment.

@@ -36,7 +36,7 @@ class IndependentStackFragment : AppBaseFragment(R.layout.fragment_independent_s
 
         activity?.onBackPressedDispatcher?.addCallback(this) {
             isEnabled =
-                    if (navigator.currentFragment !== this@IndependentStackFragment) false
+                    if (navigator.current !== this@IndependentStackFragment) false
                     else visitOrder.asSequence().map(this@IndependentStackFragment::navigatorFor).map(StackNavigator::pop).firstOrNull { it }
                             ?: false
 
@@ -48,7 +48,7 @@ class IndependentStackFragment : AppBaseFragment(R.layout.fragment_independent_s
         super.onViewCreated(view, savedInstanceState)
 
         if (navigators.isEmpty()) for (id in CONTAINER_IDS) navigatorFor(id).apply {
-            if (currentFragment == null) push(IndependentStackChildFragment.newInstance(name(containerId), 1))
+            if (current == null) push(IndependentStackChildFragment.newInstance(name(containerId), 1))
         }
 
         uiState = uiState.copy(

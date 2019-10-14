@@ -84,24 +84,24 @@ class MultiStackNavigatorTest {
         multiStackNavigator.waitForIdleSyncAfter { push(testFragmentC) }
         multiStackNavigator.waitForIdleSyncAfter { push(testFragmentD) }
 
-        assertSame(testFragmentD, multiStackNavigator.currentFragment)
+        assertSame(testFragmentD, multiStackNavigator.current)
 
         multiStackNavigator.waitForIdleSyncAfter { show(0) }
 
-        assertSame(testFragmentB, multiStackNavigator.currentFragment)
-        assertSame(testFragmentD, multiStackNavigator.navigatorAt(2).currentFragment)
+        assertSame(testFragmentB, multiStackNavigator.current)
+        assertSame(testFragmentD, multiStackNavigator.navigatorAt(2).current)
 
         multiStackNavigator.waitForIdleSyncAfter { pop() }
 
-        assertSame(testFragmentA, multiStackNavigator.currentFragment)
+        assertSame(testFragmentA, multiStackNavigator.current)
 
         multiStackNavigator.waitForIdleSyncAfter { show(2) }
 
-        assertSame(testFragmentD, multiStackNavigator.currentFragment)
+        assertSame(testFragmentD, multiStackNavigator.current)
 
         multiStackNavigator.waitForIdleSyncAfter { show(1) }
 
-        assertEquals("1", multiStackNavigator.currentFragment?.tag)
+        assertEquals("1", multiStackNavigator.current?.tag)
     }
 
     @Test
@@ -113,10 +113,10 @@ class MultiStackNavigatorTest {
         multiStackNavigator.waitForIdleSyncAfter { push(testFragmentA) }
         multiStackNavigator.waitForIdleSyncAfter { push(testFragmentB) }
 
-        assertSame(testFragmentA, multiStackNavigator.peek())
+        assertSame(testFragmentA, multiStackNavigator.previous)
 
         multiStackNavigator.waitForIdleSyncAfter { show(1) }
 
-        assertSame(testFragmentB, multiStackNavigator.peek())
+        assertSame(testFragmentB, multiStackNavigator.previous)
     }
 }
