@@ -48,6 +48,9 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val tabs = view.findViewById<ChipGroup>(R.id.tabs)
+
+        innerNavigator.stackSelectedListener = { tabs.check(DESTINATIONS[it]) }
         innerNavigator.transactionModifier = { crossFade() }
         innerNavigator.stackTransactionModifier = { index ->
             when (transitionOption) {
@@ -56,7 +59,7 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
             }
         }
 
-        view.findViewById<ChipGroup>(R.id.tabs).setOnCheckedChangeListener { _, checkedId ->
+        tabs.setOnCheckedChangeListener { _, checkedId ->
             if (checkedId != -1) innerNavigator.show(DESTINATIONS.indexOf(checkedId))
         }
 
@@ -73,7 +76,7 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
                 fabShows = true,
                 fabClickListener = View.OnClickListener {
                     val current = innerNavigator.currentFragment as? MultipleStackChildFragment
-                    if (current != null) innerNavigator.show(MultipleStackChildFragment.newInstance(current.name, current.depth + 1))
+                    if (current != null) innerNavigator.push(MultipleStackChildFragment.newInstance(current.name, current.depth + 1))
                 },
                 showsBottomNav = true,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.transparent)

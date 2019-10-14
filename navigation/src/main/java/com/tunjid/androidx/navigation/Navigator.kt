@@ -2,8 +2,21 @@ package com.tunjid.androidx.navigation
 
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
+
+/**
+ * Convenience method for [Fragment] delegation to a [FragmentActivity] when implementing
+ * [Navigator.Controller]
+ */
+inline fun <reified T : Navigator> Fragment.activityNavigatorController() = object : ReadOnlyProperty<Fragment, T> {
+    override operator fun getValue(thisRef: Fragment, property: KProperty<*>): T =
+            (activity as? Navigator.Controller)?.navigator as? T
+                    ?: throw IllegalStateException("The hosting Activity is not a Navigator Controller")
+}
 
 interface Navigator {
 
@@ -17,6 +30,8 @@ interface Navigator {
      * Returns the current visible Fragment the User can interact with
      */
     val currentFragment: Fragment?
+
+    fun peek() : Fragment?
 
     /**
      * Pops the current fragment off the stack, up until the last fragment.
@@ -36,7 +51,7 @@ interface Navigator {
     /**
      * Show the specified fragment
      */
-    fun show(fragment: Fragment, tag: String): Boolean
+    fun push(fragment: Fragment, tag: String): Boolean
 
     /**
      * Attempts to show the fragment provided, retrieving it from the back stack
@@ -45,9 +60,9 @@ interface Navigator {
      *
      * This is a convenience method for showing a [Fragment] that implements the [Navigator.TagProvider]
      * interface
-     * @see show
+     * @see push
      */
-    fun <T> show(fragment: T) where T : Fragment, T : TagProvider = show(fragment, fragment.stableTag)
+    fun <T> push(fragment: T) where T : Fragment, T : TagProvider = push(fragment, fragment.stableTag)
 
     /**
      * An interface to provide unique tags for [Fragment]. Fragment implementers typically delegate
@@ -64,16 +79,16 @@ interface Navigator {
      * the incoming Fragment. Implementers typically configure mappings for
      * shared element transitions, or other kinds of animations.
      *
-     * It's convenient to let  Fragments implement this interface, along with [TagProvider].
+     * It's convenient to let Fragments implement this interface, along with [TagProvider].
      */
     interface TransactionModifier {
         fun augmentTransaction(transaction: FragmentTransaction, incomingFragment: Fragment)
     }
 
     /**
-     * Interface for a class that hosts a [StackNavigator]
+     * Interface for a class that hosts a [Navigator]
      */
-    interface NavigationController {
+    interface Controller {
         val navigator: Navigator
     }
 }

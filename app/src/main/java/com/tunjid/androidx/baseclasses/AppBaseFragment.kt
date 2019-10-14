@@ -3,7 +3,7 @@ package com.tunjid.androidx.baseclasses
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import com.tunjid.androidx.navigation.Navigator
-import com.tunjid.androidx.navigation.activityNavigationController
+import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.uidrivers.GlobalUiController
 import com.tunjid.androidx.uidrivers.InsetProvider
 import com.tunjid.androidx.uidrivers.UiState
@@ -16,7 +16,7 @@ abstract class AppBaseFragment(
         InsetProvider,
         GlobalUiController,
         Navigator.TagProvider,
-        Navigator.NavigationController {
+        Navigator.Controller {
 
     private var activityUiState by activityGlobalUiController()
 
@@ -24,7 +24,7 @@ abstract class AppBaseFragment(
 
     override val stableTag: String = javaClass.simpleName
 
-    override val navigator by activityNavigationController()
+    override val navigator by activityNavigatorController<Navigator>()
 
     override var uiState: UiState
         get() = activityUiState

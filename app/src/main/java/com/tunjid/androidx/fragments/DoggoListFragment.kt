@@ -90,7 +90,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
 
     override fun onDoggoClicked(doggo: Doggo) {
         Doggo.transitionDoggo = doggo
-        navigator.show(DoggoPagerFragment.newInstance())
+        navigator.push(DoggoPagerFragment.newInstance())
     }
 
     override fun onDoggoImageLoaded(doggo: Doggo) {

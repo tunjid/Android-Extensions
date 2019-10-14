@@ -17,7 +17,7 @@ import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.crossFade
 import com.tunjid.androidx.uidrivers.globalUiDriver
 
-class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiController, Navigator.NavigationController {
+class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiController, Navigator.Controller {
 
     override val navigator: MultiStackNavigator by multiStackNavigationController(
             tabs.size,

@@ -8,14 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
-import android.widget.TextView
 import androidx.activity.addCallback
+import androidx.annotation.IdRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
-import com.google.android.material.shape.CornerFamily
-import com.google.android.material.shape.MaterialShapeDrawable
-import com.google.android.material.shape.ShapeAppearanceModel
+import com.google.android.material.button.MaterialButton
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
@@ -24,20 +22,23 @@ import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.StackNavigator
 import com.tunjid.androidx.navigation.childStackNavigationController
 import com.tunjid.androidx.uidrivers.crossFade
+import java.util.*
 
 
 class IndependentStackFragment : AppBaseFragment(R.layout.fragment_independent_stack) {
 
-    private val containerIds = intArrayOf(R.id.stack_1, R.id.stack_2, R.id.stack_3, R.id.stack_4)
     private val navigators = mutableMapOf<Int, StackNavigator>()
+    private val visitOrder = ArrayDeque<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        savedInstanceState?.getIntArray(ORDER)?.apply { visitOrder.addAll(this.asList()) }
 
         activity?.onBackPressedDispatcher?.addCallback(this) {
             isEnabled =
                     if (navigator.currentFragment !== this@IndependentStackFragment) false
-                    else navigators.values.asSequence().map { it.pop() }.firstOrNull { it } ?: false
+                    else visitOrder.asSequence().map(this@IndependentStackFragment::navigatorFor).map(StackNavigator::pop).firstOrNull { it }
+                            ?: false
 
             if (!isEnabled) activity?.onBackPressed()
         }
@@ -46,8 +47,8 @@ class IndependentStackFragment : AppBaseFragment(R.layout.fragment_independent_s
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (navigators.isEmpty()) for (id in containerIds) navigatorFor(id).apply {
-            if (currentFragment == null) show(IndependentStackChildFragment.newInstance(resources.getResourceEntryName(containerId).replace("_", " "), 1))
+        if (navigators.isEmpty()) for (id in CONTAINER_IDS) navigatorFor(id).apply {
+            if (currentFragment == null) push(IndependentStackChildFragment.newInstance(name(containerId), 1))
         }
 
         uiState = uiState.copy(
@@ -61,10 +62,24 @@ class IndependentStackFragment : AppBaseFragment(R.layout.fragment_independent_s
         )
     }
 
-    internal fun navigatorFor(id: Int) = navigators.getOrPut(id) {
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putIntArray(ORDER, visitOrder.toIntArray())
+        super.onSaveInstanceState(outState)
+    }
+
+    private fun navigatorFor(id: Int) = navigators.getOrPut(id) {
         val stackNavigator by childStackNavigationController(id)
         stackNavigator.apply { transactionModifier = { crossFade() } }
     }
+
+    internal fun addTosStack(id: Int, depth: Int, name: String) {
+        visitOrder.remove(id)
+        visitOrder.addFirst(id)
+        navigatorFor(id).push(IndependentStackChildFragment.newInstance(name, depth))
+    }
+
+    private fun name(@IdRes containerId: Int) =
+            resources.getResourceEntryName(containerId).replace("_", " ")
 
     companion object {
         fun newInstance(): IndependentStackFragment = IndependentStackFragment().apply { arguments = Bundle() }
@@ -81,28 +96,23 @@ class IndependentStackChildFragment : Fragment(), Navigator.TagProvider {
 
     var depth: Int by args()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = TextView(inflater.context).apply {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = MaterialButton(inflater.context).apply {
         val spacing = context.resources.getDimensionPixelSize(R.dimen.single_margin)
 
-        gravity = Gravity.CENTER
-
+        backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorPrimaryDark))
+        strokeColor = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.white))
+        strokeWidth = context.resources.getDimensionPixelSize(R.dimen.eigth_margin)
         textSize = resources.getDimensionPixelSize(R.dimen.small_text).toFloat()
+        transformationMethod = null
+        gravity = Gravity.CENTER
+        cornerRadius = spacing
 
         text = SpanBuilder.of(name)
                 .appendNewLine()
                 .append(SpanBuilder.of(resources.getQuantityString(R.plurals.stack_depth, depth, depth))
-                        .resize(0.6F)
+                        .resize(0.5F)
                         .build())
                 .build()
-
-        background = MaterialShapeDrawable.createWithElevationOverlay(context, elevation).apply {
-            setTint(ContextCompat.getColor(context, R.color.colorPrimary))
-            strokeColor = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.white))
-            strokeWidth = context.resources.getDimensionPixelSize(R.dimen.eigth_margin).toFloat()
-            shapeAppearanceModel = ShapeAppearanceModel.builder()
-                    .setAllCorners(CornerFamily.ROUNDED, spacing)
-                    .build()
-        }
 
         layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT).apply {
             gravity = Gravity.CENTER
@@ -116,7 +126,7 @@ class IndependentStackChildFragment : Fragment(), Navigator.TagProvider {
         setTextColor(ContextCompat.getColor(context, R.color.white))
         setOnClickListener {
             val parent = parentFragment as? IndependentStackFragment
-            parent?.navigatorFor(this@IndependentStackChildFragment.id)?.show(newInstance(name, depth + 1))
+            parent?.addTosStack(this@IndependentStackChildFragment.id, depth + 1, name)
         }
     }
 
@@ -127,3 +137,6 @@ class IndependentStackChildFragment : Fragment(), Navigator.TagProvider {
         }
     }
 }
+
+private const val ORDER = "ORDER"
+private val CONTAINER_IDS = intArrayOf(R.id.stack_1, R.id.stack_2, R.id.stack_3, R.id.stack_4)

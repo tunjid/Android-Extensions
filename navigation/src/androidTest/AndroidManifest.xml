@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.tunjid.androidx.navigation">
+
+    <application android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity android:name="com.tunjid.androidx.navigation.NavigationTestActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
