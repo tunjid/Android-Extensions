@@ -28,7 +28,7 @@ fun FragmentActivity.stackNavigationController(@IdRes containerId: Int): Lazy<St
  */
 
 class StackNavigator constructor(
-        internal val fragmentManager: FragmentManager,
+        private val fragmentManager: FragmentManager,
         @param:IdRes @field:IdRes @get:IdRes override val containerId: Int
 ) : Navigator {
 
@@ -56,7 +56,7 @@ class StackNavigator constructor(
     private val baskStackEntries
         get() = fragmentManager.run { (0 until backStackEntryCount).map(this::getBackStackEntryAt).filter { it.inContainer } }
 
-    private val fragmentTags
+    internal val fragmentTags
         get() = baskStackEntries.map { it.tag }
 
     init {
