@@ -119,6 +119,8 @@ class MultiStackNavigator(
 
     fun show(index: Int) = showInternal(index, true)
 
+    fun navigatorAt(index: Int) = stackFragments[index].navigator
+
     override fun peek(): Fragment? = when (val peeked = activeNavigator.peek()) {
         is Fragment -> peeked
         else -> visitStack.run { elementAtOrNull(lastIndex - 1) }?.let { penultimate ->
