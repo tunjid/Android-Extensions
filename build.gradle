@@ -42,6 +42,15 @@ buildscript {
         dynamicAnimations = 'androidx.dynamicanimation:dynamicanimation:1.1.0-alpha02'
         dynamicAnimationsKtx = 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha02'
 
+        testCore = 'androidx.test:core:1.0.0'
+
+        mockitoCore = 'org.mockito:mockito-core:2.23.0'
+        mockitoAndroid = 'org.mockito:mockito-android:2.23.0'
+
+        espressoCore = 'androidx.test.espresso:espresso-core:3.1.0'
+        espressoContrib = 'androidx.test.espresso:espresso-contrib:3.1.0'
+        espressoIdlingResource = 'androidx.test.espresso.idling:idling-concurrent:3.1.0'
+
         ktxCore = 'androidx.core:core-ktx:1.0.2'
         kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 

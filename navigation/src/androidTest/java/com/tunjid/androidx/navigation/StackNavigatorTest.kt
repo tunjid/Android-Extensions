@@ -3,14 +3,8 @@ package com.tunjid.androidx.navigation
 import androidx.fragment.app.FragmentManager
 import androidx.test.annotation.UiThreadTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
-import com.tunjid.androidx.core.testclasses.TestActivity
-import com.tunjid.androidx.core.testclasses.TestFragment
-import com.tunjid.androidx.savedstate.savedStateFor
-import com.tunjid.androidx.test.TestUtils
-import com.tunjid.androidx.test.idlingresources.FragmentGoneIdlingResource
-import com.tunjid.androidx.test.idlingresources.FragmentVisibleIdlingResource
-import com.tunjid.androidx.test.resources.TestIdler
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -18,7 +12,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
-import java.util.concurrent.TimeUnit
+
 
 /**
  * Tests the [StackNavigator]
@@ -27,16 +21,21 @@ import java.util.concurrent.TimeUnit
  * Created by tj.dahunsi on 4/29/17.
  */
 
+private const val TAG_A = "A"
+private const val TAG_B = "B"
+private const val TAG_C = "C"
+private const val TAG_D = "D"
+private const val TAG_E = "E"
+
 @RunWith(AndroidJUnit4::class)
 class StackNavigatorTest {
 
-    private var activity: TestActivity? = null
-    private var stackNavigator: StackNavigator? = null
-    private var testIdler: TestIdler? = null
+    private lateinit var activity: NavigationTestActivity
+    private lateinit var stackNavigator: StackNavigator
 
     @Rule
     @JvmField
-    var activityRule: ActivityTestRule<*> = ActivityTestRule(TestActivity::class.java)
+    var activityRule: ActivityTestRule<*> = ActivityTestRule(NavigationTestActivity::class.java)
 
     @Rule
     @JvmField
@@ -44,78 +43,48 @@ class StackNavigatorTest {
 
     @Before
     fun setUp() {
-        testIdler = TestIdler(DEFAULT_TIME_OUT.toLong(), TimeUnit.SECONDS)
-        activity = activityRule.activity as TestActivity
-        stackNavigator = StackNavigator(savedStateFor(activity!!, "TEST"), activity!!.supportFragmentManager, activity!!.containerId)
+        activity = activityRule.activity as NavigationTestActivity
+        stackNavigator = StackNavigator(activity.supportFragmentManager, activity.containerId)
     }
 
     @After
     fun tearDown() {
-        activity?.finish()
-        activity = null
-        testIdler = null
-
-        // Unregister all idling resources before new tests start
-        TestUtils.unregisterAllIdlingResources()
+        activity.finish()
     }
 
     @Test
     @Throws(Throwable::class)
     fun testFragmentTagsAdded() {
-        val testIdler = testIdler ?: throw IllegalStateException("testIdler not initialized")
-        val activity = activity ?: throw IllegalStateException("Activity not initialized")
-        val fragmentStackNavigator = stackNavigator
-                ?: throw IllegalStateException("stackNavigator not initialized")
+        val testFragment = NavigationTestFragment.newInstance(TAG_A)
 
-        val fragmentManager: FragmentManager = activity.supportFragmentManager
-        val testFragment = TestFragment.newInstance(TAG_A)
+       assertTrue( stackNavigator.push(testFragment))
+        getInstrumentation().waitForIdleSync()
 
-        fragmentManager.beginTransaction()
-                .replace(activity.containerId, testFragment, TAG_A)
-                .addToBackStack(TAG_A)
-                .commit()
-
-        val resource = FragmentVisibleIdlingResource(fragmentManager, TAG_A, true)
-        testIdler.till(resource)
-
-        assertTrue(fragmentStackNavigator.fragmentTags.contains(TAG_A))
-        assertTrue(fragmentStackNavigator.fragmentTags.size == 1)
+        assertTrue(stackNavigator.fragmentTags.contains(testFragment.stableTag))
+        assertTrue(stackNavigator.fragmentTags.size == 1)
     }
 
     @Test
     @Throws(Throwable::class)
     fun testFragmentTagsRestored() {
-        val testIdler = testIdler ?: throw IllegalStateException("testIdler not initialized")
-        val activity = activity ?: throw IllegalStateException("Activity not initialized")
-        val fragmentStackNavigator = stackNavigator
-                ?: throw IllegalStateException("stackNavigator not initialized")
+        val testFragment = NavigationTestFragment.newInstance(TAG_A)
 
-        val fragmentManager = fragmentStackNavigator.fragmentManager
-        val testFragment = TestFragment.newInstance(TAG_A)
-
-        fragmentManager.beginTransaction()
-                .replace(activity.containerId, testFragment, TAG_A)
-                .addToBackStack(TAG_A)
-                .commit()
-
-        val resource = FragmentVisibleIdlingResource(fragmentManager, TAG_A, true)
-        testIdler.till(resource)
+       assertTrue( stackNavigator.push(testFragment))
+        getInstrumentation().waitForIdleSync()
 
         // create new instance of fragentStateManager and confirm all
         // the old tags are restored
-        val copy = StackNavigator(savedStateFor(activity, "OTHER"), activity.supportFragmentManager, activity.containerId)
+        val copy = StackNavigator(activity.supportFragmentManager, activity.containerId)
 
-        assertTrue(copy.fragmentTags.contains(TAG_A))
+        assertTrue(copy.fragmentTags.contains(testFragment.stableTag))
         assertTrue(copy.fragmentTags.size == 1)
     }
 
     @Test//(expected = IllegalStateException.class)
     @UiThreadTest
     fun testExceptionNotAddedToBackStack() {
-        val activity = activity ?: throw IllegalStateException("Activity not initialized")
-
         val fragmentManager: FragmentManager = activity.supportFragmentManager
-        val testFragment = TestFragment.newInstance(TAG_A)
+        val testFragment = NavigationTestFragment.newInstance(TAG_A)
 
         expectedException.expect(IllegalStateException::class.java)
         expectedException.expectMessage(StackNavigator.MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK)
@@ -125,83 +94,103 @@ class StackNavigatorTest {
                 .commitNow()
     }
 
+    @Test//(expected = IllegalStateException.class)
+    fun testIndependentContainer() {
+        val fragmentManager: FragmentManager = activity.supportFragmentManager
+        val testFragmentA = NavigationTestFragment.newInstance(TAG_A)
+        val testFragmentB = NavigationTestFragment.newInstance(TAG_B)
+
+        assertTrue(stackNavigator.push(testFragmentA))
+        getInstrumentation().waitForIdleSync()
+        fragmentManager.beginTransaction()
+                .replace(activity.ignoredLayoutId, testFragmentB, testFragmentB.stableTag)
+                .commit()
+        getInstrumentation().waitForIdleSync()
+
+        assertEquals(1, stackNavigator.fragmentTags.size)
+        assertEquals(listOf(TAG_A), stackNavigator.fragmentTags)
+    }
+    
     @Test
     @Throws(Throwable::class)
     fun testAddAndRemove() {
-        val testIdler = testIdler ?: throw IllegalStateException("testIdler not initialized")
-        val activity = activity ?: throw IllegalStateException("Activity not initialized")
+        val testFragmentA = NavigationTestFragment.newInstance(TAG_A)
+        val testFragmentB = NavigationTestFragment.newInstance(TAG_B)
 
-        val fragmentManager: FragmentManager = activity.supportFragmentManager
-        val testFragmentA = TestFragment.newInstance(TAG_A)
-        val testFragmentB = TestFragment.newInstance(TAG_B)
+        assertTrue(stackNavigator.push(testFragmentA))
+        getInstrumentation().waitForIdleSync()
 
-        fragmentManager.beginTransaction()
-                .replace(activity.containerId, testFragmentA, testFragmentA.stableTag)
-                .addToBackStack(testFragmentA.stableTag)
-                .commit()
+        assertTrue(stackNavigator.push(testFragmentB))
+        getInstrumentation().waitForIdleSync()
 
-        testIdler.till(FragmentVisibleIdlingResource(activity, testFragmentA.stableTag, true))
+        assertEquals(2, stackNavigator.fragmentTags.size)
+        assertSame(testFragmentA, stackNavigator.peek())
 
-        fragmentManager.beginTransaction()
-                .replace(activity.containerId, testFragmentB, testFragmentB.stableTag)
-                .addToBackStack(testFragmentB.stableTag)
-                .commit()
+        stackNavigator.pop()
+        getInstrumentation().waitForIdleSync()
 
-        testIdler.till(FragmentVisibleIdlingResource(activity, testFragmentB.stableTag, true))
-
-        assertEquals(fragmentManager.backStackEntryCount, 2)
-
-        fragmentManager.popBackStack()
-
-        testIdler.till(FragmentGoneIdlingResource(activity, testFragmentB.stableTag, true))
-
-        assertEquals(fragmentManager.backStackEntryCount, 1)
-
-        fragmentManager.popBackStack()
-
-        testIdler.till(FragmentGoneIdlingResource(activity, testFragmentA.stableTag, true))
-
-        assertEquals(fragmentManager.backStackEntryCount, 0)
+        assertEquals(1, stackNavigator.fragmentTags.size)
+        assertFalse(stackNavigator.pop())
     }
 
     @Test
     @Throws(Throwable::class)
-    fun testIgnoredId() {
-        val testIdler = testIdler ?: throw IllegalStateException("testIdler not initialized")
-        val activity = activity ?: throw IllegalStateException("Activity not initialized")
-        val fragmentStackNavigator = stackNavigator
-                ?: throw IllegalStateException("stackNavigator not initialized")
+    fun testNoDoublePushSameTag() {
+        val testFragmentA = NavigationTestFragment.newInstance(TAG_A)
+        val testFragmentDuplicateA = NavigationTestFragment.newInstance(TAG_A)
 
-        val fragmentManager: FragmentManager = activity.supportFragmentManager
-        val testFragmentA = TestFragment.newInstance(TAG_A)
-        val testFragmentB = TestFragment.newInstance(TAG_B)
+        assertTrue(stackNavigator.push(testFragmentA))
 
-        fragmentManager.beginTransaction()
-                .replace(activity.containerId, testFragmentA, testFragmentA.stableTag)
-                .addToBackStack(testFragmentA.stableTag)
-                .commit()
+        getInstrumentation().waitForIdleSync()
 
-        testIdler.till(FragmentVisibleIdlingResource(activity, testFragmentA.stableTag, true))
+        assertEquals(1, stackNavigator.fragmentTags.size)
 
-        assertEquals(fragmentManager.backStackEntryCount, 1)
-        assertEquals(fragmentManager.backStackEntryCount, fragmentStackNavigator.fragmentTags.size)
+        assertFalse(stackNavigator.push(testFragmentDuplicateA))
 
-        fragmentManager.beginTransaction()
-                .replace(activity.ignoredLayoutId, testFragmentB, testFragmentB.stableTag)
-                .addToBackStack(testFragmentB.stableTag)
-                .commit()
+        getInstrumentation().waitForIdleSync()
 
-        testIdler.till(FragmentVisibleIdlingResource(activity, testFragmentB.stableTag, true))
-
-        assertEquals(fragmentManager.backStackEntryCount, 2)
-        assertFalse(fragmentManager.backStackEntryCount == fragmentStackNavigator.fragmentTags.size)
+        assertEquals(1, stackNavigator.fragmentTags.size)
     }
 
-    companion object {
+    @Test
+    @Throws(Throwable::class)
+    fun testClear() {
+        val testFragmentA = NavigationTestFragment.newInstance(TAG_A)
+        val testFragmentB = NavigationTestFragment.newInstance(TAG_B)
+        val testFragmentC = NavigationTestFragment.newInstance(TAG_C)
+        val testFragmentD = NavigationTestFragment.newInstance(TAG_D)
+        val testFragmentE = NavigationTestFragment.newInstance(TAG_E)
 
-        private const val DEFAULT_TIME_OUT = 5
+        assertTrue(stackNavigator.push(testFragmentA))
+        getInstrumentation().waitForIdleSync()
 
-        private const val TAG_A = "A"
-        private const val TAG_B = "B"
+        assertEquals(1, stackNavigator.fragmentTags.size)
+
+        assertTrue(stackNavigator.push(testFragmentB))
+        getInstrumentation().waitForIdleSync()
+
+        assertEquals(2, stackNavigator.fragmentTags.size)
+
+        stackNavigator.clear(includeMatch = true)
+        getInstrumentation().waitForIdleSync()
+
+        assertEquals(0, stackNavigator.fragmentTags.size)
+
+        assertTrue(stackNavigator.push(testFragmentC))
+        getInstrumentation().waitForIdleSync()
+        assertTrue(stackNavigator.push(testFragmentD))
+        getInstrumentation().waitForIdleSync()
+        assertTrue(stackNavigator.push(testFragmentE))
+        getInstrumentation().waitForIdleSync()
+
+        assertEquals(3, stackNavigator.fragmentTags.size)
+        assertEquals(listOf(TAG_C, TAG_D, TAG_E), stackNavigator.fragmentTags)
+
+        stackNavigator.clear(TAG_C)
+        getInstrumentation().waitForIdleSync()
+
+        assertEquals(1, stackNavigator.fragmentTags.size)
+        assertEquals(listOf(TAG_C), stackNavigator.fragmentTags)
     }
+
 }
