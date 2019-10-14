@@ -21,16 +21,16 @@ There are 4 modules:
 
 build.gradle lines
 
-    implementation 'com.tunjid.androidx:constraintlayout:1.0.0-alpha03'
-    implementation 'com.tunjid.androidx:communications:1.0.0-alpha03'
-    implementation 'com.tunjid.androidx:recyclerview:1.0.0-alpha03'
-    implementation 'com.tunjid.androidx:navigation:1.0.0-alpha05'
-    implementation 'com.tunjid.androidx:savedstate:1.0.0-alpha03'
-    implementation 'com.tunjid.androidx:functions:1.0.0-alpha03'
-    implementation 'com.tunjid.androidx:material:1.0.0-alpha03'
-    implementation 'com.tunjid.androidx:core:1.0.0-alpha03'
-    implementation 'com.tunjid.androidx:view:1.0.0-alpha03'
-    implementation 'com.tunjid.androidx:test:1.0.0-alpha03'
+    implementation 'com.tunjid.androidx:constraintlayout:1.0.0-beta01'
+    implementation 'com.tunjid.androidx:communications:1.0.0-beta01'
+    implementation 'com.tunjid.androidx:recyclerview:1.0.0-beta01'
+    implementation 'com.tunjid.androidx:navigation:1.0.0-beta01'
+    implementation 'com.tunjid.androidx:savedstate:1.0.0-beta01'
+    implementation 'com.tunjid.androidx:functions:1.0.0-beta01'
+    implementation 'com.tunjid.androidx:material:1.0.0-beta01'
+    implementation 'com.tunjid.androidx:core:1.0.0-beta01'
+    implementation 'com.tunjid.androidx:view:1.0.0-beta01'
+    implementation 'com.tunjid.androidx:test:1.0.0-beta01'
 
 Projects that use This library include:
 
