@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
             R.id.content_container
     ) { index -> RouteFragment.newInstance(index).let { it to it.stableTag } }
 
-    override var uiState: UiState by globalUiDriver { navigator.currentFragment }
+    override var uiState: UiState by globalUiDriver { navigator.current }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         findViewById<BottomNavigationView>(R.id.bottom_navigation).apply {
             navigator.stackSelectedListener = { menu.findItem(tabs[it])?.isChecked = true }
             navigator.transactionModifier = { incomingFragment ->
-                val current = navigator.currentFragment
+                val current = navigator.current
                 if (current is Navigator.TransactionModifier) current.augmentTransaction(this, incomingFragment)
                 else crossFade()
             }

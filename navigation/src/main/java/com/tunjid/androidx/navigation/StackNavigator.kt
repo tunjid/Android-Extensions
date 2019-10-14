@@ -41,7 +41,7 @@ class StackNavigator constructor(
     /**
      * Gets the last fragment added to the [FragmentManager]
      */
-    override val currentFragment: Fragment?
+    override val current: Fragment?
         get() = fragmentManager.findFragmentById(containerId)
 
     private val String.toEntry
@@ -98,9 +98,10 @@ class StackNavigator constructor(
         return fragmentShown
     }
 
-    override fun peek(): Fragment? = fragmentTags.run {
-        elementAtOrNull(lastIndex - 1).let(fragmentManager::findFragmentByTag)
-    }
+    override val previous: Fragment?
+        get() = fragmentTags.run {
+            elementAtOrNull(lastIndex - 1).let(fragmentManager::findFragmentByTag)
+        }
 
     override fun pop(): Boolean = fragmentTags.run {
         if (size > 1) clear(last(), true).let { true }

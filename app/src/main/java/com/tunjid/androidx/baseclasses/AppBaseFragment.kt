@@ -29,7 +29,7 @@ abstract class AppBaseFragment(
     override var uiState: UiState
         get() = activityUiState
         set(value) {
-            if (navigator.currentFragment === this) activityUiState = value
+            if (navigator.current === this) activityUiState = value
         }
 
 }

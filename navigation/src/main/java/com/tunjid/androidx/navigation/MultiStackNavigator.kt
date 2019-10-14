@@ -95,8 +95,8 @@ class MultiStackNavigator(
     val activeNavigator
         get() = activeFragment.navigator
 
-    override val currentFragment: Fragment?
-        get() = activeNavigator.currentFragment
+    override val current: Fragment?
+        get() = activeNavigator.current
 
     init {
         fragmentManager.registerFragmentLifecycleCallbacks(StackLifecycleCallback(), false)
@@ -121,12 +121,13 @@ class MultiStackNavigator(
 
     fun navigatorAt(index: Int) = stackFragments[index].navigator
 
-    override fun peek(): Fragment? = when (val peeked = activeNavigator.peek()) {
-        is Fragment -> peeked
-        else -> visitStack.run { elementAtOrNull(lastIndex - 1) }?.let { penultimate ->
-            stackFragments.elementAtOrNull(penultimate)?.navigator?.currentFragment
+    override val previous: Fragment?
+        get() = when (val peeked = activeNavigator.previous) {
+            is Fragment -> peeked
+            else -> visitStack.run { elementAtOrNull(lastIndex - 1) }?.let { penultimate ->
+                stackFragments.elementAtOrNull(penultimate)?.navigator?.current
+            }
         }
-    }
 
     /**
      * Pops the current fragment off the stack in focus. If The current
@@ -196,7 +197,7 @@ class StackFragment : Fragment() {
     internal var index: Int by args()
     private var containerId: Int by args()
 
-    internal val hasNoRoot get() = navigator.currentFragment == null
+    internal val hasNoRoot get() = navigator.current == null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

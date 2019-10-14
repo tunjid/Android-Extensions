@@ -38,7 +38,7 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
 
         activity?.onBackPressedDispatcher?.addCallback(this) {
             isEnabled =
-                    if (navigator.currentFragment !== this@MultipleStackFragment) false
+                    if (navigator.current !== this@MultipleStackFragment) false
                     else innerNavigator.pop()
 
             if (!isEnabled) activity?.onBackPressed()
@@ -75,7 +75,7 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
                 fabIcon = R.drawable.ic_bullseye_24dp,
                 fabShows = true,
                 fabClickListener = View.OnClickListener {
-                    val current = innerNavigator.currentFragment as? MultipleStackChildFragment
+                    val current = innerNavigator.current as? MultipleStackChildFragment
                     if (current != null) innerNavigator.push(MultipleStackChildFragment.newInstance(current.name, current.depth + 1))
                 },
                 showsBottomNav = true,

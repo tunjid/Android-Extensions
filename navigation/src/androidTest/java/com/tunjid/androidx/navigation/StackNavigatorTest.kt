@@ -70,7 +70,7 @@ class StackNavigatorTest {
 
         stackNavigator.waitForIdleSyncAfter { assertTrue(push(testFragment)) }
 
-        // create new instance of fragentStateManager and confirm all
+        // create new instance of StackNavigator and confirm all
         // the old tags are restored
         val copy = StackNavigator(activity.supportFragmentManager, activity.containerId)
 
@@ -118,7 +118,7 @@ class StackNavigatorTest {
         stackNavigator.waitForIdleSyncAfter { assertTrue(push(testFragmentB)) }
 
         assertEquals(2, stackNavigator.fragmentTags.size)
-        assertSame(testFragmentA, stackNavigator.peek())
+        assertSame(testFragmentA, stackNavigator.previous)
 
         stackNavigator.waitForIdleSyncAfter { pop() }
 
