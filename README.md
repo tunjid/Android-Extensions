@@ -6,7 +6,7 @@
 ![](https://cdn-images-1.medium.com/max/1600/1*sxTblN6YkLnGSoNjuEfGaw.gif)  |  ![](https://cdn-images-1.medium.com/max/1600/1*5tbALvA4vm5S00g7TMsQ6A.gif)
 
 This repository is a collection of modules to help bootstrap an Android Application.
-There are 4 modules:
+There are 10 modules:
 
 1. App: A sample app demoing the modules in the repository. 
 2. Core: A few added utilities to the core Android KTX libraries.
@@ -28,7 +28,7 @@ build.gradle lines
     implementation 'com.tunjid.androidx:savedstate:1.0.0-beta01'
     implementation 'com.tunjid.androidx:functions:1.0.0-beta01'
     implementation 'com.tunjid.androidx:material:1.0.0-beta01'
-    implementation 'com.tunjid.androidx:core:1.0.0-beta01'
+    implementation 'com.tunjid.androidx:core:1.0.0-beta02'
     implementation 'com.tunjid.androidx:view:1.0.0-beta01'
     implementation 'com.tunjid.androidx:test:1.0.0-beta01'
 
