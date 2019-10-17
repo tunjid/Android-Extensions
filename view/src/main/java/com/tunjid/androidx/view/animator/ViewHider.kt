@@ -63,7 +63,7 @@ class ViewHider<T : View> private constructor(
         if (this.isVisible == visible) return
 
         // View hasn't been laid out yet and has it's observer attached
-        if (!view.isLaidOut) return view.doOnPreDraw { toggle(visible) }
+        if (!view.isLaidOut) return view.doOnPreDraw { toggle(visible) }.let { Unit }
 
         this.isVisible = visible
 
