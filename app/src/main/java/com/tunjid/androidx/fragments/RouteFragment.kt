@@ -56,6 +56,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route),
             DoggoRankFragment::class.java.simpleName -> DoggoRankFragment.newInstance()
             IndependentStackFragment::class.java.simpleName -> IndependentStackFragment.newInstance()
             MultipleStackFragment::class.java.simpleName -> MultipleStackFragment.newInstance()
+            HardServiceConnectionFragment::class.java.simpleName -> HardServiceConnectionFragment.newInstance()
             else -> newInstance(tabIndex) // No-op, all RouteFragment instances have the same tag
         })
     }

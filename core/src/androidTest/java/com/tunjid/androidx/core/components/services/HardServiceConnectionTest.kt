@@ -29,16 +29,16 @@ class HardServiceConnectionTest {
     @get:Rule
     val serviceRule = ServiceTestRule()
 
-    private lateinit var connection: HardServiceConnection<TestService>
     private lateinit var context: Context
+    private lateinit var connection: HardServiceConnection<TestService>
 
     private fun intent() = Intent(ApplicationProvider.getApplicationContext<Application>(), TestService::class.java)
 
     @Before
     @Throws(Exception::class)
     fun setUp() {
-        connection = HardServiceConnection(TestService::class.java)
         context = getInstrumentation().context
+        connection = HardServiceConnection(context, TestService::class.java)
         assertFalse(HardServiceConnection.isServiceRunning(TestService::class.java, context))
     }
 
@@ -58,7 +58,7 @@ class HardServiceConnectionTest {
     fun testBindWithCallback() {
         var bound: TestService? = null
 
-        connection = HardServiceConnection(TestService::class.java) {
+        connection = HardServiceConnection(context, TestService::class.java) {
             assertNotNull(it)
             bound = it
         }
@@ -69,8 +69,15 @@ class HardServiceConnectionTest {
         assertSame(connection.boundService, bound)
     }
 
+    @Test
+    fun testUnbind() {
+        bind()
+        assertNotNull(connection.boundService)
+    }
+
 
     private fun bind() {
+        connection.bind()
         val binder: IBinder = serviceRule.bindService(intent(), connection, Context.BIND_AUTO_CREATE)
         require(binder is SelfBinder<*>) { "Bound Service is not a SelfBinder" }
     }

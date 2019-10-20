@@ -19,11 +19,10 @@ import android.util.Log
  */
 
 class HardServiceConnection<T> @JvmOverloads constructor(
+        private val context: Context,
         private val serviceClass: Class<T>,
         private val bindCallback: ((T) -> Unit)? = null
 ) : ServiceConnection where T : Service, T : SelfBindingService<T> {
-
-    private var bindingContext: Context? = null
 
     var boundService: T? = null
         private set
@@ -38,39 +37,31 @@ class HardServiceConnection<T> @JvmOverloads constructor(
 
     override fun onServiceDisconnected(name: ComponentName) {
         boundService = null
-        bindingContext = null
     }
 
     /**
      * Binds the typed [Service] to the supplied context
      */
-    fun bind(context: Context, flags: Int = Context.BIND_AUTO_CREATE, intentModifier: Intent.() -> Unit) {
-        if (bindingContext != null) unbindService() // In case previously bound
-        bindingContext = context
-        context.bindService(Intent(context, serviceClass).apply(intentModifier), this, flags)
-    }
+    fun bind(flags: Int = Context.BIND_AUTO_CREATE, intentModifier: Intent.() -> Unit = {}) =
+            context.bindService(Intent(context, serviceClass).apply(intentModifier), this, flags)
 
     /**
      * Convenience method for starting the typed [Service]
      */
-    fun start(context: Context, intentModifier: Intent.() -> Unit) {
-        context.startService(Intent(context, serviceClass).apply(intentModifier))
-    }
+    fun start(intentModifier: Intent.() -> Unit = {}) =
+            context.startService(Intent(context, serviceClass).apply(intentModifier))
 
     /**
      * Unbinds the service from the last [Context] instance it was bound to. Returns true if
      * there was a [Service] bound to this [HardServiceConnection], false otherwise
      */
-    fun unbindService(): Boolean {
-        if (bindingContext != null) return try {
-            bindingContext?.unbindService(this)
-            bindingContext = null
-            true
-        } catch (e: IllegalArgumentException) {
-            Log.i(TAG, "Attempted to unbind ${serviceClass.name}, but it was not bound")
-            false
-        }
-        return false
+    fun unbindService(): Boolean = try {
+        boundService = null
+        context.unbindService(this)
+        true
+    } catch (e: IllegalArgumentException) {
+        Log.i(TAG, "Attempted to unbind ${serviceClass.name}, but it was not bound")
+        false
     }
 
     companion object {

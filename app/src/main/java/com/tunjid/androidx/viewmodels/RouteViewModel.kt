@@ -28,7 +28,8 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
             ),
             listOf(
                     Route(HidingViewFragment::class.java.simpleName, formatRoute(R.string.route_hiding_view)),
-                    Route(SpanbuilderFragment::class.java.simpleName, formatRoute(R.string.route_span_builder))
+                    Route(SpanbuilderFragment::class.java.simpleName, formatRoute(R.string.route_span_builder)),
+                    Route(HardServiceConnectionFragment::class.java.simpleName, formatRoute(R.string.route_hard_service_connection))
             )
     )
 

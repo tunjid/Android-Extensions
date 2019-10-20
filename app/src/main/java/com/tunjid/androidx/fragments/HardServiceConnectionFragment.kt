@@ -1,142 +1,81 @@
 package com.tunjid.androidx.fragments
 
-import android.content.res.ColorStateList
 import android.os.Bundle
-import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.widget.FrameLayout
-import androidx.activity.addCallback
-import androidx.annotation.IdRes
+import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.view.setPadding
-import androidx.fragment.app.Fragment
-import com.google.android.material.button.MaterialButton
+import androidx.lifecycle.observe
+import androidx.transition.TransitionManager
+import com.transitionseverywhere.ChangeText
+import com.transitionseverywhere.ChangeText.CHANGE_BEHAVIOR_OUT_IN
+import com.tunjid.androidx.CounterService
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
-import com.tunjid.androidx.core.components.args
-import com.tunjid.androidx.core.text.SpanBuilder
-import com.tunjid.androidx.navigation.Navigator
-import com.tunjid.androidx.navigation.StackNavigator
-import com.tunjid.androidx.navigation.childStackNavigationController
-import com.tunjid.androidx.uidrivers.crossFade
-import java.util.*
+import com.tunjid.androidx.core.components.services.HardServiceConnection
 
 
-class IndependentStackFragment : AppBaseFragment(R.layout.fragment_independent_stack) {
+class HardServiceConnectionFragment : AppBaseFragment(R.layout.fragment_hard_service_connection) {
 
-    private val navigators = mutableMapOf<Int, StackNavigator>()
-    private val visitOrder = ArrayDeque<Int>()
+    private lateinit var connection: HardServiceConnection<CounterService>
+    private var statusText: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        savedInstanceState?.getIntArray(ORDER)?.apply { visitOrder.addAll(this.asList()) }
-
-        activity?.onBackPressedDispatcher?.addCallback(this) {
-            isEnabled =
-                    if (navigator.current !== this@IndependentStackFragment) false
-                    else visitOrder.asSequence().map(this@IndependentStackFragment::navigatorFor).map(StackNavigator::pop).firstOrNull { it }
-                            ?: false
-
-            if (!isEnabled) activity?.onBackPressed()
-        }
+        connection = HardServiceConnection(requireContext(), CounterService::class.java, this::onServiceBound)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        if (navigators.isEmpty()) for (id in CONTAINER_IDS) navigatorFor(id).apply {
-            if (current == null) push(IndependentStackChildFragment.newInstance(name(containerId), 1))
-        }
-
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.simpleName,
                 toolBarMenu = 0,
                 toolbarShows = true,
-                fabShows = false,
-                fabClickListener = View.OnClickListener {},
+                fabShows = true,
+                fabIcon = R.drawable.ic_connect_24dp,
+                fabText = getText(R.string.bind_service),
+                fabClickListener = View.OnClickListener { toggleService() },
                 showsBottomNav = true,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.transparent)
         )
+
+        statusText = view.findViewById(R.id.text)
+        updateText(getString(R.string.service_disconnected))
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putIntArray(ORDER, visitOrder.toIntArray())
-        super.onSaveInstanceState(outState)
-    }
-
-    private fun navigatorFor(id: Int) = navigators.getOrPut(id) {
-        val stackNavigator by childStackNavigationController(id)
-        stackNavigator.apply { transactionModifier = { crossFade() } }
-    }
-
-    internal fun addTosStack(id: Int, depth: Int, name: String) {
-        visitOrder.remove(id)
-        visitOrder.addFirst(id)
-        navigatorFor(id).push(IndependentStackChildFragment.newInstance(name, depth))
-    }
-
-    private fun name(@IdRes containerId: Int) =
-            resources.getResourceEntryName(containerId).replace("_", " ")
-
-    companion object {
-        fun newInstance(): IndependentStackFragment = IndependentStackFragment().apply { arguments = Bundle() }
-    }
-
-}
-
-class IndependentStackChildFragment : Fragment(), Navigator.TagProvider {
-
-    override val stableTag: String
-        get() = "${javaClass.simpleName}-$name-$depth"
-
-    private var name: String by args()
-
-    var depth: Int by args()
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = MaterialButton(inflater.context).apply {
-        val spacing = context.resources.getDimensionPixelSize(R.dimen.single_margin)
-
-        backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorPrimaryDark))
-        strokeColor = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.white))
-        strokeWidth = context.resources.getDimensionPixelSize(R.dimen.eigth_margin)
-        textSize = resources.getDimensionPixelSize(R.dimen.small_text).toFloat()
-        transformationMethod = null
-        gravity = Gravity.CENTER
-        cornerRadius = spacing
-
-        text = SpanBuilder.of(name)
-                .appendNewLine()
-                .append(SpanBuilder.of(resources.getQuantityString(R.plurals.stack_depth, depth, depth))
-                        .resize(0.5F)
-                        .build())
-                .build()
-
-        layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT).apply {
-            gravity = Gravity.CENTER
-            leftMargin = spacing
-            topMargin = spacing
-            rightMargin = spacing
-            bottomMargin = spacing
+    private fun toggleService() = when {
+        connection.boundService == null -> {
+            connection.bind().let { Unit }
         }
-
-        setPadding(spacing)
-        setTextColor(ContextCompat.getColor(context, R.color.white))
-        setOnClickListener {
-            val parent = parentFragment as? IndependentStackFragment
-            parent?.addTosStack(this@IndependentStackChildFragment.id, depth + 1, name)
+        else -> {
+            connection.unbindService()
+            updateText(getString(R.string.service_disconnected))
+            uiState = uiState.copy(fabIcon = R.drawable.ic_connect_24dp, fabText = getText(R.string.bind_service))
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        statusText = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        connection.unbindService()
+    }
+
+    private fun onServiceBound(service: CounterService) {
+        uiState = uiState.copy(fabIcon = R.drawable.ic_disconnect_24dp, fabText = getText(R.string.unbind_service))
+        service.counter.observe(this) { updateText(resources.getQuantityString(R.plurals.bind_duration, it.toInt(), it)) }
+    }
+
+    private fun updateText(text: CharSequence) = (view as? ViewGroup)?.run {
+        TransitionManager.beginDelayedTransition(this, ChangeText().setChangeBehavior(CHANGE_BEHAVIOR_OUT_IN))
+        statusText?.text = text
     }
 
     companion object {
-        fun newInstance(name: String, depth: Int): IndependentStackChildFragment = IndependentStackChildFragment().apply {
-            this.name = name
-            this.depth = depth
-        }
+        fun newInstance(): HardServiceConnectionFragment = HardServiceConnectionFragment().apply { arguments = Bundle() }
     }
-}
 
-private const val ORDER = "ORDER"
-private val CONTAINER_IDS = intArrayOf(R.id.stack_1, R.id.stack_2, R.id.stack_3, R.id.stack_4)
+}
