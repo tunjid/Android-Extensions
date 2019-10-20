@@ -125,11 +125,11 @@ open class ListManager<VH : ViewHolder, T>(
 
     fun findViewHolderForItemId(id: Long): VH? = recyclerView?.findViewHolderForItemId(id) as? VH
 
-    fun post(runnable: Runnable) {
+    fun post(runnable: () -> Unit) {
         recyclerView?.post(runnable)
     }
 
-    fun postDelayed(delay: Long, runnable: Runnable) {
+    fun postDelayed(delay: Long, runnable: () -> Unit) {
         recyclerView?.postDelayed(runnable, delay)
     }
 

@@ -13,7 +13,7 @@
     <!-- Route Descriptions -->
     <string name="route_doggo_list">A list of hints demonstrating delegation of shared element transitions to the calling fragment.</string>
     <string name="route_doggo_rank">A list of good boyes showing drag and drop functionality.</string>
-    <string name="route_independent_stack">A demo of the StackNavigator using independent stacks within the same FragmentManager.</string>
+    <string name="route_independent_stack">A demo of the StackNavigator using independent stacks* within the same FragmentManager.</string>
     <string name="route_multiple_inner_stack">A demo of the MultiStackNavigator, while being a child of a MultiStackNavigator; Stack-ception.</string>
     <string name="route_shifting_tile">A grid of shifting colorful tiles demonstrating the Diffable interface.</string>
     <string name="route_endless_tile">A grid of colorful tiles demonstrating endless scrolling with the Diffable interface.</string>
@@ -69,5 +69,15 @@
     </plurals>
     <string name="slide">Slide in/out</string>
     <string name="cross_fade">Cross Fade</string>
+
+    <!-- HardServiceConnection -->
+    <string name="bind_service">Bind Service</string>
+    <string name="unbind_service">Unbind Service</string>
+    <plurals name="bind_duration">
+        <item quantity="one">Bound for %1$d second</item>
+        <item quantity="other">Bound for %1$d seconds</item>
+    </plurals>
+    <string name="service_disconnected">Service disconnected</string>
+    <string name="route_hard_service_connection">A fragment demonstrating the HardServiceConnection</string>
 
 </resources>

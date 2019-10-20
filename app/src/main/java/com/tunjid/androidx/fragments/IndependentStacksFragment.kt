@@ -25,7 +25,7 @@ import com.tunjid.androidx.uidrivers.crossFade
 import java.util.*
 
 
-class IndependentStackFragment : AppBaseFragment(R.layout.fragment_independent_stack) {
+class IndependentStacksFragment : AppBaseFragment(R.layout.fragment_independent_stack) {
 
     private val navigators = mutableMapOf<Int, StackNavigator>()
     private val visitOrder = ArrayDeque<Int>()
@@ -36,8 +36,8 @@ class IndependentStackFragment : AppBaseFragment(R.layout.fragment_independent_s
 
         activity?.onBackPressedDispatcher?.addCallback(this) {
             isEnabled =
-                    if (navigator.current !== this@IndependentStackFragment) false
-                    else visitOrder.asSequence().map(this@IndependentStackFragment::navigatorFor).map(StackNavigator::pop).firstOrNull { it }
+                    if (navigator.current !== this@IndependentStacksFragment) false
+                    else visitOrder.asSequence().map(this@IndependentStacksFragment::navigatorFor).map(StackNavigator::pop).firstOrNull { it }
                             ?: false
 
             if (!isEnabled) activity?.onBackPressed()
@@ -82,7 +82,7 @@ class IndependentStackFragment : AppBaseFragment(R.layout.fragment_independent_s
             resources.getResourceEntryName(containerId).replace("_", " ")
 
     companion object {
-        fun newInstance(): IndependentStackFragment = IndependentStackFragment().apply { arguments = Bundle() }
+        fun newInstance(): IndependentStacksFragment = IndependentStacksFragment().apply { arguments = Bundle() }
     }
 
 }
@@ -125,7 +125,7 @@ class IndependentStackChildFragment : Fragment(), Navigator.TagProvider {
         setPadding(spacing)
         setTextColor(ContextCompat.getColor(context, R.color.white))
         setOnClickListener {
-            val parent = parentFragment as? IndependentStackFragment
+            val parent = parentFragment as? IndependentStacksFragment
             parent?.addTosStack(this@IndependentStackChildFragment.id, depth + 1, name)
         }
     }

@@ -14,7 +14,7 @@ import com.tunjid.androidx.view.animator.ViewHider
  * Created by tj.dahunsi on 5/6/17.
  */
 
-class HidingViewFragment : AppBaseFragment(R.layout.fragment_hiding_view) {
+class HidingViewsFragment : AppBaseFragment(R.layout.fragment_hiding_view) {
 
     private lateinit var leftHider: ViewHider<View>
     private lateinit var topHider: ViewHider<View>
@@ -66,6 +66,6 @@ class HidingViewFragment : AppBaseFragment(R.layout.fragment_hiding_view) {
     }
 
     companion object {
-        fun newInstance(): HidingViewFragment = HidingViewFragment().apply { arguments = Bundle() }
+        fun newInstance(): HidingViewsFragment = HidingViewsFragment().apply { arguments = Bundle() }
     }
 }

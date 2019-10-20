@@ -22,7 +22,7 @@ import com.tunjid.androidx.uidrivers.slide
 import com.tunjid.androidx.view.util.InsetFlags
 
 
-class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) {
+class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack) {
 
     override val insetFlags: InsetFlags = InsetFlags.NO_TOP
 
@@ -38,7 +38,7 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
 
         activity?.onBackPressedDispatcher?.addCallback(this) {
             isEnabled =
-                    if (navigator.current !== this@MultipleStackFragment) false
+                    if (navigator.current !== this@MultipleStacksFragment) false
                     else innerNavigator.pop()
 
             if (!isEnabled) activity?.onBackPressed()
@@ -92,7 +92,7 @@ class MultipleStackFragment : AppBaseFragment(R.layout.fragment_multiple_stack) 
 
         private val DESTINATIONS = intArrayOf(R.id.first, R.id.second, R.id.third)
 
-        fun newInstance(): MultipleStackFragment = MultipleStackFragment().apply { arguments = Bundle() }
+        fun newInstance(): MultipleStacksFragment = MultipleStacksFragment().apply { arguments = Bundle() }
     }
 
 }
@@ -119,7 +119,7 @@ class MultipleStackChildFragment : Fragment(), Navigator.TagProvider {
                         .italic()
                         .bold()
                         .click(this) {
-                            (parentFragment?.parentFragment as? MultipleStackFragment)?.apply {
+                            (parentFragment?.parentFragment as? MultipleStacksFragment)?.apply {
                                 innerNavigator.clear()
                             }
                         }
