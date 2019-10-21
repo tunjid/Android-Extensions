@@ -13,6 +13,7 @@ import com.tunjid.androidx.CounterService
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.services.HardServiceConnection
+import com.tunjid.androidx.viewmodels.routeName
 
 
 class HardServiceConnectionFragment : AppBaseFragment(R.layout.fragment_hard_service_connection) {
@@ -28,7 +29,7 @@ class HardServiceConnectionFragment : AppBaseFragment(R.layout.fragment_hard_ser
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         uiState = uiState.copy(
-                toolbarTitle = this::class.java.simpleName,
+                toolbarTitle = this::class.java.routeName,
                 toolBarMenu = 0,
                 toolbarShows = true,
                 fabShows = true,

@@ -18,6 +18,7 @@ import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidx.viewholders.TileViewHolder
 import com.tunjid.androidx.viewmodels.ShiftingTileViewModel
+import com.tunjid.androidx.viewmodels.routeName
 
 class ShiftingTilesFragment : AppBaseFragment(R.layout.fragment_route) {
 
@@ -42,7 +43,7 @@ class ShiftingTilesFragment : AppBaseFragment(R.layout.fragment_route) {
         super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
-                toolbarTitle = this::class.java.simpleName,
+                toolbarTitle = this::class.java.routeName,
                 toolbarShows = true,
                 toolBarMenu = 0,
                 fabShows = true,

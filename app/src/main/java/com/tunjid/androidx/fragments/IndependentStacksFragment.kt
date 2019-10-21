@@ -22,6 +22,7 @@ import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.StackNavigator
 import com.tunjid.androidx.navigation.childStackNavigationController
 import com.tunjid.androidx.uidrivers.crossFade
+import com.tunjid.androidx.viewmodels.routeName
 import java.util.*
 
 
@@ -52,7 +53,7 @@ class IndependentStacksFragment : AppBaseFragment(R.layout.fragment_independent_
         }
 
         uiState = uiState.copy(
-                toolbarTitle = this::class.java.simpleName,
+                toolbarTitle = this::class.java.routeName,
                 toolBarMenu = 0,
                 toolbarShows = true,
                 fabShows = false,

@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.text.SpanBuilder
+import com.tunjid.androidx.viewmodels.routeName
 
 /**
  * Fragment showing the use of a SpanBuilder
@@ -20,7 +21,7 @@ class SpanbuilderFragment : AppBaseFragment(R.layout.fragment_spanbuilder) {
         super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
-                toolbarTitle = this::class.java.simpleName,
+                toolbarTitle = this::class.java.routeName,
                 toolbarShows = true,
                 toolBarMenu = 0,
                 fabShows = false,

@@ -26,6 +26,7 @@ import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
 import com.tunjid.androidx.viewholders.ScanViewHolder
 import com.tunjid.androidx.viewmodels.BleViewModel
+import com.tunjid.androidx.viewmodels.routeName
 
 class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan),
         ScanAdapter.ScanAdapterListener {
@@ -44,7 +45,7 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan),
         super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
-                toolbarTitle = this::class.java.simpleName,
+                toolbarTitle = this::class.java.routeName,
                 toolBarMenu = R.menu.menu_ble_scan,
                 toolbarShows = true,
                 fabShows = false,

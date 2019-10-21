@@ -20,6 +20,7 @@ import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
 import com.tunjid.androidx.viewholders.NSDViewHolder
 import com.tunjid.androidx.viewmodels.NsdViewModel
+import com.tunjid.androidx.viewmodels.routeName
 
 /**
  * A [Fragment] listing supported NSD servers
@@ -42,7 +43,7 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan),
         super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
-                toolbarTitle = this::class.java.simpleName,
+                toolbarTitle = this::class.java.routeName,
                 toolbarShows = true,
                 toolBarMenu = R.menu.menu_nsd_scan,
                 fabShows = false,

@@ -22,6 +22,7 @@ import com.tunjid.androidx.navigation.childMultiStackNavigationController
 import com.tunjid.androidx.uidrivers.crossFade
 import com.tunjid.androidx.uidrivers.slide
 import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.viewmodels.routeName
 
 
 class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack) {
@@ -70,7 +71,7 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
         }
 
         uiState = uiState.copy(
-                toolbarTitle = SpanBuilder.of(this::class.java.simpleName).color(Color.WHITE).build(),
+                toolbarTitle = SpanBuilder.of(this::class.java.routeName).color(Color.WHITE).build(),
                 toolBarMenu = 0,
                 toolbarShows = true,
                 fabText = getString(R.string.go_deeper),
