@@ -36,18 +36,6 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
 
     operator fun get(@IdRes index: Int): List<Route> = mapping[index]
 
-    private val <T : AppBaseFragment> Class<T>.routeName
-        get() = simpleName
-                .replace("Fragment", "")
-                .replace(
-                        String.format("%s|%s|%s",
-                                "(?<=[A-Z])(?=[A-Z][a-z])",
-                                "(?<=[^A-Z])(?=[A-Z])",
-                                "(?<=[A-Za-z])(?=[^A-Za-z])"
-                        ).toRegex(),
-                        " "
-                )
-
     private fun formatRoute(@StringRes stringRes: Int): CharSequence = getApplication<Application>().run {
         SpanBuilder.of(getString(stringRes))
                 .italic()
@@ -56,3 +44,16 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
                 .build()
     }
 }
+
+
+val <T : AppBaseFragment> Class<T>.routeName
+    get() = simpleName
+            .replace("Fragment", "")
+            .replace(
+                    String.format("%s|%s|%s",
+                            "(?<=[A-Z])(?=[A-Z][a-z])",
+                            "(?<=[^A-Z])(?=[A-Z])",
+                            "(?<=[A-Za-z])(?=[^A-Za-z])"
+                    ).toRegex(),
+                    " "
+            )

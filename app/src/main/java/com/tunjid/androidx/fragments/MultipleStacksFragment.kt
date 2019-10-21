@@ -1,5 +1,6 @@
 package com.tunjid.androidx.fragments
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.chip.ChipGroup
+import com.tunjid.androidx.MutedColors
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
@@ -68,7 +70,7 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
         }
 
         uiState = uiState.copy(
-                toolbarTitle = this::class.java.simpleName,
+                toolbarTitle = SpanBuilder.of(this::class.java.simpleName).color(Color.WHITE).build(),
                 toolBarMenu = 0,
                 toolbarShows = true,
                 fabText = getString(R.string.go_deeper),
@@ -127,8 +129,8 @@ class MultipleStackChildFragment : Fragment(), Navigator.TagProvider {
                 .build()
         gravity = Gravity.CENTER
         textSize = resources.getDimensionPixelSize(R.dimen.large_text).toFloat()
+        setBackgroundColor(MutedColors.atIndex(depth))
         setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
-        setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
     }
 
     companion object {
