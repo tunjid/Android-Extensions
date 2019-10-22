@@ -29,6 +29,7 @@ import com.tunjid.androidx.recyclerview.ListManagerBuilder
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.androidx.viewholders.DoggoViewHolder
+import com.tunjid.androidx.viewmodels.routeName
 import java.util.Objects.requireNonNull
 import kotlin.math.abs
 
@@ -53,7 +54,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
         super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
-                toolbarTitle = this::class.java.simpleName,
+                toolbarTitle = this::class.java.routeName,
                 toolBarMenu = 0,
                 toolbarShows = true,
                 fabIcon = R.drawable.ic_paw_24dp,

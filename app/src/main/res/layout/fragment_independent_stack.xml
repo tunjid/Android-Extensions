@@ -4,7 +4,7 @@
     android:id="@+id/inner_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="@dimen/actionbar_height"
+    android:paddingTop="@dimen/sextuple_margin"
     android:background="@color/colorPrimary">
 
     <androidx.fragment.app.FragmentContainerView

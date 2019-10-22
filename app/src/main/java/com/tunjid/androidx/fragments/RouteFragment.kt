@@ -14,6 +14,7 @@ import com.tunjid.androidx.model.Route
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
 import com.tunjid.androidx.viewholders.RouteItemViewHolder
 import com.tunjid.androidx.viewmodels.RouteViewModel
+import com.tunjid.androidx.viewmodels.routeName
 
 class RouteFragment : AppBaseFragment(R.layout.fragment_route),
         RouteAdapter.RouteAdapterListener {
@@ -46,17 +47,17 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route),
 
     override fun onItemClicked(route: Route) {
         navigator.push(when (route.destination) {
-            DoggoListFragment::class.java.simpleName -> DoggoListFragment.newInstance()
-            BleScanFragment::class.java.simpleName -> BleScanFragment.newInstance()
-            NsdScanFragment::class.java.simpleName -> NsdScanFragment.newInstance()
-            HidingViewsFragment::class.java.simpleName -> HidingViewsFragment.newInstance()
-            SpanbuilderFragment::class.java.simpleName -> SpanbuilderFragment.newInstance()
-            ShiftingTilesFragment::class.java.simpleName -> ShiftingTilesFragment.newInstance()
-            EndlessTilesFragment::class.java.simpleName -> EndlessTilesFragment.newInstance()
-            DoggoRankFragment::class.java.simpleName -> DoggoRankFragment.newInstance()
-            IndependentStacksFragment::class.java.simpleName -> IndependentStacksFragment.newInstance()
-            MultipleStacksFragment::class.java.simpleName -> MultipleStacksFragment.newInstance()
-            HardServiceConnectionFragment::class.java.simpleName -> HardServiceConnectionFragment.newInstance()
+            DoggoListFragment::class.java.routeName -> DoggoListFragment.newInstance()
+            BleScanFragment::class.java.routeName -> BleScanFragment.newInstance()
+            NsdScanFragment::class.java.routeName -> NsdScanFragment.newInstance()
+            HidingViewsFragment::class.java.routeName -> HidingViewsFragment.newInstance()
+            SpanbuilderFragment::class.java.routeName -> SpanbuilderFragment.newInstance()
+            ShiftingTilesFragment::class.java.routeName -> ShiftingTilesFragment.newInstance()
+            EndlessTilesFragment::class.java.routeName -> EndlessTilesFragment.newInstance()
+            DoggoRankFragment::class.java.routeName -> DoggoRankFragment.newInstance()
+            IndependentStacksFragment::class.java.routeName -> IndependentStacksFragment.newInstance()
+            MultipleStacksFragment::class.java.routeName -> MultipleStacksFragment.newInstance()
+            HardServiceConnectionFragment::class.java.routeName -> HardServiceConnectionFragment.newInstance()
             else -> newInstance(tabIndex) // No-op, all RouteFragment instances have the same tag
         })
     }

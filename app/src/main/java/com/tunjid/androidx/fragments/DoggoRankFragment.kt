@@ -26,6 +26,7 @@ import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.androidx.viewholders.DoggoRankViewHolder
 import com.tunjid.androidx.viewholders.DoggoViewHolder
 import com.tunjid.androidx.viewmodels.DoggoRankViewModel
+import com.tunjid.androidx.viewmodels.routeName
 import kotlin.math.abs
 
 class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
@@ -47,7 +48,7 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
         super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
-                toolbarTitle = this::class.java.simpleName,
+                toolbarTitle = this::class.java.routeName,
                 toolBarMenu = 0,
                 toolbarShows = true,
                 fabText = getString(R.string.reset_doggos),

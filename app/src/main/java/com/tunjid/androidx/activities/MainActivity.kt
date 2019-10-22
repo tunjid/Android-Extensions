@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
             R.id.content_container
     ) { index -> RouteFragment.newInstance(index).let { it to it.stableTag } }
 
-    override var uiState: UiState by globalUiDriver { navigator.current }
+    override var uiState: UiState by globalUiDriver { navigator.activeNavigator }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

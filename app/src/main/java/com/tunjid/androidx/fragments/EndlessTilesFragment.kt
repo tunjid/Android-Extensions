@@ -16,6 +16,7 @@ import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidx.viewholders.TileViewHolder
 import com.tunjid.androidx.viewmodels.EndlessTileViewModel
 import com.tunjid.androidx.viewmodels.EndlessTileViewModel.Companion.NUM_TILES
+import com.tunjid.androidx.viewmodels.routeName
 import kotlin.math.abs
 
 class EndlessTilesFragment : AppBaseFragment(R.layout.fragment_route) {
@@ -34,7 +35,7 @@ class EndlessTilesFragment : AppBaseFragment(R.layout.fragment_route) {
         super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
-                toolbarTitle = this::class.java.simpleName,
+                toolbarTitle = this::class.java.routeName,
                 toolbarShows = true,
                 toolBarMenu = 0,
                 fabShows = true,
