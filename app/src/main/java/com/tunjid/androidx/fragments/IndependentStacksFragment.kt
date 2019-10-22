@@ -1,6 +1,7 @@
 package com.tunjid.androidx.fragments
 
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -22,6 +23,7 @@ import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.StackNavigator
 import com.tunjid.androidx.navigation.childStackNavigationController
 import com.tunjid.androidx.uidrivers.crossFade
+import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.routeName
 import java.util.*
 
@@ -30,6 +32,8 @@ class IndependentStacksFragment : AppBaseFragment(R.layout.fragment_independent_
 
     private val navigators = mutableMapOf<Int, StackNavigator>()
     private val visitOrder = ArrayDeque<Int>()
+
+    override val insetFlags = InsetFlags.NO_TOP
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +57,7 @@ class IndependentStacksFragment : AppBaseFragment(R.layout.fragment_independent_
         }
 
         uiState = uiState.copy(
-                toolbarTitle = this::class.java.routeName,
+                toolbarTitle = SpanBuilder.of(this::class.java.routeName).color(Color.WHITE).build(),
                 toolBarMenu = 0,
                 toolbarShows = true,
                 fabShows = false,
