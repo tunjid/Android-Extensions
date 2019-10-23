@@ -31,6 +31,7 @@ class HidingViewsFragment : AppBaseFragment(R.layout.fragment_hiding_view) {
                 toolBarMenu = 0,
                 fabShows = false,
                 showsBottomNav = false,
+                lightStatusBar = true,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
         )
 

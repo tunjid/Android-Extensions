@@ -42,6 +42,7 @@ class EndlessTilesFragment : AppBaseFragment(R.layout.fragment_route) {
                 fabIcon = R.drawable.ic_info_outline_24dp,
                 fabText = getString(R.string.tile_info),
                 showsBottomNav = false,
+                lightStatusBar = true,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),
                 fabClickListener = View.OnClickListener {
                     uiState = uiState.copy(snackbarText = "There are ${viewModel.tiles.size} tiles")

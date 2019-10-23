@@ -35,6 +35,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route),
                 toolbarShows = true,
                 fabShows = false,
                 showsBottomNav = true,
+                lightStatusBar = true,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
         )
 

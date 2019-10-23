@@ -20,6 +20,7 @@ data class UiState(
         val fabText: CharSequence,
         val snackbarText: CharSequence,
         @ColorInt val navBarColor: Int,
+        val lightStatusBar: Boolean,
         val showsBottomNav: Boolean,
         val fabClickListener: View.OnClickListener?
 ) : Parcelable {
@@ -29,6 +30,7 @@ data class UiState(
              showsFabConsumer: (Boolean) -> Unit,
              showsToolbarConsumer: (Boolean) -> Unit,
              navBarColorConsumer: (Int) -> Unit,
+             lightStatusBarConsumer: (Boolean) -> Unit,
              fabStateConsumer: (Int, CharSequence) -> Unit,
              fabExtendedConsumer: (Boolean) -> Unit,
              snackbarTextConsumer: (CharSequence) -> Unit,
@@ -47,6 +49,7 @@ data class UiState(
         onChanged(newState, UiState::snackbarText) { snackbarTextConsumer(snackbarText) }
         onChanged(newState, UiState::toolbarShows) { showsToolbarConsumer(toolbarShows) }
         onChanged(newState, UiState::navBarColor) { navBarColorConsumer(navBarColor) }
+        onChanged(newState, UiState::lightStatusBar) { lightStatusBarConsumer(lightStatusBar) }
 
         fabClickListenerConsumer.invoke(newState.fabClickListener)
 
@@ -68,6 +71,7 @@ data class UiState(
             fabText = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(`in`),
             snackbarText = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(`in`),
             navBarColor = `in`.readInt(),
+            lightStatusBar = `in`.readByte().toInt() != 0x00,
             showsBottomNav = `in`.readByte().toInt() != 0x00,
             fabClickListener = null
     )
@@ -95,6 +99,7 @@ data class UiState(
                 fabText = "",
                 toolBarMenu = 0,
                 navBarColor = Color.BLACK,
+                lightStatusBar = false,
                 showsBottomNav = true,
                 fabShows = true,
                 fabExtended = true,

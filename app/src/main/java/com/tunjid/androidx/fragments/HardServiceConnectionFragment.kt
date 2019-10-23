@@ -37,6 +37,7 @@ class HardServiceConnectionFragment : AppBaseFragment(R.layout.fragment_hard_ser
                 fabText = getText(R.string.bind_service),
                 fabClickListener = View.OnClickListener { toggleService() },
                 showsBottomNav = true,
+                lightStatusBar = true,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.transparent)
         )
 

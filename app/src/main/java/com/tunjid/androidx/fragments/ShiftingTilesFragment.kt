@@ -50,6 +50,7 @@ class ShiftingTilesFragment : AppBaseFragment(R.layout.fragment_route) {
                 showsBottomNav = false,
                 fabIcon = fabIconRes,
                 fabText = fabText,
+                lightStatusBar = true,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),
                 fabClickListener = View.OnClickListener {
                     viewModel.toggleChanges()

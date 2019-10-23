@@ -26,6 +26,7 @@ class SpanbuilderFragment : AppBaseFragment(R.layout.fragment_spanbuilder) {
                 toolBarMenu = 0,
                 fabShows = false,
                 showsBottomNav = true,
+                lightStatusBar = true,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
         )
 

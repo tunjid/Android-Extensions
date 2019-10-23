@@ -173,6 +173,7 @@ class GlobalUiDriver(
                     fabHider::set,
                     toolbarHider::set,
                     this::setNavBarColor,
+                    this::setLightStatusBar,
                     this::setFabIcon,
                     fabExtensionAnimator::setExtended,
                     this::showSnackBar,
@@ -182,11 +183,11 @@ class GlobalUiDriver(
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
 
-            val isLight = ColorUtils.calculateLuminance(value.navBarColor) > 0.5
-            val systemUiVisibility = if (isLight) DEFAULT_SYSTEM_UI_FLAGS or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-            else DEFAULT_SYSTEM_UI_FLAGS
+            uiFlagTweak {
+                if (value.navBarColor.isBrightColor) it or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+                else it and View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR.inv()
+            }
 
-            host.window.decorView.systemUiVisibility = systemUiVisibility
             host.window.navigationBarColor = value.navBarColor
         }
 
@@ -201,6 +202,18 @@ class GlobalUiDriver(
         navBackgroundView.background = GradientDrawable(
                 GradientDrawable.Orientation.BOTTOM_TOP,
                 intArrayOf(color, Color.TRANSPARENT))
+    }
+
+    private fun setLightStatusBar(lightStatusBar: Boolean) = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> uiFlagTweak { flags ->
+            if (lightStatusBar) flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            else flags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+        }
+        else -> host.window.statusBarColor = ContextCompat.getColor(host, if (lightStatusBar) R.color.transparent else R.color.black_50)
+    }
+
+    private fun uiFlagTweak(tweaker: (Int) -> Int) = host.window.decorView.run {
+        systemUiVisibility = tweaker(systemUiVisibility)
     }
 
     private fun updateMainToolBar(menu: Int, invalidatedAlone: Boolean, title: CharSequence) = toolbarHider.view.run {
@@ -229,6 +242,7 @@ class GlobalUiDriver(
         visibility != View.VISIBLE || this.title == null -> {
             setTitle(title)
             refreshMenu(menu)
+            updateNavIcon()
         }
         else -> for (i in 0 until childCount) {
             val child = getChildAt(i)
@@ -241,7 +255,7 @@ class GlobalUiDriver(
                 child.animate()
                         .setDuration(TOOLBAR_ANIM_DELAY)
                         .setInterpolator(AccelerateDecelerateInterpolator())
-                        .withEndAction { updateNavIcon(title) }
+                        .withEndAction { updateNavIcon() }
                         .alpha(1F)
                         .start()
             }.start()
@@ -256,13 +270,9 @@ class GlobalUiDriver(
         navigatorSupplier().current?.onPrepareOptionsMenu(this.menu)
     }
 
-    private fun Toolbar.updateNavIcon(currentTitle: CharSequence) {
+    private fun Toolbar.updateNavIcon() {
         TransitionManager.beginDelayedTransition(this, AutoTransition().setDuration(100))
-        val tint = (currentTitle as? SpannableStringBuilder)?.run {
-            getSpans(0, title.length, ForegroundColorSpan::class.java)
-                    .firstOrNull()
-                    ?.foregroundColor
-        } ?: ContextCompat.getColor(context, R.color.colorPrimary)
+        val tint = titleTint
 
         navigationIcon =
                 if (navigatorSupplier().previous == null) null
@@ -272,9 +282,19 @@ class GlobalUiDriver(
                 }
     }
 
+    private val Int.isBrightColor get() = ColorUtils.calculateLuminance(this) > 0.5
+
+    private val Toolbar.titleTint: Int
+        get() = (title as? SpannableStringBuilder)?.run {
+            getSpans(0, title.length, ForegroundColorSpan::class.java)
+                    .firstOrNull()
+                    ?.foregroundColor
+        } ?: ContextCompat.getColor(context, R.color.colorPrimary)
+
     companion object {
         private const val TOOLBAR_ANIM_DELAY = 200L
-        private const val DEFAULT_SYSTEM_UI_FLAGS = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+        private const val DEFAULT_SYSTEM_UI_FLAGS =
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                 WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS

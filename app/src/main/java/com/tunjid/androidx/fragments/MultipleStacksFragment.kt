@@ -82,6 +82,7 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
                     if (current != null) innerNavigator.push(MultipleStackChildFragment.newInstance(current.name, current.depth + 1))
                 },
                 showsBottomNav = true,
+                lightStatusBar = false,
                 navBarColor = ContextCompat.getColor(requireContext(), R.color.transparent)
         )
     }
