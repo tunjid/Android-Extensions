@@ -12,7 +12,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -22,8 +21,10 @@ import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
 import com.tunjid.androidx.adapters.ScanAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
+import com.tunjid.androidx.core.content.resolveColor
 import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
+import com.tunjid.androidx.setLoading
 import com.tunjid.androidx.viewholders.ScanViewHolder
 import com.tunjid.androidx.viewmodels.BleViewModel
 import com.tunjid.androidx.viewmodels.routeName
@@ -70,9 +71,8 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan),
         super.onActivityCreated(savedInstanceState)
         if (viewModel.hasBle()) return
 
-        val activity = requireActivity()
-        Toast.makeText(activity, R.string.ble_not_supported, Toast.LENGTH_SHORT).show()
-        activity.onBackPressed()
+        uiState = uiState.copy(snackbarText = getString(R.string.ble_not_supported))
+        navigator.pop()
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
@@ -86,7 +86,7 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan),
         val refresh = menu.findItem(R.id.menu_refresh)
 
         refresh?.isVisible = currentlyScanning
-        if (currentlyScanning) refresh?.setActionView(R.layout.actionbar_indeterminate_progress)
+        if (currentlyScanning) refresh?.setLoading(requireContext().resolveColor(R.color.colorPrimary))
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {

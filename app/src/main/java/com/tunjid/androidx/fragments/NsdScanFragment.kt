@@ -16,8 +16,10 @@ import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
 import com.tunjid.androidx.adapters.NsdAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
+import com.tunjid.androidx.core.content.resolveColor
 import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
+import com.tunjid.androidx.setLoading
 import com.tunjid.androidx.viewholders.NSDViewHolder
 import com.tunjid.androidx.viewmodels.NsdViewModel
 import com.tunjid.androidx.viewmodels.routeName
@@ -85,7 +87,7 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan),
         val refresh = menu.findItem(R.id.menu_refresh)
 
         refresh?.isVisible = currentlyScanning
-        if (currentlyScanning) refresh?.setActionView(R.layout.actionbar_indeterminate_progress)
+        if (currentlyScanning) refresh?.setLoading(requireContext().resolveColor(R.color.colorPrimary))
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {

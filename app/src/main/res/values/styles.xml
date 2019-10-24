@@ -9,5 +9,12 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light">
         <item name="iconTint">@color/colorPrimary</item>
+        <item name="actionMenuTextAppearance">@style/ToolbarMenuItemTextAppearance</item>
+    </style>
+
+    <style name="ToolbarMenuItemTextAppearance" parent="@style/TextAppearance.MaterialComponents.Body1">
+        <item name="textAllCaps">false</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 </resources>
