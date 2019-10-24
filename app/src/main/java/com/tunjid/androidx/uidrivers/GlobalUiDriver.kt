@@ -1,7 +1,9 @@
 package com.tunjid.androidx.uidrivers
 
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.text.SpannableStringBuilder
@@ -20,10 +22,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.DrawableCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.doOnLayout
-import androidx.core.view.drawToBitmap
-import androidx.core.view.isVisible
+import androidx.core.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.transition.AutoTransition
@@ -32,6 +31,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.text.SpanBuilder
 import com.tunjid.androidx.material.animator.FabExtensionAnimator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.view.animator.ViewHider
@@ -274,15 +274,16 @@ class GlobalUiDriver(
         TransitionManager.beginDelayedTransition(this, AutoTransition().setDuration(100))
         val tint = titleTint
 
+        menu.forEach {
+            it.icon = it.icon.updateTint(tint)
+            it.title = SpanBuilder.of(it.title).color(tint).build()
+            it.actionView?.backgroundTintList = ColorStateList.valueOf(tint)
+        }
+
         navigationIcon =
                 if (navigatorSupplier().previous == null) null
-                else ContextCompat.getDrawable(context, R.drawable.ic_arrow_back_24dp)?.apply {
-                    mutate()
-                    DrawableCompat.setTint(this, tint)
-                }
+                else ContextCompat.getDrawable(context, R.drawable.ic_arrow_back_24dp).updateTint(tint)
     }
-
-    private val Int.isBrightColor get() = ColorUtils.calculateLuminance(this) > 0.5
 
     private val Toolbar.titleTint: Int
         get() = (title as? SpannableStringBuilder)?.run {
@@ -295,10 +296,16 @@ class GlobalUiDriver(
         private const val TOOLBAR_ANIM_DELAY = 200L
         private const val DEFAULT_SYSTEM_UI_FLAGS =
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                        WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
     }
+}
+
+private val Int.isBrightColor get() = ColorUtils.calculateLuminance(this) > 0.5
+
+private fun Drawable?.updateTint(tint: Int) = this?.run {
+    DrawableCompat.wrap(this).apply { DrawableCompat.setTint(this, tint) }
 }
 
 private fun ViewHider<*>.set(show: Boolean) =
