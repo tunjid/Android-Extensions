@@ -22,6 +22,8 @@ import com.tunjid.androidx.adapters.DoggoAdapter
 import com.tunjid.androidx.adapters.DoggoAdapter.ImageListAdapterListener
 import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
+import com.tunjid.androidx.core.content.resolveThemeColor
+import com.tunjid.androidx.core.graphics.drawable.updateTint
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.recyclerview.ListManager
@@ -99,10 +101,9 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
         if (doggo == Doggo.transitionDoggo) startPostponedEnterTransition()
     }
 
-    private fun getDivider(orientation: Int): RecyclerView.ItemDecoration {
-        val context = requireContext()
-        val decoration = DividerItemDecoration(context, orientation)
-        decoration.setDrawable(requireNonNull<Drawable>(getDrawable(context, R.drawable.bg_divider)))
+    private fun getDivider(orientation: Int): RecyclerView.ItemDecoration = requireContext().run {
+        val decoration = DividerItemDecoration(this, orientation)
+        decoration.setDrawable(requireNonNull<Drawable>(getDrawable(this, R.drawable.bg_divider).updateTint(resolveThemeColor(R.attr.colorSurface))))
         return decoration
     }
 

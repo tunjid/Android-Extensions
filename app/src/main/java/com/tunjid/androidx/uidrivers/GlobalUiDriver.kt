@@ -30,6 +30,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.resolveColor
 import com.tunjid.androidx.core.content.resolveDrawable
+import com.tunjid.androidx.core.content.resolveThemeColor
 import com.tunjid.androidx.core.graphics.drawable.updateTint
 import com.tunjid.androidx.core.text.SpanBuilder
 import com.tunjid.androidx.material.animator.FabExtensionAnimator
@@ -291,7 +292,7 @@ class GlobalUiDriver(
             getSpans(0, title.length, ForegroundColorSpan::class.java)
                     .firstOrNull()
                     ?.foregroundColor
-        } ?: context.resolveColor(R.color.colorPrimary)
+        } ?: context.resolveThemeColor(R.attr.prominent_text_color)
 
     companion object {
         private const val TOOLBAR_ANIM_DELAY = 200L

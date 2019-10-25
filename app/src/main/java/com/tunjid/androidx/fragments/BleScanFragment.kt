@@ -22,6 +22,7 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.adapters.ScanAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.resolveColor
+import com.tunjid.androidx.core.content.resolveThemeColor
 import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
 import com.tunjid.androidx.setLoading
@@ -86,7 +87,7 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan),
         val refresh = menu.findItem(R.id.menu_refresh)
 
         refresh?.isVisible = currentlyScanning
-        if (currentlyScanning) refresh?.setLoading(requireContext().resolveColor(R.color.colorPrimary))
+        if (currentlyScanning) refresh?.setLoading(requireContext().resolveThemeColor(R.attr.prominent_text_color))
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
