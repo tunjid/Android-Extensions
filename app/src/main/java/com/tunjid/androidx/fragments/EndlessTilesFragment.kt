@@ -2,13 +2,14 @@ package com.tunjid.androidx.fragments
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
 import com.tunjid.androidx.adapters.TileAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
+import com.tunjid.androidx.core.content.resolveThemeColor
+import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
 import com.tunjid.androidx.view.util.InsetFlags
@@ -42,8 +43,8 @@ class EndlessTilesFragment : AppBaseFragment(R.layout.fragment_route) {
                 fabIcon = R.drawable.ic_info_outline_24dp,
                 fabText = getString(R.string.tile_info),
                 showsBottomNav = false,
-                lightStatusBar = true,
-                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),
+                lightStatusBar = !requireContext().isDarkTheme,
+                navBarColor = requireContext().resolveThemeColor(R.attr.nav_bar_color),
                 fabClickListener = View.OnClickListener {
                     uiState = uiState.copy(snackbarText = "There are ${viewModel.tiles.size} tiles")
                 }

@@ -2,7 +2,6 @@ package com.tunjid.androidx.fragments
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.RecyclerView
@@ -11,6 +10,8 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.adapters.TileAdapter
 import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
+import com.tunjid.androidx.core.content.resolveThemeColor
+import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
 import com.tunjid.androidx.uidrivers.SlideInItemAnimator
@@ -50,8 +51,8 @@ class ShiftingTilesFragment : AppBaseFragment(R.layout.fragment_route) {
                 showsBottomNav = false,
                 fabIcon = fabIconRes,
                 fabText = fabText,
-                lightStatusBar = true,
-                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),
+                lightStatusBar = !requireContext().isDarkTheme,
+                navBarColor = requireContext().resolveThemeColor(R.attr.nav_bar_color),
                 fabClickListener = View.OnClickListener {
                     viewModel.toggleChanges()
                     uiState = uiState.copy(fabIcon = fabIconRes, fabText = fabText)

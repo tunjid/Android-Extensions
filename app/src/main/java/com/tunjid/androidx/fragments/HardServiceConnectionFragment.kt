@@ -13,6 +13,8 @@ import com.tunjid.androidx.CounterService
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.services.HardServiceConnection
+import com.tunjid.androidx.core.content.resolveThemeColor
+import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.viewmodels.routeName
 
 
@@ -37,8 +39,8 @@ class HardServiceConnectionFragment : AppBaseFragment(R.layout.fragment_hard_ser
                 fabText = getText(R.string.bind_service),
                 fabClickListener = View.OnClickListener { toggleService() },
                 showsBottomNav = true,
-                lightStatusBar = true,
-                navBarColor = ContextCompat.getColor(requireContext(), R.color.transparent)
+                lightStatusBar = !requireContext().isDarkTheme,
+                navBarColor = requireContext().resolveThemeColor(R.attr.nav_bar_color)
         )
 
         statusText = view.findViewById(R.id.text)

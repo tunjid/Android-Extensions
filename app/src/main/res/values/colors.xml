@@ -4,5 +4,6 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorSurface">#FFFFFF</color>
+    <color name="nav_bar_color">@color/white_75</color>
     <color name="prominent_text_color">#3F51B5</color>
 </resources>

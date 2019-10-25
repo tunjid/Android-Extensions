@@ -2,7 +2,6 @@ package com.tunjid.androidx.fragments
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
@@ -10,6 +9,8 @@ import com.tunjid.androidx.adapters.RouteAdapter
 import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
+import com.tunjid.androidx.core.content.resolveThemeColor
+import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.model.Route
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
 import com.tunjid.androidx.viewholders.RouteItemViewHolder
@@ -35,8 +36,8 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route),
                 toolbarShows = true,
                 fabShows = false,
                 showsBottomNav = true,
-                lightStatusBar = true,
-                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
+                lightStatusBar = !requireContext().isDarkTheme,
+                navBarColor = requireContext().resolveThemeColor(R.attr.nav_bar_color)
         )
 
         ListManagerBuilder<RouteItemViewHolder, PlaceHolder.State>()

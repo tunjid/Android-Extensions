@@ -2,9 +2,10 @@ package com.tunjid.androidx.fragments
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.content.ContextCompat
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
+import com.tunjid.androidx.core.content.resolveThemeColor
+import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.view.animator.ViewHider
 import com.tunjid.androidx.viewmodels.routeName
 
@@ -31,8 +32,8 @@ class HidingViewsFragment : AppBaseFragment(R.layout.fragment_hiding_view) {
                 toolBarMenu = 0,
                 fabShows = false,
                 showsBottomNav = false,
-                lightStatusBar = true,
-                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
+                lightStatusBar = !requireContext().isDarkTheme,
+                navBarColor = requireContext().resolveThemeColor(R.attr.nav_bar_color)
         )
 
         val leftButton = view.findViewById<View>(R.id.left_button)

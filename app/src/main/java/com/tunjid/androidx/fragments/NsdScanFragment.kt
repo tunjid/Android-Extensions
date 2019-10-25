@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
@@ -16,8 +15,8 @@ import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
 import com.tunjid.androidx.adapters.NsdAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
-import com.tunjid.androidx.core.content.resolveColor
 import com.tunjid.androidx.core.content.resolveThemeColor
+import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
 import com.tunjid.androidx.setLoading
@@ -51,8 +50,8 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan),
                 toolBarMenu = R.menu.menu_nsd_scan,
                 fabShows = false,
                 showsBottomNav = true,
-                lightStatusBar = true,
-                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
+                lightStatusBar = !requireContext().isDarkTheme,
+                navBarColor = requireContext().resolveThemeColor(R.attr.nav_bar_color)
         )
 
         val placeHolder = PlaceHolder(view.findViewById(R.id.placeholder_container))

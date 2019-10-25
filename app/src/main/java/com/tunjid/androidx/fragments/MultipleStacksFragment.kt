@@ -15,6 +15,7 @@ import com.tunjid.androidx.MutedColors
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
+import com.tunjid.androidx.core.content.resolveColor
 import com.tunjid.androidx.core.text.SpanBuilder
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
@@ -83,7 +84,7 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
                 },
                 showsBottomNav = true,
                 lightStatusBar = false,
-                navBarColor = ContextCompat.getColor(requireContext(), R.color.transparent)
+                navBarColor = requireContext().resolveColor(R.color.transparent)
         )
     }
 
