@@ -1,13 +1,11 @@
 package com.tunjid.androidx.viewmodels
 
 import android.app.Application
-import android.view.ContextThemeWrapper
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
-import com.tunjid.androidx.core.content.resolveThemeColor
 import com.tunjid.androidx.core.text.SpanBuilder
 import com.tunjid.androidx.fragments.*
 import com.tunjid.androidx.model.Route
@@ -38,11 +36,10 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
 
     operator fun get(@IdRes index: Int): List<Route> = mapping[index]
 
-    private fun formatRoute(@StringRes stringRes: Int): CharSequence = ContextThemeWrapper(getApplication(), R.style.AppTheme).run {
+    private fun formatRoute(@StringRes stringRes: Int): CharSequence = getApplication<Application>().run {
         SpanBuilder.of(getString(stringRes))
                 .italic()
                 .underline()
-                .color(this.resolveThemeColor(R.attr.prominent_text_color))
                 .build()
     }
 }

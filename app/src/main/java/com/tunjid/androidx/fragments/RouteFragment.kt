@@ -1,7 +1,11 @@
 package com.tunjid.androidx.fragments
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.fragment.app.viewModels
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
@@ -45,6 +49,14 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route),
                 .withLinearLayoutManager()
                 .withPaddedAdapter(RouteAdapter(viewModel[tabIndex], this))
                 .build()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.menu_theme -> AppCompatDelegate.setDefaultNightMode(
+                if (requireContext().isDarkTheme) MODE_NIGHT_NO
+                else MODE_NIGHT_YES
+        ).let { true }
+        else -> super.onOptionsItemSelected(item)
     }
 
     override fun onItemClicked(route: Route) {
