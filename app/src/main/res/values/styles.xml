@@ -11,7 +11,7 @@
         <item name="android:colorBackground">@color/colorSurface</item>
     </style>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light">
+    <style name="AppTheme.PopupOverlay" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="iconTint">?attr/prominent_text_color</item>
         <item name="actionMenuTextAppearance">@style/ToolbarMenuItemTextAppearance</item>
     </style>
