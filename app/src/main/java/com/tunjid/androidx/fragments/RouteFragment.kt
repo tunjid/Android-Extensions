@@ -1,8 +1,11 @@
 package com.tunjid.androidx.fragments
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
-import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.fragment.app.viewModels
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
@@ -10,6 +13,8 @@ import com.tunjid.androidx.adapters.RouteAdapter
 import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
+import com.tunjid.androidx.core.content.resolveThemeColor
+import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.model.Route
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
 import com.tunjid.androidx.viewholders.RouteItemViewHolder
@@ -35,8 +40,8 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route),
                 toolbarShows = true,
                 fabShows = false,
                 showsBottomNav = true,
-                lightStatusBar = true,
-                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
+                lightStatusBar = !requireContext().isDarkTheme,
+                navBarColor = requireContext().resolveThemeColor(R.attr.nav_bar_color)
         )
 
         ListManagerBuilder<RouteItemViewHolder, PlaceHolder.State>()
@@ -44,6 +49,14 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route),
                 .withLinearLayoutManager()
                 .withPaddedAdapter(RouteAdapter(viewModel[tabIndex], this))
                 .build()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.menu_theme -> AppCompatDelegate.setDefaultNightMode(
+                if (requireContext().isDarkTheme) MODE_NIGHT_NO
+                else MODE_NIGHT_YES
+        ).let { true }
+        else -> super.onOptionsItemSelected(item)
     }
 
     override fun onItemClicked(route: Route) {

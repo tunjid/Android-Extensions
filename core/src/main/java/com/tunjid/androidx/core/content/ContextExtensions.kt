@@ -11,6 +11,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 
+@ColorInt
 fun Context.resolveColor(@ColorRes color: Int) = ContextCompat.getColor(this, color)
 
 fun Context.resolveDrawable(@DrawableRes drawable: Int) = ContextCompat.getDrawable(this, drawable)

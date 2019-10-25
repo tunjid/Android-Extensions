@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="nav_bar_color" format="reference" />
+    <attr name="prominent_text_color" format="reference" />
+</resources>

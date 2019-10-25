@@ -3,10 +3,11 @@ package com.tunjid.androidx.fragments
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
+import com.tunjid.androidx.core.content.resolveThemeColor
 import com.tunjid.androidx.core.text.SpanBuilder
+import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.viewmodels.routeName
 
 /**
@@ -26,8 +27,8 @@ class SpanbuilderFragment : AppBaseFragment(R.layout.fragment_spanbuilder) {
                 toolBarMenu = 0,
                 fabShows = false,
                 showsBottomNav = true,
-                lightStatusBar = true,
-                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
+                lightStatusBar = !requireContext().isDarkTheme,
+                navBarColor = requireContext().resolveThemeColor(R.attr.nav_bar_color)
         )
 
         val textView = view.findViewById<TextView>(R.id.text)
@@ -42,7 +43,7 @@ class SpanbuilderFragment : AppBaseFragment(R.layout.fragment_spanbuilder) {
                 .append(".")
                 .appendSpace()
                 .append(SpanBuilder.of("This is a colored span")
-                        .color(context, R.color.colorPrimaryDark)
+                        .color(context.resolveThemeColor(R.attr.prominent_text_color))
                         .build())
                 .appendNewLine()
                 .append(3)

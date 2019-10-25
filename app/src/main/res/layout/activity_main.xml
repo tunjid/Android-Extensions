@@ -51,14 +51,12 @@
         android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:background="?attr/colorPrimary"
-        android:backgroundTint="@color/transparent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/top_inset"
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:theme="@style/AppTheme.PopupOverlay"
-        app:titleTextColor="@color/colorPrimary" />
+        app:titleTextColor="?attr/prominent_text_color" />
 
     <View
         android:id="@+id/keyboard_padding"

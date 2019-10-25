@@ -16,7 +16,7 @@
         android:gravity="center"
         android:paddingLeft="@dimen/quarter_margin"
         android:paddingRight="@dimen/quarter_margin"
-        android:textColor="@color/colorPrimary"
+        android:textColor="?attr/prominent_text_color"
         android:textSize="@dimen/large_text"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

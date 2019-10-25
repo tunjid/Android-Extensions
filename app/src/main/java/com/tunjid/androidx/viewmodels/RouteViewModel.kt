@@ -39,8 +39,6 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
     private fun formatRoute(@StringRes stringRes: Int): CharSequence = getApplication<Application>().run {
         SpanBuilder.of(getString(stringRes))
                 .italic()
-                .underline()
-                .color(this, R.color.colorPrimary)
                 .build()
     }
 }

@@ -9,7 +9,6 @@ import android.view.View
 import android.view.View.OnLayoutChangeListener
 import android.widget.ImageView
 import androidx.core.app.SharedElementCallback
-import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getDrawable
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
@@ -22,6 +21,9 @@ import com.tunjid.androidx.adapters.DoggoAdapter
 import com.tunjid.androidx.adapters.DoggoAdapter.ImageListAdapterListener
 import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
+import com.tunjid.androidx.core.content.resolveThemeColor
+import com.tunjid.androidx.core.graphics.drawable.updateTint
+import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.recyclerview.ListManager
@@ -60,10 +62,10 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
                 fabIcon = R.drawable.ic_paw_24dp,
                 fabText = getString(R.string.collapse_prompt),
                 fabShows = true,
-                lightStatusBar = true,
                 showsBottomNav = true,
+                lightStatusBar = !requireContext().isDarkTheme,
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
-                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75),
+                navBarColor = requireContext().resolveThemeColor(R.attr.nav_bar_color),
                 fabClickListener = View.OnClickListener { uiState = uiState.copy(fabExtended = !uiState.fabExtended) }
         )
 
@@ -99,10 +101,9 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
         if (doggo == Doggo.transitionDoggo) startPostponedEnterTransition()
     }
 
-    private fun getDivider(orientation: Int): RecyclerView.ItemDecoration {
-        val context = requireContext()
-        val decoration = DividerItemDecoration(context, orientation)
-        decoration.setDrawable(requireNonNull<Drawable>(getDrawable(context, R.drawable.bg_divider)))
+    private fun getDivider(orientation: Int): RecyclerView.ItemDecoration = requireContext().run {
+        val decoration = DividerItemDecoration(this, orientation)
+        decoration.setDrawable(requireNonNull<Drawable>(getDrawable(this, R.drawable.bg_divider).updateTint(resolveThemeColor(R.attr.colorSurface))))
         return decoration
     }
 

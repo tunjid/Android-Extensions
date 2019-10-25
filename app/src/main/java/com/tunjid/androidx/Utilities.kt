@@ -1,5 +1,7 @@
 package com.tunjid.androidx
 
+import android.content.Context
+import android.content.res.Configuration
 import android.view.MenuItem
 import android.widget.ProgressBar
 import androidx.annotation.ColorInt
@@ -16,3 +18,10 @@ fun MenuItem.setLoading(@ColorInt tint: Int): MenuItem? = setActionView(R.layout
     val progressBar = it?.actionView as? ProgressBar ?: return@also
     progressBar.apply { indeterminateDrawable = indeterminateDrawable.updateTint(tint) }
 }
+
+val Context.isDarkTheme
+    get() = when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+        Configuration.UI_MODE_NIGHT_NO,
+        Configuration.UI_MODE_NIGHT_UNDEFINED -> false
+        else -> true
+    }
