@@ -43,7 +43,7 @@ class SpanbuilderFragment : AppBaseFragment(R.layout.fragment_spanbuilder) {
                 .append(".")
                 .appendSpace()
                 .append(SpanBuilder.of("This is a colored span")
-                        .color(context, R.color.colorPrimaryDark)
+                        .color(context.resolveThemeColor(R.attr.prominent_text_color))
                         .build())
                 .appendNewLine()
                 .append(3)
