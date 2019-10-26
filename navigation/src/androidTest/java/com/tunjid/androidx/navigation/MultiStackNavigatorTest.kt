@@ -5,8 +5,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import com.tunjid.androidx.savedstate.savedStateFor
 import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertSame
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -89,7 +88,6 @@ class MultiStackNavigatorTest {
         multiStackNavigator.waitForIdleSyncAfter { show(0) }
 
         assertSame(testFragmentB, multiStackNavigator.current)
-        assertSame(testFragmentD, multiStackNavigator.navigatorAt(2).current)
 
         multiStackNavigator.waitForIdleSyncAfter { pop() }
 
@@ -118,5 +116,24 @@ class MultiStackNavigatorTest {
         multiStackNavigator.waitForIdleSyncAfter { show(1) }
 
         assertSame(testFragmentB, multiStackNavigator.previous)
+    }
+
+    @Test
+    fun testClear() {
+        val initial =  multiStackNavigator.current!!
+        val initialTag =  initial.tag
+
+        InstrumentationRegistry.getInstrumentation().runOnMainSync { multiStackNavigator.clearAll() }
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+        val current =  multiStackNavigator.current!!
+        val currentTag =  current.tag
+
+        assertNotNull(initialTag)
+        assertNotNull(currentTag)
+        assertNull(initial.activity)
+        assertNotNull(current.activity)
+        assertNotSame(initial, current)
+        assertEquals(initialTag, currentTag)
     }
 }

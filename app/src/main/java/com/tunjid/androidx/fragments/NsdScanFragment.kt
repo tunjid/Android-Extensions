@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
@@ -16,10 +15,14 @@ import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
 import com.tunjid.androidx.adapters.NsdAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
+import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
+import com.tunjid.androidx.setLoading
 import com.tunjid.androidx.viewholders.NSDViewHolder
 import com.tunjid.androidx.viewmodels.NsdViewModel
+import com.tunjid.androidx.viewmodels.routeName
 
 /**
  * A [Fragment] listing supported NSD servers
@@ -42,12 +45,13 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan),
         super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
-                toolbarTitle = this::class.java.simpleName,
+                toolbarTitle = this::class.java.routeName,
                 toolbarShows = true,
                 toolBarMenu = R.menu.menu_nsd_scan,
                 fabShows = false,
                 showsBottomNav = true,
-                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
+                lightStatusBar = !requireContext().isDarkTheme,
+                navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )
 
         val placeHolder = PlaceHolder(view.findViewById(R.id.placeholder_container))
@@ -83,13 +87,13 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan),
         val refresh = menu.findItem(R.id.menu_refresh)
 
         refresh?.isVisible = currentlyScanning
-        if (currentlyScanning) refresh?.setActionView(R.layout.actionbar_indeterminate_progress)
+        if (currentlyScanning) refresh?.setLoading(requireContext().themeColorAt(R.attr.prominent_text_color))
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.menu_scan -> scanDevices(true).let { true }
         R.id.menu_stop -> scanDevices(false).let { true }
-        else -> true
+        else -> super.onOptionsItemSelected(item)
     }
 
     override fun onServiceClicked(serviceInfo: NsdServiceInfo) = Unit

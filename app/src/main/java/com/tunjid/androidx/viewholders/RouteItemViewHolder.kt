@@ -17,6 +17,8 @@ import androidx.core.widget.TextViewCompat
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
+import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.graphics.drawable.withTint
 
 class RouteItemViewHolder(itemView: View, listener: RouteAdapter.RouteAdapterListener) : InteractiveViewHolder<RouteAdapter.RouteAdapterListener>(itemView, listener), View.OnClickListener {
 
@@ -48,13 +50,12 @@ class RouteItemViewHolder(itemView: View, listener: RouteAdapter.RouteAdapterLis
 
     @SuppressLint("ResourceAsColor")
     private fun setIcons(isDown: Boolean, vararg textViews: TextView) {
+        val context = itemView.context
         val resVal = if (isDown) R.drawable.anim_vect_down_to_right_arrow else R.drawable.anim_vect_right_to_down_arrow
 
         for (textView in textViews) {
-            var icon: Drawable? = AnimatedVectorDrawableCompat.create(itemView.context, resVal)
+            val icon: Drawable? = AnimatedVectorDrawableCompat.create(itemView.context, resVal).withTint(context.themeColorAt(R.attr.prominent_text_color))
             if (icon != null) {
-                icon = DrawableCompat.wrap(icon.mutate())
-                DrawableCompat.setTint(icon!!, R.color.dark_grey)
                 DrawableCompat.setTintMode(icon, PorterDuff.Mode.SRC_IN)
                 TextViewCompat.setCompoundDrawablesRelativeWithIntrinsicBounds(textView, null, null, icon, null)
             }

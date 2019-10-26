@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Android Bootstrap</string>
+    <string name="app_name">Android Extensions</string>
     <string name="empty_string" />
     <string name="unknown_device">Unknown device</string>
     <string name="ble_not_supported">BLE is not supported</string>
@@ -20,9 +20,11 @@
     <string name="route_ble_scan">A fragment demonstrating the use of the BLEScanner from the Communications module.</string>
     <string name="route_nsd_scan">A fragment demonstrating the use of the NsdHelper from the Communications module.</string>
     <string name="route_hiding_view">A fragment demonstrating the ViewHider, useful for implementing the "quick return" pattern</string>
-    <string name="route_span_builder">A fragment demonstrating the SpanBuilder</string>
+    <string name="route_span_builder">A fragment demonstrating the charSequence extensions for building spans</string>
 
     <!-- Menu items -->
+    <string name="menu_reset_navigation">Reset Navigation</string>
+    <string name="menu_theme">Toggle theme</string>
     <string name="menu_scan">Scan</string>
     <string name="menu_stop">Stop</string>
     <string name="menu_refresh">Refresh</string>

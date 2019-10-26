@@ -52,6 +52,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
                 fabShows = true,
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
                 showsBottomNav = false,
+                lightStatusBar = false,
                 navBarColor = Color.TRANSPARENT,
                 fabClickListener = View.OnClickListener { Doggo.transitionDoggo?.let { navigator.push(AdoptDoggoFragment.newInstance(it)) } }
         )

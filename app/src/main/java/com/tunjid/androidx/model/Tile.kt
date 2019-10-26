@@ -1,10 +1,9 @@
 package com.tunjid.androidx.model
 
-import android.graphics.Color
-
 import com.tunjid.androidx.recyclerview.diff.Differentiable
 
 import androidx.annotation.ColorInt
+import com.tunjid.androidx.MutedColors
 
 class Tile private constructor(
         val number: Int,
@@ -22,10 +21,7 @@ class Tile private constructor(
 
     companion object {
 
-        private val colors = intArrayOf(Color.RED, Color.BLACK, Color.BLUE, Color.CYAN, Color.MAGENTA, Color.GREEN, Color.LTGRAY, Color.DKGRAY)
+        fun generate(id: Int): Tile = Tile(id, MutedColors.random(false))
 
-        fun generate(id: Int): Tile = Tile(id, colors[randomIndex()])
-
-        private fun randomIndex(): Int = (Math.random() * colors.size).toInt()
     }
 }

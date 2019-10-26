@@ -5,13 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentContainerView
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
-import androidx.fragment.app.commit
-import androidx.fragment.app.commitNow
+import androidx.fragment.app.*
 import androidx.lifecycle.Lifecycle
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.savedstate.LifecycleSavedStateContainer
@@ -84,7 +78,13 @@ class MultiStackNavigator(
 
     private val indices = 0 until stackCount
     internal val visitStack: Stack<Int> = Stack()
-    internal val stackFragments: List<StackFragment>
+
+    /**
+     * Mutable only because [clearAll]  replaces [StackFragment] instances. The alternative would
+     * be a computed property delegated to [FragmentManager.addedStackFragments], which has too
+     * many iterations in it's corresponding [FragmentManager.findFragmentByTag] to be justifiable.
+     */
+    internal var stackFragments: List<StackFragment>
 
     private val activeFragment: StackFragment
         get() = stackFragments.run { firstOrNull(Fragment::isAttached) ?: first() }
@@ -105,7 +105,7 @@ class MultiStackNavigator(
         val freshState = stateContainer.isFreshState
 
         if (freshState) fragmentManager.commitNow {
-            indices.forEach { index -> add(containerId, StackFragment.newInstance(index), index.toString()) }
+            addStackFragments()
         }
         else fragmentManager.addedStackFragments(indices).forEach { stackFragment ->
             visitStack.push(stackFragment.index)
@@ -119,7 +119,19 @@ class MultiStackNavigator(
 
     fun show(index: Int) = showInternal(index, true)
 
-    fun navigatorAt(index: Int) = stackFragments[index].navigator
+    /**
+     * Removes all [Fragment]s from this [MultiStackNavigator] effectively resetting it.
+     * After this call the [rootFunction] will be re-invoked for the first stack, allowing for the
+     * replacement for the first [Fragment] shown; this is very useful for auth and de-auth flows.
+     */
+    fun clearAll() = fragmentManager.commitNow {
+        stackFragments.forEach { remove(it) }
+        addStackFragments()
+        runOnCommit {
+            stackFragments = fragmentManager.addedStackFragments(indices)
+            stackSelectedListener?.invoke(0)
+        }
+    }
 
     override val previous: Fragment?
         get() = when (val peeked = activeNavigator.previous) {
@@ -165,6 +177,10 @@ class MultiStackNavigator(
         if (visitStack.contains(index)) visitStack.remove(index)
         visitStack.push(index)
         stateContainer.savedState.putIntArray(NAV_STACK_ORDER, visitStack.toIntArray())
+    }
+
+    private fun FragmentTransaction.addStackFragments() {
+        indices.forEach { index -> add(containerId, StackFragment.newInstance(index), index.toString()) }
     }
 
     private fun StackFragment.showRoot() = rootFunction(index).apply { navigator.push(first, second) }

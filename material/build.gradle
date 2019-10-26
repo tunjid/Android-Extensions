@@ -6,7 +6,8 @@ dependencies {
     implementation parent.ext.kotlin
     implementation parent.ext.material
     implementation parent.ext.dynamicAnimations
-    
+
+    implementation project(':core')
     implementation project(':view')
 
     testImplementation 'junit:junit:4.12'

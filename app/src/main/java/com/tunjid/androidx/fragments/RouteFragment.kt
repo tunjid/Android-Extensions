@@ -1,8 +1,11 @@
 package com.tunjid.androidx.fragments
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
-import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.fragment.app.viewModels
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
@@ -10,10 +13,13 @@ import com.tunjid.androidx.adapters.RouteAdapter
 import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
+import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.model.Route
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
 import com.tunjid.androidx.viewholders.RouteItemViewHolder
 import com.tunjid.androidx.viewmodels.RouteViewModel
+import com.tunjid.androidx.viewmodels.routeName
 
 class RouteFragment : AppBaseFragment(R.layout.fragment_route),
         RouteAdapter.RouteAdapterListener {
@@ -30,11 +36,12 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route),
 
         uiState = uiState.copy(
                 toolbarTitle = getString(R.string.app_name),
-                toolBarMenu = 0,
+                toolBarMenu = R.menu.menu_route,
                 toolbarShows = true,
                 fabShows = false,
                 showsBottomNav = true,
-                navBarColor = ContextCompat.getColor(requireContext(), R.color.white_75)
+                lightStatusBar = !requireContext().isDarkTheme,
+                navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )
 
         ListManagerBuilder<RouteItemViewHolder, PlaceHolder.State>()
@@ -44,19 +51,27 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route),
                 .build()
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.menu_theme -> AppCompatDelegate.setDefaultNightMode(
+                if (requireContext().isDarkTheme) MODE_NIGHT_NO
+                else MODE_NIGHT_YES
+        ).let { true }
+        else -> super.onOptionsItemSelected(item)
+    }
+
     override fun onItemClicked(route: Route) {
         navigator.push(when (route.destination) {
-            DoggoListFragment::class.java.simpleName -> DoggoListFragment.newInstance()
-            BleScanFragment::class.java.simpleName -> BleScanFragment.newInstance()
-            NsdScanFragment::class.java.simpleName -> NsdScanFragment.newInstance()
-            HidingViewsFragment::class.java.simpleName -> HidingViewsFragment.newInstance()
-            SpanbuilderFragment::class.java.simpleName -> SpanbuilderFragment.newInstance()
-            ShiftingTilesFragment::class.java.simpleName -> ShiftingTilesFragment.newInstance()
-            EndlessTilesFragment::class.java.simpleName -> EndlessTilesFragment.newInstance()
-            DoggoRankFragment::class.java.simpleName -> DoggoRankFragment.newInstance()
-            IndependentStacksFragment::class.java.simpleName -> IndependentStacksFragment.newInstance()
-            MultipleStacksFragment::class.java.simpleName -> MultipleStacksFragment.newInstance()
-            HardServiceConnectionFragment::class.java.simpleName -> HardServiceConnectionFragment.newInstance()
+            DoggoListFragment::class.java.routeName -> DoggoListFragment.newInstance()
+            BleScanFragment::class.java.routeName -> BleScanFragment.newInstance()
+            NsdScanFragment::class.java.routeName -> NsdScanFragment.newInstance()
+            HidingViewsFragment::class.java.routeName -> HidingViewsFragment.newInstance()
+            CharacterSequenceExtensionsFragment::class.java.routeName -> CharacterSequenceExtensionsFragment.newInstance()
+            ShiftingTilesFragment::class.java.routeName -> ShiftingTilesFragment.newInstance()
+            EndlessTilesFragment::class.java.routeName -> EndlessTilesFragment.newInstance()
+            DoggoRankFragment::class.java.routeName -> DoggoRankFragment.newInstance()
+            IndependentStacksFragment::class.java.routeName -> IndependentStacksFragment.newInstance()
+            MultipleStacksFragment::class.java.routeName -> MultipleStacksFragment.newInstance()
+            HardServiceConnectionFragment::class.java.routeName -> HardServiceConnectionFragment.newInstance()
             else -> newInstance(tabIndex) // No-op, all RouteFragment instances have the same tag
         })
     }

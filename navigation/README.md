@@ -1,5 +1,9 @@
 # Navigation
 
+|                         Independent Single Stacks                          |                      Top Level MultiStack Navigation                       |                        Nested MultiStack Navigation                        |
+|:--------------------------------------------------------------------------:|:--------------------------------------------------------------------------:|:--------------------------------------------------------------------------:|
+| ![](https://cdn-images-1.medium.com/max/1600/1*OvyttYsUDHw1LP-SA8VRSw.gif) | ![](https://cdn-images-1.medium.com/max/1600/1*Rj7f7D3XfwUuXFlBnBSQ1A.gif) | ![](https://cdn-images-1.medium.com/max/1600/1*q1WqvY91CWlmAjdEiwbA_g.gif) |
+
 ### Navigator
 
 An interface for changing navigation destinations with ```Fragments```.
