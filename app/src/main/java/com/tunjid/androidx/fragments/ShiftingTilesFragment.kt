@@ -10,7 +10,7 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.adapters.TileAdapter
 import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
-import com.tunjid.androidx.core.content.resolveThemeColor
+import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
@@ -52,7 +52,7 @@ class ShiftingTilesFragment : AppBaseFragment(R.layout.fragment_route) {
                 fabIcon = fabIconRes,
                 fabText = fabText,
                 lightStatusBar = !requireContext().isDarkTheme,
-                navBarColor = requireContext().resolveThemeColor(R.attr.nav_bar_color),
+                navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
                 fabClickListener = View.OnClickListener {
                     viewModel.toggleChanges()
                     uiState = uiState.copy(fabIcon = fabIconRes, fabText = fabText)

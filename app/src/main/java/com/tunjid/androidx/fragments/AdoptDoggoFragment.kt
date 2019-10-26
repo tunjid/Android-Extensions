@@ -14,8 +14,7 @@ import com.tunjid.androidx.adapters.DoggoAdapter.ImageListAdapterListener
 import com.tunjid.androidx.adapters.InputAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
-import com.tunjid.androidx.core.content.resolveColor
-import com.tunjid.androidx.core.content.resolveThemeColor
+import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
 import com.tunjid.androidx.uidrivers.*
@@ -45,7 +44,7 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo),
                 lightStatusBar = false,
                 showsBottomNav = true,
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
-                navBarColor = requireContext().resolveThemeColor(R.attr.nav_bar_color),
+                navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
                 fabClickListener = View.OnClickListener {
                     uiState = uiState.copy(snackbarText = getString(R.string.adopted_doggo, doggo.name))
                 }

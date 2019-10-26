@@ -14,7 +14,7 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.adapters.DoggoAdapter
 import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
-import com.tunjid.androidx.core.content.resolveThemeColor
+import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.navigation.Navigator
@@ -58,7 +58,7 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
                 showsBottomNav = true,
                 lightStatusBar = !requireContext().isDarkTheme,
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
-                navBarColor = requireContext().resolveThemeColor(R.attr.nav_bar_color),
+                navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
                 fabClickListener = View.OnClickListener { viewModel.resetList() }
         )
 

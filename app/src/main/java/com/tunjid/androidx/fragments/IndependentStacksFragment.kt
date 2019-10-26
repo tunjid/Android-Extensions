@@ -18,7 +18,7 @@ import com.google.android.material.button.MaterialButton
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
-import com.tunjid.androidx.core.content.resolveColor
+import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.text.SpanBuilder
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.StackNavigator
@@ -65,7 +65,7 @@ class IndependentStacksFragment : AppBaseFragment(R.layout.fragment_independent_
                 fabClickListener = View.OnClickListener {},
                 showsBottomNav = true,
                 lightStatusBar = false,
-                navBarColor = requireContext().resolveColor(R.color.transparent)
+                navBarColor = requireContext().colorAt(R.color.transparent)
         )
     }
 

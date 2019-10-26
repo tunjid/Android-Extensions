@@ -28,10 +28,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidx.R
-import com.tunjid.androidx.core.content.resolveColor
-import com.tunjid.androidx.core.content.resolveDrawable
-import com.tunjid.androidx.core.content.resolveThemeColor
-import com.tunjid.androidx.core.graphics.drawable.updateTint
+import com.tunjid.androidx.core.content.colorAt
+import com.tunjid.androidx.core.content.drawableAt
+import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.graphics.drawable.withTint
 import com.tunjid.androidx.core.text.SpanBuilder
 import com.tunjid.androidx.material.animator.FabExtensionAnimator
 import com.tunjid.androidx.navigation.Navigator
@@ -114,7 +114,7 @@ class GlobalUiDriver(
 ) : GlobalUiController {
 
     init {
-        host.window.statusBarColor = host.resolveColor(R.color.transparent)
+        host.window.statusBarColor = host.colorAt(R.color.transparent)
         host.window.decorView.systemUiVisibility = DEFAULT_SYSTEM_UI_FLAGS
     }
 
@@ -209,7 +209,7 @@ class GlobalUiDriver(
             if (lightStatusBar) flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             else flags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
         }
-        else -> host.window.statusBarColor = host.resolveColor(if (lightStatusBar) R.color.transparent else R.color.black_50)
+        else -> host.window.statusBarColor = host.colorAt(if (lightStatusBar) R.color.transparent else R.color.black_50)
     }
 
     private fun uiFlagTweak(tweaker: (Int) -> Int) = host.window.decorView.run {
@@ -225,7 +225,7 @@ class GlobalUiDriver(
     private fun setFabIcon(@DrawableRes icon: Int, title: CharSequence) = host.runOnUiThread {
         if (icon != 0 && title.isNotBlank()) fabExtensionAnimator.updateGlyphs(FabExtensionAnimator.newState(
                 title,
-                host.resolveDrawable(icon))
+                host.drawableAt(icon))
         )
     }
 
@@ -276,15 +276,15 @@ class GlobalUiDriver(
         val tint = titleTint
 
         menu.forEach {
-            it.icon = it.icon.updateTint(tint)
+            it.icon = it.icon.withTint(tint)
             it.title = SpanBuilder.of(it.title).color(tint).build()
             it.actionView?.backgroundTintList = ColorStateList.valueOf(tint)
         }
 
-        overflowIcon = overflowIcon.updateTint(tint)
+        overflowIcon = overflowIcon.withTint(tint)
         navigationIcon =
                 if (navigatorSupplier().previous == null) null
-                else context.resolveDrawable(R.drawable.ic_arrow_back_24dp).updateTint(tint)
+                else context.drawableAt(R.drawable.ic_arrow_back_24dp).withTint(tint)
     }
 
     private val Toolbar.titleTint: Int
@@ -292,7 +292,7 @@ class GlobalUiDriver(
             getSpans(0, title.length, ForegroundColorSpan::class.java)
                     .firstOrNull()
                     ?.foregroundColor
-        } ?: context.resolveThemeColor(R.attr.prominent_text_color)
+        } ?: context.themeColorAt(R.attr.prominent_text_color)
 
     companion object {
         private const val TOOLBAR_ANIM_DELAY = 200L

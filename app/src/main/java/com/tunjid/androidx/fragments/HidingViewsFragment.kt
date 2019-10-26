@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
-import com.tunjid.androidx.core.content.resolveThemeColor
+import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.view.animator.ViewHider
 import com.tunjid.androidx.viewmodels.routeName
@@ -33,7 +33,7 @@ class HidingViewsFragment : AppBaseFragment(R.layout.fragment_hiding_view) {
                 fabShows = false,
                 showsBottomNav = false,
                 lightStatusBar = !requireContext().isDarkTheme,
-                navBarColor = requireContext().resolveThemeColor(R.attr.nav_bar_color)
+                navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )
 
         val leftButton = view.findViewById<View>(R.id.left_button)

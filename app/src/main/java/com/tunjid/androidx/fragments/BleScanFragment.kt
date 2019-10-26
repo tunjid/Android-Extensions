@@ -20,7 +20,7 @@ import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
 import com.tunjid.androidx.adapters.ScanAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
-import com.tunjid.androidx.core.content.resolveThemeColor
+import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
@@ -52,7 +52,7 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan),
                 fabShows = false,
                 showsBottomNav = false,
                 lightStatusBar = !requireContext().isDarkTheme,
-                navBarColor = requireContext().resolveThemeColor(R.attr.nav_bar_color)
+                navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )
 
         val placeHolder = PlaceHolder(view.findViewById(R.id.placeholder_container))
@@ -86,7 +86,7 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan),
         val refresh = menu.findItem(R.id.menu_refresh)
 
         refresh?.isVisible = currentlyScanning
-        if (currentlyScanning) refresh?.setLoading(requireContext().resolveThemeColor(R.attr.prominent_text_color))
+        if (currentlyScanning) refresh?.setLoading(requireContext().themeColorAt(R.attr.prominent_text_color))
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {

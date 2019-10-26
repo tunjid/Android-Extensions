@@ -18,16 +18,16 @@ import androidx.core.content.ContextCompat
  * Convenience method for [ContextCompat.getColor]
  */
 @ColorInt
-fun Context.resolveColor(@ColorRes color: Int) = ContextCompat.getColor(this, color)
+fun Context.colorAt(@ColorRes color: Int) = ContextCompat.getColor(this, color)
 
 /**
  * Convenience method for [ContextCompat.getDrawable]
  */
-fun Context.resolveDrawable(@DrawableRes drawable: Int) = ContextCompat.getDrawable(this, drawable)
+fun Context.drawableAt(@DrawableRes drawable: Int) = ContextCompat.getDrawable(this, drawable)
 
 @ColorInt
-fun Context.resolveThemeColor(@AttrRes colorAttr: Int): Int = TypedValue().run typedValue@{
-    this@resolveThemeColor.theme.resolveAttribute(colorAttr, this@typedValue, true).run { if (this) data else Color.BLACK }
+fun Context.themeColorAt(@AttrRes colorAttr: Int): Int = TypedValue().run typedValue@{
+    this@themeColorAt.theme.resolveAttribute(colorAttr, this@typedValue, true).run { if (this) data else Color.BLACK }
 }
 
 /**
@@ -37,6 +37,7 @@ fun Context.resolveThemeColor(@AttrRes colorAttr: Int): Int = TypedValue().run t
  * This property will return null for [Service] and [Application] backed [ContextWrapper]
  * instances as you would expect.
  */
+@Suppress("unused")
 val Context.unwrapActivity: Activity?
     get() {
         var wrapped = this

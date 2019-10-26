@@ -21,8 +21,8 @@ import com.tunjid.androidx.adapters.DoggoAdapter
 import com.tunjid.androidx.adapters.DoggoAdapter.ImageListAdapterListener
 import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
-import com.tunjid.androidx.core.content.resolveThemeColor
-import com.tunjid.androidx.core.graphics.drawable.updateTint
+import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.graphics.drawable.withTint
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.navigation.Navigator
@@ -65,7 +65,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
                 showsBottomNav = true,
                 lightStatusBar = !requireContext().isDarkTheme,
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
-                navBarColor = requireContext().resolveThemeColor(R.attr.nav_bar_color),
+                navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
                 fabClickListener = View.OnClickListener { uiState = uiState.copy(fabExtended = !uiState.fabExtended) }
         )
 
@@ -103,7 +103,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
 
     private fun getDivider(orientation: Int): RecyclerView.ItemDecoration = requireContext().run {
         val decoration = DividerItemDecoration(this, orientation)
-        decoration.setDrawable(requireNonNull<Drawable>(getDrawable(this, R.drawable.bg_divider).updateTint(resolveThemeColor(R.attr.colorSurface))))
+        decoration.setDrawable(requireNonNull<Drawable>(getDrawable(this, R.drawable.bg_divider).withTint(themeColorAt(R.attr.colorSurface))))
         return decoration
     }
 

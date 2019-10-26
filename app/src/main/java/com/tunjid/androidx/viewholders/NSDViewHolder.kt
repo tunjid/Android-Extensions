@@ -3,11 +3,10 @@ package com.tunjid.androidx.viewholders
 import android.net.nsd.NsdServiceInfo
 import android.view.View
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import com.tunjid.androidx.R
 import com.tunjid.androidx.adapters.NsdAdapter
-import com.tunjid.androidx.core.content.resolveColor
-import com.tunjid.androidx.core.content.resolveThemeColor
+import com.tunjid.androidx.core.content.colorAt
+import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.recyclerview.InteractiveViewHolder
 
 class NSDViewHolder(itemView: View, listener: NsdAdapter.ServiceClickedListener)
@@ -33,8 +32,8 @@ class NSDViewHolder(itemView: View, listener: NsdAdapter.ServiceClickedListener)
         if (isSelf) stringBuilder.append(" (SELF)")
 
         val color =
-                if (isSelf) itemView.context.resolveColor(R.color.dark_grey)
-                else itemView.context.resolveThemeColor(R.attr.prominent_text_color)
+                if (isSelf) itemView.context.colorAt(R.color.dark_grey)
+                else itemView.context.themeColorAt(R.attr.prominent_text_color)
 
         textView.setTextColor(color)
         textView.text = stringBuilder.toString()
