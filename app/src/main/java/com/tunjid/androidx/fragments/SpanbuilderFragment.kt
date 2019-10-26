@@ -1,12 +1,15 @@
 package com.tunjid.androidx.fragments
 
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.method.LinkMovementMethod
 import android.view.View
 import android.widget.TextView
+import androidx.core.text.*
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
-import com.tunjid.androidx.core.text.SpanBuilder
+import com.tunjid.androidx.core.text.click
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.viewmodels.routeName
 
@@ -31,61 +34,36 @@ class SpanbuilderFragment : AppBaseFragment(R.layout.fragment_spanbuilder) {
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )
 
-        val textView = view.findViewById<TextView>(R.id.text)
-        val context = textView.context
-
-        val text = SpanBuilder.of("This is a regular span")
-                .prependSpace()
-                .prepend(".")
-                .prepend(1)
-                .appendNewLine()
-                .append(2)
-                .append(".")
-                .appendSpace()
-                .append(SpanBuilder.of("This is a colored span")
-                        .color(context.themeColorAt(R.attr.prominent_text_color))
-                        .build())
-                .appendNewLine()
-                .append(3)
-                .append(".")
-                .appendSpace()
-                .append(SpanBuilder.of("This is an italicized span")
-                        .italic()
-                        .build())
-                .appendNewLine()
-                .append(4)
-                .append(".")
-                .appendSpace()
-                .append(SpanBuilder.of("This is an underlined span")
-                        .underline()
-                        .build())
-                .appendNewLine()
-                .append(5)
-                .append(".")
-                .appendSpace()
-                .append(SpanBuilder.of("This is a bold span")
-                        .bold()
-                        .build())
-                .appendNewLine()
-                .append(6)
-                .append(".")
-                .appendSpace()
-                .append(SpanBuilder.of("This is a resized span")
-                        .resize(1.2f)
-                        .build())
-                .appendNewLine()
-                .append(7)
-                .append(".")
-                .appendSpace()
-                .append(SpanBuilder.of("This is a clickable span")
-                        .click(textView,
-                                { paint -> paint.isUnderlineText = true },
-                                { uiState = uiState.copy(snackbarText = "Clicked text!") })
-                        .build())
-                .appendNewLine()
-                .build()
-
-        textView.text = text
+        view.findViewById<TextView>(R.id.text).apply {
+            movementMethod = LinkMovementMethod.getInstance()
+            text = SpannableStringBuilder("1. This is a regular span.")
+                    .append("\n")
+                    .color(context.themeColorAt(R.attr.prominent_text_color)) {
+                        append("2. This is a colored span")
+                    }
+                    .append("\n")
+                    .italic {
+                        append("3. This is an italicized span")
+                    }
+                    .append("\n")
+                    .underline {
+                        append("4. This is an underlined span")
+                    }
+                    .append("\n")
+                    .bold {
+                        append("5. This is a bold span")
+                    }
+                    .append("\n")
+                    .scale(1.5F) {
+                        append("6. This is a resized span")
+                    }
+                    .append("\n")
+                    .append(
+                            SpannableStringBuilder("7. This is a clickable span").click(
+                                    { paint -> paint.isUnderlineText = true },
+                                    { uiState = uiState.copy(snackbarText = "Clicked text!") })
+                    )
+        }
     }
 
     companion object {

@@ -2,6 +2,8 @@ package com.tunjid.androidx.fragments
 
 import android.graphics.Color
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.method.LinkMovementMethod
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +18,7 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.colorAt
-import com.tunjid.androidx.core.text.SpanBuilder
+import com.tunjid.androidx.core.text.*
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
@@ -73,7 +75,7 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
         }
 
         uiState = uiState.copy(
-                toolbarTitle = SpanBuilder.of(this::class.java.routeName).color(Color.WHITE).build(),
+                toolbarTitle = SpannableStringBuilder(this::class.java.routeName).color(Color.WHITE),
                 toolBarMenu = R.menu.menu_default,
                 toolbarShows = true,
                 fabText = getString(R.string.go_deeper),
@@ -113,26 +115,24 @@ class MultipleStackChildFragment : Fragment(), Navigator.TagProvider {
     var depth: Int by args()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = TextView(inflater.context).apply {
-        text = SpanBuilder.of(name)
+        text = SpannableStringBuilder(name)
                 .appendNewLine()
-                .append(SpanBuilder.of(resources.getQuantityString(R.plurals.stack_depth, depth, depth))
-                        .resize(0.6F)
-                        .build())
+                .append(SpannableStringBuilder(resources.getQuantityString(R.plurals.stack_depth, depth, depth))
+                        .scale(0.6F))
                 .appendNewLine()
-                .append(SpanBuilder.of(resources.getString(R.string.clear))
-                        .resize(0.6F)
+                .append(SpannableStringBuilder(resources.getString(R.string.clear))
+                        .scale(0.6F)
                         .underline()
                         .italic()
                         .bold()
-                        .click(this) {
+                        .click {
                             (parentFragment?.parentFragment as? MultipleStacksFragment)?.apply {
                                 innerNavigator.clear()
                             }
-                        }
-                        .build())
-                .build()
+                        })
         gravity = Gravity.CENTER
         textSize = resources.getDimensionPixelSize(R.dimen.large_text).toFloat()
+        movementMethod = LinkMovementMethod.getInstance()
         setBackgroundColor(MutedColors.colorAt(context.isDarkTheme, depth))
         setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
     }

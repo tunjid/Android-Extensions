@@ -5,16 +5,9 @@ import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
-import android.text.SpannedString
 import android.text.TextPaint
-import android.text.method.LinkMovementMethod
-import android.text.style.ClickableSpan
-import android.text.style.ForegroundColorSpan
-import android.text.style.RelativeSizeSpan
-import android.text.style.StyleSpan
-import android.text.style.UnderlineSpan
+import android.text.style.*
 import android.view.View
-import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
@@ -32,17 +25,7 @@ import java.util.regex.Pattern
  * Created by tj.dahunsi on 5/20/17.
  */
 
-class SpanBuilder {
-
-    private var content: CharSequence = ""
-
-    private constructor() {
-        this.content = ""
-    }
-
-    private constructor(content: CharSequence) {
-        this.content = content
-    }
+internal class SpanBuilder internal constructor(private var content: CharSequence) {
 
     fun bold(): SpanBuilder = apply { this.content = bold(content) }
 
@@ -50,37 +33,17 @@ class SpanBuilder {
 
     fun underline(): SpanBuilder = apply { this.content = underline(content) }
 
-    fun resize(relativeSize: Float): SpanBuilder = apply { this.content = resize(relativeSize, content) }
+    fun scale(relativeSize: Float): SpanBuilder = apply { this.content = scale(relativeSize, content) }
 
     fun color(@ColorInt color: Int): SpanBuilder = apply { this.content = color(color, content) }
 
     fun color(context: Context, @ColorRes color: Int): SpanBuilder = apply { this.content = color(ContextCompat.getColor(context, color), content) }
 
-    fun click(textView: TextView,
-              paintConsumer: (TextPaint) -> Unit = {},
-              clickAction: () -> Unit): SpanBuilder {
-        this.content = click(textView, paintConsumer, clickAction, content)
-        textView.movementMethod = LinkMovementMethod.getInstance()
-        return this
+    fun click(paintConsumer: (TextPaint) -> Unit = {}, clickAction: () -> Unit): SpanBuilder = apply {
+        this.content = click(paintConsumer, clickAction, content)
     }
 
-    fun prepend(number: Number): SpanBuilder = apply { this.content = format(CONCATENATE_FORMATTER, number.toString(), content) }
-
-    fun append(number: Number): SpanBuilder = apply { this.content = format(CONCATENATE_FORMATTER, content, number.toString()) }
-
-    fun prepend(sequence: CharSequence): SpanBuilder = apply { this.content = format(CONCATENATE_FORMATTER, sequence, content) }
-
-    fun append(sequence: CharSequence): SpanBuilder = apply { this.content = format(CONCATENATE_FORMATTER, content, sequence) }
-
-    fun prependNewLine(): SpanBuilder = apply { this.content = format(CONCATENATE_FORMATTER, NEW_LINE, content) }
-
     fun appendNewLine(): SpanBuilder = apply { this.content = format(CONCATENATE_FORMATTER, content, NEW_LINE) }
-
-    fun prependSpace(): SpanBuilder = apply { this.content = format(CONCATENATE_FORMATTER, SPACE, content) }
-
-    fun appendSpace(): SpanBuilder = apply { this.content = format(CONCATENATE_FORMATTER, content, SPACE) }
-
-    fun wrapInBrackets(): SpanBuilder = apply { this.content = format(BRACKETS, content) }
 
     fun build(): CharSequence = content
 
@@ -88,13 +51,7 @@ class SpanBuilder {
 
         private val FORMAT_SEQUENCE = Pattern.compile("%([0-9]+\\$|<?)([^a-zA-z%]*)([[a-zA-Z%]&&[^tT]]|[tT][a-zA-Z])")
         private const val CONCATENATE_FORMATTER = "%1\$s%2\$s"
-        private const val BRACKETS = "(%1\$s)"
         private const val NEW_LINE = "\n"
-        private const val SPACE = " "
-
-        fun of(): SpanBuilder = SpanBuilder()
-
-        fun of(content: CharSequence): SpanBuilder = SpanBuilder(content)
 
         /**
          * Returns a CharSequence that concatenates the specified array of CharSequence
@@ -159,11 +116,10 @@ class SpanBuilder {
         private fun underline(vararg content: CharSequence): CharSequence =
                 apply(content, UnderlineSpan())
 
-        private fun resize(relativeSize: Float, vararg content: CharSequence): CharSequence =
+        private fun scale(relativeSize: Float, vararg content: CharSequence): CharSequence =
                 apply(content, RelativeSizeSpan(relativeSize))
 
-        private fun click(textView: TextView,
-                          paintConsumer: (TextPaint) -> Unit,
+        private fun click(paintConsumer: (TextPaint) -> Unit,
                           clickAction: () -> Unit,
                           vararg content: CharSequence): CharSequence =
                 apply(content, object : ClickableSpan() {
@@ -188,7 +144,7 @@ class SpanBuilder {
          * additional arguments are ignored.
          * @return the formatted string (with spans).
          */
-        fun format(format: CharSequence, vararg args: Any): SpannedString =
+        fun format(format: CharSequence, vararg args: Any): SpannableStringBuilder =
                 format(Locale.getDefault(), format, *args)
 
         /**
@@ -203,7 +159,7 @@ class SpanBuilder {
          * @return the formatted string (with spans).
          * @see String.format
          */
-        private fun format(locale: Locale, format: CharSequence, vararg args: Any): SpannedString {
+        private fun format(locale: Locale, format: CharSequence, vararg args: Any): SpannableStringBuilder {
             val out = SpannableStringBuilder(format)
 
             var i = 0
@@ -243,7 +199,7 @@ class SpanBuilder {
                 i += cookedArg.length
             }
 
-            return SpannedString(out)
+            return out
         }
     }
 
