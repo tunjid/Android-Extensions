@@ -92,7 +92,7 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan),
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.menu_scan -> scanDevices(true).let { true }
         R.id.menu_stop -> scanDevices(false).let { true }
-        else -> true
+        else -> super.onOptionsItemSelected(item)
     }
 
 

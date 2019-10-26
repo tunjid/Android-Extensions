@@ -23,8 +23,8 @@
     <string name="route_span_builder">A fragment demonstrating the SpanBuilder</string>
 
     <!-- Menu items -->
-    <string name="menu_Theme">Toggle theme</string>
-    <string name="menu_clear">Clear</string>
+    <string name="menu_reset_navigation">Reset Navigation</string>
+    <string name="menu_theme">Toggle theme</string>
     <string name="menu_scan">Scan</string>
     <string name="menu_stop">Stop</string>
     <string name="menu_refresh">Refresh</string>

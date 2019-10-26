@@ -5,13 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentContainerView
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
-import androidx.fragment.app.commit
-import androidx.fragment.app.commitNow
+import androidx.fragment.app.*
 import androidx.lifecycle.Lifecycle
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.savedstate.LifecycleSavedStateContainer
@@ -85,6 +79,7 @@ class MultiStackNavigator(
     private val indices = 0 until stackCount
     internal val visitStack: Stack<Int> = Stack()
     internal val stackFragments: List<StackFragment>
+        get() = fragmentManager.addedStackFragments(indices)
 
     private val activeFragment: StackFragment
         get() = stackFragments.run { firstOrNull(Fragment::isAttached) ?: first() }
@@ -112,14 +107,22 @@ class MultiStackNavigator(
         }
 
         stateContainer.savedState.getIntArray(NAV_STACK_ORDER)?.apply { visitStack.sortBy { indexOf(it) } }
-        stackFragments = fragmentManager.addedStackFragments(indices)
 
         if (freshState) show(0)
     }
 
     fun show(index: Int) = showInternal(index, true)
 
-    fun navigatorAt(index: Int) = stackFragments[index].navigator
+    /**
+     * Removes all [Fragment]s from this [MultiStackNavigator] effectively resetting it.
+     * After this call the [rootFunction] will be re-invoked for the first stack, allowing for the
+     * replacement for the first [Fragment] shown; this is very useful for auth and de-auth flows.
+     */
+    fun clearAll() = fragmentManager.commitNow {
+        stackFragments.forEach { remove(it) }
+        indices.forEach { index -> add(containerId, StackFragment.newInstance(index), index.toString()) }
+        stackSelectedListener?.invoke(0)
+    }
 
     override val previous: Fragment?
         get() = when (val peeked = activeNavigator.previous) {

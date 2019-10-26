@@ -89,7 +89,6 @@ class MultiStackNavigatorTest {
         multiStackNavigator.waitForIdleSyncAfter { show(0) }
 
         assertSame(testFragmentB, multiStackNavigator.current)
-        assertSame(testFragmentD, multiStackNavigator.navigatorAt(2).current)
 
         multiStackNavigator.waitForIdleSyncAfter { pop() }
 

@@ -73,7 +73,7 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
 
         uiState = uiState.copy(
                 toolbarTitle = SpanBuilder.of(this::class.java.routeName).color(Color.WHITE).build(),
-                toolBarMenu = 0,
+                toolBarMenu = R.menu.menu_default,
                 toolbarShows = true,
                 fabText = getString(R.string.go_deeper),
                 fabIcon = R.drawable.ic_bullseye_24dp,
