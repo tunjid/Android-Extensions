@@ -78,8 +78,13 @@ class MultiStackNavigator(
 
     private val indices = 0 until stackCount
     internal val visitStack: Stack<Int> = Stack()
-    internal val stackFragments: List<StackFragment>
-        get() = fragmentManager.addedStackFragments(indices)
+
+    /**
+     * Mutable only because [clearAll]  replaces [StackFragment] instances. The alternative would
+     * be a computed property delegated to [FragmentManager.addedStackFragments], which has too
+     * many iterations in it's corresponding [FragmentManager.findFragmentByTag] to be justifiable.
+     */
+    internal var stackFragments: List<StackFragment>
 
     private val activeFragment: StackFragment
         get() = stackFragments.run { firstOrNull(Fragment::isAttached) ?: first() }
@@ -100,13 +105,14 @@ class MultiStackNavigator(
         val freshState = stateContainer.isFreshState
 
         if (freshState) fragmentManager.commitNow {
-            indices.forEach { index -> add(containerId, StackFragment.newInstance(index), index.toString()) }
+            addStackFragments()
         }
         else fragmentManager.addedStackFragments(indices).forEach { stackFragment ->
             visitStack.push(stackFragment.index)
         }
 
         stateContainer.savedState.getIntArray(NAV_STACK_ORDER)?.apply { visitStack.sortBy { indexOf(it) } }
+        stackFragments = fragmentManager.addedStackFragments(indices)
 
         if (freshState) show(0)
     }
@@ -120,8 +126,11 @@ class MultiStackNavigator(
      */
     fun clearAll() = fragmentManager.commitNow {
         stackFragments.forEach { remove(it) }
-        indices.forEach { index -> add(containerId, StackFragment.newInstance(index), index.toString()) }
-        stackSelectedListener?.invoke(0)
+        addStackFragments()
+        runOnCommit {
+            stackFragments = fragmentManager.addedStackFragments(indices)
+            stackSelectedListener?.invoke(0)
+        }
     }
 
     override val previous: Fragment?
@@ -168,6 +177,10 @@ class MultiStackNavigator(
         if (visitStack.contains(index)) visitStack.remove(index)
         visitStack.push(index)
         stateContainer.savedState.putIntArray(NAV_STACK_ORDER, visitStack.toIntArray())
+    }
+
+    private fun FragmentTransaction.addStackFragments() {
+        indices.forEach { index -> add(containerId, StackFragment.newInstance(index), index.toString()) }
     }
 
     private fun StackFragment.showRoot() = rootFunction(index).apply { navigator.push(first, second) }
