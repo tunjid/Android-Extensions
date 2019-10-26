@@ -1,7 +1,5 @@
 package com.tunjid.androidx.model
 
-import android.graphics.Color
-
 import com.tunjid.androidx.recyclerview.diff.Differentiable
 
 import androidx.annotation.ColorInt
@@ -23,7 +21,7 @@ class Tile private constructor(
 
     companion object {
 
-        fun generate(id: Int): Tile = Tile(id, MutedColors.randomColor())
+        fun generate(id: Int): Tile = Tile(id, MutedColors.random(false))
 
     }
 }

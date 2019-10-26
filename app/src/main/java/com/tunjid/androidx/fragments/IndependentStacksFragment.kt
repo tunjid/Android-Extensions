@@ -15,11 +15,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
+import com.tunjid.androidx.MutedColors
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.text.SpanBuilder
+import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.StackNavigator
 import com.tunjid.androidx.navigation.childStackNavigationController
@@ -49,6 +51,9 @@ class IndependentStacksFragment : AppBaseFragment(R.layout.fragment_independent_
             if (!isEnabled) activity?.onBackPressed()
         }
     }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+            super.onCreateView(inflater, container, savedInstanceState)?.apply { setBackgroundColor(MutedColors.colorAt(inflater.context.isDarkTheme, 0)) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -106,7 +111,7 @@ class IndependentStackChildFragment : Fragment(), Navigator.TagProvider {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = MaterialButton(inflater.context).apply {
         val spacing = context.resources.getDimensionPixelSize(R.dimen.single_margin)
 
-        backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorPrimaryDark))
+        backgroundTintList = ColorStateList.valueOf(MutedColors.colorAt(inflater.context.isDarkTheme, 1))
         strokeColor = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.white))
         strokeWidth = context.resources.getDimensionPixelSize(R.dimen.eigth_margin)
         textSize = resources.getDimensionPixelSize(R.dimen.small_text).toFloat()

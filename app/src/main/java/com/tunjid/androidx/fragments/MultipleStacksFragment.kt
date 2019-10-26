@@ -17,6 +17,7 @@ import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.text.SpanBuilder
+import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.childMultiStackNavigationController
@@ -132,7 +133,7 @@ class MultipleStackChildFragment : Fragment(), Navigator.TagProvider {
                 .build()
         gravity = Gravity.CENTER
         textSize = resources.getDimensionPixelSize(R.dimen.large_text).toFloat()
-        setBackgroundColor(MutedColors.atIndex(depth))
+        setBackgroundColor(MutedColors.colorAt(context.isDarkTheme, depth))
         setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
     }
 
