@@ -75,7 +75,7 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
         }
 
         uiState = uiState.copy(
-                toolbarTitle = SpannableStringBuilder(this::class.java.routeName).color(Color.WHITE),
+                toolbarTitle = this::class.java.routeName.color(Color.WHITE),
                 toolBarMenu = R.menu.menu_default,
                 toolbarShows = true,
                 fabText = getString(R.string.go_deeper),
@@ -117,10 +117,10 @@ class MultipleStackChildFragment : Fragment(), Navigator.TagProvider {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = TextView(inflater.context).apply {
         text = SpannableStringBuilder(name)
                 .appendNewLine()
-                .append(SpannableStringBuilder(resources.getQuantityString(R.plurals.stack_depth, depth, depth))
+                .append(resources.getQuantityString(R.plurals.stack_depth, depth, depth)
                         .scale(0.6F))
                 .appendNewLine()
-                .append(SpannableStringBuilder(resources.getString(R.string.clear))
+                .append(resources.getString(R.string.clear)
                         .scale(0.6F)
                         .underline()
                         .italic()

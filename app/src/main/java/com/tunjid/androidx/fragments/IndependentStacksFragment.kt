@@ -66,7 +66,7 @@ class IndependentStacksFragment : AppBaseFragment(R.layout.fragment_independent_
         }
 
         uiState = uiState.copy(
-                toolbarTitle = SpannableStringBuilder(this::class.java.routeName).color(Color.WHITE),
+                toolbarTitle = this::class.java.routeName.color(Color.WHITE),
                 toolBarMenu = 0,
                 toolbarShows = true,
                 fabShows = false,
@@ -124,7 +124,7 @@ class IndependentStackChildFragment : Fragment(), Navigator.TagProvider {
 
         text = SpannableStringBuilder(name)
                 .appendNewLine()
-                .append(SpannableStringBuilder(resources.getQuantityString(R.plurals.stack_depth, depth, depth)).scale(0.5F))
+                .append(resources.getQuantityString(R.plurals.stack_depth, depth, depth).scale(0.5F))
 
         layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT).apply {
             gravity = Gravity.CENTER

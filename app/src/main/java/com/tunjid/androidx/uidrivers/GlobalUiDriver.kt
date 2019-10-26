@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
-import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.view.MenuItem
@@ -275,7 +274,7 @@ class GlobalUiDriver(
 
         menu.forEach {
             it.icon = it.icon.withTint(tint)
-            it.title = SpannableStringBuilder(it.title).color(tint)
+            it.title = it.title.color(tint)
             it.actionView?.backgroundTintList = ColorStateList.valueOf(tint)
         }
 

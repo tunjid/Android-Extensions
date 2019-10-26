@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView android:id="@+id/text"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:layout_marginTop="@dimen/actionbar_height"
-    android:lineSpacingMultiplier="1.2"
-    android:paddingBottom="@dimen/half_margin"
     android:paddingLeft="@dimen/single_margin"
-    android:paddingRight="@dimen/single_margin"
     android:paddingTop="@dimen/half_margin"
-    android:text="@string/app_name"
-    android:textSize="@dimen/medium_text" />
+    android:paddingRight="@dimen/single_margin"
+    android:paddingBottom="@dimen/half_margin">
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lineSpacingMultiplier="1.6"
+        android:text="@string/app_name"
+        android:textSize="@dimen/medium_text" />
+</androidx.core.widget.NestedScrollView>

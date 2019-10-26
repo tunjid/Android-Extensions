@@ -65,7 +65,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route),
             BleScanFragment::class.java.routeName -> BleScanFragment.newInstance()
             NsdScanFragment::class.java.routeName -> NsdScanFragment.newInstance()
             HidingViewsFragment::class.java.routeName -> HidingViewsFragment.newInstance()
-            SpanbuilderFragment::class.java.routeName -> SpanbuilderFragment.newInstance()
+            CharacterSequenceExtensionsFragment::class.java.routeName -> CharacterSequenceExtensionsFragment.newInstance()
             ShiftingTilesFragment::class.java.routeName -> ShiftingTilesFragment.newInstance()
             EndlessTilesFragment::class.java.routeName -> EndlessTilesFragment.newInstance()
             DoggoRankFragment::class.java.routeName -> DoggoRankFragment.newInstance()

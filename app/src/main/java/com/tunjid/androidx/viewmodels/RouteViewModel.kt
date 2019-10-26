@@ -1,7 +1,6 @@
 package com.tunjid.androidx.viewmodels
 
 import android.app.Application
-import android.text.SpannableStringBuilder
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
@@ -30,7 +29,7 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
             ),
             listOf(
                     Route(HidingViewsFragment::class.java.routeName, formatRoute(R.string.route_hiding_view)),
-                    Route(SpanbuilderFragment::class.java.routeName, formatRoute(R.string.route_span_builder)),
+                    Route(CharacterSequenceExtensionsFragment::class.java.routeName, formatRoute(R.string.route_span_builder)),
                     Route(HardServiceConnectionFragment::class.java.routeName, formatRoute(R.string.route_hard_service_connection))
             )
     )
@@ -38,7 +37,7 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
     operator fun get(@IdRes index: Int): List<Route> = mapping[index]
 
     private fun formatRoute(@StringRes stringRes: Int): CharSequence = getApplication<Application>().run {
-        SpannableStringBuilder(getString(stringRes)).italic()
+        getString(stringRes).italic()
     }
 }
 
