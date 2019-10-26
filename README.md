@@ -3,29 +3,29 @@
 This repository is a collection of modules to help bootstrap an Android Application.
 There are 10 modules:
 
-1. App: A sample app demoing the modules in the repository. 
-2. Core: A few added utilities to the core Android KTX libraries.
-3. SavedState: Delegated implementation of Android's Saved State Registry for Components that also have a lifecycle.
-4. Navigation: Interfaces and implementations of Fragment based Navigators, including single and multiple stacks.
-5. View: A module containing UI building blocks, like animators and helper methods for views.
-6. RecyclerView: Utility classes for the ```RecyclerView``` ```ViewGroup``` like drag and drop, swipe gestures, endless scrolling and much more.
-7. ConstraintLayout: Utility classes for the ```ConstraintLayout``` ```ViewGroup```.
-8. Material: Utility classes around Google's Material Design components including an expandable floating action button.
-9. Communications: Utility classes for Near Service Discovery (NSD) and Bluetooth Low Energy (BLE) communication.
-10. Test: Testing utilities built mostly around Espresso.
+1. [App](https://github.com/tunjid/Android-Extensions/blob/master/app/README.md): A sample app demoing the modules in the repository. 
+2. [Core](https://github.com/tunjid/Android-Extensions/blob/master/core/README.md): A few added utilities to the core Android KTX libraries.
+3. [Saved State](https://github.com/tunjid/Android-Extensions/blob/master/savedstate/README.md): Delegated implementation of Android's Saved State Registry for Components that also have a lifecycle.
+4. [Navigation](https://github.com/tunjid/Android-Extensions/blob/master/navigation/README.md): Interfaces and implementations of Fragment based Navigators, including single and multiple stacks.
+5. [View](https://github.com/tunjid/Android-Extensions/blob/master/view/README.md): A module containing UI building blocks, like animators and helper methods for views.
+6. [RecyclerView](https://github.com/tunjid/Android-Extensions/blob/master/recyclerview/README.md): Utility classes for the ```RecyclerView``` ```ViewGroup``` like drag and drop, swipe gestures, endless scrolling and much more.
+7. [ConstraintLayout](https://github.com/tunjid/Android-Extensions/blob/master/constraintlayout/README.md): Utility classes for the ```ConstraintLayout``` ```ViewGroup```.
+8. [Material](https://github.com/tunjid/Android-Extensions/blob/master/material/README.md): Utility classes around Google's Material Design components including an expandable floating action button.
+9. [Communications](https://github.com/tunjid/Android-Extensions/blob/master/communications/README.md): Utility classes for Near Service Discovery (NSD) and Bluetooth Low Energy (BLE) communication.
+10. [Test](https://github.com/tunjid/Android-Extensions/blob/master/test/README.md): Testing utilities built mostly around Espresso.
 
 build.gradle lines
 
-    implementation 'com.tunjid.androidx:constraintlayout:1.0.0-beta01'
-    implementation 'com.tunjid.androidx:communications:1.0.0-beta01'
-    implementation 'com.tunjid.androidx:recyclerview:1.0.0-beta01'
-    implementation 'com.tunjid.androidx:navigation:1.0.0-beta02'
-    implementation 'com.tunjid.androidx:savedstate:1.0.0-beta01'
-    implementation 'com.tunjid.androidx:functions:1.0.0-beta01'
-    implementation 'com.tunjid.androidx:material:1.0.0-beta01'
-    implementation 'com.tunjid.androidx:core:1.0.0-beta03'
-    implementation 'com.tunjid.androidx:view:1.0.0-beta01'
-    implementation 'com.tunjid.androidx:test:1.0.0-beta01'
+    implementation 'com.tunjid.androidx:constraintlayout:1.0.0-rc01'
+    implementation 'com.tunjid.androidx:communications:1.0.0-rc01'
+    implementation 'com.tunjid.androidx:recyclerview:1.0.0-rc01'
+    implementation 'com.tunjid.androidx:navigation:1.0.0-rc01'
+    implementation 'com.tunjid.androidx:savedstate:1.0.0-rc01'
+    implementation 'com.tunjid.androidx:functions:1.0.0-rc01'
+    implementation 'com.tunjid.androidx:material:1.0.0-rc01'
+    implementation 'com.tunjid.androidx:core:1.0.0-rc01'
+    implementation 'com.tunjid.androidx:view:1.0.0-rc01'
+    implementation 'com.tunjid.androidx:test:1.0.0-rc01'
 
 Projects that use This library include:
 
