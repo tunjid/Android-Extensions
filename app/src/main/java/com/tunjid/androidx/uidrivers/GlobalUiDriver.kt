@@ -5,7 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
-import android.text.SpannableStringBuilder
+import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.view.MenuItem
 import android.view.View
@@ -32,7 +32,7 @@ import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.graphics.drawable.withTint
-import com.tunjid.androidx.core.text.SpanBuilder
+import com.tunjid.androidx.core.text.color
 import com.tunjid.androidx.material.animator.FabExtensionAnimator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.view.animator.ViewHider
@@ -274,7 +274,7 @@ class GlobalUiDriver(
 
         menu.forEach {
             it.icon = it.icon.withTint(tint)
-            it.title = SpanBuilder.of(it.title).color(tint).build()
+            it.title = it.title.color(tint)
             it.actionView?.backgroundTintList = ColorStateList.valueOf(tint)
         }
 
@@ -285,7 +285,7 @@ class GlobalUiDriver(
     }
 
     private val Toolbar.titleTint: Int
-        get() = (title as? SpannableStringBuilder)?.run {
+        get() = (title as? Spanned)?.run {
             getSpans(0, title.length, ForegroundColorSpan::class.java)
                     .firstOrNull()
                     ?.foregroundColor

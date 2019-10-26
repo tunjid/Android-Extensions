@@ -3,6 +3,7 @@ package com.tunjid.androidx.fragments
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.text.SpannableStringBuilder
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +21,9 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.colorAt
-import com.tunjid.androidx.core.text.SpanBuilder
+import com.tunjid.androidx.core.text.appendNewLine
+import com.tunjid.androidx.core.text.color
+import com.tunjid.androidx.core.text.scale
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.StackNavigator
@@ -63,7 +66,7 @@ class IndependentStacksFragment : AppBaseFragment(R.layout.fragment_independent_
         }
 
         uiState = uiState.copy(
-                toolbarTitle = SpanBuilder.of(this::class.java.routeName).color(Color.WHITE).build(),
+                toolbarTitle = this::class.java.routeName.color(Color.WHITE),
                 toolBarMenu = 0,
                 toolbarShows = true,
                 fabShows = false,
@@ -119,12 +122,9 @@ class IndependentStackChildFragment : Fragment(), Navigator.TagProvider {
         gravity = Gravity.CENTER
         cornerRadius = spacing
 
-        text = SpanBuilder.of(name)
+        text = SpannableStringBuilder(name)
                 .appendNewLine()
-                .append(SpanBuilder.of(resources.getQuantityString(R.plurals.stack_depth, depth, depth))
-                        .resize(0.5F)
-                        .build())
-                .build()
+                .append(resources.getQuantityString(R.plurals.stack_depth, depth, depth).scale(0.5F))
 
         layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT).apply {
             gravity = Gravity.CENTER
