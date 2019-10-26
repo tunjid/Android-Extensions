@@ -175,7 +175,7 @@ class GlobalUiDriver(
                     this::setNavBarColor,
                     this::setLightStatusBar,
                     this::setFabIcon,
-                    fabExtensionAnimator::setExtended,
+                    fabExtensionAnimator::isExtended::set,
                     this::showSnackBar,
                     this::updateMainToolBar,
                     this::setFabClickListener
@@ -223,10 +223,7 @@ class GlobalUiDriver(
     }
 
     private fun setFabIcon(@DrawableRes icon: Int, title: CharSequence) = host.runOnUiThread {
-        if (icon != 0 && title.isNotBlank()) fabExtensionAnimator.updateGlyphs(FabExtensionAnimator.newState(
-                title,
-                host.drawableAt(icon))
-        )
+        if (icon != 0 && title.isNotBlank()) fabExtensionAnimator.updateGlyphs(title, icon)
     }
 
     private fun setFabClickListener(onClickListener: View.OnClickListener?) =

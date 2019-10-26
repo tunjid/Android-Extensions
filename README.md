@@ -1,10 +1,5 @@
 # Android Extensions
 
-
-.             |  .
-:-------------------------:|:-------------------------:
-![](https://cdn-images-1.medium.com/max/1600/1*sxTblN6YkLnGSoNjuEfGaw.gif)  |  ![](https://cdn-images-1.medium.com/max/1600/1*5tbALvA4vm5S00g7TMsQ6A.gif)
-
 This repository is a collection of modules to help bootstrap an Android Application.
 There are 10 modules:
 
@@ -46,7 +41,7 @@ A medium post with some of it's offerings can be read [here](https://medium.com/
 
 ## View
 Read more about the view module, classes and components [here](https://github.com/tunjid/Android-Extensions/blob/master/view/README.md).
-A medium post with some of it's offerings can be read [here].
+A medium post with some of it's offerings can be read [here](https://proandroiddev.com/creating-an-expandable-floating-action-button-in-android-6626b968559e).
 
 ## RecyclerView
 Read more about the RecyclerView module, classes and components [here](https://github.com/tunjid/Android-Extensions/blob/master/recyclerview/README.md).
