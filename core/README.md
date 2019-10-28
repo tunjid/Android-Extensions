@@ -1,10 +1,18 @@
 # Core
 
-### ServiceConnection
+### HardServiceConnection
 
 A convenience API for interacting with Bound Services in Android, removing a lot of the boilerplate involved with the added benefit of
 generic typing.
 
-### Spanbuilder
+### ContextExtensions
 
-A class for creating and concatenating a variety of [Spannable](https://developer.android.com/reference/android/text/Spannable.html) items.
+Extensions to cover ContextCompat methods
+
+### CharSequenceExtensions
+
+Extensions for CharSequence styling with [spans](https://developer.android.com/reference/android/text/Spannable.html) items.
+
+### DrawableExtensions
+
+Extensions to cover Drawable methods
