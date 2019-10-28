@@ -5,7 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
-import androidx.fragment.app.*
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.commit
+import androidx.fragment.app.commitNow
 import androidx.lifecycle.Lifecycle
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.savedstate.LifecycleSavedStateContainer
@@ -191,9 +197,8 @@ class MultiStackNavigator(
             if (id != this@MultiStackNavigator.containerId) return
             check(this is StackFragment) { "Only Stack Fragments may be added to a container View managed by a MultiStackNavigator" }
 
-            if (!stateContainer.isFreshState) return
-
-            if (index != 0) fm.commit { detach(this@run) }
+            val visibleIndex = if (visitStack.isEmpty()) 0 else visitStack.peek()
+            if (index != visibleIndex && isAttached) fm.commit { detach(this@run) }
         }
 
         override fun onFragmentResumed(fm: FragmentManager, fragment: Fragment) = fragment.run {

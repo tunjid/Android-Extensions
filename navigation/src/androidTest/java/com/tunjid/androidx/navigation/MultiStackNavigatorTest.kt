@@ -135,5 +135,20 @@ class MultiStackNavigatorTest {
         assertNotNull(current.activity)
         assertNotSame(initial, current)
         assertEquals(initialTag, currentTag)
+
+        assertFalse(multiStackNavigator.stackFragments[0].isDetached)
+        assertTrue(multiStackNavigator.stackFragments[1].isDetached)
+        assertTrue(multiStackNavigator.stackFragments[2].isDetached)
+    }
+
+    @Test
+    fun testClearIndex() {
+        multiStackNavigator.waitForIdleSyncAfter { show(1) }
+        InstrumentationRegistry.getInstrumentation().runOnMainSync { multiStackNavigator.clearAll() }
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+        assertTrue(multiStackNavigator.stackFragments[0].isDetached)
+        assertFalse(multiStackNavigator.stackFragments[1].isDetached)
+        assertTrue(multiStackNavigator.stackFragments[2].isDetached)
     }
 }
