@@ -139,13 +139,12 @@ class MultiStackNavigator(
      * @see [StackNavigator.pop]
      */
     override fun pop(): Boolean = when {
-        activeFragment.navigator.pop() -> true
-        stackVisitor.canLeave() -> {
-            stackVisitor.leave(activeFragment.index)
-            showInternal(stackVisitor.currentHost(), false)
+        activeFragment.navigator.pop() ->
             true
-        }
-        else -> false
+        stackVisitor.leave(activeFragment.index) ->
+            showInternal(stackVisitor.currentHost(), false).let { true }
+        else ->
+            false
     }
 
     override fun clear(upToTag: String?, includeMatch: Boolean) = activeNavigator.clear(upToTag, includeMatch)
@@ -227,9 +226,13 @@ internal class MultiStackVisitor(private val container: LifecycleSavedStateConta
         saveState()
     }
 
-    fun leave(value: Int): Unit = delegate.run {
-        if (size > 1) remove(value)
-        saveState()
+    fun leave(value: Int): Boolean = delegate.run {
+        val willLeave = size > 1
+        if (willLeave) {
+            remove(value)
+            saveState()
+        }
+        return willLeave
     }
 
     fun leaveAll(): Unit = delegate.run {
@@ -237,8 +240,6 @@ internal class MultiStackVisitor(private val container: LifecycleSavedStateConta
         add(0)
         saveState()
     }
-
-    fun canLeave(): Boolean = delegate.size > 1
 
     fun currentHost(): Int = delegate.last()
 
