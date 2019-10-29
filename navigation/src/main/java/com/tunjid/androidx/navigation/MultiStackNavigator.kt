@@ -5,18 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentContainerView
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
-import androidx.fragment.app.commit
-import androidx.fragment.app.commitNow
+import androidx.fragment.app.*
 import androidx.lifecycle.Lifecycle
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.savedstate.LifecycleSavedStateContainer
 import com.tunjid.androidx.savedstate.savedStateFor
-import java.util.*
 
 const val MULTI_STACK_NAVIGATOR = "com.tunjid.androidx.navigation.MultiStackNavigator"
 
@@ -53,7 +46,7 @@ fun FragmentActivity.multiStackNavigationController(
  */
 class MultiStackNavigator(
         stackCount: Int,
-        private val stateContainer: LifecycleSavedStateContainer,
+        stateContainer: LifecycleSavedStateContainer,
         private val fragmentManager: FragmentManager,
         @IdRes override val containerId: Int,
         private val rootFunction: (Int) -> Pair<Fragment, String>) : Navigator {
@@ -83,7 +76,7 @@ class MultiStackNavigator(
         }
 
     private val indices = 0 until stackCount
-    internal val visitStack: Stack<Int> = Stack()
+    internal val stackVisitor = MultiStackVisitor(stateContainer)
 
     /**
      * Mutable only because [clearAll]  replaces [StackFragment] instances. The alternative would
@@ -108,19 +101,9 @@ class MultiStackNavigator(
         fragmentManager.registerFragmentLifecycleCallbacks(StackLifecycleCallback(), false)
         fragmentManager.addOnBackStackChangedListener { throw IllegalStateException("Fragments may not be added to the back stack of a FragmentManager managed by a MultiStackNavigator") }
 
-        val freshState = stateContainer.isFreshState
+        if (stateContainer.isFreshState) fragmentManager.commitNow { addStackFragments() }
 
-        if (freshState) fragmentManager.commitNow {
-            addStackFragments()
-        }
-        else fragmentManager.addedStackFragments(indices).forEach { stackFragment ->
-            visitStack.push(stackFragment.index)
-        }
-
-        stateContainer.savedState.getIntArray(NAV_STACK_ORDER)?.apply { visitStack.sortBy { indexOf(it) } }
         stackFragments = fragmentManager.addedStackFragments(indices)
-
-        if (freshState) show(0)
     }
 
     fun show(index: Int) = showInternal(index, true)
@@ -131,6 +114,7 @@ class MultiStackNavigator(
      * replacement for the first [Fragment] shown; this is very useful for auth and de-auth flows.
      */
     fun clearAll() = fragmentManager.commitNow {
+        stackVisitor.leaveAll()
         stackFragments.forEach { remove(it) }
         addStackFragments()
         runOnCommit {
@@ -142,8 +126,8 @@ class MultiStackNavigator(
     override val previous: Fragment?
         get() = when (val peeked = activeNavigator.previous) {
             is Fragment -> peeked
-            else -> visitStack.run { elementAtOrNull(lastIndex - 1) }?.let { penultimate ->
-                stackFragments.elementAtOrNull(penultimate)?.navigator?.current
+            else -> stackVisitor.previousHost()?.let {
+                stackFragments.elementAtOrNull(it)?.navigator?.current
             }
         }
 
@@ -155,9 +139,12 @@ class MultiStackNavigator(
      * @see [StackNavigator.pop]
      */
     override fun pop(): Boolean = when {
-        activeFragment.navigator.pop() -> true
-        visitStack.run { remove(activeFragment.index); isEmpty() } -> false
-        else -> showInternal(visitStack.peek(), false).let { true }
+        activeFragment.navigator.pop() ->
+            true
+        stackVisitor.leave(activeFragment.index) ->
+            showInternal(stackVisitor.currentHost(), false).let { true }
+        else ->
+            false
     }
 
     override fun clear(upToTag: String?, includeMatch: Boolean) = activeNavigator.clear(upToTag, includeMatch)
@@ -166,7 +153,7 @@ class MultiStackNavigator(
 
     private fun showInternal(index: Int, addTap: Boolean) = fragmentManager.commit {
         val toShow = stackFragments[index]
-        if (addTap) track(toShow)
+        if (addTap) stackVisitor.visit(toShow.index)
 
         stackTransactionModifier?.invoke(this, index)
 
@@ -177,12 +164,6 @@ class MultiStackNavigator(
         }
 
         runOnCommit { stackSelectedListener?.invoke(index) }
-    }
-
-    private fun track(tab: StackFragment) = tab.run {
-        if (visitStack.contains(index)) visitStack.remove(index)
-        visitStack.push(index)
-        stateContainer.savedState.putIntArray(NAV_STACK_ORDER, visitStack.toIntArray())
     }
 
     private fun FragmentTransaction.addStackFragments() {
@@ -197,8 +178,7 @@ class MultiStackNavigator(
             if (id != this@MultiStackNavigator.containerId) return
             check(this is StackFragment) { "Only Stack Fragments may be added to a container View managed by a MultiStackNavigator" }
 
-            val visibleIndex = if (visitStack.isEmpty()) 0 else visitStack.peek()
-            if (index != visibleIndex && isAttached) fm.commit { detach(this@run) }
+            if (index != stackVisitor.currentHost() && isAttached) fm.commit { detach(this@run) }
         }
 
         override fun onFragmentResumed(fm: FragmentManager, fragment: Fragment) = fragment.run {
@@ -233,6 +213,41 @@ class StackFragment : Fragment() {
     companion object {
         internal fun newInstance(index: Int) = StackFragment().apply { this.index = index; containerId = View.generateViewId() }
     }
+}
+
+internal class MultiStackVisitor(private val container: LifecycleSavedStateContainer) {
+
+    private val delegate = (container.savedState.getIntArray(NAV_STACK_ORDER)
+            ?: intArrayOf(0)).toMutableList()
+
+    fun visit(value: Int) = delegate.run {
+        remove(value) // No duplicates
+        add(value)
+        saveState()
+    }
+
+    fun leave(value: Int): Boolean = delegate.run {
+        val willLeave = size > 1
+        if (willLeave) {
+            remove(value)
+            saveState()
+        }
+        return willLeave
+    }
+
+    fun leaveAll(): Unit = delegate.run {
+        clear()
+        add(0)
+        saveState()
+    }
+
+    fun currentHost(): Int = delegate.last()
+
+    fun hosts(): IntArray = delegate.toIntArray()
+
+    fun previousHost() = delegate.run { elementAtOrNull(lastIndex - 1) }
+
+    private fun saveState() = container.savedState.putIntArray(NAV_STACK_ORDER, hosts())
 }
 
 const val NAV_STACK_ORDER = "navState"
