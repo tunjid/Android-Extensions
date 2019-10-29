@@ -53,19 +53,19 @@ class MultiStackNavigatorTest {
         multiStackNavigator.waitForIdleSyncAfter { show(2) }
         multiStackNavigator.waitForIdleSyncAfter { show(1) }
 
-        assertEquals(listOf(0, 2, 1), multiStackNavigator.visitStack.toList())
+        assertEquals(listOf(0, 2, 1), multiStackNavigator.stackVisitor.hosts().toList())
 
         multiStackNavigator.waitForIdleSyncAfter { show(2) }
 
-        assertEquals(listOf(0, 1, 2), multiStackNavigator.visitStack.toList())
+        assertEquals(listOf(0, 1, 2), multiStackNavigator.stackVisitor.hosts().toList())
 
         multiStackNavigator.waitForIdleSyncAfter { pop() }
 
-        assertEquals(listOf(0, 1), multiStackNavigator.visitStack.toList())
+        assertEquals(listOf(0, 1), multiStackNavigator.stackVisitor.hosts().toList())
 
         multiStackNavigator.waitForIdleSyncAfter { pop() }
 
-        assertEquals(listOf(0), multiStackNavigator.visitStack.toList())
+        assertEquals(listOf(0), multiStackNavigator.stackVisitor.hosts().toList())
     }
 
     @Test
@@ -139,6 +139,9 @@ class MultiStackNavigatorTest {
         assertFalse(multiStackNavigator.stackFragments[0].isDetached)
         assertTrue(multiStackNavigator.stackFragments[1].isDetached)
         assertTrue(multiStackNavigator.stackFragments[2].isDetached)
+
+        assertEquals(listOf(0), multiStackNavigator.stackVisitor.hosts().toList())
+
     }
 
     @Test
@@ -147,8 +150,10 @@ class MultiStackNavigatorTest {
         InstrumentationRegistry.getInstrumentation().runOnMainSync { multiStackNavigator.clearAll() }
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
 
-        assertTrue(multiStackNavigator.stackFragments[0].isDetached)
-        assertFalse(multiStackNavigator.stackFragments[1].isDetached)
+        assertFalse(multiStackNavigator.stackFragments[0].isDetached)
+        assertTrue(multiStackNavigator.stackFragments[1].isDetached)
         assertTrue(multiStackNavigator.stackFragments[2].isDetached)
+
+        assertEquals(listOf(0), multiStackNavigator.stackVisitor.hosts().toList())
     }
 }
