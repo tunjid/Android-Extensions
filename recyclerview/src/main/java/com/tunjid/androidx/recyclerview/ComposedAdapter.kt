@@ -3,7 +3,7 @@ package com.tunjid.androidx.recyclerview
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
-class DelegateAdapter<ItemT : Any?, VH : RecyclerView.ViewHolder>(
+private class ComposedAdapter<ItemT : Any?, VH : RecyclerView.ViewHolder>(
         private val itemsSource: () -> List<ItemT>,
         private val viewHolderCreator: (ViewGroup, Int) -> VH,
         private val viewHolderBinder: (holder: VH, item: ItemT, position: Int) -> Unit,
@@ -19,7 +19,7 @@ class DelegateAdapter<ItemT : Any?, VH : RecyclerView.ViewHolder>(
 ) : RecyclerView.Adapter<VH>() {
 
     init {
-        if (itemIdFunction != null) setHasStableIds(true)
+        setHasStableIds(itemIdFunction != null)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH = viewHolderCreator(parent, viewType)
@@ -74,7 +74,7 @@ fun <ItemT, VH : RecyclerView.ViewHolder> adapterOf(
         onAttachedToRecyclerView: ((RecyclerView) -> Unit)? = null,
         onDetachedFromRecyclerView: ((RecyclerView) -> Unit)? = null
 ): RecyclerView.Adapter<VH> =
-        DelegateAdapter(
+        ComposedAdapter(
                 itemsSource,
                 viewHolderCreator,
                 viewHolderBinder,
