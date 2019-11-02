@@ -62,7 +62,9 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo),
                                 itemsSource = { items },
                                 viewHolderCreator = { parent, _ -> InputViewHolder(parent.inflate(R.layout.viewholder_simple_input)) },
                                 viewHolderBinder = { viewHolder, hint, _ -> viewHolder.bind(hint) },
-                                itemIdFunction = { it.hashCode().toLong() }
+                                itemIdFunction = { it.hashCode().toLong() },
+                                onViewHolderRecycled = InputViewHolder::unbind,
+                                onViewHolderDetached = InputViewHolder::unbind
                         )
                 )
                 .build()

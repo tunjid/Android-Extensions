@@ -73,7 +73,9 @@ class ShiftingTilesFragment : AppBaseFragment(R.layout.fragment_route) {
                                 itemsSource = viewModel::tiles,
                                 viewHolderCreator = { parent, _ -> TileViewHolder(parent.inflate(R.layout.viewholder_tile), onTileClicked) },
                                 viewHolderBinder = { viewHolder, tile, _ -> viewHolder.bind(tile) },
-                                itemIdFunction = { it.hashCode().toLong() }
+                                itemIdFunction = { it.hashCode().toLong() },
+                                onViewHolderRecycled = TileViewHolder::unbind,
+                                onViewHolderDetached = TileViewHolder::unbind
                         ),
                         4
                 )

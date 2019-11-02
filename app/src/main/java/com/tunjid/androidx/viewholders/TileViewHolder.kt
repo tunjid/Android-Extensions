@@ -5,12 +5,14 @@ import android.animation.ValueAnimator
 import android.graphics.Color
 import android.view.View
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.R
 import com.tunjid.androidx.model.Tile
-import com.tunjid.androidx.recyclerview.InteractiveViewHolder
 
-class TileViewHolder(itemView: View, scanAdapterListener: (tile: Tile) -> Unit)
-    : InteractiveViewHolder<(tile: Tile) -> Unit>(itemView, scanAdapterListener) {
+class TileViewHolder(
+        itemView: View,
+        private val onClick: (tile: Tile) -> Unit
+) : RecyclerView.ViewHolder(itemView) {
 
     private lateinit var tile: Tile
     private val text: TextView = itemView.findViewById(R.id.tile_text)
@@ -19,7 +21,7 @@ class TileViewHolder(itemView: View, scanAdapterListener: (tile: Tile) -> Unit)
 
     init {
         animator.duration = COLOR_CHANGE_DURATION.toLong()
-        itemView.setOnClickListener { delegate?.invoke(tile) }
+        itemView.setOnClickListener { onClick(tile) }
     }
 
     fun bind(tile: Tile) {
@@ -32,7 +34,7 @@ class TileViewHolder(itemView: View, scanAdapterListener: (tile: Tile) -> Unit)
         animator.start()
     }
 
-    fun unBind() {
+    fun unbind() {
         animator.cancel()
         animator.removeUpdateListener(listener)
     }

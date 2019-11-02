@@ -66,7 +66,7 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan),
                         adapterOf(
                                 itemsSource = viewModel::services,
                                 viewHolderCreator = { parent, _ -> NSDViewHolder(parent.inflate(R.layout.viewholder_nsd_list), this) },
-                                viewHolderBinder = { viewHolder, service, _ -> viewHolder.bind(service, this) }
+                                viewHolderBinder = { viewHolder, service, _ -> viewHolder.bind(service) }
                         )
                 )
                 .withPlaceholder(placeHolder)
