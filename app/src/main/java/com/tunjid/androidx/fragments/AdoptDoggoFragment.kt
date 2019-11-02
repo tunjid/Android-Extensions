@@ -10,7 +10,7 @@ import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
-import com.tunjid.androidx.adapters.ImageListAdapterListener
+import com.tunjid.androidx.adapters.DoggoInteractionListener
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.themeColorAt
@@ -25,7 +25,7 @@ import com.tunjid.androidx.viewholders.DoggoViewHolder
 import com.tunjid.androidx.viewholders.InputViewHolder
 
 class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo),
-        ImageListAdapterListener {
+        DoggoInteractionListener {
 
     override val insetFlags: InsetFlags = InsetFlags.NO_TOP
 

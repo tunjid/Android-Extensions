@@ -11,7 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
-import com.tunjid.androidx.adapters.ImageListAdapterListener
+import com.tunjid.androidx.adapters.DoggoInteractionListener
 import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
@@ -34,7 +34,7 @@ import kotlin.math.abs
 
 class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
         Navigator.TransactionModifier,
-        ImageListAdapterListener {
+        DoggoInteractionListener {
 
     override val insetFlags: InsetFlags = InsetFlags.ALL
 

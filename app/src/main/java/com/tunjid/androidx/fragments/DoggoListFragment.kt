@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
-import com.tunjid.androidx.adapters.ImageListAdapterListener
+import com.tunjid.androidx.adapters.DoggoInteractionListener
 import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
@@ -37,7 +37,7 @@ import java.util.Objects.requireNonNull
 import kotlin.math.abs
 
 class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
-        ImageListAdapterListener,
+        DoggoInteractionListener,
         Navigator.TransactionModifier {
 
     override val insetFlags: InsetFlags = InsetFlags.ALL

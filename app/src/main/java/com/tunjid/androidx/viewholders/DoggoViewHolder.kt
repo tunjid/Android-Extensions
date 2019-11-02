@@ -9,13 +9,13 @@ import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.RequestCreator
 import com.tunjid.androidx.R
-import com.tunjid.androidx.adapters.ImageListAdapterListener
+import com.tunjid.androidx.adapters.DoggoInteractionListener
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.view.util.hashTransitionName
 
 open class DoggoViewHolder(
         itemView: View,
-        private val adapterListener: ImageListAdapterListener
+        private val adapterListener: DoggoInteractionListener
 ) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
     private lateinit var doggo: Doggo
