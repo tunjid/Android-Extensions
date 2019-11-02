@@ -11,7 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
-import com.tunjid.androidx.adapters.DoggoAdapter
+import com.tunjid.androidx.adapters.DoggoInteractionListener
 import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
@@ -22,8 +22,10 @@ import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManager.Companion.SWIPE_DRAG_ALL_DIRECTIONS
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
 import com.tunjid.androidx.recyclerview.SwipeDragOptions
+import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
+import com.tunjid.androidx.view.util.inflate
 import com.tunjid.androidx.viewholders.DoggoRankViewHolder
 import com.tunjid.androidx.viewholders.DoggoViewHolder
 import com.tunjid.androidx.viewmodels.DoggoRankViewModel
@@ -32,7 +34,7 @@ import kotlin.math.abs
 
 class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
         Navigator.TransactionModifier,
-        DoggoAdapter.ImageListAdapterListener {
+        DoggoInteractionListener {
 
     override val insetFlags: InsetFlags = InsetFlags.ALL
 
@@ -66,11 +68,14 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
 
         listManager = ListManagerBuilder<DoggoRankViewHolder, PlaceHolder.State>()
                 .withRecyclerView(view.findViewById(R.id.recycler_view))
-                .withPaddedAdapter(DoggoAdapter(
-                        viewModel.doggos,
-                        R.layout.viewholder_doggo_rank,
-                        { itemView, adapterListener -> DoggoRankViewHolder(itemView, adapterListener) },
-                        this))
+                .withPaddedAdapter(
+                        adapterOf(
+                                itemsSource = viewModel::doggos,
+                                viewHolderCreator = { parent, _ -> DoggoRankViewHolder(parent.inflate(R.layout.viewholder_doggo_rank), this) },
+                                viewHolderBinder = { viewHolder, doggo, _ -> viewHolder.bind(doggo) },
+                                itemIdFunction = { it.hashCode().toLong() }
+                        )
+                )
                 .addScrollListener { _, dy -> if (abs(dy) > 4) uiState = uiState.copy(fabExtended = dy < 0) }
                 .withPlaceholder(placeHolder)
                 .withLinearLayoutManager()

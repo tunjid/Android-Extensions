@@ -6,21 +6,21 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-
-import com.tunjid.androidx.R
-import com.tunjid.androidx.adapters.RouteAdapter
-import com.tunjid.androidx.model.Route
-import com.tunjid.androidx.recyclerview.InteractiveViewHolder
-
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.widget.TextViewCompat
+import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
+import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.graphics.drawable.withTint
+import com.tunjid.androidx.model.Route
 
-class RouteItemViewHolder(itemView: View, listener: RouteAdapter.RouteAdapterListener) : InteractiveViewHolder<RouteAdapter.RouteAdapterListener>(itemView, listener), View.OnClickListener {
+class RouteItemViewHolder(
+        itemView: View,
+        private val delegate: (Route) -> Unit
+) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
     private var route: Route? = null
 
@@ -43,7 +43,7 @@ class RouteItemViewHolder(itemView: View, listener: RouteAdapter.RouteAdapterLis
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.description -> delegate?.onItemClicked(route!!)
+            R.id.description -> delegate.invoke(route!!)
             else -> changeVisibility(routeDestination, routeDescription)
         }
     }

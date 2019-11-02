@@ -17,8 +17,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
-import com.tunjid.androidx.adapters.DoggoAdapter
-import com.tunjid.androidx.adapters.DoggoAdapter.ImageListAdapterListener
+import com.tunjid.androidx.adapters.DoggoInteractionListener
 import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
@@ -28,15 +27,17 @@ import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
+import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
+import com.tunjid.androidx.view.util.inflate
 import com.tunjid.androidx.viewholders.DoggoViewHolder
 import com.tunjid.androidx.viewmodels.routeName
 import java.util.Objects.requireNonNull
 import kotlin.math.abs
 
 class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
-        ImageListAdapterListener,
+        DoggoInteractionListener,
         Navigator.TransactionModifier {
 
     override val insetFlags: InsetFlags = InsetFlags.ALL
@@ -71,11 +72,14 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
 
         listManager = ListManagerBuilder<DoggoViewHolder, PlaceHolder.State>()
                 .withRecyclerView(view.findViewById(R.id.recycler_view))
-                .withPaddedAdapter(DoggoAdapter(
-                        Doggo.doggos,
-                        R.layout.viewholder_doggo_list,
-                        { itemView, adapterListener -> DoggoViewHolder(itemView, adapterListener) },
-                        this), 2)
+                .withPaddedAdapter(
+                        adapterOf(
+                                itemsSource = Doggo.Companion::doggos,
+                                viewHolderCreator = { parent, _ -> DoggoViewHolder(parent.inflate(R.layout.viewholder_doggo_list), this) },
+                                viewHolderBinder = { viewHolder, doggo, _ -> viewHolder.bind(doggo) },
+                                itemIdFunction = { it.hashCode().toLong() }
+                        ),
+                        2)
                 .addScrollListener { _, dy -> if (abs(dy) > 4) uiState = uiState.copy(fabExtended = dy < 0) }
                 .addDecoration(getDivider(DividerItemDecoration.HORIZONTAL))
                 .addDecoration(getDivider(DividerItemDecoration.VERTICAL))

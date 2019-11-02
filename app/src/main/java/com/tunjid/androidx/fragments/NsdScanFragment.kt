@@ -13,13 +13,15 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
-import com.tunjid.androidx.adapters.NsdAdapter
+import com.tunjid.androidx.adapters.ServiceClickedListener
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
+import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.setLoading
+import com.tunjid.androidx.view.util.inflate
 import com.tunjid.androidx.viewholders.NSDViewHolder
 import com.tunjid.androidx.viewmodels.NsdViewModel
 import com.tunjid.androidx.viewmodels.routeName
@@ -28,7 +30,7 @@ import com.tunjid.androidx.viewmodels.routeName
  * A [Fragment] listing supported NSD servers
  */
 class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan),
-        NsdAdapter.ServiceClickedListener {
+        ServiceClickedListener {
 
     private val viewModel by viewModels<NsdViewModel>()
 
@@ -60,7 +62,13 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan),
         listManager = ListManagerBuilder<NSDViewHolder, PlaceHolder.State>()
                 .withRecyclerView(view.findViewById(R.id.list))
                 .addDecoration(DividerItemDecoration(requireActivity(), VERTICAL))
-                .withAdapter(NsdAdapter(this, viewModel.services))
+                .withAdapter(
+                        adapterOf(
+                                itemsSource = viewModel::services,
+                                viewHolderCreator = { parent, _ -> NSDViewHolder(parent.inflate(R.layout.viewholder_nsd_list), this) },
+                                viewHolderBinder = { viewHolder, service, _ -> viewHolder.bind(service) }
+                        )
+                )
                 .withPlaceholder(placeHolder)
                 .withLinearLayoutManager()
                 .build()
