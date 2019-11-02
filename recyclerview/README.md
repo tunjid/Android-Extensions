@@ -14,10 +14,9 @@ are the ```DiffUtil.DiffResult```, and a ```List``` containing the items of the 
 bi function applied to the ```Lists``` to diff.
 
 
-## InteractiveAdapter
+## ComposedAdapter
 
-A ```RecyclerViewAdapter``` that hosts a ```ViewHolder``` with a typed interaction delegate;
-Implementations could be ClickListeners, LongClickListeners, both combined or what have you.
+A ```RecyclerViewAdapter``` built with the adapterOf function that delegates all callbacks to individually composed functions.
 
 ## ListManager
 
