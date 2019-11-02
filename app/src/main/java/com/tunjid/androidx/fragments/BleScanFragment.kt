@@ -18,19 +18,19 @@ import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
-import com.tunjid.androidx.adapters.ScanAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
+import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.setLoading
+import com.tunjid.androidx.view.util.inflate
 import com.tunjid.androidx.viewholders.ScanViewHolder
 import com.tunjid.androidx.viewmodels.BleViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
-class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan),
-        ScanAdapter.ScanAdapterListener {
+class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan) {
 
     private val viewModel by viewModels<BleViewModel>()
 
@@ -61,7 +61,13 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan),
         listManager = ListManagerBuilder<ScanViewHolder, PlaceHolder.State>()
                 .withRecyclerView(view.findViewById(R.id.list))
                 .addDecoration(DividerItemDecoration(requireActivity(), DividerItemDecoration.VERTICAL))
-                .withAdapter(ScanAdapter(this, viewModel.scanResults))
+                .withAdapter(
+                        adapterOf(
+                                itemsSource = viewModel::scanResults,
+                                viewHolderCreator = { parent, _ -> ScanViewHolder(parent.inflate(R.layout.viewholder_scan), this::onBluetoothDeviceClicked) },
+                                viewHolderBinder = { viewHolder, scanResult, _ -> viewHolder.bind(scanResult) }
+                        )
+                )
                 .withPlaceholder(placeHolder)
                 .withLinearLayoutManager()
                 .build()
@@ -142,7 +148,7 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan),
         listManager.clear()
     }
 
-    override fun onBluetoothDeviceClicked(bluetoothDevice: BluetoothDevice) {
+    private fun onBluetoothDeviceClicked(bluetoothDevice: BluetoothDevice) {
         uiState = uiState.copy(snackbarText = bluetoothDevice.address)
     }
 

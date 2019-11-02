@@ -6,14 +6,16 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
-import com.tunjid.androidx.adapters.TileAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
+import com.tunjid.androidx.model.Tile
 import com.tunjid.androidx.recyclerview.ListManager
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
+import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
+import com.tunjid.androidx.view.util.inflate
 import com.tunjid.androidx.viewholders.TileViewHolder
 import com.tunjid.androidx.viewmodels.EndlessTileViewModel
 import com.tunjid.androidx.viewmodels.EndlessTileViewModel.Companion.NUM_TILES
@@ -50,10 +52,21 @@ class EndlessTilesFragment : AppBaseFragment(R.layout.fragment_route) {
                 }
         )
 
+        val onTileClicked = { tile: Tile -> uiState = uiState.copy(snackbarText = tile.toString()) }
+
         listManager = ListManagerBuilder<TileViewHolder, PlaceHolder.State>()
                 .withRecyclerView(view.findViewById(R.id.recycler_view))
                 .withGridLayoutManager(3)
-                .withAdapter(TileAdapter(viewModel.tiles) { uiState = uiState.copy(snackbarText = it.toString()) })
+                .withAdapter(
+                        adapterOf(
+                                itemsSource = viewModel::tiles,
+                                viewHolderCreator = { parent, _ -> TileViewHolder(parent.inflate(R.layout.viewholder_tile), onTileClicked) },
+                                viewHolderBinder = { viewHolder, tile, _ -> viewHolder.bind(tile) },
+                                itemIdFunction = { it.hashCode().toLong() },
+                                onViewHolderRecycled = TileViewHolder::unbind,
+                                onViewHolderDetached = TileViewHolder::unbind
+                        )
+                )
                 .withEndlessScrollCallback(NUM_TILES) { viewModel.fetchMore() }
                 .addScrollListener { _, dy -> if (abs(dy) > 3) uiState = uiState.copy(fabShows = dy < 0) }
                 .build()

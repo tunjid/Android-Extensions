@@ -3,14 +3,16 @@ package com.tunjid.androidx.viewholders
 import android.net.nsd.NsdServiceInfo
 import android.view.View
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.R
-import com.tunjid.androidx.adapters.NsdAdapter
+import com.tunjid.androidx.adapters.ServiceClickedListener
 import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.content.themeColorAt
-import com.tunjid.androidx.recyclerview.InteractiveViewHolder
 
-class NSDViewHolder(itemView: View, listener: NsdAdapter.ServiceClickedListener)
-    : InteractiveViewHolder<NsdAdapter.ServiceClickedListener>(itemView, listener), View.OnClickListener {
+class NSDViewHolder(
+        itemView: View,
+        private val listener: ServiceClickedListener
+) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
     private val textView: TextView = itemView as TextView
     private lateinit var serviceInfo: NsdServiceInfo
@@ -19,15 +21,14 @@ class NSDViewHolder(itemView: View, listener: NsdAdapter.ServiceClickedListener)
         itemView.setOnClickListener(this)
     }
 
-    fun bind(info: NsdServiceInfo, listener: NsdAdapter.ServiceClickedListener) {
+    fun bind(info: NsdServiceInfo) {
         serviceInfo = info
-        delegate = listener
 
         val stringBuilder = StringBuilder()
         stringBuilder.append(info.serviceName).append("\n")
                 .append(if (info.host != null) info.host.hostAddress else "")
 
-        val isSelf = delegate?.isSelf(info) ?: return
+        val isSelf = listener.isSelf(info)
 
         if (isSelf) stringBuilder.append(" (SELF)")
 
@@ -39,5 +40,5 @@ class NSDViewHolder(itemView: View, listener: NsdAdapter.ServiceClickedListener)
         textView.text = stringBuilder.toString()
     }
 
-    override fun onClick(v: View) = delegate?.onServiceClicked(serviceInfo) ?: Unit
+    override fun onClick(v: View) = listener.onServiceClicked(serviceInfo)
 }

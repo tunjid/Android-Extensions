@@ -12,11 +12,10 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.doOnNextLayout
+import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.R
-import com.tunjid.androidx.recyclerview.InteractiveViewHolder
 
-class InputViewHolder(itemView: View)
-    : InteractiveViewHolder<Unit>(itemView, Unit), TextWatcher {
+class InputViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), TextWatcher {
 
     private var lastLineCount = 1
 
@@ -36,6 +35,8 @@ class InputViewHolder(itemView: View)
         setTintAlpha(text.hasFocus())
         hint.doOnNextLayout { scaleHint(isEmpty(text.text)) }
     }
+
+    fun unbind() = text.removeTextChangedListener(this)
 
     override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) = Unit
 
