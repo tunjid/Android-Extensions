@@ -4,13 +4,13 @@ import android.net.nsd.NsdServiceInfo
 import android.view.View
 import android.widget.TextView
 import com.tunjid.androidx.R
-import com.tunjid.androidx.adapters.NsdAdapter
+import com.tunjid.androidx.adapters.ServiceClickedListener
 import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.recyclerview.InteractiveViewHolder
 
-class NSDViewHolder(itemView: View, listener: NsdAdapter.ServiceClickedListener)
-    : InteractiveViewHolder<NsdAdapter.ServiceClickedListener>(itemView, listener), View.OnClickListener {
+class NSDViewHolder(itemView: View, listener: ServiceClickedListener)
+    : InteractiveViewHolder<ServiceClickedListener>(itemView, listener), View.OnClickListener {
 
     private val textView: TextView = itemView as TextView
     private lateinit var serviceInfo: NsdServiceInfo
@@ -19,7 +19,7 @@ class NSDViewHolder(itemView: View, listener: NsdAdapter.ServiceClickedListener)
         itemView.setOnClickListener(this)
     }
 
-    fun bind(info: NsdServiceInfo, listener: NsdAdapter.ServiceClickedListener) {
+    fun bind(info: NsdServiceInfo, listener: ServiceClickedListener) {
         serviceInfo = info
         delegate = listener
 

@@ -3,7 +3,7 @@ package com.tunjid.androidx.fragments
 import android.os.Bundle
 import android.view.View
 import com.tunjid.androidx.R
-import com.tunjid.androidx.adapters.DoggoAdapter.ImageListAdapterListener
+import com.tunjid.androidx.adapters.ImageListAdapterListener
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.model.Doggo

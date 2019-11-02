@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.fragment.app.viewModels
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
-import com.tunjid.androidx.adapters.RouteAdapter
 import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
@@ -17,12 +16,13 @@ import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.model.Route
 import com.tunjid.androidx.recyclerview.ListManagerBuilder
+import com.tunjid.androidx.recyclerview.adapterOf
+import com.tunjid.androidx.view.util.inflate
 import com.tunjid.androidx.viewholders.RouteItemViewHolder
 import com.tunjid.androidx.viewmodels.RouteViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
-class RouteFragment : AppBaseFragment(R.layout.fragment_route),
-        RouteAdapter.RouteAdapterListener {
+class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
 
     private val viewModel: RouteViewModel by viewModels()
 
@@ -47,7 +47,14 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route),
         ListManagerBuilder<RouteItemViewHolder, PlaceHolder.State>()
                 .withRecyclerView(view.findViewById(R.id.recycler_view))
                 .withLinearLayoutManager()
-                .withPaddedAdapter(RouteAdapter(viewModel[tabIndex], this))
+                .withPaddedAdapter(
+                        adapterOf(
+                                itemsSource = { viewModel[tabIndex] },
+                                viewHolderCreator = { parent, _ -> RouteItemViewHolder(parent.inflate(R.layout.viewholder_route), this::onRouteClicked) },
+                                viewHolderBinder = { routeViewHolder, route, _ -> routeViewHolder.bind(route) },
+                                itemIdFunction = { it.hashCode().toLong() }
+                        )
+                )
                 .build()
     }
 
@@ -59,7 +66,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route),
         else -> super.onOptionsItemSelected(item)
     }
 
-    override fun onItemClicked(route: Route) {
+    private fun onRouteClicked(route: Route) {
         navigator.push(when (route.destination) {
             DoggoListFragment::class.java.routeName -> DoggoListFragment.newInstance()
             BleScanFragment::class.java.routeName -> BleScanFragment.newInstance()
