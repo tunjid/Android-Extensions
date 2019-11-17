@@ -17,6 +17,8 @@ import java.util.*
 
 open class FabExtensionAnimator(private val button: MaterialButton) {
 
+    var transitionOptions: (Transition.() -> Unit)? = null
+
     @Suppress("MemberVisibilityCanBePrivate")
     protected var collapsedFabSize: Int = button.resources.getDimensionPixelSize(R.dimen.collapsed_fab_size)
     @Suppress("MemberVisibilityCanBePrivate")
@@ -95,7 +97,9 @@ open class FabExtensionAnimator(private val button: MaterialButton) {
         TransitionManager.beginDelayedTransition(group, AutoTransition()
                 .setDuration(EXTENSION_DURATION.toLong())
                 .addListener(listener)
-                .addTarget(button))
+                .addTarget(button)
+                .apply { transitionOptions?.invoke(this) }
+        )
 
         if (extended) this.button.text = this.glyphState!!.text
         else this.button.text = ""

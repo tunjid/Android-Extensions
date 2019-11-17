@@ -1,37 +1,30 @@
 package com.tunjid.androidx.uidrivers
 
-import android.animation.ArgbEvaluator
-import android.animation.IntEvaluator
-import android.animation.TypeEvaluator
-import android.animation.ValueAnimator
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
+import android.transition.Transition
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
 import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.animation.doOnEnd
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.ViewCompat
 import androidx.core.view.doOnLayout
 import androidx.core.view.drawToBitmap
 import androidx.core.view.forEach
 import androidx.core.view.isVisible
-import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.transition.AutoTransition
@@ -46,10 +39,8 @@ import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.graphics.drawable.withTint
 import com.tunjid.androidx.core.text.color
 import com.tunjid.androidx.material.animator.FabExtensionAnimator
-import com.tunjid.androidx.material.animator.speedDial
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.view.animator.ViewHider
-import com.tunjid.androidx.view.util.spring
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -59,55 +50,6 @@ import kotlin.reflect.KProperty
  */
 interface GlobalUiController {
     var uiState: UiState
-
-    fun speedDialer(
-            @ColorInt tint: Int = Color.BLUE,
-            vararg items: Pair<CharSequence?, Drawable>,
-            dismissListener: (Int?) -> Unit
-    ): View.OnClickListener = View.OnClickListener { button ->
-        if (button !is MaterialButton) return@OnClickListener
-        val context = button.context
-        val colorFrom = context.themeColorAt(R.attr.colorPrimary)
-        val colorTo = context.themeColorAt(R.attr.colorAccent).run {
-            Color.argb(20, Color.red(this), Color.green(this), Color.blue(this))
-        }
-
-        button.strokeColor = ColorStateList.valueOf(context.themeColorAt(R.attr.colorAccent))
-
-        button.spring(DynamicAnimation.ROTATION).animateToFinalPosition(45F)
-
-        val animators = listOf(
-                roundAbout(colorFrom, colorTo, ArgbEvaluator(), { button.backgroundTintList!!.defaultColor }) { button.backgroundTintList = ColorStateList.valueOf(it as Int) },
-                roundAbout(0, context.resources.getDimensionPixelSize(R.dimen.quarter_margin), IntEvaluator(), button::getStrokeWidth, button::setStrokeWidth)
-        )
-
-        speedDial(anchor = button, tint = tint, items = *items, dismissListener = { index ->
-            animators.forEach(ValueAnimator::cancel)
-            button.spring(DynamicAnimation.ROTATION).animateToFinalPosition(0F)
-            if (index == null) {
-                roundAbout(colorFrom, colorTo, ArgbEvaluator(), { button.backgroundTintList!!.defaultColor }) { button.backgroundTintList = ColorStateList.valueOf(it as Int) }
-                roundAbout(0, context.resources.getDimensionPixelSize(R.dimen.quarter_margin), IntEvaluator(), button::getStrokeWidth, button::setStrokeWidth)
-            }
-            dismissListener(index)
-        })
-    }
-
-    private inline fun <reified T> roundAbout(
-            originalPosition: T,
-            nextPosition: T,
-            evaluator: TypeEvaluator<T>,
-            crossinline getter: () -> T,
-            crossinline setter: (T) -> Unit
-    ) = ValueAnimator.ofObject(evaluator, getter(), nextPosition).apply {
-        duration = 200L
-        addUpdateListener { setter(it.animatedValue as T) }
-        doOnEnd {
-            setObjectValues(getter(), originalPosition)
-            removeAllListeners()
-            start()
-        }
-        start()
-    }
 }
 
 /**
@@ -241,7 +183,8 @@ class GlobalUiDriver(
                     fabExtensionAnimator::isExtended::set,
                     this::showSnackBar,
                     this::updateMainToolBar,
-                    this::setFabClickListener
+                    this::setFabClickListener,
+                    this::setFabTransitionOptions
             )
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
@@ -291,6 +234,10 @@ class GlobalUiDriver(
 
     private fun setFabClickListener(onClickListener: View.OnClickListener?) =
             fabHider.view.setOnClickListener(onClickListener)
+
+    private fun setFabTransitionOptions(options: (Transition.() -> Unit)?) {
+        fabExtensionAnimator.transitionOptions = options
+    }
 
     private fun showSnackBar(message: CharSequence) = Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_SHORT).run {
         // Necessary to remove snackbar padding for keyboard on older versions of Android

@@ -39,7 +39,7 @@ fun speedDial(
         anchor: View,
         @ColorInt tint: Int = anchor.context.themeColorAt(R.attr.colorPrimary),
         @StyleRes animationStyle: Int = android.R.style.Animation_Dialog,
-        vararg items: Pair<CharSequence?, Drawable>,
+        items: List<Pair<CharSequence?, Drawable>>,
         dismissListener: (Int?) -> Unit
 ) = LinearLayout(anchor.context).run root@{
     rotationY = MIRROR

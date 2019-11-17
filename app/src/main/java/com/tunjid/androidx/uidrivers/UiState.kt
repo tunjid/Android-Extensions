@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Parcel
 import android.os.Parcelable
 import android.text.TextUtils
+import android.transition.Transition
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
@@ -22,7 +23,8 @@ data class UiState(
         @ColorInt val navBarColor: Int,
         val lightStatusBar: Boolean,
         val showsBottomNav: Boolean,
-        val fabClickListener: View.OnClickListener?
+        val fabClickListener: View.OnClickListener?,
+        val fabTransitionOptions: (Transition.() -> Unit)?
 ) : Parcelable {
 
     fun diff(newState: UiState,
@@ -35,8 +37,12 @@ data class UiState(
              fabExtendedConsumer: (Boolean) -> Unit,
              snackbarTextConsumer: (CharSequence) -> Unit,
              toolbarStateConsumer: (Int, Boolean, CharSequence) -> Unit,
-             fabClickListenerConsumer: (View.OnClickListener?) -> Unit
+             fabClickListenerConsumer: (View.OnClickListener?) -> Unit,
+             fabTransitionOptionConsumer: ((Transition.() -> Unit)?) -> Unit
     ): UiState {
+
+        fabClickListenerConsumer.invoke(newState.fabClickListener)
+        fabTransitionOptionConsumer.invoke(newState.fabTransitionOptions)
 
         onChanged(newState, UiState::toolBarMenu, UiState::toolbarInvalidated, UiState::toolbarTitle) {
             toolbarStateConsumer(toolBarMenu, toolbarInvalidated, toolbarTitle)
@@ -50,8 +56,6 @@ data class UiState(
         onChanged(newState, UiState::toolbarShows) { showsToolbarConsumer(toolbarShows) }
         onChanged(newState, UiState::navBarColor) { navBarColorConsumer(navBarColor) }
         onChanged(newState, UiState::lightStatusBar) { lightStatusBarConsumer(lightStatusBar) }
-
-        fabClickListenerConsumer.invoke(newState.fabClickListener)
 
         return newState
     }
@@ -73,7 +77,8 @@ data class UiState(
             navBarColor = `in`.readInt(),
             lightStatusBar = `in`.readByte().toInt() != 0x00,
             showsBottomNav = `in`.readByte().toInt() != 0x00,
-            fabClickListener = null
+            fabClickListener = null,
+            fabTransitionOptions = null
     )
 
     override fun describeContents(): Int = 0
@@ -107,7 +112,8 @@ data class UiState(
                 snackbarText = "",
                 toolbarInvalidated = false,
                 toolbarTitle = "",
-                fabClickListener = null
+                fabClickListener = null,
+                fabTransitionOptions = null
         )
 
         @JvmField

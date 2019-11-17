@@ -71,13 +71,27 @@ private fun getKey(property: DynamicAnimation.ViewProperty): Int = when (propert
     else -> throw IllegalAccessException("Unknown ViewProperty: $property")
 }
 
-fun SpringAnimation.withOneShotEndListener(onEnd: () -> Unit) = apply {
-    addEndListener(object : DynamicAnimation.OnAnimationEndListener {
-        override fun onAnimationEnd(animation: DynamicAnimation<out DynamicAnimation<*>>?, canceled: Boolean, value: Float, velocity: Float) {
-            removeEndListener(this)
-            onEnd()
+fun SpringAnimation.withOneShotEndListener(onEnd: () -> Unit): SpringAnimation = addEndListener(object : DynamicAnimation.OnAnimationEndListener {
+    override fun onAnimationEnd(animation: DynamicAnimation<out DynamicAnimation<*>>?, canceled: Boolean, value: Float, velocity: Float) {
+        removeEndListener(this)
+        onEnd()
+    }
+})
+
+fun SpringAnimation.withUpdateListener(
+        isOneShot: Boolean = true,
+        range: ClosedRange<Float> = 0F.rangeTo(this.spring.finalPosition),
+        inRange: () -> Unit
+): SpringAnimation {
+    val listener = object : DynamicAnimation.OnAnimationUpdateListener {
+        override fun onAnimationUpdate(animation: DynamicAnimation<out DynamicAnimation<*>>?, value: Float, velocity: Float) {
+            if (range.contains(value)) {
+                inRange()
+                if (isOneShot) removeUpdateListener(this)
+            }
         }
-    })
+    }
+    return addUpdateListener(listener).withOneShotEndListener { removeUpdateListener(listener) }
 }
 
 /**
@@ -98,6 +112,8 @@ fun View.popOver(
 }
 
 private fun View.wrapAtAnchor(anchor: View, adjuster: () -> Point): View? = FrameLayout(anchor.context).apply {
+    clipChildren = false
+    clipToPadding = false
     this@wrapAtAnchor.alignToAnchor(anchor, adjuster)
     addView(this@wrapAtAnchor, ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT))
 }
