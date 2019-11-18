@@ -4,6 +4,7 @@ import android.animation.ArgbEvaluator
 import android.animation.IntEvaluator
 import android.animation.TypeEvaluator
 import android.animation.ValueAnimator
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.Drawable
@@ -19,6 +20,7 @@ import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.material.animator.speedDial
 import com.tunjid.androidx.view.util.spring
+import com.tunjid.androidx.view.util.withOneShotEndListener
 import com.tunjid.androidx.view.util.withUpdateListener
 
 class StateAwareSpeedDial(
@@ -35,12 +37,11 @@ class StateAwareSpeedDial(
 
         this.button = button
 
-        if (uiController.uiState.fabExtended) {
-            uiController.uiState = uiController.uiState.copy(
+        if (uiController.uiState.fabExtended) return uiController.mutate {
+            copy(
                     fabExtended = false,
-                    fabTransitionOptions = { onEnd() }
+                    fabTransitionOptions = { extendThenDial() }
             )
-            return
         }
 
         val context = button.context
@@ -49,34 +50,37 @@ class StateAwareSpeedDial(
             Color.argb(20, Color.red(this), Color.green(this), Color.blue(this))
         }
 
+        val rotationSpring = button.spring(DynamicAnimation.ROTATION)
+        if (rotationSpring.isRunning) return
+
         button.strokeColor = ColorStateList.valueOf(context.themeColorAt(R.attr.colorAccent))
 
-        button.spring(DynamicAnimation.ROTATION)
+        rotationSpring
                 .withUpdateListener(range = 90F.rangeTo(180F)) { button.icon = button.context.drawableAt(R.drawable.ic_unfold_less_24dp) }
                 .animateToFinalPosition(225F)
 
-        val animators = listOf(
-                roundAbout(colorFrom, colorTo, ArgbEvaluator(), { button.backgroundTintList!!.defaultColor }) { button.backgroundTintList = ColorStateList.valueOf(it as Int) },
-                roundAbout(0, context.resources.getDimensionPixelSize(R.dimen.quarter_margin), IntEvaluator(), button::getStrokeWidth, button::setStrokeWidth)
-        )
+        val animators = button.haloEffects(colorFrom, colorTo, context)
 
-        speedDial(anchor = button, tint = tint, items = items, dismissListener = { index ->
+        speedDial(anchor = button, tint = tint, items = items, dismissListener = dismiss@{ index ->
             animators.forEach(ValueAnimator::cancel)
-            button.spring(DynamicAnimation.ROTATION)
+            rotationSpring
                     .withUpdateListener(range = 90F.rangeTo(180F)) { button.icon = button.context.drawableAt(R.drawable.ic_unfold_more_24dp) }
+                    .withOneShotEndListener { dismissListener(index) }
                     .animateToFinalPosition(0F)
-            if (index == null) {
-                roundAbout(colorFrom, colorTo, ArgbEvaluator(), { button.backgroundTintList!!.defaultColor }) { button.backgroundTintList = ColorStateList.valueOf(it as Int) }
-                roundAbout(0, context.resources.getDimensionPixelSize(R.dimen.quarter_margin), IntEvaluator(), button::getStrokeWidth, button::setStrokeWidth)
-            }
-            dismissListener(index)
+
+            if (index == null) button.haloEffects(colorFrom, colorTo, context)
         })
     }
 
-    private fun Transition.onEnd() = doOnEnd {
+    private fun MaterialButton.haloEffects(colorFrom: Int, colorTo: Int, context: Context) = listOf(
+            roundAbout(colorFrom, colorTo, ArgbEvaluator(), { backgroundTintList!!.defaultColor }) { backgroundTintList = ColorStateList.valueOf(it as Int) },
+            roundAbout(0, context.resources.getDimensionPixelSize(R.dimen.quarter_margin), IntEvaluator(), this::getStrokeWidth, this::setStrokeWidth)
+    )
+
+    private fun Transition.extendThenDial() = doOnEnd {
         if (!uiController.uiState.fabExtended && button != null) {
             onClick(button)
-            uiController.uiState = uiController.uiState.copy(fabTransitionOptions = null)
+            uiController.mutate { copy(fabTransitionOptions = null) }
         }
     }.let { Unit }
 

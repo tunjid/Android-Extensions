@@ -80,9 +80,11 @@ fun SpringAnimation.withOneShotEndListener(onEnd: () -> Unit): SpringAnimation =
 
 fun SpringAnimation.withUpdateListener(
         isOneShot: Boolean = true,
-        range: ClosedRange<Float> = 0F.rangeTo(this.spring.finalPosition),
+        range: ClosedRange<Float> = Float.MIN_VALUE.rangeTo(Float.MAX_VALUE),
         inRange: () -> Unit
-): SpringAnimation {
+): SpringAnimation = apply {
+    if (isRunning) return@apply inRange()
+
     val listener = object : DynamicAnimation.OnAnimationUpdateListener {
         override fun onAnimationUpdate(animation: DynamicAnimation<out DynamicAnimation<*>>?, value: Float, velocity: Float) {
             if (range.contains(value)) {
@@ -91,7 +93,7 @@ fun SpringAnimation.withUpdateListener(
             }
         }
     }
-    return addUpdateListener(listener).withOneShotEndListener { removeUpdateListener(listener) }
+    addUpdateListener(listener).withOneShotEndListener { removeUpdateListener(listener) }
 }
 
 /**
