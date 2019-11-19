@@ -82,4 +82,10 @@
     <string name="service_disconnected">Service disconnected</string>
     <string name="route_hard_service_connection">A fragment demonstrating the HardServiceConnection</string>
 
+    <!-- SpeedDial -->
+    <string name="speed_dial">Speed Dial</string>
+    <string name="expand_fab">Expand FAB</string>
+    <string name="option_1">Option 1</string>
+    <string name="option_2">Option 2</string>
+
 </resources>

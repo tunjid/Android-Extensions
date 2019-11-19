@@ -7,9 +7,9 @@ import android.view.View
 import android.view.WindowManager
 import androidx.annotation.IntDef
 import androidx.core.view.doOnPreDraw
-import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import com.tunjid.androidx.view.util.spring
+import com.tunjid.androidx.view.util.withOneShotEndListener
 
 /**
  * Translates a view offscreen, useful for adding the quick return pattern to a view.
@@ -103,15 +103,6 @@ class ViewHider<T : View> private constructor(
     private class Listener internal constructor() {
         val startActions = mutableListOf<() -> Unit>()
         val endActions = mutableListOf<() -> Unit>()
-    }
-
-    private fun SpringAnimation.withOneShotEndListener(onEnd: (canceled: Boolean) -> Unit) = apply {
-        addEndListener(object : DynamicAnimation.OnAnimationEndListener {
-            override fun onAnimationEnd(animation: DynamicAnimation<out DynamicAnimation<*>>?, canceled: Boolean, value: Float, velocity: Float) {
-                removeEndListener(this)
-                onEnd(canceled)
-            }
-        })
     }
 
     companion object {

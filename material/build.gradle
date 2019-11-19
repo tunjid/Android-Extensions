@@ -4,6 +4,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation parent.ext.kotlin
+    implementation parent.ext.ktxCore
     implementation parent.ext.material
     implementation parent.ext.dynamicAnimations
 

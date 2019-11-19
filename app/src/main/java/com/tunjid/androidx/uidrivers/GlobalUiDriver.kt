@@ -7,6 +7,7 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
+import android.transition.Transition
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
@@ -19,7 +20,11 @@ import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.graphics.ColorUtils
-import androidx.core.view.*
+import androidx.core.view.ViewCompat
+import androidx.core.view.doOnLayout
+import androidx.core.view.drawToBitmap
+import androidx.core.view.forEach
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.transition.AutoTransition
@@ -178,7 +183,8 @@ class GlobalUiDriver(
                     fabExtensionAnimator::isExtended::set,
                     this::showSnackBar,
                     this::updateMainToolBar,
-                    this::setFabClickListener
+                    this::setFabClickListener,
+                    this::setFabTransitionOptions
             )
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
@@ -229,6 +235,10 @@ class GlobalUiDriver(
     private fun setFabClickListener(onClickListener: View.OnClickListener?) =
             fabHider.view.setOnClickListener(onClickListener)
 
+    private fun setFabTransitionOptions(options: (Transition.() -> Unit)?) {
+        fabExtensionAnimator.transitionOptions = options
+    }
+
     private fun showSnackBar(message: CharSequence) = Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_SHORT).run {
         // Necessary to remove snackbar padding for keyboard on older versions of Android
         ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets -> insets }
@@ -273,15 +283,15 @@ class GlobalUiDriver(
         val tint = titleTint
 
         menu.forEach {
-            it.icon = it.icon.withTint(tint)
+            it.icon = it.icon?.withTint(tint)
             it.title = it.title.color(tint)
             it.actionView?.backgroundTintList = ColorStateList.valueOf(tint)
         }
 
-        overflowIcon = overflowIcon.withTint(tint)
+        overflowIcon = overflowIcon?.withTint(tint)
         navigationIcon =
                 if (navigatorSupplier().previous == null) null
-                else context.drawableAt(R.drawable.ic_arrow_back_24dp).withTint(tint)
+                else context.drawableAt(R.drawable.ic_arrow_back_24dp)?.withTint(tint)
     }
 
     private val Toolbar.titleTint: Int

@@ -9,18 +9,18 @@ import androidx.core.graphics.drawable.DrawableCompat
 /**
  * Convenience extension for [DrawableCompat.wrap]  and [DrawableCompat.setTint]
  */
-fun Drawable?.withTint(@ColorInt tint: Int) = this?.run {
+fun Drawable.withTint(@ColorInt tint: Int): Drawable = this.run {
     wrapped.apply { DrawableCompat.setTint(this, tint) }
 }
 
 @Suppress("unused")
-fun Drawable?.withTintList(tint: ColorStateList) = this?.run {
+fun Drawable.withTintList(tint: ColorStateList): Drawable = this.run {
     wrapped.apply { DrawableCompat.setTintList(this, tint) }
 }
 
 @Suppress("unused")
-fun Drawable?.withTintMode(tintMode: PorterDuff.Mode) = this?.run {
+fun Drawable.withTintMode(tintMode: PorterDuff.Mode): Drawable = this.run {
     wrapped.apply { DrawableCompat.setTintMode(this, tintMode) }
 }
 
-val Drawable.wrapped get() = DrawableCompat.wrap(this)
+val Drawable.wrapped: Drawable get() = DrawableCompat.wrap(this)

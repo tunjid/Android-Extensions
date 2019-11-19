@@ -79,6 +79,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
             IndependentStacksFragment::class.java.routeName -> IndependentStacksFragment.newInstance()
             MultipleStacksFragment::class.java.routeName -> MultipleStacksFragment.newInstance()
             HardServiceConnectionFragment::class.java.routeName -> HardServiceConnectionFragment.newInstance()
+            SpeedDialFragment::class.java.routeName -> SpeedDialFragment.newInstance()
             else -> newInstance(tabIndex) // No-op, all RouteFragment instances have the same tag
         })
     }
