@@ -39,6 +39,7 @@ fun speedDial(
         anchor: View,
         @ColorInt tint: Int = anchor.context.themeColorAt(R.attr.colorPrimary),
         @StyleRes animationStyle: Int = android.R.style.Animation_Dialog,
+        layoutAnimationController: LayoutAnimationController = LayoutAnimationController(speedDialAnimation, INITIAL_DELAY).apply { order = ORDER_NORMAL },
         items: List<Pair<CharSequence?, Drawable>>,
         dismissListener: (Int?) -> Unit
 ) = LinearLayout(anchor.context).run root@{
@@ -47,7 +48,7 @@ fun speedDial(
     clipChildren = false
     clipToPadding = false
     orientation = VERTICAL
-    layoutAnimation = LayoutAnimationController(speedDialAnimation, INITIAL_DELAY).apply { order = ORDER_NORMAL }
+    layoutAnimation = layoutAnimationController
 
     popOver(anchor = anchor, adjuster = getOffset(anchor)) popUp@{
         this.animationStyle = animationStyle
@@ -55,7 +56,7 @@ fun speedDial(
         var dismissReason: Int? = null
         setOnDismissListener { dismissListener(dismissReason) }
 
-        items.mapIndexed { index, pair ->  speedDialLayout(pair, tint, View.OnClickListener { dismissReason = index; dismiss() }) }
+        items.mapIndexed { index, pair -> speedDialLayout(pair, tint, View.OnClickListener { dismissReason = index; dismiss() }) }
                 .forEach(this@root::addView)
     }
 }
