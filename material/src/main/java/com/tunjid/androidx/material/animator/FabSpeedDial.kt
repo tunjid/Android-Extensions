@@ -138,7 +138,7 @@ private val speedDialAnimation: Animation
         addAnimation(translate())
     }
 
-private fun alpha() = AlphaAnimation(0F, 1F).interpolate()
+private fun alpha() = AlphaAnimation(0F, 1F).accelerateDecelerate()
 
 private fun translate(): Animation = TranslateAnimation(
         RELATIVE_TO_PARENT,
@@ -149,7 +149,7 @@ private fun translate(): Animation = TranslateAnimation(
         SPEED_DIAL_TRANSLATION_Y,
         RELATIVE_TO_PARENT,
         0F
-).interpolate()
+).accelerateDecelerate()
 
 private fun scale(): Animation = ScaleAnimation(
         SPEED_DIAL_SCALE,
@@ -160,7 +160,7 @@ private fun scale(): Animation = ScaleAnimation(
         SPEED_DIAL_SCALE_PIVOT,
         RELATIVE_TO_SELF,
         SPEED_DIAL_SCALE_PIVOT
-).interpolate()
+).accelerateDecelerate()
 
 private const val SPEED_DIAL_TRANSLATION_Y = -0.2F
 private const val SPEED_DIAL_SCALE_PIVOT = 0.5F
@@ -170,4 +170,4 @@ private const val MIRROR = 180F
 
 private val translucentBlack = Color.argb(50, 0, 0, 0)
 
-private fun Animation.interpolate() = apply { interpolator = AccelerateDecelerateInterpolator() }
+private fun Animation.accelerateDecelerate() = apply { interpolator = AccelerateDecelerateInterpolator() }
