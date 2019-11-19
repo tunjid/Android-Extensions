@@ -48,7 +48,7 @@ class SpeedDialFragment : AppBaseFragment(R.layout.fragment_speed_dial) {
                 fabClickListener = SpeedDialClickListener(
                         tint = context.themeColorAt(R.attr.colorAccent),
                         items = speedDialItems(),
-                        runGuard = this@SpeedDialFragment::fabExtensionCheck,
+                        runGuard = this@SpeedDialFragment::fabExtensionGuard,
                         dismissListener = this@SpeedDialFragment::onSpeedDialClicked
                 )
         )
@@ -71,13 +71,13 @@ class SpeedDialFragment : AppBaseFragment(R.layout.fragment_speed_dial) {
         else -> Unit
     }
 
-    private fun fabExtensionCheck(view: View): Boolean {
-        if (!uiState.fabExtended) return false
+    private fun fabExtensionGuard(view: View): Boolean {
+        if (!uiState.fabExtended) return true
         uiState = uiState.copy(
                 fabExtended = false,
                 fabTransitionOptions = { speedDialRecall(view) }
         )
-        return true
+        return false
     }
 
     private fun Transition.speedDialRecall(view: View) = doOnEnd {
