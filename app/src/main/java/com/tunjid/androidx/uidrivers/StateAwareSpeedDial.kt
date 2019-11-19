@@ -14,6 +14,7 @@ import androidx.annotation.ColorInt
 import androidx.core.animation.doOnEnd
 import androidx.core.transition.doOnEnd
 import androidx.dynamicanimation.animation.DynamicAnimation
+import androidx.dynamicanimation.animation.SpringAnimation
 import com.google.android.material.button.MaterialButton
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.drawableAt
@@ -21,7 +22,7 @@ import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.material.animator.speedDial
 import com.tunjid.androidx.view.util.spring
 import com.tunjid.androidx.view.util.withOneShotEndListener
-import com.tunjid.androidx.view.util.withUpdateListener
+import com.tunjid.androidx.view.util.withOneShotUpdateListener
 
 class StateAwareSpeedDial(
         private val uiController: GlobalUiController,
@@ -44,29 +45,36 @@ class StateAwareSpeedDial(
             )
         }
 
+        val rotationSpring = button.spring(DynamicAnimation.ROTATION)
+        if (rotationSpring.isRunning) return
+
+        val flipRange = 90F..180F
         val context = button.context
         val colorFrom = context.themeColorAt(R.attr.colorPrimary)
         val colorTo = context.themeColorAt(R.attr.colorAccent).run {
             Color.argb(20, Color.red(this), Color.green(this), Color.blue(this))
         }
 
-        val rotationSpring = button.spring(DynamicAnimation.ROTATION)
-        if (rotationSpring.isRunning) return
-
         button.strokeColor = ColorStateList.valueOf(context.themeColorAt(R.attr.colorAccent))
 
-        rotationSpring
-                .withUpdateListener(range = 90F.rangeTo(180F)) { button.icon = button.context.drawableAt(R.drawable.ic_unfold_less_24dp) }
-                .animateToFinalPosition(225F)
+        rotationSpring.apply {
+            doInRange(flipRange) { button.icon = button.context.drawableAt(R.drawable.ic_unfold_less_24dp) }
+            animateToFinalPosition(225F) // re-targeting will be idempotent
+        }
 
         val animators = button.haloEffects(colorFrom, colorTo, context)
 
         speedDial(anchor = button, tint = tint, items = items, dismissListener = dismiss@{ index ->
             animators.forEach(ValueAnimator::cancel)
-            rotationSpring
-                    .withUpdateListener(range = 90F.rangeTo(180F)) { button.icon = button.context.drawableAt(R.drawable.ic_unfold_more_24dp) }
-                    .withOneShotEndListener { dismissListener(index) }
-                    .animateToFinalPosition(0F)
+
+            rotationSpring.apply {
+                if (!isRunning) {
+                    doInRange(flipRange) { button.icon = button.context.drawableAt(R.drawable.ic_unfold_more_24dp) }
+                    withOneShotEndListener { dismissListener(index) }
+                }
+
+                animateToFinalPosition(0F)
+            }
 
             if (index == null) button.haloEffects(colorFrom, colorTo, context)
         })
@@ -76,13 +84,6 @@ class StateAwareSpeedDial(
             roundAbout(colorFrom, colorTo, ArgbEvaluator(), { backgroundTintList!!.defaultColor }) { backgroundTintList = ColorStateList.valueOf(it as Int) },
             roundAbout(0, context.resources.getDimensionPixelSize(R.dimen.quarter_margin), IntEvaluator(), this::getStrokeWidth, this::setStrokeWidth)
     )
-
-    private fun Transition.extendThenDial() = doOnEnd {
-        if (!uiController.uiState.fabExtended && button != null) {
-            onClick(button)
-            uiController.mutate { copy(fabTransitionOptions = null) }
-        }
-    }.let { Unit }
 
     private inline fun <reified T> roundAbout(
             originalPosition: T,
@@ -99,5 +100,20 @@ class StateAwareSpeedDial(
             start()
         }
         start()
+    }
+
+    private fun Transition.extendThenDial() = doOnEnd {
+        if (uiController.uiState.fabExtended || button == null) return@doOnEnd
+        onClick(button)
+        uiController.mutate { copy(fabTransitionOptions = null) }
+    }
+
+    private fun SpringAnimation.doInRange(range: ClosedRange<Float>, action: () -> Unit) = apply {
+        var flipped = false
+        withOneShotUpdateListener update@{ value, _ ->
+            if (flipped || !range.contains(value)) return@update
+            action()
+            flipped = true
+        }
     }
 }

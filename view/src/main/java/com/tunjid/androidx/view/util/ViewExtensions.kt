@@ -71,6 +71,9 @@ private fun getKey(property: DynamicAnimation.ViewProperty): Int = when (propert
     else -> throw IllegalAccessException("Unknown ViewProperty: $property")
 }
 
+/**
+ * An end listener that removes itself when the animation ends
+ */
 fun SpringAnimation.withOneShotEndListener(onEnd: () -> Unit): SpringAnimation = addEndListener(object : DynamicAnimation.OnAnimationEndListener {
     override fun onAnimationEnd(animation: DynamicAnimation<out DynamicAnimation<*>>?, canceled: Boolean, value: Float, velocity: Float) {
         removeEndListener(this)
@@ -78,21 +81,13 @@ fun SpringAnimation.withOneShotEndListener(onEnd: () -> Unit): SpringAnimation =
     }
 })
 
-fun SpringAnimation.withUpdateListener(
-        isOneShot: Boolean = true,
-        range: ClosedRange<Float> = Float.MIN_VALUE.rangeTo(Float.MAX_VALUE),
-        inRange: () -> Unit
+/**
+ * An update listener that removes itself when the animation ends
+ */
+fun SpringAnimation.withOneShotUpdateListener(
+        onUpdate: (value: Float, velocity: Float) -> Unit
 ): SpringAnimation = apply {
-    if (isRunning) return@apply inRange()
-
-    val listener = object : DynamicAnimation.OnAnimationUpdateListener {
-        override fun onAnimationUpdate(animation: DynamicAnimation<out DynamicAnimation<*>>?, value: Float, velocity: Float) {
-            if (range.contains(value)) {
-                inRange()
-                if (isOneShot) removeUpdateListener(this)
-            }
-        }
-    }
+    val listener = DynamicAnimation.OnAnimationUpdateListener { _, value, velocity -> onUpdate(value, velocity) }
     addUpdateListener(listener).withOneShotEndListener { removeUpdateListener(listener) }
 }
 
