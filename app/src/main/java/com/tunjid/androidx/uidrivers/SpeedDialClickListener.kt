@@ -8,11 +8,9 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.Drawable
-import android.transition.Transition
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.core.animation.doOnEnd
-import androidx.core.transition.doOnEnd
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import com.google.android.material.button.MaterialButton
@@ -24,26 +22,15 @@ import com.tunjid.androidx.view.util.spring
 import com.tunjid.androidx.view.util.withOneShotEndListener
 import com.tunjid.androidx.view.util.withOneShotUpdateListener
 
-class StateAwareSpeedDial(
-        private val uiController: GlobalUiController,
+class SpeedDialClickListener(
         @ColorInt private val tint: Int = Color.BLUE,
         private val items: List<Pair<CharSequence?, Drawable>>,
+        private val runGuard: (View) -> Boolean,
         private val dismissListener: (Int?) -> Unit
 ) : View.OnClickListener {
 
-    private var button: MaterialButton? = null
-
     override fun onClick(button: View?) {
-        if (button !is MaterialButton) return
-
-        this.button = button
-
-        if (uiController.uiState.fabExtended) return uiController.mutate {
-            copy(
-                    fabExtended = false,
-                    fabTransitionOptions = { extendThenDial() }
-            )
-        }
+        if (button !is MaterialButton || runGuard(button)) return
 
         val rotationSpring = button.spring(DynamicAnimation.ROTATION)
         if (rotationSpring.isRunning) return
@@ -100,12 +87,6 @@ class StateAwareSpeedDial(
             start()
         }
         start()
-    }
-
-    private fun Transition.extendThenDial() = doOnEnd {
-        if (uiController.uiState.fabExtended || button == null) return@doOnEnd
-        onClick(button)
-        uiController.mutate { copy(fabTransitionOptions = null) }
     }
 
     private fun SpringAnimation.doInRange(range: ClosedRange<Float>, action: () -> Unit) = apply {

@@ -3,7 +3,9 @@ package com.tunjid.androidx.fragments
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.transition.Transition
 import android.view.View
+import androidx.core.transition.doOnEnd
 import androidx.core.view.postDelayed
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
@@ -12,7 +14,7 @@ import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.graphics.drawable.withTint
 import com.tunjid.androidx.core.text.color
 import com.tunjid.androidx.isDarkTheme
-import com.tunjid.androidx.uidrivers.StateAwareSpeedDial
+import com.tunjid.androidx.uidrivers.SpeedDialClickListener
 import com.tunjid.androidx.viewmodels.routeName
 
 /**
@@ -43,10 +45,10 @@ class SpeedDialFragment : AppBaseFragment(R.layout.fragment_speed_dial) {
                 showsBottomNav = false,
                 lightStatusBar = !context.isDarkTheme,
                 navBarColor = context.themeColorAt(R.attr.nav_bar_color),
-                fabClickListener = StateAwareSpeedDial(
-                        uiController = this,
+                fabClickListener = SpeedDialClickListener(
                         tint = context.themeColorAt(R.attr.colorAccent),
                         items = speedDialItems(),
+                        runGuard = this@SpeedDialFragment::fabExtensionCheck,
                         dismissListener = this@SpeedDialFragment::onSpeedDialClicked
                 )
         )
@@ -67,6 +69,21 @@ class SpeedDialFragment : AppBaseFragment(R.layout.fragment_speed_dial) {
     private fun onSpeedDialClicked(it: Int?) = when (it) {
         0 -> uiState = uiState.copy(fabExtended = true)
         else -> Unit
+    }
+
+    private fun fabExtensionCheck(view: View): Boolean {
+        if (!uiState.fabExtended) return false
+        uiState = uiState.copy(
+                fabExtended = false,
+                fabTransitionOptions = { speedDialRecall(view) }
+        )
+        return true
+    }
+
+    private fun Transition.speedDialRecall(view: View) = doOnEnd {
+        if (uiState.fabExtended) return@doOnEnd
+        uiState.fabClickListener?.onClick(view)
+        uiState = uiState.copy(fabTransitionOptions = null)
     }
 
     companion object {

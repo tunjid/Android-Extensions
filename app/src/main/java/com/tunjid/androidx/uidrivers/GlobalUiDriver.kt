@@ -50,8 +50,6 @@ import kotlin.reflect.KProperty
  */
 interface GlobalUiController {
     var uiState: UiState
-
-    fun mutate(mutator: UiState.() -> UiState) { uiState = mutator(uiState) }
 }
 
 /**
