@@ -4,17 +4,18 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.forEach
 import androidx.core.view.updatePadding
+import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
+import androidx.dynamicanimation.animation.springAnimationOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentManager
-import androidx.transition.AutoTransition
-import androidx.transition.TransitionManager
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.marginLayoutParams
@@ -28,7 +29,6 @@ class InsetLifecycleCallbacks(
         private val toolbar: Toolbar,
         private val topInsetView: View,
         private val bottomInsetView: View,
-        private val keyboardPadding: View,
         private val bottomNavHeightGetter: () -> Int
 ) : FragmentManager.FragmentLifecycleCallbacks() {
 
@@ -36,6 +36,12 @@ class InsetLifecycleCallbacks(
     private var rightInset: Int = 0
     private var insetsApplied: Boolean = false
     private var lastInsetDispatch: InsetDispatch? = InsetDispatch()
+
+    private val coordinatorSpring = bottomPaddingSpring(coordinatorLayout)
+    private val contentSpring = bottomPaddingSpring(contentContainer).addEndListener { _, _, _, _ ->
+        val input = contentContainer.recursiveFocusedChild as? EditText ?: return@addEndListener
+        input.text = input.text // Scroll to text that has focus
+    }
 
     init {
         ViewCompat.setOnApplyWindowInsetsListener(parentContainer) { _, insets -> consumeSystemInsets(insets) }
@@ -75,14 +81,10 @@ class InsetLifecycleCallbacks(
         val old = contentContainer.paddingBottom
         val new = max(insets.systemWindowInsetBottom - bottomInset - bottomNavHeightGetter(), 0)
 
-        if (old != new) TransitionManager.beginDelayedTransition(parentContainer, AutoTransition().apply {
-            duration = ANIMATION_DURATION.toLong()
-            coordinatorLayout.forEach { addTarget(it) }
-            addTarget(coordinatorLayout) // Animate coordinator and its children, mainly the FAB
-        })
+        if (old == new) return insets
 
-        contentContainer.updatePadding(bottom = new)
-        keyboardPadding.layoutParams.height = if (new != 0) new else 1 // 0 breaks animations
+        contentSpring.animateToFinalPosition(new.toFloat())
+        coordinatorSpring.animateToFinalPosition((if (new != 0) new else 1).toFloat())
 
         return insets
     }
@@ -96,11 +98,6 @@ class InsetLifecycleCallbacks(
 
             toolbar.marginLayoutParams.topMargin = if (insetFlags.hasTopInset) 0 else topInset
             coordinatorLayout.marginLayoutParams.bottomMargin = if (insetFlags.hasBottomInset) 0 else bottomInset
-
-            TransitionManager.beginDelayedTransition(parentContainer, AutoTransition()
-                    .setDuration(ANIMATION_DURATION.toLong())
-                    .addTarget(contentContainer) // Animate inset change
-            )
 
             topInsetView.visibility = if (insetFlags.hasTopInset) View.VISIBLE else View.GONE
             bottomInsetView.visibility = if (insetFlags.hasBottomInset) View.VISIBLE else View.GONE
@@ -139,3 +136,22 @@ class InsetLifecycleCallbacks(
             val insetFlags: InsetFlags? = null
     )
 }
+
+private fun bottomPaddingSpring(view: View): SpringAnimation = springAnimationOf(
+        {
+            view.updatePadding(bottom = it.toInt())
+            view.invalidate()
+        },
+        { view.paddingBottom.toFloat() },
+        0F
+).apply {
+    spring.stiffness = SpringForce.STIFFNESS_MEDIUM
+    spring.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+}
+
+private val View.recursiveFocusedChild : View?
+    get() {
+        if (this !is ViewGroup) return null
+        val focused = focusedChild
+        return focused.recursiveFocusedChild ?: focused
+    }

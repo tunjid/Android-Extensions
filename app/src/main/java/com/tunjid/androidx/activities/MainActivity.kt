@@ -38,8 +38,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
                     this@MainActivity.findViewById(R.id.coordinator_layout),
                     this@MainActivity.findViewById(R.id.toolbar),
                     this@MainActivity.findViewById(R.id.top_inset),
-                    this@MainActivity.findViewById(R.id.bottom_inset),
-                    this@MainActivity.findViewById(R.id.keyboard_padding)
+                    this@MainActivity.findViewById(R.id.bottom_inset)
             ) { if (uiState.showsBottomNav) height else 0 }, true)
 
             navigator.stackSelectedListener = { menu.findItem(tabs[it])?.isChecked = true }
