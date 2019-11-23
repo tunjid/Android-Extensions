@@ -44,7 +44,7 @@ class InsetLifecycleCallbacks(
     }
 
     init {
-        ViewCompat.setOnApplyWindowInsetsListener(parentContainer) { _, insets -> consumeSystemInsets(insets) }
+        ViewCompat.setOnApplyWindowInsetsListener(parentContainer) { _, insets -> onInsetsApplied(insets) }
     }
 
     override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) =
@@ -53,7 +53,7 @@ class InsetLifecycleCallbacks(
     private fun isNotInCurrentFragmentContainer(fragment: Fragment): Boolean =
             stackNavigatorSource()?.run { fragment.id != containerId } ?: true
 
-    private fun consumeSystemInsets(insets: WindowInsetsCompat): WindowInsetsCompat {
+    private fun onInsetsApplied(insets: WindowInsetsCompat): WindowInsetsCompat {
         if (this.insetsApplied) return insets
 
         topInset = insets.systemWindowInsetTop
@@ -102,11 +102,10 @@ class InsetLifecycleCallbacks(
             topInsetView.visibility = if (insetFlags.hasTopInset) View.VISIBLE else View.GONE
             bottomInsetView.visibility = if (insetFlags.hasBottomInset) View.VISIBLE else View.GONE
 
-            parentContainer.setPadding(
-                    if (insetFlags.hasLeftInset) this.leftInset else 0,
-                    0,
-                    if (insetFlags.hasRightInset) this.rightInset else 0,
-                    0)
+            parentContainer.updatePadding(
+                    left = if (insetFlags.hasLeftInset) this.leftInset else 0,
+                    right = if (insetFlags.hasRightInset) this.rightInset else 0
+            )
 
             val topPadding = if (insetFlags.hasTopInset) topInset else 0
             val bottomPadding = bottomNavHeightGetter() + if (insetFlags.hasBottomInset) bottomInset else 0
