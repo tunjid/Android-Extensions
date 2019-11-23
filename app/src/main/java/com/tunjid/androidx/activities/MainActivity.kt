@@ -29,18 +29,19 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        supportFragmentManager.registerFragmentLifecycleCallbacks(InsetLifecycleCallbacks(
-                this.navigator::activeNavigator,
-                findViewById(R.id.constraint_layout),
-                findViewById(R.id.content_container),
-                findViewById(R.id.coordinator_layout),
-                findViewById(R.id.toolbar),
-                findViewById(R.id.top_inset),
-                findViewById(R.id.bottom_inset),
-                findViewById(R.id.keyboard_padding)
-        ), true)
-
         findViewById<BottomNavigationView>(R.id.bottom_navigation).apply {
+
+            supportFragmentManager.registerFragmentLifecycleCallbacks(InsetLifecycleCallbacks(
+                    this@MainActivity.navigator::activeNavigator,
+                    this@MainActivity.findViewById(R.id.constraint_layout),
+                    this@MainActivity.findViewById(R.id.content_container),
+                    this@MainActivity.findViewById(R.id.coordinator_layout),
+                    this@MainActivity.findViewById(R.id.toolbar),
+                    this@MainActivity.findViewById(R.id.top_inset),
+                    this@MainActivity.findViewById(R.id.bottom_inset),
+                    this@MainActivity.findViewById(R.id.keyboard_padding)
+            ) { if (uiState.showsBottomNav) height else 0 }, true)
+
             navigator.stackSelectedListener = { menu.findItem(tabs[it])?.isChecked = true }
             navigator.transactionModifier = { incomingFragment ->
                 val current = navigator.current

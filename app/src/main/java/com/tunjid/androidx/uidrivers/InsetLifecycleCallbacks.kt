@@ -1,7 +1,6 @@
 package com.tunjid.androidx.uidrivers
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -16,20 +15,21 @@ import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentManager
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
-import com.tunjid.androidx.R
+import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.marginLayoutParams
 import kotlin.math.max
 
 class InsetLifecycleCallbacks(
-        private val stackNavigatorSource: () -> com.tunjid.androidx.navigation.Navigator?,
+        private val stackNavigatorSource: () -> Navigator?,
         private val parentContainer: ViewGroup,
         private val contentContainer: FragmentContainerView,
         private val coordinatorLayout: CoordinatorLayout,
         private val toolbar: Toolbar,
         private val topInsetView: View,
         private val bottomInsetView: View,
-        private val keyboardPadding: View
+        private val keyboardPadding: View,
+        private val bottomNavHeightGetter: () -> Int
 ) : FragmentManager.FragmentLifecycleCallbacks() {
 
     private var leftInset: Int = 0
@@ -40,8 +40,6 @@ class InsetLifecycleCallbacks(
     init {
         ViewCompat.setOnApplyWindowInsetsListener(parentContainer) { _, insets -> consumeSystemInsets(insets) }
     }
-
-    override fun onFragmentPreAttached(fm: FragmentManager, f: Fragment, context: Context) = adjustInsetForFragment(f)
 
     override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) =
             onFragmentViewCreated(v, f)
@@ -75,10 +73,7 @@ class InsetLifecycleCallbacks(
 
     private fun consumeFragmentInsets(insets: WindowInsetsCompat): WindowInsetsCompat {
         val old = contentContainer.paddingBottom
-        var new = insets.systemWindowInsetBottom - bottomInset
-        if (new != bottomInset) new -= parentContainer.resources.getDimensionPixelSize(R.dimen.triple_and_half_margin)
-
-        new = max(new, 0)
+        val new = max(insets.systemWindowInsetBottom - bottomInset - bottomNavHeightGetter(), 0)
 
         if (old != new) TransitionManager.beginDelayedTransition(parentContainer, AutoTransition().apply {
             duration = ANIMATION_DURATION.toLong()
@@ -96,7 +91,7 @@ class InsetLifecycleCallbacks(
     fun adjustInsetForFragment(fragment: Fragment?) {
         if (fragment !is InsetProvider || isNotInCurrentFragmentContainer(fragment)) return
 
-        fragment.insetFlags.dispatch {
+        fragment.insetFlags.dispatch(fragment.tag) {
             if (insetFlags == null || lastInsetDispatch == this) return
 
             toolbar.marginLayoutParams.topMargin = if (insetFlags.hasTopInset) 0 else topInset
@@ -116,12 +111,17 @@ class InsetLifecycleCallbacks(
                     if (insetFlags.hasRightInset) this.rightInset else 0,
                     0)
 
+            val topPadding = if (insetFlags.hasTopInset) topInset else 0
+            val bottomPadding = bottomNavHeightGetter() + if (insetFlags.hasBottomInset) bottomInset else 0
+
+            fragment.view?.updatePadding(top = topPadding, bottom = bottomPadding)
+
             lastInsetDispatch = this
         }
     }
 
-    private inline fun InsetFlags.dispatch(receiver: InsetDispatch.() -> Unit) =
-            receiver.invoke(InsetDispatch(leftInset, topInset, rightInset, bottomInset, this))
+    private inline fun InsetFlags.dispatch(tag: String?, receiver: InsetDispatch.() -> Unit) =
+            receiver.invoke(InsetDispatch(tag, leftInset, topInset, rightInset, bottomInset, this))
 
     companion object {
         const val ANIMATION_DURATION = 300
@@ -131,6 +131,7 @@ class InsetLifecycleCallbacks(
     }
 
     private data class InsetDispatch(
+            val tag: String? = null,
             val leftInset: Int = 0,
             val topInset: Int = 0,
             val rightInset: Int = 0,
