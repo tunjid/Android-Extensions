@@ -39,7 +39,7 @@ class InsetLifecycleCallbacks(
 
     private val coordinatorSpring = bottomPaddingSpring(coordinatorLayout)
     private val contentSpring = bottomPaddingSpring(contentContainer).addEndListener { _, _, _, _ ->
-        val input = contentContainer.recursiveFocusedChild as? EditText ?: return@addEndListener
+        val input = contentContainer.innermostFocusedChild as? EditText ?: return@addEndListener
         input.text = input.text // Scroll to text that has focus
     }
 
@@ -149,9 +149,9 @@ private fun bottomPaddingSpring(view: View): SpringAnimation = springAnimationOf
     spring.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
 }
 
-private val View.recursiveFocusedChild : View?
+private val View.innermostFocusedChild : View?
     get() {
         if (this !is ViewGroup) return null
         val focused = focusedChild
-        return focused.recursiveFocusedChild ?: focused
+        return focused.innermostFocusedChild ?: focused
     }
