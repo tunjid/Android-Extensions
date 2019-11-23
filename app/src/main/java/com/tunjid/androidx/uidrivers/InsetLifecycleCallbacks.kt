@@ -27,7 +27,6 @@ class InsetLifecycleCallbacks(
         private val contentContainer: FragmentContainerView,
         private val coordinatorLayout: CoordinatorLayout,
         private val toolbar: Toolbar,
-        private val topInsetView: View,
         private val bottomInsetView: View,
         private val bottomNavHeightGetter: () -> Int
 ) : FragmentManager.FragmentLifecycleCallbacks() {
@@ -61,7 +60,7 @@ class InsetLifecycleCallbacks(
         rightInset = insets.systemWindowInsetRight
         bottomInset = insets.systemWindowInsetBottom
 
-        topInsetView.layoutParams.height = topInset
+        toolbar.marginLayoutParams.topMargin = topInset
         bottomInsetView.layoutParams.height = bottomInset
 
         adjustInsetForFragment(stackNavigatorSource()?.current)
@@ -96,10 +95,8 @@ class InsetLifecycleCallbacks(
         fragment.insetFlags.dispatch(fragment.tag) {
             if (insetFlags == null || lastInsetDispatch == this) return
 
-            toolbar.marginLayoutParams.topMargin = if (insetFlags.hasTopInset) 0 else topInset
             coordinatorLayout.marginLayoutParams.bottomMargin = if (insetFlags.hasBottomInset) 0 else bottomInset
 
-            topInsetView.visibility = if (insetFlags.hasTopInset) View.VISIBLE else View.GONE
             bottomInsetView.visibility = if (insetFlags.hasBottomInset) View.VISIBLE else View.GONE
 
             parentContainer.updatePadding(

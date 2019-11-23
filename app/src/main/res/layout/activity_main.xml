@@ -7,14 +7,6 @@
     android:layout_height="match_parent"
     tools:context="com.tunjid.androidx.activities.MainActivity">
 
-    <View
-        android:id="@+id/top_inset"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/content_container"
         android:layout_width="0dp"
@@ -53,7 +45,7 @@
         android:layout_height="56dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/top_inset"
+        app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:theme="@style/AppTheme.PopupOverlay"
         app:titleTextColor="?attr/prominent_text_color" />
