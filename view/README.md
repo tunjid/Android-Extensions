@@ -12,3 +12,11 @@ It uses the SpringAnimation from the Jetpack dynamic animations library.
 
 A utility class for consuming ```WindowInsets``` if you decide to.
 They describe what insets to consume for whatever class that uses them.
+
+## View.popOver
+
+A utility method for popping any arbitrary ```View``` over an anchor View
+
+## View.innermostFocusedChild
+
+A utility method that returns the deepest nested ```View``` that has focus

@@ -107,7 +107,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
 
     private fun getDivider(orientation: Int): RecyclerView.ItemDecoration = requireContext().run {
         val decoration = DividerItemDecoration(this, orientation)
-        decoration.setDrawable(requireNonNull<Drawable>(getDrawable(this, R.drawable.bg_divider).withTint(themeColorAt(R.attr.colorSurface))))
+        decoration.setDrawable(requireNonNull<Drawable>(getDrawable(this, R.drawable.bg_divider)?.withTint(themeColorAt(R.attr.colorSurface))))
         return decoration
     }
 

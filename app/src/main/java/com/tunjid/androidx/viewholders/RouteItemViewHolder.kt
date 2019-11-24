@@ -54,7 +54,7 @@ class RouteItemViewHolder(
         val resVal = if (isDown) R.drawable.anim_vect_down_to_right_arrow else R.drawable.anim_vect_right_to_down_arrow
 
         for (textView in textViews) {
-            val icon: Drawable? = AnimatedVectorDrawableCompat.create(itemView.context, resVal).withTint(context.themeColorAt(R.attr.prominent_text_color))
+            val icon: Drawable? = AnimatedVectorDrawableCompat.create(itemView.context, resVal)?.withTint(context.themeColorAt(R.attr.prominent_text_color))
             if (icon != null) {
                 DrawableCompat.setTintMode(icon, PorterDuff.Mode.SRC_IN)
                 TextViewCompat.setCompoundDrawablesRelativeWithIntrinsicBounds(textView, null, null, icon, null)

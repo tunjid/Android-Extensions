@@ -1,11 +1,24 @@
 package com.tunjid.androidx.view.util
 
+import android.graphics.Color
+import android.graphics.Point
+import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.widget.FrameLayout
+import android.widget.PopupWindow
+import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
+import androidx.core.graphics.component1
+import androidx.core.graphics.component2
+import androidx.core.view.doOnLayout
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import com.tunjid.androidx.view.R
+
 
 /**
  * An extension function which creates/retrieves a [SpringAnimation] and stores it in the [View]s
@@ -58,4 +71,72 @@ private fun getKey(property: DynamicAnimation.ViewProperty): Int = when (propert
     SpringAnimation.SCROLL_X -> R.id.scroll_x
     SpringAnimation.SCROLL_Y -> R.id.scroll_y
     else -> throw IllegalAccessException("Unknown ViewProperty: $property")
+}
+
+/**
+ * An end listener that removes itself when the animation ends
+ */
+fun SpringAnimation.withOneShotEndListener(onEnd: () -> Unit): SpringAnimation = addEndListener(object : DynamicAnimation.OnAnimationEndListener {
+    override fun onAnimationEnd(animation: DynamicAnimation<out DynamicAnimation<*>>?, canceled: Boolean, value: Float, velocity: Float) {
+        removeEndListener(this)
+        onEnd()
+    }
+})
+
+/**
+ * An update listener that removes itself when the animation ends
+ */
+fun SpringAnimation.withOneShotUpdateListener(
+        onUpdate: (value: Float, velocity: Float) -> Unit
+): SpringAnimation = apply {
+    val listener = DynamicAnimation.OnAnimationUpdateListener { _, value, velocity -> onUpdate(value, velocity) }
+    addUpdateListener(listener).withOneShotEndListener { removeUpdateListener(listener) }
+}
+
+/**
+ * Returns the innermost focused child within this [View] hierarchy, or null if this is not a [ViewGroup]
+ */
+val View.innermostFocusedChild: View?
+    get() {
+        if (this !is ViewGroup) return null
+        val focused = focusedChild
+        return focused?.innermostFocusedChild ?: focused
+    }
+
+/**
+ * Pops an orphaned [View] over the specified [anchor] using a [PopupWindow]
+ */
+fun View.popOver(
+        @ColorInt backgroundColor: Int = Color.argb(60, 0, 0, 0),
+        anchor: View,
+        adjuster: () -> Point = { Point(0, 0) },
+        options: PopupWindow.() -> Unit = {}
+) {
+    require(!this.isAttachedToWindow) { "The View being attached must be an orphan" }
+    PopupWindow(this.wrapAtAnchor(backgroundColor, anchor, adjuster), MATCH_PARENT, MATCH_PARENT, true).run {
+        isOutsideTouchable = true
+        contentView.setOnTouchListener { _, _ -> dismiss(); true }
+        options(this)
+        showAtLocation(anchor, Gravity.START, 0, 0)
+    }
+}
+
+private fun View.wrapAtAnchor(@ColorInt backgroundColor: Int,
+                              anchor: View, adjuster: () -> Point
+): View? = FrameLayout(anchor.context).apply {
+    clipChildren = false
+    clipToPadding = false
+    this@wrapAtAnchor.alignToAnchor(anchor, adjuster)
+    setBackgroundColor(backgroundColor)
+    addView(this@wrapAtAnchor, ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT))
+}
+
+private fun View.alignToAnchor(anchor: View, adjuster: () -> Point) = intArrayOf(0, 0).run {
+    anchor.getLocationInWindow(this)
+    doOnLayout {
+        val (offsetX, offsetY) = adjuster()
+        val x = this[0].toFloat() + offsetX
+        val y = this[1].toFloat() + offsetY
+        translationX = x; translationY = y
+    }
 }
