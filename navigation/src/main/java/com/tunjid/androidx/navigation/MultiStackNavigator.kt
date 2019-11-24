@@ -112,7 +112,18 @@ class MultiStackNavigator(
         stackFragments = fragmentManager.addedStackFragments(indices)
     }
 
+    /**
+     * Show the stack at the specified index
+     */
     fun show(index: Int) = showInternal(index, true)
+
+    /**
+     * Returns the [Navigator] at the specified index.
+     *
+     * This [Navigator] may not be attached to the [FragmentActivity], hence it only permits read
+     * actions. Write and modification actions should be called on the [activeNavigator] instead.
+     */
+    fun navigatorAt(index: Int): ReadOnlyNavigator? = stackFragments.getOrNull(index)?.navigator
 
     /**
      * Removes all [Fragment]s from this [MultiStackNavigator] effectively resetting it.
@@ -187,8 +198,10 @@ class MultiStackNavigator(
             check(this is StackFragment) { "Only Stack Fragments may be added to a container View managed by a MultiStackNavigator" }
 
             navigator.transactionModifier = this@MultiStackNavigator.transactionModifier
-            if (index == stackVisitor.currentHost()) stackSelectedListener?.invoke(index)
-            if (hasNoRoot) showRoot()
+            if (index == stackVisitor.currentHost()) {
+                stackSelectedListener?.invoke(index)
+                if (hasNoRoot) showRoot()
+            }
         }
     }
 }
