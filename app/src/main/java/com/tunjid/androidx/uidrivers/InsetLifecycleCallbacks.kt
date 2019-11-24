@@ -24,13 +24,12 @@ import com.tunjid.androidx.view.util.marginLayoutParams
 
 class InsetLifecycleCallbacks(
         globalUiController: GlobalUiController,
-        private val stackNavigatorSource: () -> Navigator?,
         private val parentContainer: ViewGroup,
-        private val contentContainer: FragmentContainerView,
+        private val fragmentContainer: FragmentContainerView,
         private val coordinatorLayout: CoordinatorLayout,
         private val toolbar: Toolbar,
-        private val bottomInsetView: View,
-        private val bottomNavHeightGetter: () -> Int
+        private val bottomNavView: View,
+        private val stackNavigatorSource: () -> Navigator?
 ) : FragmentManager.FragmentLifecycleCallbacks(), GlobalUiController by globalUiController {
 
     private var leftInset: Int = 0
@@ -57,7 +56,7 @@ class InsetLifecycleCallbacks(
         bottomInset = insets.systemWindowInsetBottom
 
         toolbar.marginLayoutParams.topMargin = topInset
-        bottomInsetView.layoutParams.height = bottomInset
+        bottomNavView.marginLayoutParams.bottomMargin = bottomInset
 
         adjustInsetForFragment(stackNavigatorSource()?.current)
 
@@ -74,9 +73,9 @@ class InsetLifecycleCallbacks(
 
     private fun consumeFragmentInsets(insets: WindowInsetsCompat): WindowInsetsCompat {
         withSpring(coordinatorInsetReducer(insets.systemWindowInsetBottom), coordinatorLayout)
-        withSpring(contentInsetReducer(insets.systemWindowInsetBottom), contentContainer) {
+        withSpring(contentInsetReducer(insets.systemWindowInsetBottom), fragmentContainer) {
             addEndListener { _, _, _, _ ->
-                val input = contentContainer.innermostFocusedChild as? EditText
+                val input = fragmentContainer.innermostFocusedChild as? EditText
                         ?: return@addEndListener
                 input.text = input.text // Scroll to text that has focus
             }
@@ -92,15 +91,13 @@ class InsetLifecycleCallbacks(
         fragment.insetFlags.dispatch(fragment.tag) {
             if (insetFlags == null || lastInsetDispatch == this) return
 
-            bottomInsetView.visibility = if (insetFlags.hasBottomInset) View.VISIBLE else View.GONE
-
             parentContainer.updatePadding(
                     left = this.leftInset given insetFlags.hasLeftInset,
                     right = this.rightInset given insetFlags.hasRightInset
             )
 
             val topPadding = topInset given insetFlags.hasTopInset
-            val bottomPadding = bottomNavHeightGetter() + (bottomInset given insetFlags.hasBottomInset)
+            val bottomPadding = (bottomNavView.height given uiState.showsBottomNav) + (bottomInset given insetFlags.hasBottomInset)
 
             fragment.view?.updatePadding(top = topPadding, bottom = bottomPadding)
 
@@ -112,11 +109,11 @@ class InsetLifecycleCallbacks(
             receiver.invoke(InsetDispatch(tag, leftInset, topInset, rightInset, bottomInset, this))
 
     private fun contentInsetReducer(systemBottomInset: Int) =
-            systemBottomInset - bottomInset - (bottomNavHeightGetter() given !uiState.showsBottomNav)
+            systemBottomInset - bottomInset
 
     private fun coordinatorInsetReducer(systemBottomInset: Int) =
             if (systemBottomInset > bottomInset) systemBottomInset
-            else bottomInset + (bottomNavHeightGetter() given uiState.showsBottomNav)
+            else bottomInset + (bottomNavView.height given uiState.showsBottomNav)
 
     private fun withSpring(bottomPadding: Int, view: View, modifier: SpringAnimation.() -> Unit = {}) {
         val spring = view.getTag(R.id.bottom_padding) as? SpringAnimation

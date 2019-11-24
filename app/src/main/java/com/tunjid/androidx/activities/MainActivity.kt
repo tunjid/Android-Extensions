@@ -33,13 +33,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
 
             supportFragmentManager.registerFragmentLifecycleCallbacks(InsetLifecycleCallbacks(
                     this@MainActivity,
-                    this@MainActivity.navigator::activeNavigator,
                     this@MainActivity.findViewById(R.id.constraint_layout),
                     this@MainActivity.findViewById(R.id.content_container),
                     this@MainActivity.findViewById(R.id.coordinator_layout),
                     this@MainActivity.findViewById(R.id.toolbar),
-                    this@MainActivity.findViewById(R.id.bottom_inset),
-                    this::getHeight
+                    this,
+                    this@MainActivity.navigator::activeNavigator
             ), true)
 
             navigator.stackSelectedListener = { menu.findItem(tabs[it])?.isChecked = true }
