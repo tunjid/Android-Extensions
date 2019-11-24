@@ -95,12 +95,12 @@ class InsetLifecycleCallbacks(
             bottomInsetView.visibility = if (insetFlags.hasBottomInset) View.VISIBLE else View.GONE
 
             parentContainer.updatePadding(
-                    left = if (insetFlags.hasLeftInset) this.leftInset else 0,
-                    right = if (insetFlags.hasRightInset) this.rightInset else 0
+                    left = this.leftInset given insetFlags.hasLeftInset,
+                    right = this.rightInset given insetFlags.hasRightInset
             )
 
-            val topPadding = if (insetFlags.hasTopInset) topInset else 0
-            val bottomPadding = bottomNavHeightGetter() + if (insetFlags.hasBottomInset) bottomInset else 0
+            val topPadding = topInset given insetFlags.hasTopInset
+            val bottomPadding = bottomNavHeightGetter() + (bottomInset given insetFlags.hasBottomInset)
 
             fragment.view?.updatePadding(top = topPadding, bottom = bottomPadding)
 
@@ -112,11 +112,11 @@ class InsetLifecycleCallbacks(
             receiver.invoke(InsetDispatch(tag, leftInset, topInset, rightInset, bottomInset, this))
 
     private fun contentInsetReducer(systemBottomInset: Int) =
-            (systemBottomInset - bottomInset - if (uiState.showsBottomNav) 0 else bottomNavHeightGetter())
+            systemBottomInset - bottomInset - (bottomNavHeightGetter() given !uiState.showsBottomNav)
 
     private fun coordinatorInsetReducer(systemBottomInset: Int) =
             if (systemBottomInset > bottomInset) systemBottomInset
-            else bottomInset + if (uiState.showsBottomNav) bottomNavHeightGetter() else 0
+            else bottomInset + (bottomNavHeightGetter() given uiState.showsBottomNav)
 
     private fun withSpring(bottomPadding: Int, view: View, modifier: SpringAnimation.() -> Unit = {}) {
         val spring = view.getTag(R.id.bottom_padding) as? SpringAnimation
@@ -140,6 +140,8 @@ class InsetLifecycleCallbacks(
             val insetFlags: InsetFlags? = null
     )
 }
+
+private infix fun Int.given(flag: Boolean) = if (flag) this else 0
 
 private fun View.bottomPaddingSpring(): SpringAnimation = springAnimationOf(
         {
