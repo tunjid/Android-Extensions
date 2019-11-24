@@ -7,7 +7,6 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
-import android.transition.Transition
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
@@ -25,6 +24,7 @@ import androidx.core.view.doOnLayout
 import androidx.core.view.drawToBitmap
 import androidx.core.view.forEach
 import androidx.core.view.isVisible
+import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.transition.AutoTransition
@@ -235,8 +235,8 @@ class GlobalUiDriver(
     private fun setFabClickListener(onClickListener: View.OnClickListener?) =
             fabHider.view.setOnClickListener(onClickListener)
 
-    private fun setFabTransitionOptions(options: (Transition.() -> Unit)?) {
-        fabExtensionAnimator.transitionOptions = options
+    private fun setFabTransitionOptions(options: (SpringAnimation.() -> Unit)?) {
+        if (options != null) fabExtensionAnimator.configureSpring(options)
     }
 
     private fun showSnackBar(message: CharSequence) = Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_SHORT).run {
