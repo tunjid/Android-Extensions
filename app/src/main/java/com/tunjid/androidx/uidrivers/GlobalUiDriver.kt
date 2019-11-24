@@ -1,7 +1,6 @@
 package com.tunjid.androidx.uidrivers
 
 import android.content.res.ColorStateList
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
@@ -20,10 +19,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.ViewCompat
-import androidx.core.view.doOnLayout
-import androidx.core.view.drawToBitmap
 import androidx.core.view.forEach
-import androidx.core.view.isVisible
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -126,34 +122,15 @@ class GlobalUiDriver(
     private val toolbarHider: ViewHider<Toolbar> = host.findViewById<Toolbar>(toolbarId).run {
         setOnMenuItemClickListener(this@GlobalUiDriver::onMenuItemClicked)
         setNavigationOnClickListener { navigatorSupplier().pop() }
-        ViewHider.of(this)
-                .setDirection(ViewHider.TOP)
-                .build()
+        ViewHider.of(this).setDirection(ViewHider.TOP).build()
     }
 
     private val fabHider: ViewHider<MaterialButton> = host.findViewById<MaterialButton>(fabId).run {
-        ViewHider.of(this).setDirection(ViewHider.BOTTOM)
-                .build()
+        ViewHider.of(this).setDirection(ViewHider.BOTTOM).build()
     }
 
-    private val bottomNavHider: ViewHider<ImageView> = host.findViewById<BottomNavigationView>(bottomNavId).run {
-        val bottomNavSnapshot = host.findViewById<ImageView>(R.id.bottom_nav_snapshot)
-        doOnLayout { bottomNavSnapshot.layoutParams.height = height }
-
-        ViewHider.of(bottomNavSnapshot)
-                .setDirection(ViewHider.BOTTOM)
-                .addStartAction {
-                    if (navigatorSupplier().current == null) return@addStartAction
-                    if (isVisible) bottomNavSnapshot.setImageBitmap(drawToBitmap(Bitmap.Config.ARGB_8888))
-
-                    // Invisible so the snapshot can  be seen to animate in
-                    visibility = if (uiState.showsBottomNav) View.INVISIBLE else View.GONE
-                }
-                .addEndAction {
-                    // Finally show or hide the actual bottom bar
-                    isVisible = uiState.showsBottomNav
-                }
-                .build()
+    private val bottomNavHider: ViewHider<*> = host.findViewById<BottomNavigationView>(bottomNavId).run {
+        ViewHider.of(this).setDirection(ViewHider.BOTTOM).build()
     }
 
     private val fabExtensionAnimator: FabExtensionAnimator =
