@@ -112,7 +112,7 @@ class InsetLifecycleCallbacks(
             receiver.invoke(InsetDispatch(tag, leftInset, topInset, rightInset, bottomInset, this))
 
     private fun contentInsetReducer(systemBottomInset: Int) =
-            systemBottomInset - bottomInset - bottomNavHeightGetter()
+            (systemBottomInset - bottomInset - if (uiState.showsBottomNav) 0 else bottomNavHeightGetter())
 
     private fun coordinatorInsetReducer(systemBottomInset: Int) =
             if (systemBottomInset > bottomInset) systemBottomInset
