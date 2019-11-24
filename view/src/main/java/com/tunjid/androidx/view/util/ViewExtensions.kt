@@ -94,6 +94,16 @@ fun SpringAnimation.withOneShotUpdateListener(
 }
 
 /**
+ * Returns the innermost focused child within this [View] hierarchy, or null if this is not a [ViewGroup]
+ */
+val View.innermostFocusedChild: View?
+    get() {
+        if (this !is ViewGroup) return null
+        val focused = focusedChild
+        return focused?.innermostFocusedChild ?: focused
+    }
+
+/**
  * Pops an orphaned [View] over the specified [anchor] using a [PopupWindow]
  */
 fun View.popOver(

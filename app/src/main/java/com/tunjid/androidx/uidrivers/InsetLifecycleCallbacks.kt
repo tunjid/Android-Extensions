@@ -19,6 +19,7 @@ import androidx.fragment.app.FragmentManager
 import com.tunjid.androidx.R
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.view.util.innermostFocusedChild
 import com.tunjid.androidx.view.util.marginLayoutParams
 
 class InsetLifecycleCallbacks(
@@ -151,10 +152,3 @@ private fun View.bottomPaddingSpring(): SpringAnimation = springAnimationOf(
     spring.stiffness = SpringForce.STIFFNESS_MEDIUM
     spring.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
 }
-
-private val View.innermostFocusedChild: View?
-    get() {
-        if (this !is ViewGroup) return null
-        val focused = focusedChild
-        return focused?.innermostFocusedChild ?: focused
-    }
