@@ -38,8 +38,9 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo),
         super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
-                toolbarShows = false,
                 toolBarMenu = 0,
+                toolbarShows = true,
+                toolbarTitle = doggo.name,
                 fabText = getString(R.string.adopt),
                 fabIcon = R.drawable.ic_hug_24dp,
                 fabShows = true,
