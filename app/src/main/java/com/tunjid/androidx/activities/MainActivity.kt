@@ -32,13 +32,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
         findViewById<BottomNavigationView>(R.id.bottom_navigation).apply {
 
             supportFragmentManager.registerFragmentLifecycleCallbacks(InsetLifecycleCallbacks(
+                    this@MainActivity,
                     this@MainActivity.navigator::activeNavigator,
                     this@MainActivity.findViewById(R.id.constraint_layout),
                     this@MainActivity.findViewById(R.id.content_container),
                     this@MainActivity.findViewById(R.id.coordinator_layout),
                     this@MainActivity.findViewById(R.id.toolbar),
-                    this@MainActivity.findViewById(R.id.bottom_inset)
-            ) { if (uiState.showsBottomNav) height else 0 }, true)
+                    this@MainActivity.findViewById(R.id.bottom_inset),
+                    this::getHeight
+            ), true)
 
             navigator.stackSelectedListener = { menu.findItem(tabs[it])?.isChecked = true }
             navigator.transactionModifier = { incomingFragment ->
