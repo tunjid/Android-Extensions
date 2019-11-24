@@ -36,7 +36,6 @@
             android:insetBottom="0px"
             app:layout_behavior="@string/bottom_transient_bar_behavior" />
 
-
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <androidx.appcompat.widget.Toolbar
