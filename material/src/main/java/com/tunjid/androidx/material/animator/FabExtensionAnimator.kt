@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.view.doOnLayout
 import androidx.dynamicanimation.animation.FloatPropertyCompat
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
@@ -139,7 +140,7 @@ private class SpringSizeInterpolator(
         spring.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
     }
 
-    fun run(extended: Boolean) {
+    fun run(extended: Boolean) = button.doOnLayout {
         val widthMeasureSpec =
                 if (extended) View.MeasureSpec.makeMeasureSpec(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
                 else View.MeasureSpec.makeMeasureSpec(collapsedFabSize, View.MeasureSpec.EXACTLY)
