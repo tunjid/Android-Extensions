@@ -37,8 +37,9 @@ import com.tunjid.androidx.view.util.popOver
 
 fun speedDial(
         anchor: View,
-        @ColorInt tint: Int = anchor.context.themeColorAt(R.attr.colorPrimary),
-        @StyleRes animationStyle: Int = android.R.style.Animation_Dialog,
+        @ColorInt buttonTint: Int = anchor.context.themeColorAt(R.attr.colorPrimary),
+        @ColorInt backgroundColor: Int = Color.argb(40, 0, 0, 0),
+        @StyleRes animationStyle: Int = R.style.PopUpFade,
         layoutAnimationController: LayoutAnimationController = LayoutAnimationController(speedDialAnimation, INITIAL_DELAY).apply { order = ORDER_NORMAL },
         items: List<Pair<CharSequence?, Drawable>>,
         dismissListener: (Int?) -> Unit
@@ -50,13 +51,14 @@ fun speedDial(
     orientation = VERTICAL
     layoutAnimation = layoutAnimationController
 
-    popOver(anchor = anchor, adjuster = getOffset(anchor)) popUp@{
+    popOver(anchor = anchor, backgroundColor = backgroundColor, adjuster = getOffset(anchor)) popUp@{
+        this.isClippingEnabled = false
         this.animationStyle = animationStyle
 
         var dismissReason: Int? = null
         setOnDismissListener { dismissListener(dismissReason) }
 
-        items.mapIndexed { index, pair -> speedDialLayout(pair, tint, View.OnClickListener { dismissReason = index; dismiss() }) }
+        items.mapIndexed { index, pair -> speedDialLayout(pair, buttonTint, View.OnClickListener { dismissReason = index; dismiss() }) }
                 .forEach(this@root::addView)
     }
 }
@@ -68,7 +70,7 @@ private fun LinearLayout.speedDialLayout(pair: Pair<CharSequence?, Drawable>, ti
     clipToPadding = false
     layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
 
-    updatePadding(bottom = context.resources.getDimensionPixelSize(R.dimen.single_margin))
+    updatePadding(top = context.resources.getDimensionPixelSize(R.dimen.single_margin))
     setOnClickListener(clickListener)
 
     addView(speedDialLabel(tint, pair.first, clickListener))
@@ -133,7 +135,7 @@ private fun Context.ripple(tint: Int, shapeModifier: ShapeAppearanceModel.Builde
 
 private val speedDialAnimation: Animation
     get() = AnimationSet(false).apply {
-        duration = 200L
+        duration = 100L
         addAnimation(alpha())
         addAnimation(scale())
         addAnimation(translate())

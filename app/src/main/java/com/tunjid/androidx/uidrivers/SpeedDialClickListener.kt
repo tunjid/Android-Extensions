@@ -51,7 +51,7 @@ class SpeedDialClickListener(
 
         val animators = button.haloEffects(colorFrom, colorTo, context)
 
-        speedDial(anchor = button, tint = tint, items = items, dismissListener = dismiss@{ index ->
+        speedDial(anchor = button, buttonTint = tint, items = items, dismissListener = dismiss@{ index ->
             animators.forEach(ValueAnimator::cancel)
 
             rotationSpring.apply {

@@ -1,5 +1,6 @@
 package com.tunjid.androidx.view.util
 
+import android.graphics.Color
 import android.graphics.Point
 import android.view.Gravity
 import android.view.View
@@ -8,6 +9,7 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.FrameLayout
 import android.widget.PopupWindow
+import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
 import androidx.core.graphics.component1
 import androidx.core.graphics.component2
@@ -95,12 +97,13 @@ fun SpringAnimation.withOneShotUpdateListener(
  * Pops an orphaned [View] over the specified [anchor] using a [PopupWindow]
  */
 fun View.popOver(
+        @ColorInt backgroundColor: Int = Color.argb(60, 0, 0, 0),
         anchor: View,
         adjuster: () -> Point = { Point(0, 0) },
         options: PopupWindow.() -> Unit = {}
 ) {
     require(!this.isAttachedToWindow) { "The View being attached must be an orphan" }
-    PopupWindow(this.wrapAtAnchor(anchor, adjuster), MATCH_PARENT, MATCH_PARENT, true).run {
+    PopupWindow(this.wrapAtAnchor(backgroundColor, anchor, adjuster), MATCH_PARENT, MATCH_PARENT, true).run {
         isOutsideTouchable = true
         contentView.setOnTouchListener { _, _ -> dismiss(); true }
         options(this)
@@ -108,10 +111,13 @@ fun View.popOver(
     }
 }
 
-private fun View.wrapAtAnchor(anchor: View, adjuster: () -> Point): View? = FrameLayout(anchor.context).apply {
+private fun View.wrapAtAnchor(@ColorInt backgroundColor: Int,
+                              anchor: View, adjuster: () -> Point
+): View? = FrameLayout(anchor.context).apply {
     clipChildren = false
     clipToPadding = false
     this@wrapAtAnchor.alignToAnchor(anchor, adjuster)
+    setBackgroundColor(backgroundColor)
     addView(this@wrapAtAnchor, ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT))
 }
 
