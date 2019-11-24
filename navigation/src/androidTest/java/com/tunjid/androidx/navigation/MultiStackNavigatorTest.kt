@@ -5,7 +5,13 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import com.tunjid.androidx.savedstate.savedStateFor
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNotSame
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertSame
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -15,7 +21,11 @@ private const val TAG_B = "B"
 private const val TAG_C = "C"
 private const val TAG_D = "D"
 
-val TAGS = listOf("0", "1", "2")
+private const val ROOT_TAG_0 = "root 0"
+private const val ROOT_TAG_1 = "root 1"
+private const val ROOT_TAG_2 = "root 2"
+
+val TAGS = listOf(ROOT_TAG_0, ROOT_TAG_1, ROOT_TAG_2)
 
 class MultiStackNavigatorTest {
 
@@ -37,9 +47,10 @@ class MultiStackNavigatorTest {
                     activity.containerId
             ) { NavigationTestFragment.newInstance(TAGS[it]).run { this to stableTag } }
         }
+
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
 
-        assertEquals(TAGS, multiStackNavigator.stackFragments.map(Fragment::getTag))
+        assertEquals(listOf(0, 1, 2).map(Int::toString), multiStackNavigator.stackFragments.map(Fragment::getTag))
     }
 
     @After
@@ -49,23 +60,30 @@ class MultiStackNavigatorTest {
 
     @Test
     fun testVisitation() {
-        multiStackNavigator.waitForIdleSyncAfter { show(0) }
-        multiStackNavigator.waitForIdleSyncAfter { show(2) }
-        multiStackNavigator.waitForIdleSyncAfter { show(1) }
+        multiStackNavigator.waitForIdleSyncAfter { show(0) }.also {
+            assertNavigatorIndices(ROOT_TAG_0, null, null)
+        }
 
-        assertEquals(listOf(0, 2, 1), multiStackNavigator.stackVisitor.hosts().toList())
+        multiStackNavigator.waitForIdleSyncAfter { show(2) }.also {
+            assertNavigatorIndices(ROOT_TAG_0, null, ROOT_TAG_2)
+        }
 
-        multiStackNavigator.waitForIdleSyncAfter { show(2) }
+        multiStackNavigator.waitForIdleSyncAfter { show(1) }.also {
+            assertNavigatorIndices(ROOT_TAG_0, ROOT_TAG_1, ROOT_TAG_2)
+            assertEquals(listOf(0, 2, 1), multiStackNavigator.stackVisitor.hosts().toList())
+        }
 
-        assertEquals(listOf(0, 1, 2), multiStackNavigator.stackVisitor.hosts().toList())
+        multiStackNavigator.waitForIdleSyncAfter { show(2) }.also {
+            assertEquals(listOf(0, 1, 2), multiStackNavigator.stackVisitor.hosts().toList())
+        }
 
-        multiStackNavigator.waitForIdleSyncAfter { pop() }
+        multiStackNavigator.waitForIdleSyncAfter { pop() }.also {
+            assertEquals(listOf(0, 1), multiStackNavigator.stackVisitor.hosts().toList())
+        }
 
-        assertEquals(listOf(0, 1), multiStackNavigator.stackVisitor.hosts().toList())
-
-        multiStackNavigator.waitForIdleSyncAfter { pop() }
-
-        assertEquals(listOf(0), multiStackNavigator.stackVisitor.hosts().toList())
+        multiStackNavigator.waitForIdleSyncAfter { pop() }.also {
+            assertEquals(listOf(0), multiStackNavigator.stackVisitor.hosts().toList())
+        }
     }
 
     @Test
@@ -75,31 +93,50 @@ class MultiStackNavigatorTest {
         val testFragmentC = NavigationTestFragment.newInstance(TAG_C)
         val testFragmentD = NavigationTestFragment.newInstance(TAG_D)
 
-        multiStackNavigator.waitForIdleSyncAfter { show(0) }
-        multiStackNavigator.waitForIdleSyncAfter { push(testFragmentA) }
-        multiStackNavigator.waitForIdleSyncAfter { push(testFragmentB) }
+        multiStackNavigator.waitForIdleSyncAfter { show(0) }.also {
+            assertNavigatorIndices(ROOT_TAG_0, null, null)
+        }
 
-        multiStackNavigator.waitForIdleSyncAfter { show(2) }
-        multiStackNavigator.waitForIdleSyncAfter { push(testFragmentC) }
-        multiStackNavigator.waitForIdleSyncAfter { push(testFragmentD) }
+        multiStackNavigator.waitForIdleSyncAfter { push(testFragmentA) }.also {
+            assertNavigatorIndices(TAG_A, null, null)
+        }
+
+        multiStackNavigator.waitForIdleSyncAfter { push(testFragmentB) }.also {
+            assertNavigatorIndices(TAG_B, null, null)
+        }
+
+        multiStackNavigator.waitForIdleSyncAfter { show(2) }.also {
+            assertNavigatorIndices(TAG_B, null, ROOT_TAG_2)
+        }
+
+        multiStackNavigator.waitForIdleSyncAfter { push(testFragmentC) }.also {
+            assertNavigatorIndices(TAG_B, null, TAG_C)
+        }
+
+        multiStackNavigator.waitForIdleSyncAfter { push(testFragmentD) }.also {
+            assertNavigatorIndices(TAG_B, null, TAG_D)
+        }
 
         assertSame(testFragmentD, multiStackNavigator.current)
 
-        multiStackNavigator.waitForIdleSyncAfter { show(0) }
+        multiStackNavigator.waitForIdleSyncAfter { show(0) }.also {
+            assertNavigatorIndices(TAG_B, null, TAG_D)
+            assertSame(testFragmentB, multiStackNavigator.current)
+        }
 
-        assertSame(testFragmentB, multiStackNavigator.current)
+        multiStackNavigator.waitForIdleSyncAfter { pop() }.also {
+            assertNavigatorIndices(TAG_A, null, TAG_D)
+            assertSame(testFragmentA, multiStackNavigator.current)
+        }
 
-        multiStackNavigator.waitForIdleSyncAfter { pop() }
+        multiStackNavigator.waitForIdleSyncAfter { show(2) }.also {
+            assertSame(testFragmentD, multiStackNavigator.current)
+        }
 
-        assertSame(testFragmentA, multiStackNavigator.current)
-
-        multiStackNavigator.waitForIdleSyncAfter { show(2) }
-
-        assertSame(testFragmentD, multiStackNavigator.current)
-
-        multiStackNavigator.waitForIdleSyncAfter { show(1) }
-
-        assertEquals("1", multiStackNavigator.current?.tag)
+        multiStackNavigator.waitForIdleSyncAfter { show(1) }.also {
+            assertNavigatorIndices(TAG_A, ROOT_TAG_1, TAG_D)
+            assertEquals(ROOT_TAG_1, multiStackNavigator.current?.tag)
+        }
     }
 
     @Test
@@ -107,27 +144,37 @@ class MultiStackNavigatorTest {
         val testFragmentA = NavigationTestFragment.newInstance(TAG_A)
         val testFragmentB = NavigationTestFragment.newInstance(TAG_B)
 
-        multiStackNavigator.waitForIdleSyncAfter { show(0) }
-        multiStackNavigator.waitForIdleSyncAfter { push(testFragmentA) }
-        multiStackNavigator.waitForIdleSyncAfter { push(testFragmentB) }
+        multiStackNavigator.waitForIdleSyncAfter { show(0) }.also {
+            assertNavigatorIndices(ROOT_TAG_0, null, null)
+        }
 
-        assertSame(testFragmentA, multiStackNavigator.previous)
+        multiStackNavigator.waitForIdleSyncAfter { push(testFragmentA) }.also {
+            assertNavigatorIndices(TAG_A, null, null)
+        }
 
-        multiStackNavigator.waitForIdleSyncAfter { show(1) }
+        multiStackNavigator.waitForIdleSyncAfter { push(testFragmentB) }.also {
+            assertSame(testFragmentA, multiStackNavigator.previous)
+            assertNavigatorIndices(TAG_B, null, null)
+        }
 
-        assertSame(testFragmentB, multiStackNavigator.previous)
+        multiStackNavigator.waitForIdleSyncAfter { show(1) }.also {
+            assertSame(testFragmentB, multiStackNavigator.previous)
+            assertNavigatorIndices(TAG_B, ROOT_TAG_1, null)
+        }
     }
 
     @Test
     fun testClear() {
-        val initial =  multiStackNavigator.current!!
-        val initialTag =  initial.tag
+        val initial = multiStackNavigator.current!!
+        val initialTag = initial.tag
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync { multiStackNavigator.clearAll() }
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
 
-        val current =  multiStackNavigator.current!!
-        val currentTag =  current.tag
+        assertNavigatorIndices(ROOT_TAG_0, null, null)
+
+        val current = multiStackNavigator.current!!
+        val currentTag = current.tag
 
         assertNotNull(initialTag)
         assertNotNull(currentTag)
@@ -146,14 +193,22 @@ class MultiStackNavigatorTest {
 
     @Test
     fun testClearIndex() {
-        multiStackNavigator.waitForIdleSyncAfter { show(1) }
+        multiStackNavigator.waitForIdleSyncAfter { show(1) }.also {
+            assertNavigatorIndices(ROOT_TAG_0, ROOT_TAG_1, null)
+        }
+
         InstrumentationRegistry.getInstrumentation().runOnMainSync { multiStackNavigator.clearAll() }
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
 
+        assertNavigatorIndices(ROOT_TAG_0, null, null)
         assertFalse(multiStackNavigator.stackFragments[0].isDetached)
         assertTrue(multiStackNavigator.stackFragments[1].isDetached)
         assertTrue(multiStackNavigator.stackFragments[2].isDetached)
 
         assertEquals(listOf(0), multiStackNavigator.stackVisitor.hosts().toList())
+    }
+
+    private fun assertNavigatorIndices(vararg tags: String?) {
+        tags.forEachIndexed { index, tag -> assertEquals(tag, multiStackNavigator.navigatorAt(index)?.current?.tag) }
     }
 }

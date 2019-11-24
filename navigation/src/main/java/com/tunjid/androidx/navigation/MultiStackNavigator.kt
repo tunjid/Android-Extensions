@@ -5,7 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
-import androidx.fragment.app.*
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.commit
+import androidx.fragment.app.commitNow
 import androidx.lifecycle.Lifecycle
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.savedstate.LifecycleSavedStateContainer
@@ -106,7 +112,18 @@ class MultiStackNavigator(
         stackFragments = fragmentManager.addedStackFragments(indices)
     }
 
+    /**
+     * Show the stack at the specified index
+     */
     fun show(index: Int) = showInternal(index, true)
+
+    /**
+     * Returns the [Navigator] at the specified index.
+     *
+     * This [Navigator] may not be attached to the [FragmentActivity], hence it only permits read
+     * actions. Write and modification actions should be called on the [activeNavigator] instead.
+     */
+    fun navigatorAt(index: Int): ReadOnlyNavigator? = stackFragments.getOrNull(index)?.navigator
 
     /**
      * Removes all [Fragment]s from this [MultiStackNavigator] effectively resetting it.
@@ -117,10 +134,7 @@ class MultiStackNavigator(
         stackVisitor.leaveAll()
         stackFragments.forEach { remove(it) }
         addStackFragments()
-        runOnCommit {
-            stackFragments = fragmentManager.addedStackFragments(indices)
-            stackSelectedListener?.invoke(0)
-        }
+        runOnCommit { stackFragments = fragmentManager.addedStackFragments(indices) }
     }
 
     override val previous: Fragment?
@@ -162,8 +176,6 @@ class MultiStackNavigator(
             fragment.index == index && fragment.isDetached -> attach(fragment)
             else -> if (!fragment.isDetached) detach(fragment)
         }
-
-        runOnCommit { stackSelectedListener?.invoke(index) }
     }
 
     private fun FragmentTransaction.addStackFragments() {
@@ -186,7 +198,10 @@ class MultiStackNavigator(
             check(this is StackFragment) { "Only Stack Fragments may be added to a container View managed by a MultiStackNavigator" }
 
             navigator.transactionModifier = this@MultiStackNavigator.transactionModifier
-            if (hasNoRoot) showRoot()
+            if (index == stackVisitor.currentHost()) {
+                stackSelectedListener?.invoke(index)
+                if (hasNoRoot) showRoot()
+            }
         }
     }
 }

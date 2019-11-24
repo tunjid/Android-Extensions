@@ -18,8 +18,7 @@ inline fun <reified T : Navigator> Fragment.activityNavigatorController() = obje
                     ?: throw IllegalStateException("The hosting Activity is not a Navigator Controller")
 }
 
-interface Navigator {
-
+interface ReadOnlyNavigator {
     /**
      * The id of the container this [Navigator] shows [Fragment]s in
      */
@@ -35,6 +34,9 @@ interface Navigator {
      * The [Fragment] that will become the [current] following a [pop]
      */
     val previous: Fragment?
+}
+
+interface Navigator : ReadOnlyNavigator {
 
     /**
      * Pops the current fragment off the stack, up until the last fragment.
