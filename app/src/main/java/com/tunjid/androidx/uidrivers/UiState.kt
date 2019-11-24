@@ -4,11 +4,11 @@ import android.graphics.Color
 import android.os.Parcel
 import android.os.Parcelable
 import android.text.TextUtils
-import android.transition.Transition
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
+import androidx.dynamicanimation.animation.SpringAnimation
 
 data class UiState(
         @MenuRes val toolBarMenu: Int,
@@ -24,7 +24,7 @@ data class UiState(
         val lightStatusBar: Boolean,
         val showsBottomNav: Boolean,
         val fabClickListener: View.OnClickListener?,
-        val fabTransitionOptions: (Transition.() -> Unit)?
+        val fabTransitionOptions: (SpringAnimation.() -> Unit)?
 ) : Parcelable {
 
     fun diff(newState: UiState,
@@ -38,7 +38,7 @@ data class UiState(
              snackbarTextConsumer: (CharSequence) -> Unit,
              toolbarStateConsumer: (Int, Boolean, CharSequence) -> Unit,
              fabClickListenerConsumer: (View.OnClickListener?) -> Unit,
-             fabTransitionOptionConsumer: ((Transition.() -> Unit)?) -> Unit
+             fabTransitionOptionConsumer: ((SpringAnimation.() -> Unit)?) -> Unit
     ): UiState {
 
         fabClickListenerConsumer.invoke(newState.fabClickListener)

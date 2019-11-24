@@ -3,10 +3,9 @@ package com.tunjid.androidx.fragments
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.transition.Transition
 import android.view.View
-import androidx.core.transition.doOnEnd
 import androidx.core.view.postDelayed
+import androidx.dynamicanimation.animation.SpringAnimation
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.drawableAt
@@ -15,6 +14,7 @@ import com.tunjid.androidx.core.graphics.drawable.withTint
 import com.tunjid.androidx.core.text.color
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.uidrivers.SpeedDialClickListener
+import com.tunjid.androidx.view.util.withOneShotEndListener
 import com.tunjid.androidx.viewmodels.routeName
 
 /**
@@ -80,8 +80,8 @@ class SpeedDialFragment : AppBaseFragment(R.layout.fragment_speed_dial) {
         return false
     }
 
-    private fun Transition.speedDialRecall(view: View) = doOnEnd {
-        if (uiState.fabExtended) return@doOnEnd
+    private fun SpringAnimation.speedDialRecall(view: View) = withOneShotEndListener {
+        if (uiState.fabExtended) return@withOneShotEndListener
         uiState.fabClickListener?.onClick(view)
         uiState = uiState.copy(fabTransitionOptions = null)
     }
