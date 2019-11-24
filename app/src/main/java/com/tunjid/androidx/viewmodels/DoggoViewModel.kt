@@ -5,47 +5,38 @@ import android.animation.ValueAnimator
 import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.Color
-import androidx.core.animation.doOnEnd
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.palette.graphics.Palette
 import com.tunjid.androidx.App
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.toLiveData
 import com.tunjid.androidx.uidrivers.BACKGROUND_TINT_DURATION
-import io.reactivex.BackpressureStrategy
-import io.reactivex.Flowable
-import io.reactivex.Single
+import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
-import io.reactivex.rxkotlin.Singles
+import io.reactivex.rxkotlin.Maybes
 import io.reactivex.schedulers.Schedulers.io
 import kotlin.math.max
 import kotlin.math.min
 
 class DoggoViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val colorMap = mutableMapOf<Doggo, Single<Int>>()
+    private val Doggo.color get() = colorMap.getOrPut(this) { calculateColor() }
+    private val colorMap = mutableMapOf<Doggo, Maybe<Int>>()
     private val processor = PublishProcessor.create<Int>()
     private val disposables = CompositeDisposable()
     private val colorEvaluator = ArgbEvaluator()
+    private val liveData = processor.toLiveData()
 
     val doggos = Doggo.doggos
 
-    fun getColors(startColor: Int)= processor.startWith(when (val doggo = Doggo.transitionDoggo) {
-        null -> Flowable.empty<Int>()
-        else -> colorMap.getOrPut(doggo) { doggo.calculateColor() }.flatMapPublisher { endColor ->
-            Flowable.create<Int>({ emitter ->
-                val animator = ValueAnimator.ofObject(colorEvaluator, startColor, endColor)
-                animator.addUpdateListener { emitter.onNext(it.animatedValue as Int) }
-                animator.doOnEnd { emitter.onComplete() }
-                animator.duration = BACKGROUND_TINT_DURATION
-
-                animator.start()
-            }, BackpressureStrategy.DROP)
-        }
-    }).toLiveData()
+    fun getColors(startColor: Int): LiveData<Int> = disposables.add(when (val doggo = Doggo.transitionDoggo) {
+        null -> Maybe.empty<Int>()
+        else -> colorMap.getOrPut(doggo) { doggo.calculateColor() }
+    }.subscribe { endColor -> animate(startColor, endColor) }).let { liveData }
 
     fun onSwiped(current: Int, fraction: Float, toTheRight: Boolean) {
         val percentage = if (toTheRight) fraction else 1 - fraction
@@ -54,16 +45,19 @@ class DoggoViewModel(application: Application) : AndroidViewModel(application) {
             false -> max(current - 1, 0)
         }
 
-        disposables.add(Singles.zip(doggos[current].color, doggos[next].color) { a, b -> colorEvaluator.evaluate(percentage, a, b) as Int }
+        disposables.add(Maybes.zip(doggos[current].color, doggos[next].color) { a, b -> colorEvaluator.evaluate(percentage, a, b) as Int }
                 .subscribeOn(io())
-                .observeOn(mainThread())
                 .subscribe(processor::onNext, Throwable::printStackTrace)
         )
     }
 
-    private val Doggo.color get() = colorMap.getOrPut(this) { calculateColor() }
+    private fun animate(startColor: Int, endColor: Int?) = ValueAnimator.ofObject(colorEvaluator, startColor, endColor).apply {
+        addUpdateListener { processor.onNext(it.animatedValue as Int) }
+        duration = BACKGROUND_TINT_DURATION
+        start()
+    }
 
-    private fun Doggo.calculateColor(): Single<Int> = Single.fromCallable {
+    private fun Doggo.calculateColor(): Maybe<Int> = Maybe.fromCallable {
         val app = getApplication<App>()
         val metrics = app.resources.displayMetrics
         val bitmap = app.getDrawable(imageRes)?.toBitmap(
@@ -72,7 +66,10 @@ class DoggoViewModel(application: Application) : AndroidViewModel(application) {
                 config = Bitmap.Config.ARGB_8888) ?: return@fromCallable Color.BLACK
 
         Palette.from(bitmap).generate().getLightVibrantColor(Color.BLACK)
-    }.cache()
+    }
+            .subscribeOn(io())
+            .observeOn(mainThread())
+            .cache()
 
     override fun onCleared() {
         super.onCleared()
