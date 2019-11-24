@@ -19,12 +19,12 @@ build.gradle lines
     implementation 'com.tunjid.androidx:constraintlayout:1.0.0-rc01'
     implementation 'com.tunjid.androidx:communications:1.0.0-rc01'
     implementation 'com.tunjid.androidx:recyclerview:1.0.0-rc02'
-    implementation 'com.tunjid.androidx:navigation:1.0.0-rc03'
+    implementation 'com.tunjid.androidx:navigation:1.0.0-rc04'
     implementation 'com.tunjid.androidx:savedstate:1.0.0-rc01'
     implementation 'com.tunjid.androidx:functions:1.0.0-rc01'
-    implementation 'com.tunjid.androidx:material:1.0.0-rc01'
+    implementation 'com.tunjid.androidx:material:1.0.0-rc03'
     implementation 'com.tunjid.androidx:core:1.0.0-rc01'
-    implementation 'com.tunjid.androidx:view:1.0.0-rc01'
+    implementation 'com.tunjid.androidx:view:1.0.0-rc02'
     implementation 'com.tunjid.androidx:test:1.0.0-rc01'
 
 Projects that use This library include:
