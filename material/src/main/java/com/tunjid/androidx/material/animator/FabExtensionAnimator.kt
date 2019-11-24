@@ -29,10 +29,7 @@ open class FabExtensionAnimator(
         get() = sizeInterpolator.isRunning
 
     var isExtended: Boolean
-        get() {
-            val params = button.layoutParams
-            return !(params.height == params.width && params.width == collapsedFabSize)
-        }
+        get() = button.layoutParams.run { height != width || width != collapsedFabSize }
         set(extended) = setExtended(extended, false)
 
     init {
