@@ -14,17 +14,17 @@ import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.view.R
 import java.util.*
 
-open class FabExtensionAnimator(private val button: MaterialButton) {
+open class FabExtensionAnimator(
+        private val button: MaterialButton,
+        private val collapsedFabSize: Int = button.resources.getDimensionPixelSize(R.dimen.collapsed_fab_size),
+        expandedFabHeight: Int = button.resources.getDimensionPixelSize(R.dimen.extended_fab_height)
+) {
 
-    @Suppress("MemberVisibilityCanBePrivate")
-    protected var collapsedFabSize: Int = button.resources.getDimensionPixelSize(R.dimen.collapsed_fab_size)
-    @Suppress("MemberVisibilityCanBePrivate")
-    protected var expandedFabHeight: Int = button.resources.getDimensionPixelSize(R.dimen.extended_fab_height)
-
-    private var glyphState: GlyphState? = null
+    private var glyphState: GlyphState = SimpleGlyphState(button.text, button.icon)
     private val sizeInterpolator = SpringSizeInterpolator(button, collapsedFabSize, expandedFabHeight)
 
-    val isAnimating: Boolean
+    @Suppress("unused")
+    val isRunning: Boolean
         get() = sizeInterpolator.isRunning
 
     var isExtended: Boolean
@@ -45,12 +45,17 @@ open class FabExtensionAnimator(private val button: MaterialButton) {
 
     @Suppress("unused")
     fun updateGlyphs(@StringRes stringRes: Int, @DrawableRes drawableRes: Int) = button.context.run {
-        updateGlyphs(SimpleGlyphState(getText(stringRes), this.drawableAt(drawableRes)!!))
+        updateGlyphs(SimpleGlyphState(getText(stringRes), this.drawableAt(drawableRes)))
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
     fun updateGlyphs(text: CharSequence, @DrawableRes drawableRes: Int) = button.context.run {
-        updateGlyphs(SimpleGlyphState(text, this.drawableAt(drawableRes)!!))
+        updateGlyphs(SimpleGlyphState(text, this.drawableAt(drawableRes)))
+    }
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun updateGlyphs(text: CharSequence, drawable: Drawable?) = button.context.run {
+        updateGlyphs(SimpleGlyphState(text, drawable))
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -69,11 +74,7 @@ open class FabExtensionAnimator(private val button: MaterialButton) {
     }
 
     private fun setExtended(extended: Boolean, force: Boolean) {
-        if ( extended && isExtended && !force) return
-
-        if (extended) this.button.text = this.glyphState!!.text
-        else this.button.text = ""
-
+        if (extended && isExtended && !force) return
         sizeInterpolator.run(extended)
     }
 
@@ -89,15 +90,14 @@ open class FabExtensionAnimator(private val button: MaterialButton) {
     }
 
     abstract class GlyphState {
-
-        abstract val icon: Drawable
+        abstract val icon: Drawable?
 
         abstract val text: CharSequence
     }
 
     class SimpleGlyphState constructor(
             override val text: CharSequence,
-            override val icon: Drawable
+            override val icon: Drawable?
     ) : GlyphState() {
 
         override fun equals(other: Any?): Boolean {
