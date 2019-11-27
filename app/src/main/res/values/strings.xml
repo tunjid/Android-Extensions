@@ -90,5 +90,11 @@
     <string name="option_3">Third Option</string>
     <string name="option_4">Fourth Option</string>
     <string name="option_5">Fifth Option</string>
-
+    <string name="stiffness">Stiffness</string>
+    <string name="bounciness">Bounciness</string>
+    <string name="none">None</string>
+    <string name="very_low">Very Low</string>
+    <string name="low">Low</string>
+    <string name="medium">Medium</string>
+    <string name="high">High</string>
 </resources>

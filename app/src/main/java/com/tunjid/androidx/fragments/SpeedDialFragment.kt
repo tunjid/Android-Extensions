@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.postDelayed
 import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.chip.ChipGroup
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.drawableAt
@@ -90,6 +92,30 @@ class SpeedDialFragment : AppBaseFragment(R.layout.fragment_speed_dial) {
             extender.isExtended = !extender.isExtended
         }
 
+
+        view.findViewById<ChipGroup>(R.id.spring_stiffness).setOnCheckedChangeListener { _, checkedId ->
+            extender.configureSpring {
+                spring.stiffness = when (checkedId) {
+                    R.id.stiffness_very_low -> SpringForce.STIFFNESS_VERY_LOW
+                    R.id.stiffness_low -> SpringForce.STIFFNESS_LOW
+                    R.id.stiffness_medium -> SpringForce.STIFFNESS_MEDIUM
+                    R.id.stiffness_high -> SpringForce.STIFFNESS_HIGH
+                    else -> SpringForce.STIFFNESS_VERY_LOW
+                }
+            }
+        }
+
+        view.findViewById<ChipGroup>(R.id.spring_damping).setOnCheckedChangeListener { _, checkedId ->
+            extender.configureSpring {
+                spring.dampingRatio = when (checkedId) {
+                    R.id.damping_none -> SpringForce.DAMPING_RATIO_NO_BOUNCY
+                    R.id.damping_low -> SpringForce.DAMPING_RATIO_LOW_BOUNCY
+                    R.id.damping_medium -> SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY
+                    R.id.damping_high -> SpringForce.DAMPING_RATIO_HIGH_BOUNCY
+                    else -> SpringForce.DAMPING_RATIO_HIGH_BOUNCY
+                }
+            }
+        }
 
         view.postDelayed(2000) { if (isResumed) uiState = uiState.copy(fabExtended = false) }
     }

@@ -123,16 +123,20 @@ private class SpringSizeInterpolator(
         val button: MaterialButton,
         val collapsedFabSize: Int,
         val expandedFabHeight: Int
-) {
-
-    private var endWidth = 0
-    private var endHeight = 0
-    private var startWidth = 0
-    private var startHeight = 0
+) : FloatPropertyCompat<View>("FabExtensionSpring") {
 
     val isRunning get() = spring.isRunning
 
-    private val spring = SpringAnimation(button, sizeProperty, collapsedFabSize.toFloat()).apply {
+    private val x1 = collapsedFabSize
+    private val y1 = collapsedFabSize
+    private var y2 = expandedFabHeight
+    private var x2 = button.height
+
+    private val slope get() = if (x2 != x1) (y2 - y1) / (x2 - x1) else 0
+
+    private val intercept get() = y2 - (slope * y1)
+
+    private val spring = SpringAnimation(button, this, x1.toFloat()).apply {
         spring.stiffness = SpringForce.STIFFNESS_MEDIUM
         spring.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
     }
@@ -148,38 +152,25 @@ private class SpringSizeInterpolator(
 
         button.measure(widthMeasureSpec, heightMeasureSpec)
 
-        startWidth = button.width
-        startHeight = button.height
-        endWidth = button.measuredWidth
-        endHeight = button.measuredHeight
+        x2 = button.measuredWidth
+        y2 = button.measuredHeight
 
-        spring.animateToFinalPosition(endWidth.toFloat())
+        spring.animateToFinalPosition(x2.toFloat())
     }
 
     fun attachToSpring(options: (SpringAnimation.() -> Unit)?) {
         if (!isRunning) options?.invoke(spring)
     }
 
-    private val slope get() = if (endWidth != startWidth) (endHeight - startHeight) / (endWidth - startWidth) else 0
+    private fun f(x: Float): Float = intercept + (slope * x)
 
-    private val intercept get() = endHeight - (slope * startHeight)
+    override fun getValue(button: View): Float = button.width.toFloat()
 
-    private val Int.y: Int get() = intercept + (slope * this)
+    override fun setValue(button: View, x: Float) = button.run {
+        layoutParams.width = x.toInt()
+        layoutParams.height = f(x).toInt()
+        requestLayout()
+        invalidate()
+    }
 
-    private val sizeProperty: FloatPropertyCompat<View>
-        get() = object : FloatPropertyCompat<View>("button") {
-            override fun setValue(button: View, width: Float) {
-                val x = width.toInt()
-                button.layoutParams.width = x
-                button.layoutParams.height = x.y
-                button.requestLayout()
-                button.invalidate()
-            }
-
-            override fun getValue(button: View): Float = button.run {
-                startWidth = width
-                startHeight = height
-                return width.toFloat()
-            }
-        }
 }
