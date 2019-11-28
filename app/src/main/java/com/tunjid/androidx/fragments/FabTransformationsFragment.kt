@@ -20,7 +20,7 @@ import com.tunjid.androidx.uidrivers.SpeedDialClickListener
 import com.tunjid.androidx.view.util.withOneShotEndListener
 import com.tunjid.androidx.viewmodels.routeName
 
-class SpeedDialFragment : AppBaseFragment(R.layout.fragment_speed_dial) {
+class FabTransformationsFragment : AppBaseFragment(R.layout.fragment_fab_transformations) {
 
     private val color
         get() = if (requireContext().isDarkTheme) Color.BLACK else Color.WHITE
@@ -50,7 +50,7 @@ class SpeedDialFragment : AppBaseFragment(R.layout.fragment_speed_dial) {
                 fabClickListener = SpeedDialClickListener(
                         tint = context.themeColorAt(R.attr.colorAccent),
                         items = speedDialItems,
-                        runGuard = this@SpeedDialFragment::fabExtensionGuard,
+                        runGuard = this@FabTransformationsFragment::fabExtensionGuard,
                         dismissListener = {
                             when (it) {
                                 null -> Unit
@@ -124,6 +124,6 @@ class SpeedDialFragment : AppBaseFragment(R.layout.fragment_speed_dial) {
     }
 
     companion object {
-        fun newInstance(): SpeedDialFragment = SpeedDialFragment().apply { arguments = Bundle() }
+        fun newInstance(): FabTransformationsFragment = FabTransformationsFragment().apply { arguments = Bundle() }
     }
 }
