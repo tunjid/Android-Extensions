@@ -102,8 +102,8 @@ open class FabExtensionAnimator(
             animateToFinalPosition(strokeWidth)
         }
         else if (!iconSame && !strokeAnimation.isRunning) scaleAnimation.apply {
-            withOneShotEndListener { animateToFinalPosition(1F) }
-            animateToFinalPosition(0.8F)
+            withOneShotEndListener { animateToFinalPosition(1000F) }
+            animateToFinalPosition(800F)
         }
     }
 
@@ -199,11 +199,11 @@ private class StrokeWidthProperty(button: MaterialButton) : FloatPropertyCompat<
 
 private class ScaleProperty : FloatPropertyCompat<View>("MaterialButtonScale") {
     override fun setValue(`object`: View, value: Float) {
-        `object`.scaleX = value
-        `object`.scaleY = value
+        `object`.scaleX = value / 1000
+        `object`.scaleY = value / 1000
     }
 
     override fun getValue(`object`: View): Float {
-        return `object`.scaleX
+        return `object`.scaleX * 1000
     }
 }
