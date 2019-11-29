@@ -1,7 +1,6 @@
 package com.tunjid.androidx.material.animator
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.annotation.DrawableRes
@@ -12,7 +11,10 @@ import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import com.google.android.material.button.MaterialButton
 import com.tunjid.androidx.core.content.drawableAt
+import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.graphics.drawable.sameAs
 import com.tunjid.androidx.view.R
+import com.tunjid.androidx.view.util.withOneShotEndListener
 import java.util.*
 
 open class FabExtensionAnimator(
@@ -21,8 +23,13 @@ open class FabExtensionAnimator(
         expandedFabHeight: Int = button.resources.getDimensionPixelSize(R.dimen.extended_fab_height)
 ) {
 
+    private val strokeWidth = button.context.resources.getDimensionPixelSize(R.dimen.fab_halo_width) * 100F
+
     private var glyphState: GlyphState = SimpleGlyphState(button.text, button.icon)
+
     private val sizeInterpolator = SpringSizeInterpolator(button, collapsedFabSize, expandedFabHeight)
+    private val strokeAnimation = SpringAnimation(button, StrokeWidthProperty(button), strokeWidth)
+    private val scaleAnimation = SpringAnimation(button, ScaleProperty(), 0.8F)
 
     @Suppress("unused")
     val isRunning: Boolean
@@ -30,15 +37,21 @@ open class FabExtensionAnimator(
 
     var isExtended: Boolean
         get() = button.layoutParams.run { height != width || width != collapsedFabSize }
-        set(extended) = setExtended(extended, false)
+        set(extended) = sizeInterpolator.run(extended)
 
     init {
         button.cornerRadius = collapsedFabSize
         button.setSingleLine()
+        configureSpring {
+            spring.stiffness = SpringForce.STIFFNESS_MEDIUM
+            spring.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+        }
     }
 
     fun configureSpring(options: SpringAnimation.() -> Unit) {
         sizeInterpolator.attachToSpring(options)
+        strokeAnimation.apply(options)
+        scaleAnimation.apply(options)
     }
 
     @Suppress("unused")
@@ -48,7 +61,7 @@ open class FabExtensionAnimator(
 
     @Suppress("MemberVisibilityCanBePrivate")
     fun updateGlyphs(text: CharSequence, @DrawableRes drawableRes: Int) = button.context.run {
-        updateGlyphs(SimpleGlyphState(text, this.drawableAt(drawableRes)))
+        updateGlyphs(SimpleGlyphState(text, drawableAt(drawableRes)))
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -57,34 +70,41 @@ open class FabExtensionAnimator(
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
-    fun updateGlyphs(glyphState: GlyphState) {
-        val isSame = glyphState == this.glyphState
-        this.glyphState = glyphState
-        animateChange(glyphState, isSame)
+    fun updateGlyphs(newGlyphState: GlyphState) {
+        val oldGlyphState = glyphState
+        glyphState = newGlyphState
+        animateChange(newGlyphState, oldGlyphState)
     }
 
-    private fun animateChange(glyphState: GlyphState, isSame: Boolean) {
+    private fun animateChange(newGlyphState: GlyphState, oldGlyphState: GlyphState) {
         val extended = isExtended
-        this.button.text = glyphState.text
-        this.button.icon = glyphState.icon
-        setExtended(extended, !isSame)
-        if (!extended) onPreExtend()
-    }
 
-    private fun setExtended(extended: Boolean, force: Boolean) {
-        if (extended && isExtended && !force) return
+        // The MaterialButton mutates the drawable internally, set it first, then check sameness
+        this.button.text = newGlyphState.text
+        this.button.icon = newGlyphState.icon
+
         sizeInterpolator.run(extended)
+
+        if (!extended) runCollapsedAnimations(
+                newGlyphState.icon sameAs oldGlyphState.icon,
+                newGlyphState.text == oldGlyphState.text
+        )
     }
 
+    /**
+     * Configures animations that should run if the text or icon of the [FabExtensionAnimator]
+     * change while it's collapsed
+     */
     @Suppress("MemberVisibilityCanBePrivate")
-    fun onPreExtend() {
-        val set = AnimatorSet()
-        set.play(animateProperty(TWITCH_END, TWITCH_START)).after(animateProperty(TWITCH_START, TWITCH_END))
-        set.start()
-    }
-
-    private fun animateProperty(start: Float, end: Float): ObjectAnimator {
-        return ObjectAnimator.ofFloat(button, ROTATION_Y_PROPERTY, start, end).setDuration(TWITCH_DURATION.toLong())
+    open fun runCollapsedAnimations(iconSame: Boolean, textSame: Boolean) {
+        if (iconSame && !scaleAnimation.isRunning) strokeAnimation.apply {
+            withOneShotEndListener { animateToFinalPosition(0F) }
+            animateToFinalPosition(strokeWidth)
+        }
+        else if (!iconSame && !strokeAnimation.isRunning) scaleAnimation.apply {
+            withOneShotEndListener { animateToFinalPosition(1000F) }
+            animateToFinalPosition(800F)
+        }
     }
 
     abstract class GlyphState {
@@ -109,14 +129,6 @@ open class FabExtensionAnimator(
             return Objects.hash(icon, text)
         }
     }
-
-    companion object {
-
-        private const val TWITCH_END = 20.0f
-        private const val TWITCH_START = 0.0f
-        private const val TWITCH_DURATION = 200
-        private const val ROTATION_Y_PROPERTY = "rotationY"
-    }
 }
 
 private class SpringSizeInterpolator(
@@ -136,10 +148,7 @@ private class SpringSizeInterpolator(
 
     private val intercept get() = y2 - (slope * y1)
 
-    private val spring = SpringAnimation(button, this, x1.toFloat()).apply {
-        spring.stiffness = SpringForce.STIFFNESS_MEDIUM
-        spring.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
-    }
+    private val spring = SpringAnimation(button, this, x1.toFloat())
 
     fun run(extended: Boolean) = button.doOnLayout {
         val widthMeasureSpec =
@@ -172,5 +181,29 @@ private class SpringSizeInterpolator(
         requestLayout()
         invalidate()
     }
+}
 
+private class StrokeWidthProperty(button: MaterialButton) : FloatPropertyCompat<MaterialButton>("MaterialButtonStroke") {
+    init {
+        button.strokeColor = ColorStateList.valueOf(button.context.themeColorAt(R.attr.colorAccent))
+    }
+
+    override fun setValue(`object`: MaterialButton, value: Float) {
+        `object`.strokeWidth = (value / 100).toInt()
+    }
+
+    override fun getValue(`object`: MaterialButton): Float {
+        return `object`.strokeWidth.toFloat() * 100
+    }
+}
+
+private class ScaleProperty : FloatPropertyCompat<View>("MaterialButtonScale") {
+    override fun setValue(`object`: View, value: Float) {
+        `object`.scaleX = value / 1000
+        `object`.scaleY = value / 1000
+    }
+
+    override fun getValue(`object`: View): Float {
+        return `object`.scaleX * 1000
+    }
 }
