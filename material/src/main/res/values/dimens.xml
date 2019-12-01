@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="fab_halo_width">4dp</dimen>
+    <dimen name="collapsed_fab_size">56dp</dimen>
+    <dimen name="extended_fab_height">48dp</dimen>
+</resources>

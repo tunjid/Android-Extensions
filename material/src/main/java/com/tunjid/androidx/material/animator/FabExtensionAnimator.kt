@@ -13,7 +13,7 @@ import com.google.android.material.button.MaterialButton
 import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.graphics.drawable.sameAs
-import com.tunjid.androidx.view.R
+import com.tunjid.androidx.material.R
 import com.tunjid.androidx.view.util.withOneShotEndListener
 import java.util.*
 
