@@ -58,10 +58,10 @@ fun CharSequence.click(paintConsumer: (TextPaint) -> Unit = {}, clickAction: () 
  * Due to the way [Spannable]s work, any argument's spans will can only be included **once** in the result.
  * Any duplicates will appear as text only.
  *
- * @param this@formatSpanned the format string (see [java.util.Formatter.format])
  * @param args   the list of arguments passed to the formatter. If there are
  * more arguments than required by `format`,
  * additional arguments are ignored.
+ * @see [java.util.Formatter.format]
  * @return the formatted string (with spans).
  */
 fun CharSequence.formatSpanned(vararg args: Any): SpannableStringBuilder =
