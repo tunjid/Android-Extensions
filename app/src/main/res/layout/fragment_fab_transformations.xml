@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/stiffness_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/triple_and_half_margin"
+        android:padding="@dimen/single_margin"
+        android:text="@string/stiffness"
+        android:textSize="@dimen/regular_text"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/spring_stiffness"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/stiffness_title"
+        app:singleLine="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/stiffness_very_low"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/very_low"
+            android:textSize="@dimen/regular_text" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/stiffness_low"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/low"
+            android:textSize="@dimen/regular_text" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/stiffness_medium"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/medium"
+            android:textSize="@dimen/regular_text" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/stiffness_high"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/high"
+            android:textSize="@dimen/regular_text" />
+
+    </com.google.android.material.chip.ChipGroup>
+
+    <TextView
+        android:id="@+id/damping_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/single_margin"
+        android:text="@string/bounciness"
+        android:textSize="@dimen/regular_text"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spring_stiffness" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/spring_damping"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/damping_title"
+        app:singleLine="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/damping_none"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/none"
+            android:textSize="@dimen/regular_text" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/damping_low"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/low"
+            android:textSize="@dimen/regular_text" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/damping_medium"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/medium"
+            android:textSize="@dimen/regular_text" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/damping_high"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/high"
+            android:textSize="@dimen/regular_text" />
+
+    </com.google.android.material.chip.ChipGroup>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/expandable_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:insetTop="0px"
+        android:insetBottom="0px"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

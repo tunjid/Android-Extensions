@@ -29,7 +29,7 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
             ),
             listOf(
                     Route(HidingViewsFragment::class.java.routeName, formatRoute(R.string.route_hiding_view)),
-                    Route(SpeedDialFragment::class.java.routeName, formatRoute(R.string.route_hiding_view)),
+                    Route(FabTransformationsFragment::class.java.routeName, formatRoute(R.string.route_fab_transformations)),
                     Route(CharacterSequenceExtensionsFragment::class.java.routeName, formatRoute(R.string.route_span_builder)),
                     Route(HardServiceConnectionFragment::class.java.routeName, formatRoute(R.string.route_hard_service_connection))
             )

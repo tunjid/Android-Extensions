@@ -21,6 +21,8 @@
     <string name="route_nsd_scan">A fragment demonstrating the use of the NsdHelper from the Communications module.</string>
     <string name="route_hiding_view">A fragment demonstrating the ViewHider, useful for implementing the "quick return" pattern</string>
     <string name="route_span_builder">A fragment demonstrating the charSequence extensions for building spans</string>
+    <string name="route_fab_transformations">A fragment showing material transformations on a FloatingActionButton</string>
+    <string name="route_hard_service_connection">A fragment demonstrating the HardServiceConnection</string>
 
     <!-- Menu items -->
     <string name="menu_reset_navigation">Reset Navigation</string>
@@ -80,7 +82,6 @@
         <item quantity="other">Bound for %1$d seconds</item>
     </plurals>
     <string name="service_disconnected">Service disconnected</string>
-    <string name="route_hard_service_connection">A fragment demonstrating the HardServiceConnection</string>
 
     <!-- SpeedDial -->
     <string name="speed_dial">Speed Dial</string>
@@ -90,5 +91,11 @@
     <string name="option_3">Third Option</string>
     <string name="option_4">Fourth Option</string>
     <string name="option_5">Fifth Option</string>
-
+    <string name="stiffness">Stiffness</string>
+    <string name="bounciness">Bounciness</string>
+    <string name="none">None</string>
+    <string name="very_low">Very Low</string>
+    <string name="low">Low</string>
+    <string name="medium">Medium</string>
+    <string name="high">High</string>
 </resources>
