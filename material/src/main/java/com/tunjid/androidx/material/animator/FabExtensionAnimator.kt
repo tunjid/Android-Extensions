@@ -19,7 +19,7 @@ import java.util.*
 
 open class FabExtensionAnimator(
         private val button: MaterialButton,
-        private val collapsedFabSize: Int = button.resources.getDimensionPixelSize(R.dimen.collapsed_fab_size),
+        collapsedFabSize: Int = button.resources.getDimensionPixelSize(R.dimen.collapsed_fab_size),
         expandedFabHeight: Int = button.resources.getDimensionPixelSize(R.dimen.extended_fab_height)
 ) {
 
@@ -35,9 +35,11 @@ open class FabExtensionAnimator(
     val isRunning: Boolean
         get() = sizeInterpolator.isRunning
 
-    var isExtended: Boolean
-        get() = button.layoutParams.run { height != width || width != collapsedFabSize }
-        set(extended) = sizeInterpolator.run(extended)
+    var isExtended: Boolean = true
+        set(extended) {
+            field = extended
+            sizeInterpolator.run(extended)
+        }
 
     init {
         button.cornerRadius = collapsedFabSize
@@ -77,15 +79,13 @@ open class FabExtensionAnimator(
     }
 
     private fun animateChange(newGlyphState: GlyphState, oldGlyphState: GlyphState) {
-        val extended = isExtended
-
         // The MaterialButton mutates the drawable internally, set it first, then check sameness
         this.button.text = newGlyphState.text
         this.button.icon = newGlyphState.icon
 
-        sizeInterpolator.run(extended)
+        sizeInterpolator.run(isExtended)
 
-        if (!extended) runCollapsedAnimations(
+        if (!isExtended) runCollapsedAnimations(
                 newGlyphState.icon sameAs oldGlyphState.icon,
                 newGlyphState.text == oldGlyphState.text
         )
@@ -95,7 +95,6 @@ open class FabExtensionAnimator(
      * Configures animations that should run if the text or icon of the [FabExtensionAnimator]
      * change while it's collapsed
      */
-    @Suppress("MemberVisibilityCanBePrivate")
     open fun runCollapsedAnimations(iconSame: Boolean, textSame: Boolean) {
         if (iconSame && !scaleAnimation.isRunning) strokeAnimation.apply {
             withOneShotEndListener { animateToFinalPosition(0F) }
