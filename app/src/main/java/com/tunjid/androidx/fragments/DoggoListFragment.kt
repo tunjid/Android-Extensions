@@ -10,6 +10,7 @@ import android.view.View.OnLayoutChangeListener
 import android.widget.ImageView
 import androidx.core.app.SharedElementCallback
 import androidx.core.content.ContextCompat.getDrawable
+import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
@@ -102,7 +103,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
     }
 
     override fun onDoggoImageLoaded(doggo: Doggo) {
-        if (doggo == Doggo.transitionDoggo) startPostponedEnterTransition()
+        if (doggo == Doggo.transitionDoggo) view?.doOnLayout { startPostponedEnterTransition() }
     }
 
     private fun getDivider(orientation: Int): RecyclerView.ItemDecoration = requireContext().run {
