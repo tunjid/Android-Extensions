@@ -9,6 +9,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnLayout
 import androidx.core.view.updatePadding
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
@@ -35,10 +36,21 @@ class InsetLifecycleCallbacks(
     private var leftInset: Int = 0
     private var rightInset: Int = 0
     private var insetsApplied: Boolean = false
+    private var lastWindowInsets: WindowInsetsCompat? = null
     private var lastInsetDispatch: InsetDispatch? = InsetDispatch()
+
+    private val bottomNavHeight get() = bottomNavView.height
 
     init {
         ViewCompat.setOnApplyWindowInsetsListener(parentContainer) { _, insets -> onInsetsApplied(insets) }
+        bottomNavView.doOnLayout { lastWindowInsets?.let(this::consumeFragmentInsets) }
+        fragmentContainer.bottomPaddingSpring {
+            addEndListener { _, _, _, _ ->
+                val input = fragmentContainer.innermostFocusedChild as? EditText
+                        ?: return@addEndListener
+                input.text = input.text // Scroll to text that has focus
+            }
+        }
     }
 
     override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) =
@@ -71,15 +83,25 @@ class InsetLifecycleCallbacks(
         ViewCompat.setOnApplyWindowInsetsListener(v) { _, insets -> consumeFragmentInsets(insets) }
     }
 
-    private fun consumeFragmentInsets(insets: WindowInsetsCompat): WindowInsetsCompat {
-        withSpring(coordinatorInsetReducer(insets.systemWindowInsetBottom), coordinatorLayout)
-        withSpring(contentInsetReducer(insets.systemWindowInsetBottom), fragmentContainer) {
-            addEndListener { _, _, _, _ ->
-                val input = fragmentContainer.innermostFocusedChild as? EditText
-                        ?: return@addEndListener
-                input.text = input.text // Scroll to text that has focus
-            }
+    private fun consumeFragmentInsets(insets: WindowInsetsCompat): WindowInsetsCompat = insets.apply {
+        lastWindowInsets = this
+
+        coordinatorLayout.ifBottomInsetChanged(coordinatorInsetReducer(systemWindowInsetBottom)) {
+            bottomPaddingSpring().animateToFinalPosition(it.toFloat())
         }
+
+        fragmentContainer.ifBottomInsetChanged(contentInsetReducer(systemWindowInsetBottom)) {
+            bottomPaddingSpring().animateToFinalPosition(it.toFloat())
+        }
+
+        val current = stackNavigatorSource()?.current ?: return@apply
+        if (isNotInCurrentFragmentContainer(current)) return@apply
+        if (current !is InsetProvider) return@apply
+
+        val large = systemWindowInsetBottom > bottomInset + bottomNavHeight.given(uiState.showsBottomNav)
+        val bottom = if (large) bottomInset else fragmentInsetReducer(current.insetFlags)
+
+        current.view?.apply { ifBottomInsetChanged(bottom) { updatePadding(bottom = it) } }
 
         return insets
     }
@@ -96,10 +118,10 @@ class InsetLifecycleCallbacks(
                     right = this.rightInset given insetFlags.hasRightInset
             )
 
-            val topPadding = topInset given insetFlags.hasTopInset
-            val bottomPadding = (bottomNavView.height given uiState.showsBottomNav) + (bottomInset given insetFlags.hasBottomInset)
-
-            fragment.view?.updatePadding(top = topPadding, bottom = bottomPadding)
+            fragment.view?.updatePadding(
+                    top = topInset given insetFlags.hasTopInset,
+                    bottom = fragmentInsetReducer(insetFlags)
+            )
 
             lastInsetDispatch = this
         }
@@ -115,10 +137,8 @@ class InsetLifecycleCallbacks(
             if (systemBottomInset > bottomInset) systemBottomInset
             else bottomInset + (bottomNavView.height given uiState.showsBottomNav)
 
-    private fun withSpring(bottomPadding: Int, view: View, modifier: SpringAnimation.() -> Unit = {}) {
-        val spring = view.getTag(R.id.bottom_padding) as? SpringAnimation
-                ?: view.bottomPaddingSpring().apply(modifier).apply { view.setTag(R.id.bottom_padding, this) }
-        if (view.paddingBottom != bottomPadding) spring.animateToFinalPosition(bottomPadding.toFloat())
+    private fun fragmentInsetReducer(insetFlags: InsetFlags): Int {
+        return bottomNavHeight.given(uiState.showsBottomNav) + bottomInset.given(insetFlags.hasBottomInset)
     }
 
     companion object {
@@ -140,14 +160,19 @@ class InsetLifecycleCallbacks(
 
 private infix fun Int.given(flag: Boolean) = if (flag) this else 0
 
-private fun View.bottomPaddingSpring(): SpringAnimation = springAnimationOf(
-        {
-            updatePadding(bottom = it.toInt())
-            invalidate()
-        },
-        { paddingBottom.toFloat() },
-        0F
-).apply {
-    spring.stiffness = SpringForce.STIFFNESS_MEDIUM
-    spring.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+private fun View.ifBottomInsetChanged(newInset: Int, action: View.(Int) -> Unit) {
+    if (paddingBottom != newInset) action(newInset)
+}
+
+private fun View.bottomPaddingSpring(modifier: SpringAnimation.() -> Unit = {}): SpringAnimation {
+    return getTag(R.id.bottom_padding) as? SpringAnimation ?: springAnimationOf(
+            { updatePadding(bottom = it.toInt()); invalidate() },
+            { paddingBottom.toFloat() },
+            0F
+    ).apply {
+        setTag(R.id.bottom_padding, this@apply)
+        spring.stiffness = SpringForce.STIFFNESS_MEDIUM
+        spring.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+        modifier(this)
+    }
 }
