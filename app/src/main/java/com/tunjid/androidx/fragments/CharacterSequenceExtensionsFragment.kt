@@ -34,13 +34,14 @@ class CharacterSequenceExtensionsFragment : AppBaseFragment(R.layout.fragment_sp
         )
 
         view.findViewById<TextView>(R.id.text).apply {
+            val color = context.themeColorAt(R.attr.prominent_text_color)
             movementMethod = LinkMovementMethod.getInstance()
             text = SpannableStringBuilder()
                     .append("\n")
                     .append("1. This is a regular span.")
                     .append("\n")
                     .append("\n")
-                    .append("2. This is a colored span".color(context.themeColorAt(R.attr.prominent_text_color)))
+                    .append("2. This is a colored span".color(color))
                     .append("\n")
                     .append("\n")
                     .append("3. This is an italicized span".italic())
@@ -55,23 +56,37 @@ class CharacterSequenceExtensionsFragment : AppBaseFragment(R.layout.fragment_sp
                     .append("6. This is a resized span".scale(1.5F))
                     .append("\n")
                     .append("\n")
-                    .append("7. This is a strike through span".strikeThrough())
+                    .append("7. This is a span scaled in the X".scaleX(1.5F))
                     .append("\n")
                     .append("\n")
-                    .append("8. This is a background colored span".backgroundColor(context.themeColorAt(R.attr.prominent_text_color)))
+                    .append("8. This is a strike through span".strikeThrough())
+                    .append("\n")
+                    .append("\n")
+                    .append("9. This is a background colored span".backgroundColor(context.themeColorAt(R.attr.prominent_text_color)))
                     .append("\n")
                     .append("\n")
                     .append(
-                            SpannableStringBuilder("9. This span has a")
+                            SpannableStringBuilder("10. This span has a")
                                     .append("subscript".subScript().scale(0.6F))
                                     .append(" and a ")
                                     .append("superscript".superScript().scale(0.6F))
                     )                    .append("\n")
                     .append("\n")
-                    .append("10. This is a clickable span".click(
+                    .append("11. This is a clickable span".click(
                             { paint -> paint.isUnderlineText = true },
                             { uiState = uiState.copy(snackbarText = "Clicked text!") })
                     )
+                    .append("\n")
+                    .append("\n")
+                    .append("This".bold() +
+                            " last " +
+                            "paragraph".italic() +
+                            " is a " +
+                            "flex".underline() +
+                            " to show the " +
+                            "plus".bold().italic().color(color).scale(1.8f) +
+                            " operator overload".color(color))
+
         }
     }
 
