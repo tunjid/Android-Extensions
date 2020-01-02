@@ -30,27 +30,27 @@ operator fun CharSequence.plus(other: CharSequence) = CONCATENATE_FORMATTER.form
 
 fun CharSequence.appendNewLine() = CONCATENATE_FORMATTER.formatSpanned(this, NEW_LINE)
 
-fun CharSequence.bold() = applySpan(StyleSpan(Typeface.BOLD))
+fun CharSequence.bold() = applyStyle(StyleSpan(Typeface.BOLD))
 
-fun CharSequence.italic() = applySpan(StyleSpan(Typeface.ITALIC))
+fun CharSequence.italic() = applyStyle(StyleSpan(Typeface.ITALIC))
 
-fun CharSequence.underline() = applySpan(UnderlineSpan())
+fun CharSequence.underline() = applyStyle(UnderlineSpan())
 
-fun CharSequence.scale(relativeSize: Float) = applySpan(RelativeSizeSpan(relativeSize))
+fun CharSequence.scale(relativeSize: Float) = applyStyle(RelativeSizeSpan(relativeSize))
 
-fun CharSequence.scaleX(relativeSize: Float) = applySpan(ScaleXSpan(relativeSize))
+fun CharSequence.scaleX(relativeSize: Float) = applyStyle(ScaleXSpan(relativeSize))
 
-fun CharSequence.backgroundColor(@ColorInt color: Int) = applySpan(BackgroundColorSpan(color))
+fun CharSequence.backgroundColor(@ColorInt color: Int) = applyStyle(BackgroundColorSpan(color))
 
-fun CharSequence.strikeThrough() = applySpan(StrikethroughSpan())
+fun CharSequence.strikeThrough() = applyStyle(StrikethroughSpan())
 
-fun CharSequence.superScript() = applySpan(SuperscriptSpan())
+fun CharSequence.superScript() = applyStyle(SuperscriptSpan())
 
-fun CharSequence.subScript() = applySpan(SubscriptSpan())
+fun CharSequence.subScript() = applyStyle(SubscriptSpan())
 
-fun CharSequence.color(@ColorInt color: Int) = applySpan(ForegroundColorSpan(color))
+fun CharSequence.color(@ColorInt color: Int) = applyStyle(ForegroundColorSpan(color))
 
-fun <T : CharacterStyle> CharSequence.applySpan(span: T) = applyTags(arrayOf(this), span)
+fun <T : CharacterStyle> CharSequence.applyStyle(span: T) = applyTags(arrayOf(this), span)
 
 fun CharSequence.click(paintConsumer: (TextPaint) -> Unit = {}, clickAction: () -> Unit) = applyTags(arrayOf(this), object : ClickableSpan() {
     override fun onClick(widget: View) = clickAction.invoke()
