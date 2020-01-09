@@ -48,6 +48,8 @@ fun CharSequence.superScript() = applyStyle(SuperscriptSpan())
 
 fun CharSequence.subScript() = applyStyle(SubscriptSpan())
 
+fun CharSequence.shiftBaseline(ratio: Float) = applyStyle(BaselineShiftSpan(ratio))
+
 fun CharSequence.color(@ColorInt color: Int) = applyStyle(ForegroundColorSpan(color))
 
 fun <T : CharacterStyle> CharSequence.applyStyle(span: T) = applyTags(arrayOf(this), span)

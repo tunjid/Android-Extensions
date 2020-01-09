@@ -66,26 +66,30 @@ class CharacterSequenceExtensionsFragment : AppBaseFragment(R.layout.fragment_sp
                     .append("\n")
                     .append("\n")
                     .append(
-                            SpannableStringBuilder("10. This span has a")
-                                    .append("subscript".subScript().scale(0.6F))
-                                    .append(" and a ")
-                                    .append("superscript".superScript().scale(0.6F))
-                    )                    .append("\n")
-                    .append("\n")
-                    .append("11. This is a clickable span".click(
-                            { paint -> paint.isUnderlineText = true },
-                            { uiState = uiState.copy(snackbarText = "Clicked text!") })
-                    )
-                    .append("\n")
-                    .append("\n")
-                    .append("This".bold() +
-                            " last " +
-                            "paragraph".italic() +
-                            " is a " +
-                            "flex".underline() +
-                            " to show the " +
-                            "plus".bold().italic().color(color).scale(1.8f) +
-                            " operator overload".color(color))
+                            SpannableStringBuilder("10. This span has a " as CharSequence
+                                    + "subscript".subScript().scale(0.6F)
+                                    + ","
+                                    + "superscript".superScript().scale(0.6F)
+                                    + " and a |"
+                                    + "Baseline shift".shiftBaseline(0.5f).scale(0.5F)
+                                    + "| all in one"
+                            )
+                                    .append("\n")
+                                    .append("\n")
+                                    .append("11. This is a clickable span".click(
+                                            { paint -> paint.isUnderlineText = true },
+                                            { uiState = uiState.copy(snackbarText = "Clicked text!") })
+                                    )
+                                    .append("\n")
+                                    .append("\n")
+                                    .append("This".bold() +
+                                            " last " +
+                                            "paragraph".italic() +
+                                            " is a " +
+                                            "flex".underline() +
+                                            " to show the " +
+                                            "plus".bold().italic().color(color).scale(1.8f) +
+                                            " operator overload".color(color)))
 
         }
     }
