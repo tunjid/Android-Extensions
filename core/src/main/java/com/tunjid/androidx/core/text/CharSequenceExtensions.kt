@@ -26,25 +26,33 @@ private val FORMAT_SEQUENCE = Pattern.compile("%([0-9]+\\$|<?)([^a-zA-z%]*)([[a-
 private const val CONCATENATE_FORMATTER = "%1\$s%2\$s"
 private const val NEW_LINE = "\n"
 
+operator fun CharSequence.plus(other: CharSequence) = CONCATENATE_FORMATTER.formatSpanned(this, other)
+
 fun CharSequence.appendNewLine() = CONCATENATE_FORMATTER.formatSpanned(this, NEW_LINE)
 
-fun CharSequence.bold() = applyTags(arrayOf(this), StyleSpan(Typeface.BOLD))
+fun CharSequence.bold() = applyStyle(StyleSpan(Typeface.BOLD))
 
-fun CharSequence.italic() = applyTags(arrayOf(this), StyleSpan(Typeface.ITALIC))
+fun CharSequence.italic() = applyStyle(StyleSpan(Typeface.ITALIC))
 
-fun CharSequence.underline() = applyTags(arrayOf(this), UnderlineSpan())
+fun CharSequence.underline() = applyStyle(UnderlineSpan())
 
-fun CharSequence.scale(relativeSize: Float) = applyTags(arrayOf(this), RelativeSizeSpan(relativeSize))
+fun CharSequence.scale(relativeSize: Float) = applyStyle(RelativeSizeSpan(relativeSize))
 
-fun CharSequence.backgroundColor(@ColorInt color: Int) = applyTags(arrayOf(this), BackgroundColorSpan(color))
+fun CharSequence.scaleX(relativeSize: Float) = applyStyle(ScaleXSpan(relativeSize))
 
-fun CharSequence.strikeThrough() = applyTags(arrayOf(this), StrikethroughSpan())
+fun CharSequence.backgroundColor(@ColorInt color: Int) = applyStyle(BackgroundColorSpan(color))
 
-fun CharSequence.superScript() = applyTags(arrayOf(this), SuperscriptSpan())
+fun CharSequence.strikeThrough() = applyStyle(StrikethroughSpan())
 
-fun CharSequence.subScript() = applyTags(arrayOf(this), SubscriptSpan())
+fun CharSequence.superScript() = applyStyle(SuperscriptSpan())
 
-fun CharSequence.color(@ColorInt color: Int) = applyTags(arrayOf(this), ForegroundColorSpan(color))
+fun CharSequence.subScript() = applyStyle(SubscriptSpan())
+
+fun CharSequence.shiftBaseline(ratio: Float) = applyStyle(BaselineShiftSpan(ratio))
+
+fun CharSequence.color(@ColorInt color: Int) = applyStyle(ForegroundColorSpan(color))
+
+fun <T : CharacterStyle> CharSequence.applyStyle(span: T) = applyTags(arrayOf(this), span)
 
 fun CharSequence.click(paintConsumer: (TextPaint) -> Unit = {}, clickAction: () -> Unit) = applyTags(arrayOf(this), object : ClickableSpan() {
     override fun onClick(widget: View) = clickAction.invoke()
