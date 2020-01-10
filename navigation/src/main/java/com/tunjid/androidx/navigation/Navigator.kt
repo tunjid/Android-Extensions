@@ -20,6 +20,10 @@ inline fun <reified T : Navigator> Fragment.activityNavigatorController() = obje
 
 internal val Fragment.navigatorTag get() = if (this is Navigator.TagProvider) stableTag else backStackTag
 
+/**
+ * Provides a window into the Navigator. This type is returned when the [Navigator] is not
+ * guaranteed to be attached, and it is therefore unsafe to perform any mutating calls with it.
+ */
 interface ReadOnlyNavigator {
     /**
      * The id of the container this [Navigator] shows [Fragment]s in
@@ -43,6 +47,9 @@ interface ReadOnlyNavigator {
     fun find(tag: String): Fragment?
 }
 
+/**
+ * An interface for managing and showing [Fragment] instances
+ */
 interface Navigator : ReadOnlyNavigator {
 
     /**
