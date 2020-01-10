@@ -5,8 +5,13 @@ import androidx.test.annotation.UiThreadTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
+import kotlinx.coroutines.runBlocking
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertSame
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -175,4 +180,37 @@ class StackNavigatorTest {
         assertEquals(listOf(TAG_C), stackNavigator.fragmentTags)
     }
 
+    @Test
+    @Throws(Throwable::class)
+    fun testSequentialOperations() = runBlocking {
+        stackNavigator.sequential(this) {
+            val testFragmentA = NavigationTestFragment.newInstance(TAG_A)
+            val testFragmentB = NavigationTestFragment.newInstance(TAG_B)
+            val testFragmentC = NavigationTestFragment.newInstance(TAG_C)
+            val testFragmentD = NavigationTestFragment.newInstance(TAG_D)
+            val testFragmentE = NavigationTestFragment.newInstance(TAG_E)
+
+            val pushedA = push(testFragmentA)
+            assertSame(testFragmentA, pushedA)
+
+            val nonPush = push(testFragmentA)
+            assertNull(nonPush)
+
+            val pushedB = push(testFragmentB)
+            assertSame(testFragmentB, pushedB)
+
+            val poppedA = pop()
+            assertSame(testFragmentA, poppedA)
+
+            push(testFragmentC)
+            push(testFragmentD)
+            push(testFragmentE)
+
+            val clearedD = clear(TAG_D)
+            assertSame(testFragmentD, clearedD)
+
+            val clearedA = clear(upToTag = TAG_C, includeMatch = true)
+            assertSame(testFragmentA, clearedA)
+        }
+    }
 }

@@ -18,6 +18,8 @@ inline fun <reified T : Navigator> Fragment.activityNavigatorController() = obje
                     ?: throw IllegalStateException("The hosting Activity is not a Navigator Controller")
 }
 
+internal val Fragment.navigatorTag get() = if (this is Navigator.TagProvider) stableTag else backStackTag
+
 interface ReadOnlyNavigator {
     /**
      * The id of the container this [Navigator] shows [Fragment]s in
@@ -31,9 +33,14 @@ interface ReadOnlyNavigator {
     val current: Fragment?
 
     /**
-     * The [Fragment] that will become the [current] following a [pop]
+     * The [Fragment] that will become the [current] following a [Navigator.pop]
      */
     val previous: Fragment?
+
+    /**
+     * Finds a [Fragment] that has previously been shown with this [Navigator]
+     */
+    fun find(tag: String): Fragment?
 }
 
 interface Navigator : ReadOnlyNavigator {
@@ -54,7 +61,9 @@ interface Navigator : ReadOnlyNavigator {
     fun clear(upToTag: String? = null, includeMatch: Boolean = false)
 
     /**
-     * Show the specified fragment
+     * Attempts to show the fragment provided, retrieving it from the back stack
+     * if an identical instance of it already exists in the [FragmentManager] under the specified
+     * tag.
      */
     fun push(fragment: Fragment, tag: String): Boolean
 
@@ -63,11 +72,12 @@ interface Navigator : ReadOnlyNavigator {
      * if an identical instance of it already exists in the [FragmentManager] under the specified
      * tag.
      *
-     * This is a convenience method for showing a [Fragment] that implements the [Navigator.TagProvider]
-     * interface
+     * This is a convenience method for showing a [Fragment] without having to explicitly provide a
+     * tag
+     *
      * @see push
      */
-    fun <T> push(fragment: T) where T : Fragment, T : TagProvider = push(fragment, fragment.stableTag)
+    fun push(fragment: Fragment) = push(fragment, fragment.navigatorTag)
 
     /**
      * An interface to provide unique tags for [Fragment]. Fragment implementers typically delegate

@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import com.tunjid.androidx.savedstate.savedStateFor
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -206,6 +207,38 @@ class MultiStackNavigatorTest {
         assertTrue(multiStackNavigator.stackFragments[2].isDetached)
 
         assertEquals(listOf(0), multiStackNavigator.stackVisitor.hosts().toList())
+    }
+
+    @Test
+    fun testSequentialOperations() = runBlocking {
+        multiStackNavigator.sequential(this) {
+            val testFragmentA = NavigationTestFragment.newInstance(TAG_A)
+
+            val root0 = show(0)
+            assertEquals(ROOT_TAG_0, root0?.tag)
+
+            val pushedA = push(testFragmentA)
+            assertSame(testFragmentA, pushedA)
+
+            val root1 = show(1)
+            assertEquals(ROOT_TAG_1, root1?.tag)
+
+            val popStack1FragA = pop()
+            assertSame(testFragmentA, popStack1FragA)
+
+            val root0Again = pop()
+            assertEquals(ROOT_TAG_0, root0Again?.tag)
+
+            val nullPop = pop()
+            assertNull(nullPop)
+
+            clearAll()
+            val newRoot0 = show(0)
+
+            assertSame(root0, root0Again)
+            assertNotSame(root0, newRoot0)
+            assertNotSame(root0Again, newRoot0)
+        }
     }
 
     private fun assertNavigatorIndices(vararg tags: String?) {

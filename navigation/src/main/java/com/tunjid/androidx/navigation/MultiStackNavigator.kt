@@ -16,6 +16,8 @@ import androidx.lifecycle.Lifecycle
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.savedstate.LifecycleSavedStateContainer
 import com.tunjid.androidx.savedstate.savedStateFor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 const val MULTI_STACK_NAVIGATOR = "com.tunjid.androidx.navigation.MultiStackNavigator"
 
@@ -163,6 +165,20 @@ class MultiStackNavigator(
     override fun clear(upToTag: String?, includeMatch: Boolean) = activeNavigator.clear(upToTag, includeMatch)
 
     override fun push(fragment: Fragment, tag: String): Boolean = activeNavigator.push(fragment, tag)
+
+    override fun find(tag: String): Fragment? = activeNavigator.find(tag)
+            ?: stackFragments
+                    .asSequence()
+                    .map(StackFragment::navigator)
+                    .filter { it != activeNavigator }
+                    .map { it.find(tag) }
+                    .firstOrNull()
+
+    fun sequential(scope: CoroutineScope, block: suspend AsyncMultiStackNavigator.() -> Unit) {
+        scope.launch {
+            block(AsyncMultiStackNavigator(this@MultiStackNavigator))
+        }
+    }
 
     private fun showInternal(index: Int, addTap: Boolean) = fragmentManager.commit {
         val toShow = stackFragments[index]
