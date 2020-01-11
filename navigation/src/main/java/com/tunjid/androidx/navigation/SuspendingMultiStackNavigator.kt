@@ -6,10 +6,9 @@ import androidx.lifecycle.Lifecycle
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
 
-class AsyncMultiStackNavigator(private val navigator: MultiStackNavigator) {
-    suspend fun pop() = AsyncNavigator(navigator).pop()
-
-    suspend fun <T : Fragment> push(fragment: T) = AsyncNavigator(navigator).push(fragment)
+class SuspendingMultiStackNavigator(
+        private val navigator: MultiStackNavigator
+) : AsyncNavigator by SuspendingNavigator(navigator) {
 
     suspend fun show(index: Int) = suspendCancellableCoroutine<Fragment?> { continuation ->
         navigator.stackFragments[navigator.activeIndex].doOnLifeCycleOnce(Lifecycle.Event.ON_RESUME) {
@@ -26,8 +25,8 @@ class AsyncMultiStackNavigator(private val navigator: MultiStackNavigator) {
         }
     }
 
-    suspend fun clear(upToTag: String? = null, includeMatch: Boolean = false) =
-            AsyncStackNavigator(navigator.activeNavigator).clear(upToTag, includeMatch)
+   override suspend fun clear(upToTag: String?, includeMatch: Boolean) =
+            SuspendingStackNavigator(navigator.activeNavigator).clear(upToTag, includeMatch)
 
     suspend fun clearAll() {
         internalClearAll()
