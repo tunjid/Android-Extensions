@@ -6,13 +6,6 @@ import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-interface AsyncNavigator {
-    suspend fun pop(): Fragment?
-    suspend fun clear(upToTag: String? = null, includeMatch: Boolean = false): Fragment?
-    suspend fun <T : Fragment> push(fragment: T, tag: String): T?
-    suspend fun <T : Fragment> push(fragment: T): T? = push(fragment, fragment.navigatorTag)
-}
-
 internal class SuspendingNavigator(private val navigator: Navigator) : AsyncNavigator {
     override suspend fun pop() = suspendCancellableCoroutine<Fragment?> { continuation ->
         when (val previous = navigator.previous) {
