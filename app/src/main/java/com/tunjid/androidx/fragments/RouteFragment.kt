@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
 import com.tunjid.androidx.adapters.withPaddedAdapter
@@ -38,7 +39,10 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
                 toolbarTitle = getString(R.string.app_name),
                 toolBarMenu = R.menu.menu_route,
                 toolbarShows = true,
-                fabShows = false,
+                fabShows = true,
+                fabIcon = R.drawable.ic_dice_24dp,
+                fabText = getString(R.string.route_feeling_lucky),
+                fabClickListener = View.OnClickListener { randomDestinations() },
                 showsBottomNav = true,
                 lightStatusBar = !requireContext().isDarkTheme,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
@@ -67,7 +71,15 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
     }
 
     private fun onRouteClicked(route: Route) {
-        navigator.push(when (route.destination) {
+        navigator.push(route.fragment)
+    }
+
+    private fun randomDestinations() = navigator.sequential(lifecycleScope) {
+        viewModel.feelingLucky(tabIndex).map { it.fragment }.forEach { push(it) }
+    }
+
+    private val Route.fragment: AppBaseFragment
+        get() = when (destination) {
             DoggoListFragment::class.java.routeName -> DoggoListFragment.newInstance()
             BleScanFragment::class.java.routeName -> BleScanFragment.newInstance()
             NsdScanFragment::class.java.routeName -> NsdScanFragment.newInstance()
@@ -81,8 +93,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
             HardServiceConnectionFragment::class.java.routeName -> HardServiceConnectionFragment.newInstance()
             FabTransformationsFragment::class.java.routeName -> FabTransformationsFragment.newInstance()
             else -> newInstance(tabIndex) // No-op, all RouteFragment instances have the same tag
-        })
-    }
+        }
 
     companion object {
         fun newInstance(tabIndex: Int): RouteFragment = RouteFragment().apply { this.tabIndex = tabIndex }

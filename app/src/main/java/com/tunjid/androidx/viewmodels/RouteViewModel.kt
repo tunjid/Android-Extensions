@@ -37,6 +37,8 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
 
     operator fun get(@IdRes index: Int): List<Route> = mapping[index]
 
+    fun feelingLucky(@IdRes index: Int) = mapping[index].shuffled().take(2)
+
     private fun formatRoute(@StringRes stringRes: Int): CharSequence = getApplication<Application>().run {
         getString(stringRes).italic()
     }
