@@ -10,8 +10,11 @@ internal val Bundle?.hashString: String
     get() = if (this == null) ""
     else keySet().joinToString(separator = "-", transform = { get(it)?.toString() ?: it })
 
-internal val Fragment.backStackTag: String
+internal val Fragment.bundleTag: String
     get() = "${javaClass.simpleName}-${arguments.hashString}"
+
+internal val Fragment.navigatorTag
+    get() = if (this is Navigator.TagProvider) stableTag else bundleTag
 
 internal fun Fragment.doOnLifeCycleOnce(
         targetEvent: Lifecycle.Event,

@@ -31,6 +31,6 @@ internal class SuspendingNavigator(private val navigator: Navigator) : AsyncNavi
             throw IllegalArgumentException("Override this")
 }
 
-fun <T> CancellableContinuation<T>.resumeIfActive(item: T) {
+internal fun <T> CancellableContinuation<T>.resumeIfActive(item: T) {
     if (isActive) resume(item)
 }
