@@ -5,7 +5,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
 
 class AsyncMultiStackNavigator(private val navigator: MultiStackNavigator) {
     suspend fun pop() = AsyncNavigator(navigator).pop()
@@ -14,10 +13,10 @@ class AsyncMultiStackNavigator(private val navigator: MultiStackNavigator) {
 
     suspend fun show(index: Int) = suspendCancellableCoroutine<Fragment?> { continuation ->
         when (navigator.activeIndex) {
-            index -> continuation.ifActive { resume(navigator.current) }
+            index -> continuation.resumeIfActive(navigator.current)
             else -> {
                 when (val upcomingStack = navigator.stackFragments.getOrNull(index)) {
-                    null -> continuation.ifActive { resume(null) } // out of index. Throw an exception maybe?
+                    null -> continuation.resumeIfActive(null)  // out of index. Throw an exception maybe?
                     else -> upcomingStack.waitForChild(continuation)
                 }
                 navigator.show(index)
@@ -32,17 +31,16 @@ class AsyncMultiStackNavigator(private val navigator: MultiStackNavigator) {
         internalClearAll()
     }
 
-    private suspend fun internalClearAll(): Fragment? =
-            suspendCancellableCoroutine<Fragment?> { continuation ->
-                // Clear all uses FragmentTransaction.commitNow, make sure calls start on the UI thread
-                val first = navigator.stackFragments.first()
-                first.view?.post {
-                    navigator.clearAll()
+    private suspend fun internalClearAll(): Fragment? = suspendCancellableCoroutine { continuation ->
+        // Clear all uses FragmentTransaction.commitNow, make sure calls start on the UI thread
+        val first = navigator.stackFragments.first()
+        first.view?.post {
+            navigator.clearAll()
 
-                    // Root function will be invoked for newly added StackFragment, wait on it's child
-                    navigator.stackFragments[0].waitForChild(continuation)
-                }
-            }
+            // Root function will be invoked for newly added StackFragment, wait on it's child
+            navigator.stackFragments[0].waitForChild(continuation)
+        }
+    }
 }
 
 private fun StackFragment.waitForChild(continuation: CancellableContinuation<Fragment?>) = doOnLifeCycleOnce(Lifecycle.Event.ON_START) {
@@ -51,11 +49,11 @@ private fun StackFragment.waitForChild(continuation: CancellableContinuation<Fra
             val fragmentManager = navigator.fragmentManager
             fragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
                 override fun onFragmentStarted(fm: FragmentManager, f: Fragment) {
-                    continuation.ifActive { resume(f) }
+                    continuation.resumeIfActive(f)
                     fragmentManager.unregisterFragmentLifecycleCallbacks(this)
                 }
             }, false)
         }
-        else -> continuation.ifActive { resume(current) }
+        else -> continuation.resumeIfActive(current)
     }
 }

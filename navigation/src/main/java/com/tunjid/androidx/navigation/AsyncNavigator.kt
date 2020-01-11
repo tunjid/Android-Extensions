@@ -9,9 +9,9 @@ import kotlin.coroutines.resume
 class AsyncNavigator(private val navigator: Navigator) {
     suspend fun pop() = suspendCancellableCoroutine<Fragment?> { continuation ->
         when (val previous = navigator.previous) {
-            null -> continuation.ifActive { resume(null) }
+            null -> continuation.resumeIfActive(null)
             else -> {
-                previous.doOnLifeCycleOnce(Lifecycle.Event.ON_START) { continuation.ifActive { resume(previous) } }
+                previous.doOnLifeCycleOnce(Lifecycle.Event.ON_START) { continuation.resumeIfActive(previous) }
                 navigator.pop()
             }
         }
@@ -19,15 +19,15 @@ class AsyncNavigator(private val navigator: Navigator) {
 
     suspend fun <T : Fragment> push(fragment: T) = suspendCancellableCoroutine<T?> { continuation ->
         when (navigator.current?.navigatorTag) {
-            fragment.navigatorTag -> continuation.ifActive { resume(null) }
+            fragment.navigatorTag -> continuation.resumeIfActive(null)
             else -> {
-                fragment.doOnLifeCycleOnce(Lifecycle.Event.ON_START) { continuation.ifActive { resume(fragment) } }
+                fragment.doOnLifeCycleOnce(Lifecycle.Event.ON_START) { continuation.resumeIfActive(fragment) }
                 navigator.push(fragment)
             }
         }
     }
 }
 
-fun <T> CancellableContinuation<T>.ifActive(action: CancellableContinuation<T>.() -> Unit) {
-    if (isActive) action(this)
+fun <T> CancellableContinuation<T>.resumeIfActive(item: T) {
+    if (isActive) resume(item)
 }

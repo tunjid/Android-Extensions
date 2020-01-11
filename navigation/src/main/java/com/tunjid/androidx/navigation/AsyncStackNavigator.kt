@@ -3,7 +3,6 @@ package com.tunjid.androidx.navigation
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
 
 class AsyncStackNavigator(private val navigator: StackNavigator) {
     suspend fun pop() = AsyncNavigator(navigator).pop()
@@ -15,10 +14,9 @@ class AsyncStackNavigator(private val navigator: StackNavigator) {
         val index = navigator.fragmentTags.indexOf(tag).let { if (includeMatch) it - 1 else it }
         val toShow = if (index < 0) null else navigator.find(navigator.fragmentTags[index] ?: "")
 
-        toShow?.doOnLifeCycleOnce(Lifecycle.Event.ON_START) { continuation.ifActive { resume(toShow) } }
-                ?: continuation.ifActive { resume(null) }
-
         navigator.clear(upToTag, includeMatch)
+        toShow?.doOnLifeCycleOnce(Lifecycle.Event.ON_START) { continuation.resumeIfActive(toShow) }
+                ?: continuation.resumeIfActive(null)
     }
 
 }
