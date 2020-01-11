@@ -12,14 +12,16 @@ class AsyncMultiStackNavigator(private val navigator: MultiStackNavigator) {
     suspend fun <T : Fragment> push(fragment: T) = AsyncNavigator(navigator).push(fragment)
 
     suspend fun show(index: Int) = suspendCancellableCoroutine<Fragment?> { continuation ->
-        when (navigator.activeIndex) {
-            index -> continuation.resumeIfActive(navigator.current)
-            else -> {
-                when (val upcomingStack = navigator.stackFragments.getOrNull(index)) {
-                    null -> continuation.resumeIfActive(null)  // out of index. Throw an exception maybe?
-                    else -> upcomingStack.waitForChild(continuation)
+        navigator.stackFragments[navigator.activeIndex].doOnLifeCycleOnce(Lifecycle.Event.ON_RESUME) {
+            when (navigator.activeIndex) {
+                index -> continuation.resumeIfActive(navigator.current)
+                else -> {
+                    when (val upcomingStack = navigator.stackFragments.getOrNull(index)) {
+                        null -> continuation.resumeIfActive(null)  // out of index. Throw an exception maybe?
+                        else -> upcomingStack.waitForChild(continuation)
+                    }
+                    navigator.show(index)
                 }
-                navigator.show(index)
             }
         }
     }
@@ -43,12 +45,12 @@ class AsyncMultiStackNavigator(private val navigator: MultiStackNavigator) {
     }
 }
 
-private fun StackFragment.waitForChild(continuation: CancellableContinuation<Fragment?>) = doOnLifeCycleOnce(Lifecycle.Event.ON_START) {
+private fun StackFragment.waitForChild(continuation: CancellableContinuation<Fragment?>) = doOnLifeCycleOnce(Lifecycle.Event.ON_RESUME) {
     when (val current = navigator.current) {
         null -> { // Root has not been shown yet, defer until the first fragment shows
             val fragmentManager = navigator.fragmentManager
             fragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
-                override fun onFragmentStarted(fm: FragmentManager, f: Fragment) {
+                override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
                     continuation.resumeIfActive(f)
                     fragmentManager.unregisterFragmentLifecycleCallbacks(this)
                 }

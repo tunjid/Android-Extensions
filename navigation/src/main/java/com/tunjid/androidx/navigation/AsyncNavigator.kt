@@ -11,7 +11,7 @@ class AsyncNavigator(private val navigator: Navigator) {
         when (val previous = navigator.previous) {
             null -> continuation.resumeIfActive(null)
             else -> {
-                previous.doOnLifeCycleOnce(Lifecycle.Event.ON_START) { continuation.resumeIfActive(previous) }
+                previous.doOnLifeCycleOnce(Lifecycle.Event.ON_RESUME) { continuation.resumeIfActive(previous) }
                 navigator.pop()
             }
         }
@@ -21,7 +21,7 @@ class AsyncNavigator(private val navigator: Navigator) {
         when (navigator.current?.navigatorTag) {
             fragment.navigatorTag -> continuation.resumeIfActive(null)
             else -> {
-                fragment.doOnLifeCycleOnce(Lifecycle.Event.ON_START) { continuation.resumeIfActive(fragment) }
+                fragment.doOnLifeCycleOnce(Lifecycle.Event.ON_RESUME) { continuation.resumeIfActive(fragment) }
                 navigator.push(fragment)
             }
         }

@@ -15,7 +15,7 @@ class AsyncStackNavigator(private val navigator: StackNavigator) {
         val toShow = if (index < 0) null else navigator.find(navigator.fragmentTags[index] ?: "")
 
         navigator.clear(upToTag, includeMatch)
-        toShow?.doOnLifeCycleOnce(Lifecycle.Event.ON_START) { continuation.resumeIfActive(toShow) }
+        toShow?.doOnLifeCycleOnce(Lifecycle.Event.ON_RESUME) { continuation.resumeIfActive(toShow) }
                 ?: continuation.resumeIfActive(null)
     }
 

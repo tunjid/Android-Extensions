@@ -16,12 +16,26 @@ internal val Fragment.backStackTag: String
 internal fun Fragment.doOnLifeCycleOnce(
         targetEvent: Lifecycle.Event,
         action: () -> Unit
-) = lifecycle.addObserver(object : LifecycleEventObserver {
-    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) = when (event) {
-        targetEvent -> {
-            action()
-            lifecycle.removeObserver(this)
+) = when {
+    lifecycle.currentState.isAtLeast(targetEvent.toState) -> action()
+    else -> lifecycle.addObserver(object : LifecycleEventObserver {
+        override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) = when (event) {
+            targetEvent -> {
+                action()
+                lifecycle.removeObserver(this)
+            }
+            else -> Unit
         }
-        else -> Unit
+    })
+}
+
+private val Lifecycle.Event.toState
+    get() = when (this) {
+        Lifecycle.Event.ON_CREATE -> Lifecycle.State.CREATED
+        Lifecycle.Event.ON_START -> Lifecycle.State.STARTED
+        Lifecycle.Event.ON_RESUME -> Lifecycle.State.RESUMED
+        Lifecycle.Event.ON_PAUSE -> Lifecycle.State.DESTROYED
+        Lifecycle.Event.ON_STOP -> Lifecycle.State.DESTROYED
+        Lifecycle.Event.ON_DESTROY -> Lifecycle.State.DESTROYED
+        Lifecycle.Event.ON_ANY -> Lifecycle.State.DESTROYED
     }
-})
