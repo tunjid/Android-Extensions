@@ -1,9 +1,12 @@
 package com.tunjid.androidx.fragments
 
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.method.LinkMovementMethod
+import android.text.style.DynamicDrawableSpan
+import android.text.style.ImageSpan
 import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
 import android.view.View
@@ -40,6 +43,22 @@ class CharacterSequenceExtensionsFragment : AppBaseFragment(R.layout.fragment_sp
             val color = context.themeColorAt(R.attr.prominent_text_color)
             movementMethod = LinkMovementMethod.getInstance()
             text = SpannableStringBuilder()
+                    .append("\n")
+                    .append(
+                            "Spans ".bold() +
+                                    "in ".color(Color.RED) +
+                                    "Android ".color(Color.GREEN).bold() +
+                                    "_".applyStyles(
+                                            ImageSpan(
+                                                    requireContext(),
+                                                    R.drawable.ic_android_24dp,
+                                                    DynamicDrawableSpan.ALIGN_BASELINE
+                                            )
+                                    ) +
+                                    " made " +
+                                    "easy!".bold().italic().underline().scale(1.2f)
+                    )
+                    .append("\n")
                     .append("\n")
                     .append("1. This is a regular span.")
                     .append("\n")
