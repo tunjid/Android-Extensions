@@ -8,7 +8,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 
 class SuspendingMultiStackNavigator(
         private val navigator: MultiStackNavigator
-) : AsyncNavigator by SuspendingNavigator(navigator) {
+) : SuspendingNavigator by CommonSuspendingNavigator(navigator) {
 
     suspend fun show(index: Int) = suspendCancellableCoroutine<Fragment?> { continuation ->
         navigator.stackFragments[navigator.activeIndex].doOnLifeCycleOnce(Lifecycle.Event.ON_RESUME) {
@@ -28,6 +28,9 @@ class SuspendingMultiStackNavigator(
    override suspend fun clear(upToTag: String?, includeMatch: Boolean) =
             SuspendingStackNavigator(navigator.activeNavigator).clear(upToTag, includeMatch)
 
+    /**
+     * @see MultiStackNavigator.clearAll
+     */
     suspend fun clearAll() {
         internalClearAll()
     }

@@ -1,36 +1,53 @@
 package com.tunjid.androidx.navigation
 
+import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import kotlinx.coroutines.CancellableContinuation
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
 
-internal class SuspendingNavigator(private val navigator: Navigator) : AsyncNavigator {
-    override suspend fun pop() = suspendCancellableCoroutine<Fragment?> { continuation ->
-        when (val previous = navigator.previous) {
-            null -> continuation.resumeIfActive(null)
-            else -> {
-                previous.doOnLifeCycleOnce(Lifecycle.Event.ON_RESUME) { continuation.resumeIfActive(previous) }
-                navigator.pop()
-            }
-        }
-    }
+/**
+ * A like for like API of a [Navigator] that returns suspending equivalents of the original
+ * functions that complete when the navigation action has finished. This typically means
+ * the [Fragment] navigated to is in the [Lifecycle.State.RESUMED] state
+ */
+interface SuspendingNavigator {
+    /**
+     * @see Navigator.containerId
+     */
+    @get:IdRes
+    val containerId: Int
 
-    override suspend fun <T : Fragment> push(fragment: T, tag: String) = suspendCancellableCoroutine<T?> { continuation ->
-        when (navigator.current?.tag) {
-            tag -> continuation.resumeIfActive(null)
-            else -> {
-                fragment.doOnLifeCycleOnce(Lifecycle.Event.ON_RESUME) { continuation.resumeIfActive(fragment) }
-                navigator.push(fragment, tag)
-            }
-        }
-    }
+    /**
+     * @see Navigator.current
+     */
+    val current: Fragment?
 
-    override suspend fun clear(upToTag: String?, includeMatch: Boolean): Fragment? =
-            throw IllegalArgumentException("Override this")
-}
+    /**
+     * @see Navigator.previous
+     */
+    val previous: Fragment?
 
-internal fun <T> CancellableContinuation<T>.resumeIfActive(item: T) {
-    if (isActive) resume(item)
+    /**
+     * @see Navigator.find
+     */
+    suspend fun find(tag: String): Fragment?
+
+    /**
+     * @see Navigator.pop
+     */
+    suspend fun pop(): Fragment?
+
+    /**
+     * @see Navigator.clear
+     */
+    suspend fun clear(upToTag: String? = null, includeMatch: Boolean = false): Fragment?
+
+    /**
+     * @see Navigator.push
+     */
+    suspend fun <T : Fragment> push(fragment: T, tag: String): T?
+
+    /**
+     * @see Navigator.push
+     */
+    suspend fun <T : Fragment> push(fragment: T): T? = push(fragment, fragment.navigatorTag)
 }

@@ -6,7 +6,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 
 class SuspendingStackNavigator(
         private val navigator: StackNavigator
-) : AsyncNavigator by SuspendingNavigator(navigator) {
+) : SuspendingNavigator by CommonSuspendingNavigator(navigator) {
 
    override suspend fun clear(upToTag: String?, includeMatch: Boolean) = suspendCancellableCoroutine<Fragment?> { continuation ->
         val tag = upToTag ?: navigator.fragmentTags.firstOrNull() ?: ""
