@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.VisibleForTesting
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import com.tunjid.androidx.core.components.args
 
 /**
  * Test fragment
@@ -19,8 +19,9 @@ import androidx.fragment.app.Fragment
 @VisibleForTesting
 class NavigationTestFragment : Fragment(), Navigator.TagProvider {
 
-    override val stableTag: String
-        get() = arguments!!.getString(STRING_ARG_KEY)!!
+    override val stableTag: String get() = argTag
+
+    private var argTag by args<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,8 +40,7 @@ class NavigationTestFragment : Fragment(), Navigator.TagProvider {
     companion object {
 
         private val TAG = NavigationTestFragment::class.java.simpleName
-        private const val STRING_ARG_KEY = "STRING_ARG_KEY"
 
-        fun newInstance(stringArg: String): NavigationTestFragment = NavigationTestFragment().apply { arguments = bundleOf(STRING_ARG_KEY to stringArg) }
+        fun newInstance(stringArg: String): NavigationTestFragment = NavigationTestFragment().apply { this.argTag = stringArg }
     }
 }

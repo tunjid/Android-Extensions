@@ -7,6 +7,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 fun Fragment.childStackNavigationController(@IdRes containerId: Int): Lazy<StackNavigator> = lazy {
     StackNavigator(childFragmentManager, containerId)
@@ -28,7 +30,7 @@ fun FragmentActivity.stackNavigationController(@IdRes containerId: Int): Lazy<St
  */
 
 class StackNavigator constructor(
-        private val fragmentManager: FragmentManager,
+        internal val fragmentManager: FragmentManager,
         @param:IdRes @field:IdRes @get:IdRes override val containerId: Int
 ) : Navigator {
 
@@ -112,6 +114,14 @@ class StackNavigator constructor(
         // Empty string will be treated as a no-op internally
         val tag = upToTag?.toEntry ?: baskStackEntries.firstOrNull()?.name ?: ""
         fragmentManager.popBackStack(tag, if (includeMatch) FragmentManager.POP_BACK_STACK_INCLUSIVE else 0)
+    }
+
+    override fun find(tag: String): Fragment? = fragmentManager.findFragmentByTag(tag)
+
+    fun sequential(scope: CoroutineScope, block: suspend SuspendingStackNavigator.() -> Unit) {
+        scope.launch {
+            block(SuspendingStackNavigator(this@StackNavigator))
+        }
     }
 
     private fun auditFragment(f: Fragment) {
