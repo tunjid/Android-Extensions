@@ -30,31 +30,31 @@ operator fun CharSequence.plus(other: CharSequence) = CONCATENATE_FORMATTER.form
 
 fun CharSequence.appendNewLine() = CONCATENATE_FORMATTER.formatSpanned(this, NEW_LINE)
 
-fun CharSequence.bold() = applyStyle(StyleSpan(Typeface.BOLD))
+fun <T : CharacterStyle> CharSequence.applyStyles(vararg styles: T) = this.applyTags(*styles)
 
-fun CharSequence.italic() = applyStyle(StyleSpan(Typeface.ITALIC))
+fun CharSequence.bold() = applyStyles(StyleSpan(Typeface.BOLD))
 
-fun CharSequence.underline() = applyStyle(UnderlineSpan())
+fun CharSequence.italic() = applyStyles(StyleSpan(Typeface.ITALIC))
 
-fun CharSequence.scale(relativeSize: Float) = applyStyle(RelativeSizeSpan(relativeSize))
+fun CharSequence.underline() = applyStyles(UnderlineSpan())
 
-fun CharSequence.scaleX(relativeSize: Float) = applyStyle(ScaleXSpan(relativeSize))
+fun CharSequence.scale(relativeSize: Float) = applyStyles(RelativeSizeSpan(relativeSize))
 
-fun CharSequence.backgroundColor(@ColorInt color: Int) = applyStyle(BackgroundColorSpan(color))
+fun CharSequence.scaleX(relativeSize: Float) = applyStyles(ScaleXSpan(relativeSize))
 
-fun CharSequence.strikeThrough() = applyStyle(StrikethroughSpan())
+fun CharSequence.backgroundColor(@ColorInt color: Int) = applyStyles(BackgroundColorSpan(color))
 
-fun CharSequence.superScript() = applyStyle(SuperscriptSpan())
+fun CharSequence.strikeThrough() = applyStyles(StrikethroughSpan())
 
-fun CharSequence.subScript() = applyStyle(SubscriptSpan())
+fun CharSequence.superScript() = applyStyles(SuperscriptSpan())
 
-fun CharSequence.shiftBaseline(ratio: Float) = applyStyle(BaselineShiftSpan(ratio))
+fun CharSequence.subScript() = applyStyles(SubscriptSpan())
 
-fun CharSequence.color(@ColorInt color: Int) = applyStyle(ForegroundColorSpan(color))
+fun CharSequence.color(@ColorInt color: Int) = applyStyles(ForegroundColorSpan(color))
 
-fun <T : CharacterStyle> CharSequence.applyStyle(span: T) = applyTags(arrayOf(this), span)
+fun CharSequence.shiftBaseline(ratio: Float) = applyStyles(BaselineShiftSpan(ratio))
 
-fun CharSequence.click(paintConsumer: (TextPaint) -> Unit = {}, clickAction: () -> Unit) = applyTags(arrayOf(this), object : ClickableSpan() {
+fun CharSequence.click(paintConsumer: (TextPaint) -> Unit = {}, clickAction: () -> Unit) = this.applyTags(object : ClickableSpan() {
     override fun onClick(widget: View) = clickAction.invoke()
 
     override fun updateDrawState(paint: TextPaint) = paintConsumer.invoke(paint)
@@ -76,18 +76,16 @@ fun CharSequence.formatSpanned(vararg args: Any): SpannableStringBuilder =
         formatActual(Locale.getDefault(), this, *args)
 
 /**
- * Returns a CharSequence that concatenates the specified array of CharSequence
- * objects and then applies a list of zero or more tags to the entire range.
+ * Applies a list of zero or more tags to the entire range in the CharSequence.
  *
- * @param content an array of character sequences to apply a style to
  * @param tags    the styled span objects to apply to the content
  * such as android.text.style.StyleSpan
  */
-private fun applyTags(content: Array<out CharSequence>, vararg tags: Any): CharSequence {
+private fun CharSequence.applyTags(vararg tags: Any): CharSequence {
     val text = SpannableStringBuilder()
     openTags(text, tags)
 
-    for (item in content) text.append(item)
+    text.append(this)
 
     closeTags(text, tags)
     return text
@@ -129,24 +127,23 @@ private fun closeTags(text: Spannable, tags: Array<out Any>) {
 private fun formatActual(locale: Locale, format: CharSequence, vararg args: Any): SpannableStringBuilder {
     val out = SpannableStringBuilder(format)
 
-    var i = 0
+    var start = 0
     var argAt = -1
 
-    while (i < out.length) {
-        val m = FORMAT_SEQUENCE.matcher(out)
-        if (!m.find(i)) break
-        i = m.start()
-        val exprEnd = m.end()
+    while (start < out.length) {
+        val matcher = FORMAT_SEQUENCE.matcher(out)
+        if (!matcher.find(start)) break
 
-        val argTerm = m.group(1)
-        val modTerm = m.group(2)
-        val typeTerm = m.group(3)
+        start = matcher.start()
+        val exprEnd = matcher.end()
 
-        val cookedArg: CharSequence
+        val argTerm = matcher.group(1)
+        val modTerm = matcher.group(2)
+        val typeTerm = matcher.group(3)
 
-        when (typeTerm) {
-            "%" -> cookedArg = "%"
-            "n" -> cookedArg = "\n"
+        val cookedArg: CharSequence = when (typeTerm) {
+            "%" -> "%"
+            "n" -> "\n"
             else -> {
                 val argIdx: Int = when (argTerm) {
                     "" -> ++argAt
@@ -156,14 +153,13 @@ private fun formatActual(locale: Locale, format: CharSequence, vararg args: Any)
 
                 val argItem = args[argIdx]
 
-                cookedArg =
-                        if (typeTerm == "s" && argItem is Spanned) argItem
-                        else String.format(locale, "%$modTerm$typeTerm", argItem)
+                if (typeTerm == "s" && argItem is Spanned) argItem
+                else String.format(locale, "%$modTerm$typeTerm", argItem)
             }
         }
 
-        out.replace(i, exprEnd, cookedArg)
-        i += cookedArg.length
+        out.replace(start, exprEnd, cookedArg)
+        start += cookedArg.length
     }
 
     return out

@@ -1,8 +1,11 @@
 package com.tunjid.androidx.fragments
 
+import android.graphics.Typeface
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.method.LinkMovementMethod
+import android.text.style.StyleSpan
+import android.text.style.UnderlineSpan
 import android.view.View
 import android.widget.TextView
 import com.tunjid.androidx.R
@@ -82,14 +85,40 @@ class CharacterSequenceExtensionsFragment : AppBaseFragment(R.layout.fragment_sp
                                     )
                                     .append("\n")
                                     .append("\n")
-                                    .append("This".bold() +
-                                            " last " +
-                                            "paragraph".italic() +
-                                            " is a " +
-                                            "flex".underline() +
-                                            " to show the " +
-                                            "plus".bold().italic().color(color).scale(1.8f) +
-                                            " operator overload".color(color)))
+                                    .append(
+                                            "Hi! I am bold, italicized and underlined with a fluent api"
+                                                    .bold().italic().underline()
+                                    )
+                                    .append("\n")
+                                    .append("\n")
+                                    .append(
+                                            "Hi! I am bold, italicized and underlined but slightly more efficient".applyStyles(
+                                                    StyleSpan(Typeface.BOLD),
+                                                    StyleSpan(Typeface.ITALIC),
+                                                    UnderlineSpan())
+                                    )
+                                    .append("\n")
+                                    .append("\n")
+                                    .append(
+                                            "Please accept the %1\$s and %2\$s before continuing".formatSpanned(
+                                                    "terms".underline().click { uiState = uiState.copy(snackbarText = "Clicked Terms") },
+                                                    "conditions".underline().click { uiState = uiState.copy(snackbarText = "Clicked Conditions") })
+                                    )
+                                    .append("\n")
+                                    .append("\n")
+                                    .append(
+                                            "This".bold() +
+                                                    " last " +
+                                                    "paragraph".italic() +
+                                                    " is a " +
+                                                    "flex".underline() +
+                                                    " to show the " +
+                                                    "plus".bold().italic().color(color).scale(1.8f) +
+                                                    " operator overload".color(color)
+                                    )
+                                    .append("\n")
+                                    .append("\n")
+                    )
 
         }
     }
