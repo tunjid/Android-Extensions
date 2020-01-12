@@ -42,7 +42,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
                 fabShows = true,
                 fabIcon = R.drawable.ic_dice_24dp,
                 fabText = getString(R.string.route_feeling_lucky),
-                fabClickListener = View.OnClickListener { randomDestinations() },
+                fabClickListener = View.OnClickListener { goSomewhereRandom() },
                 showsBottomNav = true,
                 lightStatusBar = !requireContext().isDarkTheme,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
@@ -74,8 +74,10 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
         navigator.push(route.fragment)
     }
 
-    private fun randomDestinations() = navigator.sequential(lifecycleScope) {
-        viewModel.feelingLucky(tabIndex).map { it.fragment }.forEach { push(it) }
+    private fun goSomewhereRandom() = navigator.sequential(lifecycleScope) {
+        val (tabIndex, route) = viewModel.randomRoute()
+        show(tabIndex)
+        push(route.fragment)
     }
 
     private val Route.fragment: AppBaseFragment
