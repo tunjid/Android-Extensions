@@ -211,7 +211,7 @@ class MultiStackNavigatorTest {
 
     @Test
     fun testSequentialOperations() = runBlocking {
-        multiStackNavigator.sequential(this) {
+        multiStackNavigator.suspending(this) {
             val testFragmentA = NavigationTestFragment.newInstance(TAG_A)
 
             val root0 = show(0)

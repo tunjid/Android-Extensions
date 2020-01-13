@@ -118,7 +118,7 @@ class StackNavigator constructor(
 
     override fun find(tag: String): Fragment? = fragmentManager.findFragmentByTag(tag)
 
-    fun sequential(scope: CoroutineScope, block: suspend SuspendingStackNavigator.() -> Unit) {
+    fun suspending(scope: CoroutineScope, block: suspend SuspendingStackNavigator.() -> Unit) {
         scope.launch {
             block(SuspendingStackNavigator(this@StackNavigator))
         }

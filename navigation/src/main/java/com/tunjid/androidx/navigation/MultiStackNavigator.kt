@@ -174,7 +174,7 @@ class MultiStackNavigator(
                     .map { it.find(tag) }
                     .firstOrNull()
 
-    fun sequential(scope: CoroutineScope, block: suspend SuspendingMultiStackNavigator.() -> Unit) {
+    fun suspending(scope: CoroutineScope, block: suspend SuspendingMultiStackNavigator.() -> Unit) {
         scope.launch {
             block(SuspendingMultiStackNavigator(this@MultiStackNavigator))
         }
