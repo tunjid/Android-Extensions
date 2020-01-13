@@ -11,6 +11,7 @@
     <string name="misc">Misc</string>
 
     <!-- Route Descriptions -->
+    <string name="route_feeling_lucky">I\'m feeling lucky</string>
     <string name="route_doggo_list">A list of hints demonstrating delegation of shared element transitions to the calling fragment.</string>
     <string name="route_doggo_rank">A list of good boyes showing drag and drop functionality.</string>
     <string name="route_independent_stack">A demo of the StackNavigator using independent stacks* within the same FragmentManager.</string>
@@ -61,12 +62,16 @@
     <string name="dynamic_tiles">Dynamic tile count</string>
     <string name="tile_info">Tile Info</string>
 
-    <!-- InnerStack -->
+    <!-- IndependentStack -->
+    <string name="double_line_format">%1$s\n%2$s</string>
+
+    <!-- MultipleStack -->
     <string name="first">First</string>
     <string name="second">Second</string>
     <string name="third">Third</string>
     <string name="go_deeper">Go Deeper</string>
     <string name="clear">CLEAR</string>
+    <string name="triple_line_format">%1$s\n%2$s\n%3$s</string>
     <plurals name="stack_depth">
         <item quantity="one">%1$d fragment deep</item>
         <item quantity="other">%1$d fragments deep</item>

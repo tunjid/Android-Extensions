@@ -9,6 +9,7 @@ import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.text.italic
 import com.tunjid.androidx.fragments.*
 import com.tunjid.androidx.model.Route
+import kotlin.random.Random
 
 class RouteViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -36,6 +37,8 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
     )
 
     operator fun get(@IdRes index: Int): List<Route> = mapping[index]
+
+    fun randomRoute() = Random.nextInt(mapping.size).let { it to mapping[it].shuffled().first() }
 
     private fun formatRoute(@StringRes stringRes: Int): CharSequence = getApplication<Application>().run {
         getString(stringRes).italic()

@@ -23,7 +23,7 @@ build.gradle lines
     implementation 'com.tunjid.androidx:savedstate:1.0.0'
     implementation 'com.tunjid.androidx:functions:1.0.0'
     implementation 'com.tunjid.androidx:material:1.0.0-rc06'
-    implementation 'com.tunjid.androidx:core:1.0.0'
+    implementation 'com.tunjid.androidx:core:1.1.0-alpha01'
     implementation 'com.tunjid.androidx:view:1.0.0'
     implementation 'com.tunjid.androidx:test:1.0.0-rc01'
 

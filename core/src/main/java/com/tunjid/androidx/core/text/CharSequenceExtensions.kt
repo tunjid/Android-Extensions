@@ -24,29 +24,34 @@ import java.util.regex.Pattern
 
 private val FORMAT_SEQUENCE = Pattern.compile("%([0-9]+\\$|<?)([^a-zA-z%]*)([[a-zA-Z%]&&[^tT]]|[tT][a-zA-Z])")
 private const val CONCATENATE_FORMATTER = "%1\$s%2\$s"
-private const val NEW_LINE = "\n"
 
-fun CharSequence.appendNewLine() = CONCATENATE_FORMATTER.formatSpanned(this, NEW_LINE)
+operator fun CharSequence.plus(other: CharSequence): SpannableStringBuilder = CONCATENATE_FORMATTER.formatSpanned(this, other)
 
-fun CharSequence.bold() = applyTags(arrayOf(this), StyleSpan(Typeface.BOLD))
+fun <T : CharacterStyle> CharSequence.applyStyles(vararg styles: T): CharSequence = this.applyTags(*styles)
 
-fun CharSequence.italic() = applyTags(arrayOf(this), StyleSpan(Typeface.ITALIC))
+fun CharSequence.bold(): CharSequence = applyStyles(StyleSpan(Typeface.BOLD))
 
-fun CharSequence.underline() = applyTags(arrayOf(this), UnderlineSpan())
+fun CharSequence.italic(): CharSequence = applyStyles(StyleSpan(Typeface.ITALIC))
 
-fun CharSequence.scale(relativeSize: Float) = applyTags(arrayOf(this), RelativeSizeSpan(relativeSize))
+fun CharSequence.underline(): CharSequence = applyStyles(UnderlineSpan())
 
-fun CharSequence.backgroundColor(@ColorInt color: Int) = applyTags(arrayOf(this), BackgroundColorSpan(color))
+fun CharSequence.scale(relativeSize: Float): CharSequence = applyStyles(RelativeSizeSpan(relativeSize))
 
-fun CharSequence.strikeThrough() = applyTags(arrayOf(this), StrikethroughSpan())
+fun CharSequence.scaleX(relativeSize: Float): CharSequence = applyStyles(ScaleXSpan(relativeSize))
 
-fun CharSequence.superScript() = applyTags(arrayOf(this), SuperscriptSpan())
+fun CharSequence.backgroundColor(@ColorInt color: Int): CharSequence = applyStyles(BackgroundColorSpan(color))
 
-fun CharSequence.subScript() = applyTags(arrayOf(this), SubscriptSpan())
+fun CharSequence.strikeThrough(): CharSequence = applyStyles(StrikethroughSpan())
 
-fun CharSequence.color(@ColorInt color: Int) = applyTags(arrayOf(this), ForegroundColorSpan(color))
+fun CharSequence.superScript(): CharSequence = applyStyles(SuperscriptSpan())
 
-fun CharSequence.click(paintConsumer: (TextPaint) -> Unit = {}, clickAction: () -> Unit) = applyTags(arrayOf(this), object : ClickableSpan() {
+fun CharSequence.subScript(): CharSequence = applyStyles(SubscriptSpan())
+
+fun CharSequence.color(@ColorInt color: Int): CharSequence = applyStyles(ForegroundColorSpan(color))
+
+fun CharSequence.shiftBaseline(ratio: Float): CharSequence = applyStyles(BaselineShiftSpan(ratio))
+
+fun CharSequence.click(paintConsumer: (TextPaint) -> Unit = {}, clickAction: () -> Unit): CharSequence = this.applyTags(object : ClickableSpan() {
     override fun onClick(widget: View) = clickAction.invoke()
 
     override fun updateDrawState(paint: TextPaint) = paintConsumer.invoke(paint)
@@ -68,18 +73,16 @@ fun CharSequence.formatSpanned(vararg args: Any): SpannableStringBuilder =
         formatActual(Locale.getDefault(), this, *args)
 
 /**
- * Returns a CharSequence that concatenates the specified array of CharSequence
- * objects and then applies a list of zero or more tags to the entire range.
+ * Applies a list of zero or more tags to the entire range in the CharSequence.
  *
- * @param content an array of character sequences to apply a style to
  * @param tags    the styled span objects to apply to the content
  * such as android.text.style.StyleSpan
  */
-private fun applyTags(content: Array<out CharSequence>, vararg tags: Any): CharSequence {
+private fun CharSequence.applyTags(vararg tags: Any): CharSequence {
     val text = SpannableStringBuilder()
     openTags(text, tags)
 
-    for (item in content) text.append(item)
+    text.append(this)
 
     closeTags(text, tags)
     return text
@@ -121,24 +124,23 @@ private fun closeTags(text: Spannable, tags: Array<out Any>) {
 private fun formatActual(locale: Locale, format: CharSequence, vararg args: Any): SpannableStringBuilder {
     val out = SpannableStringBuilder(format)
 
-    var i = 0
+    var start = 0
     var argAt = -1
 
-    while (i < out.length) {
-        val m = FORMAT_SEQUENCE.matcher(out)
-        if (!m.find(i)) break
-        i = m.start()
-        val exprEnd = m.end()
+    while (start < out.length) {
+        val matcher = FORMAT_SEQUENCE.matcher(out)
+        if (!matcher.find(start)) break
 
-        val argTerm = m.group(1)
-        val modTerm = m.group(2)
-        val typeTerm = m.group(3)
+        start = matcher.start()
+        val exprEnd = matcher.end()
 
-        val cookedArg: CharSequence
+        val argTerm = matcher.group(1)
+        val modTerm = matcher.group(2)
+        val typeTerm = matcher.group(3)
 
-        when (typeTerm) {
-            "%" -> cookedArg = "%"
-            "n" -> cookedArg = "\n"
+        val cookedArg: CharSequence = when (typeTerm) {
+            "%" -> "%"
+            "n" -> "\n"
             else -> {
                 val argIdx: Int = when (argTerm) {
                     "" -> ++argAt
@@ -148,14 +150,13 @@ private fun formatActual(locale: Locale, format: CharSequence, vararg args: Any)
 
                 val argItem = args[argIdx]
 
-                cookedArg =
-                        if (typeTerm == "s" && argItem is Spanned) argItem
-                        else String.format(locale, "%$modTerm$typeTerm", argItem)
+                if (typeTerm == "s" && argItem is Spanned) argItem
+                else String.format(locale, "%$modTerm$typeTerm", argItem)
             }
         }
 
-        out.replace(i, exprEnd, cookedArg)
-        i += cookedArg.length
+        out.replace(start, exprEnd, cookedArg)
+        start += cookedArg.length
     }
 
     return out
