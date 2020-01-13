@@ -183,7 +183,7 @@ class StackNavigatorTest {
     @Test
     @Throws(Throwable::class)
     fun testSequentialOperations() = runBlocking {
-        stackNavigator.suspending(this) {
+        stackNavigator.performConsecutively(this) {
             val testFragmentA = NavigationTestFragment.newInstance(TAG_A)
             val testFragmentB = NavigationTestFragment.newInstance(TAG_B)
             val testFragmentC = NavigationTestFragment.newInstance(TAG_C)

@@ -74,7 +74,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
         navigator.push(route.fragment)
     }
 
-    private fun goSomewhereRandom() = navigator.suspending(lifecycleScope) {
+    private fun goSomewhereRandom() = navigator.performConsecutively(lifecycleScope) {
         val (tabIndex, route) = viewModel.randomRoute()
         show(tabIndex)
         push(route.fragment)
