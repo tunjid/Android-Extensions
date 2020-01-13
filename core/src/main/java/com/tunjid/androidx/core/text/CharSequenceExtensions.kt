@@ -26,35 +26,35 @@ private val FORMAT_SEQUENCE = Pattern.compile("%([0-9]+\\$|<?)([^a-zA-z%]*)([[a-
 private const val CONCATENATE_FORMATTER = "%1\$s%2\$s"
 private const val NEW_LINE = "\n"
 
-operator fun CharSequence.plus(other: CharSequence) = CONCATENATE_FORMATTER.formatSpanned(this, other)
+operator fun CharSequence.plus(other: CharSequence): SpannableStringBuilder = CONCATENATE_FORMATTER.formatSpanned(this, other)
 
-fun CharSequence.appendNewLine() = CONCATENATE_FORMATTER.formatSpanned(this, NEW_LINE)
+fun CharSequence.appendNewLine(): CharSequence = CONCATENATE_FORMATTER.formatSpanned(this, NEW_LINE)
 
-fun <T : CharacterStyle> CharSequence.applyStyles(vararg styles: T) = this.applyTags(*styles)
+fun <T : CharacterStyle> CharSequence.applyStyles(vararg styles: T): CharSequence = this.applyTags(*styles)
 
-fun CharSequence.bold() = applyStyles(StyleSpan(Typeface.BOLD))
+fun CharSequence.bold(): CharSequence = applyStyles(StyleSpan(Typeface.BOLD))
 
-fun CharSequence.italic() = applyStyles(StyleSpan(Typeface.ITALIC))
+fun CharSequence.italic(): CharSequence = applyStyles(StyleSpan(Typeface.ITALIC))
 
-fun CharSequence.underline() = applyStyles(UnderlineSpan())
+fun CharSequence.underline(): CharSequence = applyStyles(UnderlineSpan())
 
-fun CharSequence.scale(relativeSize: Float) = applyStyles(RelativeSizeSpan(relativeSize))
+fun CharSequence.scale(relativeSize: Float): CharSequence = applyStyles(RelativeSizeSpan(relativeSize))
 
-fun CharSequence.scaleX(relativeSize: Float) = applyStyles(ScaleXSpan(relativeSize))
+fun CharSequence.scaleX(relativeSize: Float): CharSequence = applyStyles(ScaleXSpan(relativeSize))
 
-fun CharSequence.backgroundColor(@ColorInt color: Int) = applyStyles(BackgroundColorSpan(color))
+fun CharSequence.backgroundColor(@ColorInt color: Int): CharSequence = applyStyles(BackgroundColorSpan(color))
 
-fun CharSequence.strikeThrough() = applyStyles(StrikethroughSpan())
+fun CharSequence.strikeThrough(): CharSequence = applyStyles(StrikethroughSpan())
 
-fun CharSequence.superScript() = applyStyles(SuperscriptSpan())
+fun CharSequence.superScript(): CharSequence = applyStyles(SuperscriptSpan())
 
-fun CharSequence.subScript() = applyStyles(SubscriptSpan())
+fun CharSequence.subScript(): CharSequence = applyStyles(SubscriptSpan())
 
-fun CharSequence.color(@ColorInt color: Int) = applyStyles(ForegroundColorSpan(color))
+fun CharSequence.color(@ColorInt color: Int): CharSequence = applyStyles(ForegroundColorSpan(color))
 
-fun CharSequence.shiftBaseline(ratio: Float) = applyStyles(BaselineShiftSpan(ratio))
+fun CharSequence.shiftBaseline(ratio: Float): CharSequence = applyStyles(BaselineShiftSpan(ratio))
 
-fun CharSequence.click(paintConsumer: (TextPaint) -> Unit = {}, clickAction: () -> Unit) = this.applyTags(object : ClickableSpan() {
+fun CharSequence.click(paintConsumer: (TextPaint) -> Unit = {}, clickAction: () -> Unit): CharSequence = this.applyTags(object : ClickableSpan() {
     override fun onClick(widget: View) = clickAction.invoke()
 
     override fun updateDrawState(paint: TextPaint) = paintConsumer.invoke(paint)
