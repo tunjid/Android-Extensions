@@ -100,10 +100,12 @@ class MultiStackNavigatorTest {
 
         multiStackNavigator.waitForIdleSyncAfter { push(testFragmentA) }.also {
             assertNavigatorIndices(TAG_A, null, null)
+            assertSame(testFragmentA, multiStackNavigator.find(TAG_A))
         }
 
         multiStackNavigator.waitForIdleSyncAfter { push(testFragmentB) }.also {
             assertNavigatorIndices(TAG_B, null, null)
+            assertSame(testFragmentB, multiStackNavigator.find(TAG_B))
         }
 
         multiStackNavigator.waitForIdleSyncAfter { show(2) }.also {
@@ -112,10 +114,12 @@ class MultiStackNavigatorTest {
 
         multiStackNavigator.waitForIdleSyncAfter { push(testFragmentC) }.also {
             assertNavigatorIndices(TAG_B, null, TAG_C)
+            assertSame(testFragmentC, multiStackNavigator.find(TAG_C))
         }
 
         multiStackNavigator.waitForIdleSyncAfter { push(testFragmentD) }.also {
             assertNavigatorIndices(TAG_B, null, TAG_D)
+            assertSame(testFragmentD, multiStackNavigator.find(TAG_D))
         }
 
         assertSame(testFragmentD, multiStackNavigator.current)
