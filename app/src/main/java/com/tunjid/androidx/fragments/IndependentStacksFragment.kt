@@ -3,7 +3,6 @@ package com.tunjid.androidx.fragments
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import android.text.SpannableStringBuilder
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -21,8 +20,8 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.colorAt
-import com.tunjid.androidx.core.text.appendNewLine
 import com.tunjid.androidx.core.text.color
+import com.tunjid.androidx.core.text.formatSpanned
 import com.tunjid.androidx.core.text.scale
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.navigation.Navigator
@@ -121,11 +120,10 @@ class IndependentStackChildFragment : Fragment(), Navigator.TagProvider {
         transformationMethod = null
         gravity = Gravity.CENTER
         cornerRadius = spacing
-
-        text = SpannableStringBuilder(name)
-                .appendNewLine()
-                .append(resources.getQuantityString(R.plurals.stack_depth, depth, depth).scale(0.5F))
-
+        text = getString(R.string.double_line_format).formatSpanned(
+                name,
+                resources.getQuantityString(R.plurals.stack_depth, depth, depth).scale(0.5F)
+        )
         layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT).apply {
             gravity = Gravity.CENTER
             leftMargin = spacing

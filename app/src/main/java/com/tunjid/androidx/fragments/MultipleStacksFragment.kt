@@ -2,7 +2,6 @@ package com.tunjid.androidx.fragments
 
 import android.graphics.Color
 import android.os.Bundle
-import android.text.SpannableStringBuilder
 import android.text.method.LinkMovementMethod
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -18,7 +17,13 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.colorAt
-import com.tunjid.androidx.core.text.*
+import com.tunjid.androidx.core.text.bold
+import com.tunjid.androidx.core.text.click
+import com.tunjid.androidx.core.text.color
+import com.tunjid.androidx.core.text.formatSpanned
+import com.tunjid.androidx.core.text.italic
+import com.tunjid.androidx.core.text.scale
+import com.tunjid.androidx.core.text.underline
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
@@ -115,13 +120,10 @@ class MultipleStackChildFragment : Fragment(), Navigator.TagProvider {
     var depth: Int by args()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = TextView(inflater.context).apply {
-        text = SpannableStringBuilder(name)
-                .appendNewLine()
-                .append(resources.getQuantityString(R.plurals.stack_depth, depth, depth)
-                        .scale(0.6F))
-                .appendNewLine()
-                .append(resources.getString(R.string.clear)
-                        .scale(0.6F)
+        text = resources.getString(R.string.triple_line_format).formatSpanned(
+                name,
+                resources.getQuantityString(R.plurals.stack_depth, depth, depth).scale(0.6F),
+                resources.getString(R.string.clear).scale(0.6F)
                         .underline()
                         .italic()
                         .bold()
@@ -129,7 +131,8 @@ class MultipleStackChildFragment : Fragment(), Navigator.TagProvider {
                             (parentFragment?.parentFragment as? MultipleStacksFragment)?.apply {
                                 innerNavigator.clear()
                             }
-                        })
+                        }
+        )
         gravity = Gravity.CENTER
         textSize = resources.getDimensionPixelSize(R.dimen.large_text).toFloat()
         movementMethod = LinkMovementMethod.getInstance()

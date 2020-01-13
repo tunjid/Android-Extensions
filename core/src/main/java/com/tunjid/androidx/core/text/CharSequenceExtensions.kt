@@ -24,11 +24,8 @@ import java.util.regex.Pattern
 
 private val FORMAT_SEQUENCE = Pattern.compile("%([0-9]+\\$|<?)([^a-zA-z%]*)([[a-zA-Z%]&&[^tT]]|[tT][a-zA-Z])")
 private const val CONCATENATE_FORMATTER = "%1\$s%2\$s"
-private const val NEW_LINE = "\n"
 
 operator fun CharSequence.plus(other: CharSequence): SpannableStringBuilder = CONCATENATE_FORMATTER.formatSpanned(this, other)
-
-fun CharSequence.appendNewLine(): CharSequence = CONCATENATE_FORMATTER.formatSpanned(this, NEW_LINE)
 
 fun <T : CharacterStyle> CharSequence.applyStyles(vararg styles: T): CharSequence = this.applyTags(*styles)
 
