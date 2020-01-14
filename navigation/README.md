@@ -90,3 +90,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), StackNavigator.N
 ```
 
 Please look at `MainActivity` in the sample app for more detail.
+
+Each Navigator also supports a `performConsecutively` method that takes a coroutine scope, which lets you perform
+navigation operations one after the other as the FragmentManager is inherently asynchronous. This API is currently in alpha.
