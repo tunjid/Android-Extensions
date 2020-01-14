@@ -1,5 +1,7 @@
 package com.tunjid.androidx.navigation
 
+import android.os.Handler
+import android.os.Looper
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
@@ -25,7 +27,7 @@ class SuspendingMultiStackNavigator(
         }
     }
 
-   override suspend fun clear(upToTag: String?, includeMatch: Boolean) =
+    override suspend fun clear(upToTag: String?, includeMatch: Boolean) =
             SuspendingStackNavigator(navigator.activeNavigator).clear(upToTag, includeMatch)
 
     /**
@@ -37,8 +39,7 @@ class SuspendingMultiStackNavigator(
 
     private suspend fun internalClearAll(): Fragment? = suspendCancellableCoroutine { continuation ->
         // Clear all uses FragmentTransaction.commitNow, make sure calls start on the UI thread
-        val first = navigator.stackFragments.first()
-        first.view?.post {
+        Handler(Looper.getMainLooper()).post {
             navigator.clearAll()
 
             // Root function will be invoked for newly added StackFragment, wait on it's child
