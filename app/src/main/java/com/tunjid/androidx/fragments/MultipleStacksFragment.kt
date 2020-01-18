@@ -43,7 +43,9 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
     internal val innerNavigator: MultiStackNavigator by childMultiStackNavigationController(
             DESTINATIONS.size,
             R.id.inner_container
-    ) { MultipleStackChildFragment.newInstance(resources.getResourceEntryName(DESTINATIONS[it]), 1).run { this to stableTag } }
+    ) {
+        index -> MultipleStackChildFragment.newInstance(getChildName(index), 1)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,6 +102,8 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
         super.onViewStateRestored(savedInstanceState)
         view?.apply { transitionOption = findViewById<ChipGroup>(R.id.options).checkedChipId }
     }
+
+    private fun getChildName(index: Int) = resources.getResourceEntryName(DESTINATIONS[index])
 
     companion object {
 

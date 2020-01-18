@@ -24,7 +24,7 @@ const val MULTI_STACK_NAVIGATOR = "com.tunjid.androidx.navigation.MultiStackNavi
 fun Fragment.childMultiStackNavigationController(
         stackCount: Int,
         @IdRes containerId: Int,
-        rootFunction: (Int) -> Pair<Fragment, String>
+        rootFunction: (Int) -> Fragment
 ): Lazy<MultiStackNavigator> = lazy {
     MultiStackNavigator(
             stackCount,
@@ -37,7 +37,7 @@ fun Fragment.childMultiStackNavigationController(
 fun FragmentActivity.multiStackNavigationController(
         stackCount: Int,
         @IdRes containerId: Int,
-        rootFunction: (Int) -> Pair<Fragment, String>
+        rootFunction: (Int) -> Fragment
 ): Lazy<MultiStackNavigator> = lazy {
     MultiStackNavigator(
             stackCount,
@@ -57,7 +57,7 @@ class MultiStackNavigator(
         stateContainer: LifecycleSavedStateContainer,
         private val fragmentManager: FragmentManager,
         @IdRes override val containerId: Int,
-        private val rootFunction: (Int) -> Pair<Fragment, String>) : Navigator {
+        private val rootFunction: (Int) -> Fragment) : Navigator {
 
     /**
      * A callback that will be invoked when a stack is selected, either by the user selecting it,
@@ -197,7 +197,7 @@ class MultiStackNavigator(
         indices.forEach { index -> add(containerId, StackFragment.newInstance(index), index.toString()) }
     }
 
-    private fun StackFragment.showRoot() = rootFunction(index).apply { navigator.push(first, second) }
+    private fun StackFragment.showRoot() = rootFunction(index).let(navigator::push)
 
     private inner class StackLifecycleCallback : FragmentManager.FragmentLifecycleCallbacks() {
 
