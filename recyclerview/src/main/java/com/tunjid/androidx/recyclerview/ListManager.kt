@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView.*
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
+@Deprecated("Use extensions instead")
 @Suppress("MemberVisibilityCanBePrivate")
 open class ListManager<VH : ViewHolder, T>(
         protected var scroller: EndlessScroller? = null,
@@ -145,7 +146,7 @@ open class ListManager<VH : ViewHolder, T>(
         )
 
         private fun <VH : ViewHolder, T> fromSwipeDragOptions(listManager: ListManager<VH, T>, options: SwipeDragOptions<VH>): ItemTouchHelper =
-                ItemTouchHelper(SwipeDragTouchHelper(listManager, options))
+                ItemTouchHelper(SwipeDragTouchHelper(listManager.recyclerView!!, options))
     }
 
 }

@@ -6,18 +6,19 @@ import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
+import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.tunjid.androidx.PlaceHolder
+import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.R
-import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.model.Route
-import com.tunjid.androidx.recyclerview.ListManagerBuilder
 import com.tunjid.androidx.recyclerview.adapterOf
+import com.tunjid.androidx.recyclerview.verticalLayoutManager
+import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
 import com.tunjid.androidx.view.util.inflate
 import com.tunjid.androidx.viewholders.RouteItemViewHolder
 import com.tunjid.androidx.viewmodels.RouteViewModel
@@ -48,18 +49,16 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )
 
-        ListManagerBuilder<RouteItemViewHolder, PlaceHolder.State>()
-                .withRecyclerView(view.findViewById(R.id.recycler_view))
-                .withLinearLayoutManager()
-                .withPaddedAdapter(
-                        adapterOf(
-                                itemsSource = { viewModel[tabIndex] },
-                                viewHolderCreator = { parent, _ -> RouteItemViewHolder(parent.inflate(R.layout.viewholder_route), this::onRouteClicked) },
-                                viewHolderBinder = { routeViewHolder, route, _ -> routeViewHolder.bind(route) },
-                                itemIdFunction = { it.hashCode().toLong() }
-                        )
-                )
-                .build()
+        view.findViewById<RecyclerView>(R.id.recycler_view).apply {
+            layoutManager = verticalLayoutManager()
+            adapter = adapterOf(
+                    itemsSource = { viewModel[tabIndex] },
+                    viewHolderCreator = { parent, _ -> RouteItemViewHolder(parent.inflate(R.layout.viewholder_route), ::onRouteClicked) },
+                    viewHolderBinder = { routeViewHolder, route, _ -> routeViewHolder.bind(route) },
+                    itemIdFunction = { it.hashCode().toLong() }
+            )
+            updatePadding(bottom = InsetLifecycleCallbacks.bottomInset)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {

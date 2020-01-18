@@ -8,15 +8,15 @@ import android.view.View
 import android.widget.ImageView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
-import com.tunjid.androidx.PlaceHolder
+import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.R
 import com.tunjid.androidx.adapters.DoggoInteractionListener
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.model.Doggo
-import com.tunjid.androidx.recyclerview.ListManagerBuilder
 import com.tunjid.androidx.recyclerview.adapterOf
+import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.uidrivers.BACKGROUND_TINT_DURATION
 import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.view.util.InsetFlags
@@ -55,20 +55,17 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo),
 
         val items = listOf(*resources.getStringArray(R.array.adoption_items))
 
-        ListManagerBuilder<InputViewHolder, PlaceHolder.State>()
-                .withRecyclerView(view.findViewById(R.id.model_list))
-                .withLinearLayoutManager()
-                .withAdapter(
-                        adapterOf(
-                                itemsSource = { items },
-                                viewHolderCreator = { parent, _ -> InputViewHolder(parent.inflate(R.layout.viewholder_simple_input)) },
-                                viewHolderBinder = { viewHolder, hint, _ -> viewHolder.bind(hint) },
-                                itemIdFunction = { it.hashCode().toLong() },
-                                onViewHolderRecycled = InputViewHolder::unbind,
-                                onViewHolderDetached = InputViewHolder::unbind
-                        )
-                )
-                .build()
+        view.findViewById<RecyclerView>(R.id.model_list).apply {
+            layoutManager = verticalLayoutManager()
+            adapter = adapterOf(
+                    itemsSource = { items },
+                    viewHolderCreator = { parent, _ -> InputViewHolder(parent.inflate(R.layout.viewholder_simple_input)) },
+                    viewHolderBinder = { viewHolder, hint, _ -> viewHolder.bind(hint) },
+                    itemIdFunction = { it.hashCode().toLong() },
+                    onViewHolderRecycled = InputViewHolder::unbind,
+                    onViewHolderDetached = InputViewHolder::unbind
+            )
+        }
 
         val viewHolder = DoggoViewHolder(view, this)
         viewHolder.bind(doggo)

@@ -37,12 +37,17 @@ import androidx.recyclerview.widget.RecyclerView
  * @see [ItemTouchHelper.Callback] for more reference
  */
 class SwipeDragOptions<VH : RecyclerView.ViewHolder>(
-        internal var itemViewSwipeSupplier: () -> Boolean = { false },
-        internal var longPressDragSupplier: () -> Boolean = { false },
-        internal var dragConsumer: (VH, VH) -> Unit = { _, _ -> },
-        internal var swipeConsumer: (VH, Int) -> Unit = { _, _ -> },
-        internal var swipeDragStartConsumer: (VH, Int) -> Unit = { _, _ -> },
-        internal var swipeDragEndConsumer: (VH, Int) -> Unit = { _, _ -> },
-        internal var movementFlagFunction: (VH) -> Int = { _ -> ListManager.SWIPE_DRAG_ALL_DIRECTIONS },
-        internal var dragHandleFunction: (VH) -> View = { viewHolder -> viewHolder.itemView }
+        internal val itemViewSwipeSupplier: () -> Boolean = { false },
+        internal val longPressDragSupplier: () -> Boolean = { false },
+        internal val dragConsumer: (VH, VH) -> Unit = { _, _ -> },
+        internal val swipeConsumer: (VH, Int) -> Unit = { _, _ -> },
+        internal val swipeDragStartConsumer: (VH, Int) -> Unit = { _, _ -> },
+        internal val swipeDragEndConsumer: (VH, Int) -> Unit = { _, _ -> },
+        internal val movementFlagFunction: (VH) -> Int = { _ -> SWIPE_DRAG_ALL_DIRECTIONS },
+        internal val dragHandleFunction: (VH) -> View = { viewHolder -> viewHolder.itemView }
+)
+
+val SWIPE_DRAG_ALL_DIRECTIONS = ItemTouchHelper.Callback.makeMovementFlags(
+        ItemTouchHelper.UP or ItemTouchHelper.DOWN,
+        ItemTouchHelper.START or ItemTouchHelper.END
 )

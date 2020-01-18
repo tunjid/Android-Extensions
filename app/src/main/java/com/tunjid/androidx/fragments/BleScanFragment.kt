@@ -13,18 +13,21 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.core.app.ActivityCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
-import com.tunjid.androidx.recyclerview.ListManager
-import com.tunjid.androidx.recyclerview.ListManagerBuilder
+import com.tunjid.androidx.recyclerview.acceptDiff
 import com.tunjid.androidx.recyclerview.adapterOf
+import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.setLoading
+import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
 import com.tunjid.androidx.view.util.inflate
 import com.tunjid.androidx.viewholders.ScanViewHolder
 import com.tunjid.androidx.viewmodels.BleViewModel
@@ -34,13 +37,7 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan) {
 
     private val viewModel by viewModels<BleViewModel>()
 
-    private lateinit var listManager: ListManager<ScanViewHolder, PlaceHolder.State>
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.devices.observe(this) { listManager.onDiff(it) }
-        viewModel.isScanning.observe(this) { uiState = uiState.copy(toolbarInvalidated = true) }
-    }
+    private var recyclerView: RecyclerView? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -58,19 +55,23 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan) {
         val placeHolder = PlaceHolder(view.findViewById(R.id.placeholder_container))
         placeHolder.bind(PlaceHolder.State(R.string.no_ble_devices, R.drawable.ic_bluetooth_24dp))
 
-        listManager = ListManagerBuilder<ScanViewHolder, PlaceHolder.State>()
-                .withRecyclerView(view.findViewById(R.id.list))
-                .addDecoration(DividerItemDecoration(requireActivity(), DividerItemDecoration.VERTICAL))
-                .withAdapter(
-                        adapterOf(
-                                itemsSource = viewModel::scanResults,
-                                viewHolderCreator = { parent, _ -> ScanViewHolder(parent.inflate(R.layout.viewholder_scan), this::onBluetoothDeviceClicked) },
-                                viewHolderBinder = { viewHolder, scanResult, _ -> viewHolder.bind(scanResult) }
-                        )
-                )
-                .withPlaceholder(placeHolder)
-                .withLinearLayoutManager()
-                .build()
+        recyclerView = view.findViewById<RecyclerView>(R.id.list).apply {
+            layoutManager = verticalLayoutManager()
+            adapter = adapterOf(
+                    itemsSource = viewModel::scanResults,
+                    viewHolderCreator = { parent, _ -> ScanViewHolder(parent.inflate(R.layout.viewholder_scan), ::onBluetoothDeviceClicked) },
+                    viewHolderBinder = { viewHolder, scanResult, _ -> viewHolder.bind(scanResult) }
+            )
+
+            addItemDecoration(DividerItemDecoration(requireActivity(), DividerItemDecoration.VERTICAL))
+            updatePadding(bottom = InsetLifecycleCallbacks.bottomInset)
+
+            viewModel.devices.observe(viewLifecycleOwner) {
+                placeHolder.toggle(viewModel.scanResults.isEmpty())
+                acceptDiff(it)
+            }
+            viewModel.isScanning.observe(viewLifecycleOwner) { uiState = uiState.copy(toolbarInvalidated = true) }
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -145,7 +146,7 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan) {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        listManager.clear()
+        recyclerView = null
     }
 
     private fun onBluetoothDeviceClicked(bluetoothDevice: BluetoothDevice) {

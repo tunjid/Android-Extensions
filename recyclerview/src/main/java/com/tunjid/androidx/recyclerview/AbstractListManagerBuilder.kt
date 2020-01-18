@@ -34,6 +34,7 @@ import kotlin.math.max
  * T: The type bound in the [ListPlaceholder]
  */
 @Suppress("unused")
+@Deprecated("Use extension functions instead")
 abstract class AbstractListManagerBuilder<B : AbstractListManagerBuilder<B, S, VH, T>, S : ListManager<VH, T>, VH : ViewHolder, T> {
 
     protected var spanCount: Int = 0

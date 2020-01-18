@@ -6,21 +6,24 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
+import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
 import com.tunjid.androidx.adapters.ServiceClickedListener
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
-import com.tunjid.androidx.recyclerview.ListManager
-import com.tunjid.androidx.recyclerview.ListManagerBuilder
+import com.tunjid.androidx.recyclerview.acceptDiff
 import com.tunjid.androidx.recyclerview.adapterOf
+import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.setLoading
+import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
 import com.tunjid.androidx.view.util.inflate
 import com.tunjid.androidx.viewholders.NSDViewHolder
 import com.tunjid.androidx.viewmodels.NsdViewModel
@@ -34,14 +37,7 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan),
 
     private val viewModel by viewModels<NsdViewModel>()
 
-    private lateinit var listManager: ListManager<NSDViewHolder, PlaceHolder.State>
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-        viewModel.scanChanges.observe(this) { listManager.onDiff(it) }
-        viewModel.isScanning.observe(this) { uiState = uiState.copy(toolbarInvalidated = true) }
-    }
+    private var recyclerView: RecyclerView? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -59,19 +55,23 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan),
         val placeHolder = PlaceHolder(view.findViewById(R.id.placeholder_container))
         placeHolder.bind(PlaceHolder.State(R.string.no_nsd_devices, R.drawable.ic_signal_wifi__24dp))
 
-        listManager = ListManagerBuilder<NSDViewHolder, PlaceHolder.State>()
-                .withRecyclerView(view.findViewById(R.id.list))
-                .addDecoration(DividerItemDecoration(requireActivity(), VERTICAL))
-                .withAdapter(
-                        adapterOf(
-                                itemsSource = viewModel::services,
-                                viewHolderCreator = { parent, _ -> NSDViewHolder(parent.inflate(R.layout.viewholder_nsd_list), this) },
-                                viewHolderBinder = { viewHolder, service, _ -> viewHolder.bind(service) }
-                        )
-                )
-                .withPlaceholder(placeHolder)
-                .withLinearLayoutManager()
-                .build()
+        recyclerView=   view.findViewById<RecyclerView>(R.id.list).apply {
+            layoutManager = verticalLayoutManager()
+            adapter = adapterOf(
+                    itemsSource = viewModel::services,
+                    viewHolderCreator = { parent, _ -> NSDViewHolder(parent.inflate(R.layout.viewholder_nsd_list), this@NsdScanFragment) },
+                    viewHolderBinder = { viewHolder, service, _ -> viewHolder.bind(service) }
+            )
+
+            addItemDecoration(DividerItemDecoration(requireActivity(), VERTICAL))
+            updatePadding(bottom = InsetLifecycleCallbacks.bottomInset)
+
+            viewModel.scanChanges.observe(viewLifecycleOwner) {
+                placeHolder.toggle(viewModel.services.isEmpty())
+                acceptDiff(it)
+            }
+            viewModel.isScanning.observe(viewLifecycleOwner) { uiState = uiState.copy(toolbarInvalidated = true) }
+        }
     }
 
     override fun onResume() {
@@ -81,7 +81,7 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan),
 
     override fun onDestroyView() {
         super.onDestroyView()
-        listManager.clear()
+        recyclerView = null
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
