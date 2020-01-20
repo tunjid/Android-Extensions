@@ -15,6 +15,6 @@ class SpreadsheetViewModel(application: Application) : AndroidViewModel(applicat
 
     companion object {
 
-        const val NUM_ROWS = 30
+        const val NUM_ROWS = 50
     }
 }

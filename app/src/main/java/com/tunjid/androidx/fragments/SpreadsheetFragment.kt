@@ -11,7 +11,6 @@ import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.recyclerview.RecyclerViewMultiScroller
 import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
-import com.tunjid.androidx.uidrivers.SlideInItemAnimator
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidx.viewholders.SpreadsheetRowViewHolder

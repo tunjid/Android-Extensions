@@ -1,6 +1,5 @@
 package com.tunjid.androidx.viewholders
 
-import android.os.Trace
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -19,30 +18,30 @@ class SpreadsheetRowViewHolder(
 ) {
 
     private var row: Row? = null
-    private val refresh: () -> Unit
+    private val items get() = row?.items ?: listOf()
+    private val refresh by lazy { setup(recycledViewPool, scroller) }
 
-    init {
+    private fun setup(
+            recycledViewPool: RecyclerView.RecycledViewPool,
+            scroller: RecyclerViewMultiScroller
+    ): () -> Unit = itemView.findViewById<RecyclerView>(R.id.recycler_view).run {
         val adapter = listAdapterOf(
-                initialItems = items(),
+                initialItems = items,
                 viewHolderCreator = { viewGroup, _ -> SpreadsheetCellViewHolder(viewGroup) },
                 viewHolderBinder = { holder, item, _ -> holder.bind(item) },
                 itemIdFunction = { it.index.toLong() }
         )
-        refresh = { adapter.submitList(items()) }
-        itemView.findViewById<RecyclerView>(R.id.recycler_view).apply {
-            this.adapter = adapter
-            this.layoutManager = horizontalLayoutManager()
-            setRecycledViewPool(recycledViewPool)
-            scroller.add(this)
-        }
+        this.adapter = adapter
+        this.layoutManager = horizontalLayoutManager()
+        setRecycledViewPool(recycledViewPool)
+        scroller.add(this)
+
+        val r = { adapter.submitList(items) }
+        r
     }
 
-    private fun items() = row?.items ?: listOf()
-
     fun bind(row: Row) {
-        Trace.beginSection("Binding Spreadheet Row")
         this.row = row
         refresh()
-        Trace.endSection()
     }
 }

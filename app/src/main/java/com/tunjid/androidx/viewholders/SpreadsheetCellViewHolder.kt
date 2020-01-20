@@ -1,6 +1,5 @@
 package com.tunjid.androidx.viewholders
 
-import android.os.Trace
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.EditText
@@ -16,9 +15,7 @@ class SpreadsheetCellViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
     private val editText = itemView.findViewById<EditText>(R.id.cell)
 
     fun bind(cell: Cell) {
-        Trace.beginSection("Binding Spreadheet Cell")
         this.cell = cell
         editText.setText(cell.text)
-        Trace.endSection()
     }
 }

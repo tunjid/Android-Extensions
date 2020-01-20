@@ -81,8 +81,8 @@ class RecyclerViewMultiScroller(
     }
 
     private fun include(recyclerView: RecyclerView) {
+        recyclerView.sync()
         recyclerView.doOnLayout {
-            recyclerView.sync()
             if (syncedScrollers.contains(recyclerView)) return@doOnLayout
             syncedScrollers.add(recyclerView)
             recyclerView.addOnScrollListener(onScrollListener)
