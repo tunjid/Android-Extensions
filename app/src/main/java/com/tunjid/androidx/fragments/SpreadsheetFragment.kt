@@ -43,7 +43,7 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_route) {
             layoutManager = verticalLayoutManager()
             adapter = adapterOf(
                     itemsSource = viewModel::rows,
-                    viewHolderCreator = { parent, _ -> SpreadsheetRowViewHolder(parent, scroller, viewPool)},
+                    viewHolderCreator = { parent, _ -> SpreadsheetRowViewHolder(parent, scroller, viewPool) },
                     viewHolderBinder = { viewHolder, tile, _ -> viewHolder.bind(tile) },
                     itemIdFunction = { it.index.toLong() }
             )

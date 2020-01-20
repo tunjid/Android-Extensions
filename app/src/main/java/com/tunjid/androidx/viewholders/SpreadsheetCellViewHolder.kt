@@ -3,6 +3,7 @@ package com.tunjid.androidx.viewholders
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.R
 import com.tunjid.androidx.model.Cell
@@ -12,10 +13,10 @@ class SpreadsheetCellViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
 ) {
 
     private var cell: Cell? = null
-    private val editText = itemView.findViewById<EditText>(R.id.cell)
+    private val editText = itemView.findViewById<TextView>(R.id.cell)
 
     fun bind(cell: Cell) {
         this.cell = cell
-        editText.setText(cell.text)
+        editText.text = cell.text
     }
 }
