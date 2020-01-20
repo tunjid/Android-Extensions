@@ -2,4 +2,5 @@
 <resources>
     <public />
     <item name="recyclerview_swipe_drag" type="id" />
+    <item name="recyclerview_endless_scroller" type="id" />
 </resources>

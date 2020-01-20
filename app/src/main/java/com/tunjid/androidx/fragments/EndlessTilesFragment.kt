@@ -12,7 +12,7 @@ import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.model.Tile
 import com.tunjid.androidx.recyclerview.acceptDiff
 import com.tunjid.androidx.recyclerview.adapterOf
-import com.tunjid.androidx.recyclerview.addEndlessScrollListener
+import com.tunjid.androidx.recyclerview.setEndlessScrollListener
 import com.tunjid.androidx.recyclerview.addScrollListener
 import com.tunjid.androidx.recyclerview.gridLayoutManager
 import com.tunjid.androidx.uidrivers.SlideInItemAnimator
@@ -64,7 +64,7 @@ class EndlessTilesFragment : AppBaseFragment(R.layout.fragment_route) {
             )
 
             addScrollListener { _, dy -> if (abs(dy) > 3) uiState = uiState.copy(fabShows = dy < 0) }
-            addEndlessScrollListener(NUM_TILES) { viewModel.fetchMore() }
+            setEndlessScrollListener(NUM_TILES) { viewModel.fetchMore() }
 
             viewModel.moreTiles.observe(viewLifecycleOwner, this::acceptDiff)
         }

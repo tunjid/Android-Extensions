@@ -9,6 +9,8 @@ import kotlin.math.abs
 
 internal class ComposedEndlessScroller(
         private val visibleThreshold: Int, // The minimum amount of items to have below your current scroll position before loading more.
+        @RecyclerView.Orientation
+        private val orientation: Int,
         private val isLayoutManagerReverse: (RecyclerView.LayoutManager) -> Boolean,
         private val firstVisibleItemFunction: (RecyclerView.LayoutManager) -> Int,
         private val loadMore: (Int) -> Unit
@@ -17,15 +19,12 @@ internal class ComposedEndlessScroller(
     private var previousTotal = 0 // The total number of items in the dataset after the last load
     private var loading = true // True if we are still waiting for the last set of data to load.
 
-    fun scrollThresholdFilter(dx: Int, dy: Int): Boolean {
-        return abs(dy) < 3
-    }
-
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
 
+        val change = if(orientation == RecyclerView.HORIZONTAL) dx else dy
         val layoutManager = recyclerView.layoutManager ?: return
-        if (scrollThresholdFilter(dx, dy)) return
+        if (abs(change) < 3) return
 
         val visibleItemCount = recyclerView.childCount
         val totalItemCount = layoutManager.itemCount
@@ -51,7 +50,7 @@ internal class ComposedEndlessScroller(
     }
 }
 
-internal fun finder(layoutManager: RecyclerView.LayoutManager): Int = when (layoutManager) {
+internal fun firstVisiblePosition(layoutManager: RecyclerView.LayoutManager): Int = when (layoutManager) {
     is LinearLayoutManager -> layoutManager.findFirstVisibleItemPosition()
     is StaggeredGridLayoutManager -> {
         val store = IntArray(layoutManager.spanCount)
