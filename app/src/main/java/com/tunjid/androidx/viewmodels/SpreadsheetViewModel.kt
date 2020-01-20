@@ -9,7 +9,7 @@ class SpreadsheetViewModel(application: Application) : AndroidViewModel(applicat
 
     val rows by lazy {
         (0 until NUM_ROWS).map { rowIndex ->
-            Row(rowIndex, (0 until NUM_ROWS).map { columnIndex -> Cell(columnIndex, "$rowIndex-$columnIndex") })
+            Row(rowIndex, (0 until NUM_ROWS).map { columnIndex -> Cell(columnIndex, "$columnIndex-$rowIndex") })
         }
     }
 

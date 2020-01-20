@@ -10,7 +10,7 @@
     app:strokeColor="@color/black"
     app:strokeWidth="2dp">
 
-    <EditText
+    <TextView
         android:id="@+id/cell"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
