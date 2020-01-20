@@ -3,6 +3,7 @@ package com.tunjid.androidx.recyclerview
 import android.view.View
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -96,12 +97,6 @@ inline fun <reified VH : RecyclerView.ViewHolder> RecyclerView.viewHolderForLayo
 inline fun <reified VH : RecyclerView.ViewHolder> RecyclerView.containingViewHolder(view: View) =
         findContainingViewHolder(view) as? VH
 
-fun <VH : RecyclerView.ViewHolder> RecyclerView.setSwipeDragOptions(swipeDragOptions: SwipeDragOptions<VH>) {
-    val previous = getTag(R.id.recyclerview_swipe_drag) as? SwipeDragTouchHelper<*>
-    previous?.destroy()
-    setTag(R.id.recyclerview_swipe_drag, SwipeDragTouchHelper(this, swipeDragOptions))
-}
-
 /**
  * Resets the endless scroll. This is useful if an endless scroll was called, and nothing new
  * was fetched, or the call failed
@@ -132,3 +127,59 @@ fun RecyclerView.Adapter<*>.acceptDiff(diffResult: DiffUtil.DiffResult) = diffRe
 
 fun RecyclerView.acceptDiff(diffResult: DiffUtil.DiffResult) = adapter?.acceptDiff(diffResult)
         ?: Unit
+
+/**
+ * Configurable options for swiping and dragging the [RecyclerView] [RecyclerView.ViewHolder]
+ *
+ * @param[itemViewSwipeSupplier] Determines if the ItemView supports swipes
+ *
+ * @param[longPressDragSupplier] Determines if the long press and dragging is enabled
+ *
+ * @param[dragConsumer] Determines what happens when the ViewHolder is dragged from
+ * start [RecyclerView.ViewHolder] to end [RecyclerView.ViewHolder]
+ *
+ * @param[swipeConsumer] A callback invoked when a ViewHolder is swiped in a certain direction.
+ * arguments are the [RecyclerView.ViewHolder] and one of [ItemTouchHelper.UP],
+ * [ItemTouchHelper.DOWN], [ItemTouchHelper.LEFT] or [ItemTouchHelper.RIGHT]
+ * @see [ItemTouchHelper.Callback.onSwiped]
+ *
+ * @param[swipeDragStartConsumer] A callback for when a swipe or drag has started on a ViewHolder
+ * Arguments include the [RecyclerView.ViewHolder] and the actionState which is one of
+ * [ItemTouchHelper.ACTION_STATE_IDLE], [ItemTouchHelper.ACTION_STATE_SWIPE] or
+ * [ItemTouchHelper.ACTION_STATE_DRAG]
+
+ * @param[swipeDragEndConsumer] A callback for when a swipe or drag has ended on a ViewHolder.
+ * Arguments include the [RecyclerView.ViewHolder] and the actionState
+ *
+ * @param[movementFlagFunction] Determines whether a [RecyclerView.ViewHolder] can be swiped
+ * or dragged. Return value from this param is generated from
+ * [ItemTouchHelper.Callback.makeMovementFlags]
+ *
+ * @param[dragHandleFunction] A function for determining what View in the
+ * [RecyclerView.ViewHolder.itemView] starts the drag operation
+ *
+ * @see [ItemTouchHelper.Callback] for more reference
+ */
+fun <VH : RecyclerView.ViewHolder> RecyclerView.setSwipeDragOptions(
+        itemViewSwipeSupplier: () -> Boolean = { false },
+        longPressDragSupplier: () -> Boolean = { false },
+        dragConsumer: (VH, VH) -> Unit = { _, _ -> },
+        swipeConsumer: (VH, Int) -> Unit = { _, _ -> },
+        swipeDragStartConsumer: (VH, Int) -> Unit = { _, _ -> },
+        swipeDragEndConsumer: (VH, Int) -> Unit = { _, _ -> },
+        movementFlagFunction: (VH) -> Int = { _ -> SWIPE_DRAG_ALL_DIRECTIONS },
+        dragHandleFunction: (VH) -> View = { viewHolder -> viewHolder.itemView }
+) {
+    val previous = getTag(R.id.recyclerview_swipe_drag) as? SwipeDragTouchHelper<*>
+    previous?.destroy()
+    setTag(R.id.recyclerview_swipe_drag, SwipeDragTouchHelper(this, SwipeDragOptions(
+            itemViewSwipeSupplier = itemViewSwipeSupplier,
+            longPressDragSupplier = longPressDragSupplier,
+            dragConsumer = dragConsumer,
+            swipeConsumer = swipeConsumer,
+            swipeDragStartConsumer = swipeDragStartConsumer,
+            swipeDragEndConsumer = swipeDragEndConsumer,
+            movementFlagFunction = movementFlagFunction,
+            dragHandleFunction = dragHandleFunction
+    )))
+}

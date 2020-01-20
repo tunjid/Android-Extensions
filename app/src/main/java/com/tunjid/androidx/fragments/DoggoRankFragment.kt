@@ -58,6 +58,7 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
 
         recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view).apply {
             updatePadding(bottom = InsetLifecycleCallbacks.bottomInset)
+
             layoutManager = verticalLayoutManager()
             adapter = adapterOf(
                     itemsSource = viewModel::doggos,
@@ -67,16 +68,13 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
             )
             addScrollListener { _, dy -> if (abs(dy) > 4) uiState = uiState.copy(fabExtended = dy < 0) }
             setSwipeDragOptions(
-                    SwipeDragOptions(
-                            itemViewSwipeSupplier = { true },
-                            longPressDragSupplier = { true },
-                            swipeConsumer = { holder, _ -> removeDoggo(holder) },
-                            dragConsumer = ::moveDoggo,
-                            dragHandleFunction = DoggoRankViewHolder::dragView,
-                            movementFlagFunction = { SWIPE_DRAG_ALL_DIRECTIONS },
-                            swipeDragStartConsumer = { holder, actionState -> onSwipeOrDragStarted(holder, actionState) },
-                            swipeDragEndConsumer = { viewHolder, actionState -> onSwipeOrDragEnded(viewHolder, actionState) }
-                    )
+                    itemViewSwipeSupplier = { true },
+                    longPressDragSupplier = { true },
+                    swipeConsumer = { holder, _ -> removeDoggo(holder) },
+                    dragConsumer = ::moveDoggo,
+                    dragHandleFunction = DoggoRankViewHolder::dragView,
+                    swipeDragStartConsumer = { holder, actionState -> onSwipeOrDragStarted(holder, actionState) },
+                    swipeDragEndConsumer = { viewHolder, actionState -> onSwipeOrDragEnded(viewHolder, actionState) }
             )
 
             viewModel.watchDoggos().observe(viewLifecycleOwner, this::acceptDiff)
