@@ -25,8 +25,8 @@ fun RecyclerView.gridLayoutManager(
         spanCount: Int = 1,
         spanSizeLookup: ((position: Int) -> Int)? = null
 ): GridLayoutManager = GridLayoutManager(context, spanCount).apply {
-    setSpanSizeLookup(object : GridLayoutManager.SpanSizeLookup() {
-        override fun getSpanSize(position: Int): Int = spanSizeLookup?.invoke(position) ?: 1
+    if (spanSizeLookup != null) setSpanSizeLookup(object : GridLayoutManager.SpanSizeLookup() {
+        override fun getSpanSize(position: Int): Int = spanSizeLookup.invoke(position)
     })
 }
 
