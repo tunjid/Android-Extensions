@@ -32,6 +32,7 @@ class SpreadsheetRowViewHolder(
                 viewHolderBinder = { holder, item, _ -> holder.bind(item) },
                 itemIdFunction = { it.index.toLong() }
         )
+        this.itemAnimator = null
         this.adapter = adapter
         this.layoutManager = horizontalLayoutManager()
         setRecycledViewPool(recycledViewPool)

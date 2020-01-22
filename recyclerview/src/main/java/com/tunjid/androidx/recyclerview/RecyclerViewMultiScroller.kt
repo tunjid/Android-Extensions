@@ -15,7 +15,8 @@ import androidx.recyclerview.widget.RecyclerView
  * orientation, have the same amount of items and also use a [LinearLayoutManager]
  */
 class RecyclerViewMultiScroller(
-        @RecyclerView.Orientation private val orientation: Int = RecyclerView.HORIZONTAL
+        @RecyclerView.Orientation private val orientation: Int = RecyclerView.HORIZONTAL,
+        private val sizeUpdater: Sizer = DynamicSizer(orientation)
 ) {
     var displacement = 0
         private set
@@ -85,6 +86,7 @@ class RecyclerViewMultiScroller(
         recyclerView.doOnLayout {
             if (syncedScrollers.contains(recyclerView)) return@doOnLayout
             syncedScrollers.add(recyclerView)
+            sizeUpdater.include(recyclerView)
             recyclerView.addOnScrollListener(onScrollListener)
             recyclerView.addOnItemTouchListener(onItemTouchListener)
         }
@@ -93,6 +95,7 @@ class RecyclerViewMultiScroller(
     private fun exclude(recyclerView: RecyclerView, removeFromSet: Boolean = true) {
         recyclerView.removeOnItemTouchListener(onItemTouchListener)
         recyclerView.removeOnScrollListener(onScrollListener)
+        sizeUpdater.exclude(recyclerView)
         if (removeFromSet) syncedScrollers.remove(recyclerView) // Concurrent modification in clear()
     }
 
@@ -104,10 +107,19 @@ class RecyclerViewMultiScroller(
     private fun RecyclerView.sync() {
         if (childSize == 0) return
 
-        val position = displacement / childSize
-        val offset = displacement - (position * childSize)
+        val (position, offset) = sizeUpdater.positionAndOffsetForDisplacement(displacement)
+//        val position = displacement / childSize
+//        val offset = displacement - (position * childSize)
 
         val linearLayoutManager = layoutManager as LinearLayoutManager
         linearLayoutManager.scrollToPositionWithOffset(position, -offset)
+    }
+
+    interface Sizer {
+        fun include(recyclerView: RecyclerView)
+
+        fun exclude(recyclerView: RecyclerView)
+
+        fun positionAndOffsetForDisplacement(displacement: Int): Pair<Int, Int>
     }
 }

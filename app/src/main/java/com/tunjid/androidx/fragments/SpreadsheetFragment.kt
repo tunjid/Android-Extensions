@@ -23,6 +23,8 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_route) {
 
     override val insetFlags: InsetFlags = NO_BOTTOM
 
+    private val scroller = RecyclerViewMultiScroller()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -31,14 +33,13 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_route) {
                 toolbarShows = true,
                 toolBarMenu = 0,
                 fabShows = false,
-                showsBottomNav = false,
+                showsBottomNav = true,
                 lightStatusBar = !requireContext().isDarkTheme,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )
 
         view.findViewById<RecyclerView>(R.id.recycler_view).apply {
             val viewPool = RecyclerView.RecycledViewPool()
-            val scroller = RecyclerViewMultiScroller()
 
             layoutManager = verticalLayoutManager()
             adapter = adapterOf(
@@ -48,7 +49,11 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_route) {
                     itemIdFunction = { it.index.toLong() }
             )
         }
+    }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        scroller.clear()
     }
 
     companion object {

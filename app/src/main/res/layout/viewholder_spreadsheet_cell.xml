@@ -15,7 +15,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/transparent"
-        android:minWidth="@dimen/sextuple_margin"
         android:minHeight="@dimen/triple_margin"
         android:padding="@dimen/single_margin"
         tools:text="hello" />
