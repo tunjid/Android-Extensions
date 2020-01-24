@@ -41,6 +41,8 @@ internal class DynamicSizer(
             if (sizeAtPosition != null) position++
         }
 
+        Log.i("TEST", "Syncing. position: $position; offset: $offset")
+
         return position to offset
     }
 
@@ -94,7 +96,7 @@ internal class DynamicSizer(
 
             if (currentSize != newMaxSize) {
                 view.adjustMinSize(newMaxSize)
-                Log.i("TEST", "Changing. column: $column; current: $currentSize; oldMaxSize: $oldMaxSize; new: $newMaxSize")
+//                Log.i("TEST", "Changing. column: $column; current: $currentSize; oldMaxSize: $oldMaxSize; new: $newMaxSize")
             }
 
             if (oldMaxSize != newMaxSize) for (it in syncedScrollers) {
