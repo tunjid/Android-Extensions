@@ -61,7 +61,7 @@ internal class DynamicSizer(
         if (size == newMaxSize || currentColumn < 0) return
 
         layoutSize = newMaxSize
-        parentRecyclerView.apply {
+        parentRecyclerView?.apply {
             if (isComputingLayout) post { notifyItemChanged(currentColumn) }
             else notifyItemChanged(currentColumn)
         }
@@ -74,7 +74,7 @@ internal class DynamicSizer(
         val view = this@setSizer
 
         val listener = ViewTreeObserver.OnPreDrawListener {
-            val recyclerView = parentRecyclerView
+            val recyclerView = parentRecyclerView ?: return@OnPreDrawListener true
 
             val column = view.currentColumn
             val currentSize = if (view.wasDetached) 0 else view.size
@@ -86,22 +86,20 @@ internal class DynamicSizer(
             columnSizeMap[column] = newMaxSize
 
             if (view.wasDetached && view.previousColumn != column) {
-//                Log.i("TEST", "previous column: ${view.previousColumn}; current column: $column")
+                Log.i("TEST", "previous column: ${view.previousColumn}; current column: $column")
             }
 
             view.previousColumn = column
 
 //        Log.i("TEST", "row: $row; column: $column; current: $currentSize; oldMaxSize: $oldMaxSize; newMaxSize: $newMaxSize")
 //        Log.i("TEST", "why: $why")
-
-            if (currentSize != newMaxSize) {
-                view.adjustMinSize(newMaxSize)
 //                Log.i("TEST", "Changing. column: $column; current: $currentSize; oldMaxSize: $oldMaxSize; new: $newMaxSize")
-            }
+
+            if (currentSize != newMaxSize) view.adjustMinSize(newMaxSize)
 
             if (oldMaxSize != newMaxSize) for (it in syncedScrollers) {
                 if (it == recyclerView) continue
-                it.childIn(column)?.adjustMinSize(newMaxSize) ?: continue
+                it.childIn(column)?.adjustMinSize(newMaxSize)
             }
 
             true
@@ -132,8 +130,8 @@ internal class DynamicSizer(
         return this.findViewHolderForAdapterPosition(column)?.itemView
     }
 
-    private val View.parentRecyclerView: RecyclerView
-        get() = parent as RecyclerView
+    private val View.parentRecyclerView: RecyclerView?
+        get() = parent as? RecyclerView
 
     private var View.layoutSize: Int
         get() =
