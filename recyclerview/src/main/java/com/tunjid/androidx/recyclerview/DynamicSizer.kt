@@ -47,7 +47,7 @@ internal class DynamicSizer(
     private fun includeChild(it: View) {
         it.setSizer()
         val lastSize = columnSizeMap[it.currentColumn] ?: return
-        it.layoutSize = lastSize
+        it.adjustMinSize(lastSize)
     }
 
     private fun excludeChild(it: View) {
@@ -55,11 +55,14 @@ internal class DynamicSizer(
         it.removeSizer()
     }
 
-    private fun View.adjustMinSize(newMaxSize: Int, row: Int = 0, column: Int = 0) {
-        if (size == newMaxSize) return
+    private fun View.adjustMinSize(newMaxSize: Int) {
+        if (size == newMaxSize || currentColumn < 0) return
 
         layoutSize = newMaxSize
-        parentRecyclerView.notifyItemChanged(column)
+        parentRecyclerView.apply {
+            if (isComputingLayout) post { notifyItemChanged(currentColumn) }
+            else notifyItemChanged(currentColumn)
+        }
     }
 
     private fun View.setSizer() {
@@ -90,13 +93,13 @@ internal class DynamicSizer(
 //        Log.i("TEST", "why: $why")
 
             if (currentSize != newMaxSize) {
-                view.adjustMinSize(newMaxSize, 0, column)
+                view.adjustMinSize(newMaxSize)
                 Log.i("TEST", "Changing. column: $column; current: $currentSize; oldMaxSize: $oldMaxSize; new: $newMaxSize")
             }
 
             if (oldMaxSize != newMaxSize) for (it in syncedScrollers) {
                 if (it == recyclerView) continue
-                it.childIn(column)?.adjustMinSize(newMaxSize, 0, column) ?: continue
+                it.childIn(column)?.adjustMinSize(newMaxSize) ?: continue
             }
 
             true
