@@ -11,24 +11,25 @@ import android.widget.ImageView
 import androidx.core.app.SharedElementCallback
 import androidx.core.content.ContextCompat.getDrawable
 import androidx.core.view.doOnLayout
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
 import com.tunjid.androidx.adapters.DoggoInteractionListener
-import com.tunjid.androidx.adapters.withPaddedAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.graphics.drawable.withTint
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.navigation.Navigator
-import com.tunjid.androidx.recyclerview.ListManager
-import com.tunjid.androidx.recyclerview.ListManagerBuilder
 import com.tunjid.androidx.recyclerview.adapterOf
+import com.tunjid.androidx.recyclerview.addScrollListener
+import com.tunjid.androidx.recyclerview.gridLayoutManager
+import com.tunjid.androidx.recyclerview.viewHolderForItemId
+import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.androidx.view.util.inflate
@@ -43,12 +44,12 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
 
     override val insetFlags: InsetFlags = InsetFlags.ALL
 
-    private lateinit var listManager: ListManager<DoggoViewHolder, PlaceHolder.State>
+    private var recyclerView: RecyclerView? = null
 
     private val transitionImage: ImageView?
         get() {
             val doggo = Doggo.transitionDoggo ?: return null
-            val holder = listManager.findViewHolderForItemId(doggo.hashCode().toLong())
+            val holder = recyclerView?.viewHolderForItemId<DoggoViewHolder>(doggo.hashCode().toLong())
                     ?: return null
 
             return holder.thumbnail
@@ -71,21 +72,20 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
                 fabClickListener = View.OnClickListener { uiState = uiState.copy(fabExtended = !uiState.fabExtended) }
         )
 
-        listManager = ListManagerBuilder<DoggoViewHolder, PlaceHolder.State>()
-                .withRecyclerView(view.findViewById(R.id.recycler_view))
-                .withPaddedAdapter(
-                        adapterOf(
-                                itemsSource = Doggo.Companion::doggos,
-                                viewHolderCreator = { parent, _ -> DoggoViewHolder(parent.inflate(R.layout.viewholder_doggo_list), this) },
-                                viewHolderBinder = { viewHolder, doggo, _ -> viewHolder.bind(doggo) },
-                                itemIdFunction = { it.hashCode().toLong() }
-                        ),
-                        2)
-                .addScrollListener { _, dy -> if (abs(dy) > 4) uiState = uiState.copy(fabExtended = dy < 0) }
-                .addDecoration(getDivider(DividerItemDecoration.HORIZONTAL))
-                .addDecoration(getDivider(DividerItemDecoration.VERTICAL))
-                .withGridLayoutManager(2)
-                .build()
+        recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view).apply {
+            layoutManager = gridLayoutManager(2)
+            adapter = adapterOf(
+                    itemsSource = Doggo.Companion::doggos,
+                    viewHolderCreator = { parent, _ -> DoggoViewHolder(parent.inflate(R.layout.viewholder_doggo_list), this@DoggoListFragment) },
+                    viewHolderBinder = { viewHolder, doggo, _ -> viewHolder.bind(doggo) },
+                    itemIdFunction = { it.hashCode().toLong() }
+            )
+
+            addScrollListener { _, dy -> if (abs(dy) > 4) uiState = uiState.copy(fabExtended = dy < 0) }
+            addItemDecoration(getDivider(DividerItemDecoration.HORIZONTAL))
+            addItemDecoration(getDivider(DividerItemDecoration.VERTICAL))
+            updatePadding(bottom = InsetLifecycleCallbacks.bottomInset)
+        }
 
         postponeEnterTransition()
 
@@ -94,7 +94,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
 
     override fun onDestroyView() {
         super.onDestroyView()
-        listManager.clear()
+        recyclerView = null
     }
 
     override fun onDoggoClicked(doggo: Doggo) {
@@ -112,25 +112,23 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
         return decoration
     }
 
-    private fun scrollToPosition() {
-        listManager.withRecyclerView { recyclerView ->
-            recyclerView.addOnLayoutChangeListener(object : OnLayoutChangeListener {
-                override fun onLayoutChange(v: View, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int) {
-                    recyclerView.removeOnLayoutChangeListener(this)
-                    val last = Doggo.transitionDoggo ?: return
+    private fun scrollToPosition() = recyclerView?.apply {
+        addOnLayoutChangeListener(object : OnLayoutChangeListener {
+            override fun onLayoutChange(v: View, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int) {
+                removeOnLayoutChangeListener(this)
+                val last = Doggo.transitionDoggo ?: return
 
-                    val index = Doggo.doggos.indexOf(last)
-                    if (index < 0) return
+                val index = Doggo.doggos.indexOf(last)
+                if (index < 0) return
 
-                    val layoutManager = recyclerView.layoutManager ?: return
+                val layoutManager = layoutManager ?: return
 
-                    val viewAtPosition = layoutManager.findViewByPosition(index)
-                    val shouldScroll = viewAtPosition == null || layoutManager.isViewPartiallyVisible(viewAtPosition, false, true)
+                val viewAtPosition = layoutManager.findViewByPosition(index)
+                val shouldScroll = viewAtPosition == null || layoutManager.isViewPartiallyVisible(viewAtPosition, false, true)
 
-                    if (shouldScroll) recyclerView.post { layoutManager.scrollToPosition(index) }
-                }
-            })
-        }
+                if (shouldScroll) post { layoutManager.scrollToPosition(index) }
+            }
+        })
     }
 
     @SuppressLint("CommitTransaction")

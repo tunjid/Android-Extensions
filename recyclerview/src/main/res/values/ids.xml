@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <public />
+    <item name="recyclerview_swipe_drag" type="id" />
+    <item name="recyclerview_endless_scroller" type="id" />
+    <item name="recyclerview_was_detached" type="id" />
+    <item name="recyclerview_pre_draw" type="id" />
+    <item name="recyclerview_previous_column" type="id" />
+</resources>

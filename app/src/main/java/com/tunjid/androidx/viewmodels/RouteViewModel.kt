@@ -22,7 +22,8 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
             listOf(
                     Route(DoggoRankFragment::class.java.routeName, formatRoute(R.string.route_doggo_rank)),
                     Route(ShiftingTilesFragment::class.java.routeName, formatRoute(R.string.route_shifting_tile)),
-                    Route(EndlessTilesFragment::class.java.routeName, formatRoute(R.string.route_endless_tile))
+                    Route(EndlessTilesFragment::class.java.routeName, formatRoute(R.string.route_endless_tile)),
+                    Route(SpreadsheetFragment::class.java.routeName, formatRoute(R.string.route_spreadsheet))
             ),
             listOf(
                     Route(BleScanFragment::class.java.routeName, formatRoute(R.string.route_ble_scan)),

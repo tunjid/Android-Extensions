@@ -1,22 +1,24 @@
 package com.tunjid.androidx.recyclerview
 
 import android.annotation.SuppressLint
+import android.view.MotionEvent.ACTION_DOWN
 import android.view.View
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
-import android.view.MotionEvent.ACTION_DOWN
-
 @Suppress("UNCHECKED_CAST")
-internal class SwipeDragTouchHelper<VH : RecyclerView.ViewHolder, T>(
-        private val listManager: ListManager<VH, T>,
+internal class SwipeDragTouchHelper<VH : RecyclerView.ViewHolder>(
+        private val recyclerView: RecyclerView,
         private val options: SwipeDragOptions<VH>
 ) : ItemTouchHelper.Callback(), RecyclerView.OnChildAttachStateChangeListener {
 
     private var actionState: Int = 0
+    private val itemTouchHelper = ItemTouchHelper(this)
+    private val dragHandles = mutableSetOf<View>()
 
     init {
-        listManager.recyclerView?.addOnChildAttachStateChangeListener(this)
+        recyclerView.addOnChildAttachStateChangeListener(this)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
     override fun isItemViewSwipeEnabled(): Boolean = options.itemViewSwipeSupplier()
@@ -47,19 +49,34 @@ internal class SwipeDragTouchHelper<VH : RecyclerView.ViewHolder, T>(
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    override fun onChildViewAttachedToWindow(view: View) = listManager.withRecyclerView { recyclerView ->
+    override fun onChildViewAttachedToWindow(view: View) {
         val holder = recyclerView.findContainingViewHolder(view) as? VH
-                ?: return@withRecyclerView
+                ?: return
 
-        options.dragHandleFunction(holder).setOnTouchListener { _, motionEvent ->
-            if (motionEvent.actionMasked == ACTION_DOWN) listManager.startDrag(holder)
-            false
+        options.dragHandleFunction(holder).apply {
+            dragHandles.add(this)
+            setOnTouchListener { _, motionEvent ->
+                if (motionEvent.actionMasked == ACTION_DOWN) itemTouchHelper.startDrag(holder)
+                false
+            }
         }
     }
 
-    override fun onChildViewDetachedFromWindow(view: View) = listManager.withRecyclerView { recyclerView ->
-        val holder = recyclerView.findContainingViewHolder(view) as? VH ?: return@withRecyclerView
-        options.dragHandleFunction(holder).setOnTouchListener(null)
+    override fun onChildViewDetachedFromWindow(view: View) {
+        val holder = recyclerView.findContainingViewHolder(view) as? VH ?: return
+        options.dragHandleFunction(holder).apply {
+            dragHandles.remove(this)
+            setOnTouchListener(null)
+        }
     }
 
+    fun destroy() {
+        val iterator = dragHandles.iterator()
+        while (iterator.hasNext()) {
+            val next = iterator.next()
+            next.setOnTouchListener(null)
+            iterator.remove()
+        }
+        itemTouchHelper.attachToRecyclerView(null)
+    }
 }

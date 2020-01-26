@@ -1,5 +1,13 @@
 apply from: "${project.rootDir}/androidLib.gradle"
 
+android {
+    kotlinOptions {
+        freeCompilerArgs += [
+                "-Xuse-experimental=kotlin.Experimental"
+        ]
+    }
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
