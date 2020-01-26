@@ -81,14 +81,14 @@ inline fun <reified VH : RecyclerView.ViewHolder> RecyclerView.viewHolderForItem
  * @see RecyclerView.findViewHolderForAdapterPosition
  */
 inline fun <reified VH : RecyclerView.ViewHolder> RecyclerView.viewHolderForAdapterPosition(position: Int) =
-        findViewHolderForAdapterPosition(id) as? VH
+        findViewHolderForAdapterPosition(position) as? VH
 
 /**
  * Typed convenience method
  * @see RecyclerView.findViewHolderForLayoutPosition
  */
 inline fun <reified VH : RecyclerView.ViewHolder> RecyclerView.viewHolderForLayoutPosition(position: Int) =
-        findViewHolderForLayoutPosition(id) as? VH
+        findViewHolderForLayoutPosition(position) as? VH
 
 /**
  * Typed convenience method
