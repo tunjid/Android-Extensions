@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.chip.ChipGroup
@@ -27,6 +26,7 @@ import com.tunjid.androidx.core.text.underline
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
+import com.tunjid.androidx.navigation.addOnBackPressedCallback
 import com.tunjid.androidx.navigation.childMultiStackNavigationController
 import com.tunjid.androidx.uidrivers.crossFade
 import com.tunjid.androidx.uidrivers.slide
@@ -43,14 +43,14 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
     internal val innerNavigator: MultiStackNavigator by childMultiStackNavigationController(
             DESTINATIONS.size,
             R.id.inner_container
-    ) {
-        index -> MultipleStackChildFragment.newInstance(getChildName(index), 1)
+    ) { index ->
+        MultipleStackChildFragment.newInstance(getChildName(index), 1)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        activity?.onBackPressedDispatcher?.addCallback(this) {
+        addOnBackPressedCallback {
             isEnabled =
                     if (navigator.current !== this@MultipleStacksFragment) false
                     else innerNavigator.pop()

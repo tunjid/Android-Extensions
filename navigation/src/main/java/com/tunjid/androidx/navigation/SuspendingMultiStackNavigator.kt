@@ -13,7 +13,7 @@ class SuspendingMultiStackNavigator(
 ) : SuspendingNavigator by CommonSuspendingNavigator(navigator) {
 
     suspend fun show(index: Int) = suspendCancellableCoroutine<Fragment?> { continuation ->
-        navigator.stackFragments[navigator.activeIndex].doOnLifeCycleOnce(Lifecycle.Event.ON_RESUME) {
+        navigator.stackFragments[navigator.activeIndex].doOnLifecycleEvent(Lifecycle.Event.ON_RESUME) {
             when (navigator.activeIndex) {
                 index -> continuation.resumeIfActive(navigator.current)
                 else -> {
@@ -48,7 +48,7 @@ class SuspendingMultiStackNavigator(
     }
 }
 
-private fun StackFragment.waitForChild(continuation: CancellableContinuation<Fragment?>) = doOnLifeCycleOnce(Lifecycle.Event.ON_RESUME) {
+private fun StackFragment.waitForChild(continuation: CancellableContinuation<Fragment?>) = doOnLifecycleEvent(Lifecycle.Event.ON_RESUME) {
     when (val current = navigator.current) {
         null -> { // Root has not been shown yet, defer until the first fragment shows
             val fragmentManager = navigator.fragmentManager
