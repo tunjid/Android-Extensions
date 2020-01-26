@@ -15,14 +15,14 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.graphics.drawable.withTint
-import com.tunjid.androidx.model.Route
+import com.tunjid.androidx.model.RouteItem
 
 class RouteItemViewHolder(
         itemView: View,
-        private val delegate: (Route) -> Unit
+        private val delegate: (RouteItem.Destination) -> Unit
 ) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
-    private var route: Route? = null
+    private var route: RouteItem? = null
 
     private val routeDestination: TextView = itemView.findViewById(R.id.destination)
     private val routeDescription: TextView = itemView.findViewById(R.id.description)
@@ -34,8 +34,11 @@ class RouteItemViewHolder(
         setIcons(true, routeDestination)
     }
 
-    fun bind(route: Route) {
+    fun bind(route: RouteItem) {
         this.route = route
+
+        itemView.visibility = if (route is RouteItem.Destination) View.VISIBLE else View.INVISIBLE
+        if (route !is RouteItem.Destination) return
 
         routeDestination.text = route.destination
         routeDescription.text = route.description
@@ -43,7 +46,7 @@ class RouteItemViewHolder(
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.description -> delegate.invoke(route!!)
+            R.id.description -> (route as? RouteItem.Destination)?.let(delegate)
             else -> changeVisibility(routeDestination, routeDescription)
         }
     }
