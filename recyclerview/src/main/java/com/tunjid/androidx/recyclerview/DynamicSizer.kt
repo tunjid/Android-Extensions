@@ -7,6 +7,7 @@ import androidx.core.view.children
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.max
 
+@UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)
 internal class DynamicSizer(
         @RecyclerView.Orientation private val orientation: Int = RecyclerView.HORIZONTAL
 ) : RecyclerViewMultiScroller.Sizer {

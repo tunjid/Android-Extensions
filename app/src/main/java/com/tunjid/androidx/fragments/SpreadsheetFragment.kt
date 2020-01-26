@@ -8,6 +8,7 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
+import com.tunjid.androidx.recyclerview.ExperimentalRecyclerViewMultiScrolling
 import com.tunjid.androidx.recyclerview.RecyclerViewMultiScroller
 import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
@@ -17,6 +18,7 @@ import com.tunjid.androidx.viewholders.SpreadsheetRowViewHolder
 import com.tunjid.androidx.viewmodels.SpreadsheetViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
+@UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)
 class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_route) {
 
     private val viewModel by viewModels<SpreadsheetViewModel>()

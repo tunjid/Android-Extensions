@@ -7,6 +7,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 
+@Experimental
+@Retention(AnnotationRetention.BINARY)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+annotation class ExperimentalRecyclerViewMultiScrolling
+
 /**
  * A class that synchronizes scrolling multiple [RecyclerView]s. Useful for horizontally scrolling
  * layouts like stats.
@@ -14,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
  * The synchronized RecyclerViews must have child items that are equal in size around the specified
  * orientation, have the same amount of items and also use a [LinearLayoutManager]
  */
+@ExperimentalRecyclerViewMultiScrolling
 class RecyclerViewMultiScroller(
         @RecyclerView.Orientation private val orientation: Int = RecyclerView.HORIZONTAL,
         private val sizeUpdater: Sizer = DynamicSizer(orientation)
