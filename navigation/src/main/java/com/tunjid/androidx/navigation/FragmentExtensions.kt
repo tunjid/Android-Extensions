@@ -19,7 +19,13 @@ internal val Fragment.bundleTag: String
 internal val Fragment.navigatorTag
     get() = if (this is Navigator.TagProvider) stableTag else bundleTag
 
-fun Fragment.doOnLifeCycleOnce(
+/**
+ * Analogous to [androidx.core.view.doOnLayout], this method performs the [action] immediately
+ * if the [Fragment] is already in the specified state, otherwise it registers a
+ * [LifecycleEventObserver] to listen for the [targetEvent], performs the [action],
+ * then removes the [LifecycleEventObserver].
+ */
+fun Fragment.doOnLifecycleEvent(
         targetEvent: Lifecycle.Event,
         action: () -> Unit
 ) = when {

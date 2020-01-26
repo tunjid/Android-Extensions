@@ -22,7 +22,7 @@ internal class CommonSuspendingNavigator(private val navigator: Navigator) : Sus
         when (val previous = navigator.previous) {
             null -> continuation.resumeIfActive(null)
             else -> {
-                previous.doOnLifeCycleOnce(Lifecycle.Event.ON_RESUME) { continuation.resumeIfActive(previous) }
+                previous.doOnLifecycleEvent(Lifecycle.Event.ON_RESUME) { continuation.resumeIfActive(previous) }
                 navigator.pop()
             }
         }
@@ -32,7 +32,7 @@ internal class CommonSuspendingNavigator(private val navigator: Navigator) : Sus
         when (navigator.current?.tag) {
             tag -> continuation.resumeIfActive(null)
             else -> {
-                fragment.doOnLifeCycleOnce(Lifecycle.Event.ON_RESUME) { continuation.resumeIfActive(fragment) }
+                fragment.doOnLifecycleEvent(Lifecycle.Event.ON_RESUME) { continuation.resumeIfActive(fragment) }
                 navigator.push(fragment, tag)
             }
         }
