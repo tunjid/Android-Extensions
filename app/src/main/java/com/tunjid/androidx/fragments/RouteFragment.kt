@@ -15,7 +15,7 @@ import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
-import com.tunjid.androidx.model.Route
+import com.tunjid.androidx.model.RouteItem
 import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
@@ -69,8 +69,8 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
         else -> super.onOptionsItemSelected(item)
     }
 
-    private fun onRouteClicked(route: Route) {
-        navigator.push(route.fragment)
+    private fun onRouteClicked(destination: RouteItem.Destination) {
+        navigator.push(destination.fragment)
     }
 
     private fun goSomewhereRandom() = navigator.performConsecutively(lifecycleScope) {
@@ -79,7 +79,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
         push(route.fragment)
     }
 
-    private val Route.fragment: AppBaseFragment
+    private val RouteItem.Destination.fragment: AppBaseFragment
         get() = when (destination) {
             DoggoListFragment::class.java.routeName -> DoggoListFragment.newInstance()
             BleScanFragment::class.java.routeName -> BleScanFragment.newInstance()

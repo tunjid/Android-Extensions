@@ -8,38 +8,47 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.text.italic
 import com.tunjid.androidx.fragments.*
-import com.tunjid.androidx.model.Route
+import com.tunjid.androidx.model.RouteItem
 import kotlin.random.Random
 
 class RouteViewModel(application: Application) : AndroidViewModel(application) {
 
     private val mapping = listOf(
             listOf(
-                    Route(DoggoListFragment::class.java.routeName, formatRoute(R.string.route_doggo_list)),
-                    Route(IndependentStacksFragment::class.java.routeName, formatRoute(R.string.route_independent_stack)),
-                    Route(MultipleStacksFragment::class.java.routeName, formatRoute(R.string.route_multiple_inner_stack))
+                    RouteItem.Destination(DoggoListFragment::class.java.routeName, formatRoute(R.string.route_doggo_list)),
+                    RouteItem.Destination(IndependentStacksFragment::class.java.routeName, formatRoute(R.string.route_independent_stack)),
+                    RouteItem.Destination(MultipleStacksFragment::class.java.routeName, formatRoute(R.string.route_multiple_inner_stack)),
+                    RouteItem.Spacer
             ),
             listOf(
-                    Route(DoggoRankFragment::class.java.routeName, formatRoute(R.string.route_doggo_rank)),
-                    Route(ShiftingTilesFragment::class.java.routeName, formatRoute(R.string.route_shifting_tile)),
-                    Route(EndlessTilesFragment::class.java.routeName, formatRoute(R.string.route_endless_tile)),
-                    Route(SpreadsheetFragment::class.java.routeName, formatRoute(R.string.route_spreadsheet))
+                    RouteItem.Destination(DoggoRankFragment::class.java.routeName, formatRoute(R.string.route_doggo_rank)),
+                    RouteItem.Destination(ShiftingTilesFragment::class.java.routeName, formatRoute(R.string.route_shifting_tile)),
+                    RouteItem.Destination(EndlessTilesFragment::class.java.routeName, formatRoute(R.string.route_endless_tile)),
+                    RouteItem.Destination(SpreadsheetFragment::class.java.routeName, formatRoute(R.string.route_spreadsheet)),
+                    RouteItem.Spacer
             ),
             listOf(
-                    Route(BleScanFragment::class.java.routeName, formatRoute(R.string.route_ble_scan)),
-                    Route(NsdScanFragment::class.java.routeName, formatRoute(R.string.route_nsd_scan))
+                    RouteItem.Destination(BleScanFragment::class.java.routeName, formatRoute(R.string.route_ble_scan)),
+                    RouteItem.Destination(NsdScanFragment::class.java.routeName, formatRoute(R.string.route_nsd_scan)),
+                    RouteItem.Spacer
             ),
             listOf(
-                    Route(HidingViewsFragment::class.java.routeName, formatRoute(R.string.route_hiding_view)),
-                    Route(FabTransformationsFragment::class.java.routeName, formatRoute(R.string.route_fab_transformations)),
-                    Route(CharacterSequenceExtensionsFragment::class.java.routeName, formatRoute(R.string.route_span_builder)),
-                    Route(HardServiceConnectionFragment::class.java.routeName, formatRoute(R.string.route_hard_service_connection))
+                    RouteItem.Destination(HidingViewsFragment::class.java.routeName, formatRoute(R.string.route_hiding_view)),
+                    RouteItem.Destination(FabTransformationsFragment::class.java.routeName, formatRoute(R.string.route_fab_transformations)),
+                    RouteItem.Destination(CharacterSequenceExtensionsFragment::class.java.routeName, formatRoute(R.string.route_span_builder)),
+                    RouteItem.Destination(HardServiceConnectionFragment::class.java.routeName, formatRoute(R.string.route_hard_service_connection)),
+                    RouteItem.Spacer
             )
     )
 
-    operator fun get(@IdRes index: Int): List<Route> = mapping[index]
+    operator fun get(@IdRes index: Int): List<RouteItem> = mapping[index]
 
-    fun randomRoute() = Random.nextInt(mapping.size).let { it to mapping[it].shuffled().first() }
+    fun randomRoute() = Random.nextInt(mapping.size).let {
+        it to mapping[it]
+                .shuffled()
+                .filterIsInstance<RouteItem.Destination>()
+                .first()
+    }
 
     private fun formatRoute(@StringRes stringRes: Int): CharSequence = getApplication<Application>().run {
         getString(stringRes).italic()
