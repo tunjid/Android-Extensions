@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
-import androidx.activity.addCallback
 import androidx.annotation.IdRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
@@ -26,6 +25,7 @@ import com.tunjid.androidx.core.text.scale
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.StackNavigator
+import com.tunjid.androidx.navigation.addOnBackPressedCallback
 import com.tunjid.androidx.navigation.childStackNavigationController
 import com.tunjid.androidx.uidrivers.crossFade
 import com.tunjid.androidx.view.util.InsetFlags
@@ -44,11 +44,13 @@ class IndependentStacksFragment : AppBaseFragment(R.layout.fragment_independent_
         super.onCreate(savedInstanceState)
         savedInstanceState?.getIntArray(ORDER)?.apply { visitOrder.addAll(this.asList()) }
 
-        activity?.onBackPressedDispatcher?.addCallback(this) {
+        addOnBackPressedCallback {
             isEnabled =
                     if (navigator.current !== this@IndependentStacksFragment) false
-                    else visitOrder.asSequence().map(this@IndependentStacksFragment::navigatorFor).map(StackNavigator::pop).firstOrNull { it }
-                            ?: false
+                    else visitOrder.asSequence()
+                            .map(::navigatorFor)
+                            .map(StackNavigator::pop)
+                            .firstOrNull { it } ?: false
 
             if (!isEnabled) activity?.onBackPressed()
         }

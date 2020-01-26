@@ -28,6 +28,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
     override var uiState: UiState by globalUiDriver { navigator.activeNavigator }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
+
+        // Add this before on create to make sure fragment callbacks are added after.
+        // This makes Fragment back pressed callbacks take higher precedence.
+        onBackPressedDispatcher.addCallback(this) { if (!navigator.pop()) finish() }
+
         super.onCreate(savedInstanceState)
 
         findViewById<BottomNavigationView>(R.id.bottom_navigation).apply {
@@ -54,8 +59,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
             setOnNavigationItemSelectedListener { navigator.show(tabs.indexOf(it.itemId)).let { true } }
             setOnNavigationItemReselectedListener { navigator.activeNavigator.clear() }
         }
-
-        onBackPressedDispatcher.addCallback(this) { if (!navigator.pop()) finish() }
     }
 
     companion object {
