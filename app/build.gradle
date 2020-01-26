@@ -85,7 +85,6 @@ dependencies {
 
     implementation parent.ext.lifecycleSavedState
     implementation parent.ext.lifecycleViewModel
-    implementation parent.ext.lifecycleExtensions
     implementation parent.ext.lifeCycleReactiveStreams
 
     // other dependencies

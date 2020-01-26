@@ -31,13 +31,12 @@ buildscript {
 
         savedState = 'androidx.savedstate:savedstate:1.0.0'
 
-        lifecycleSavedState = 'androidx.lifecycle:lifecycle-viewmodel-savedstate:1.0.0-alpha04'
-        lifecycleViewModel = 'androidx.lifecycle:lifecycle-viewmodel:2.1.0'
-        lifecycleExtensions = 'androidx.lifecycle:lifecycle-extensions:2.1.0'
-        lifeCycleReactiveStreams = 'androidx.lifecycle:lifecycle-reactivestreams:2.1.0'
+        lifecycleSavedState = 'androidx.lifecycle:lifecycle-viewmodel-savedstate:1.0.0'
+        lifecycleViewModel = 'androidx.lifecycle:lifecycle-viewmodel:2.2.0'
+        lifeCycleReactiveStreams = 'androidx.lifecycle:lifecycle-reactivestreams:2.2.0'
 
-        fragment = 'androidx.fragment:fragment:1.2.0-rc05'
-        fragmentKtx = 'androidx.fragment:fragment-ktx:1.2.0-rc05'
+        fragment = 'androidx.fragment:fragment:1.2.0'
+        fragmentKtx = 'androidx.fragment:fragment-ktx:1.2.0'
 
         dynamicAnimations = 'androidx.dynamicanimation:dynamicanimation:1.1.0-alpha02'
         dynamicAnimationsKtx = 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha02'
