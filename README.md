@@ -32,8 +32,7 @@ build.gradle lines
 Projects that use This library include:
 
 1. [DigiLux Fingerprint gestures app](https://play.google.com/store/apps/details?id=com.tunjid.fingergestures)
-2. [Teammate Sports Management and Tournament Bracket App](https://play.google.com/store/apps/details?id=com.mainstreetcode.teammate)
-3. [BluetoothRcSwitch IOT Github project](https://github.com/tunjid/BluetoothRcSwitch)
+2. [BluetoothRcSwitch IOT Github project](https://github.com/tunjid/BluetoothRcSwitch)
 
 ## Core
 Read more about the core module, classes and components [here](https://github.com/tunjid/Android-Extensions/blob/develop/core/README.md).
@@ -68,3 +67,14 @@ You can read more about the testing module and classes [here](https://github.com
 
 Image attribution
 App icon made by [Freepik](https://www.freepik.com/?__hstc=57440181.7a5d7d3cc018b38de5851a6c095932c9.1558869007278.1558869007278.1558869007278.1&__hssc=57440181.5.1558869007279&__hsfp=1983466168 "Freepik") from [www.flaticon.com](https://www.flaticon.com/ "Flaticon") is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/ "Creative Commons BY 3.0"
+
+## Publishing
+
+Publishing is done with the `maven-publish` plugin. To publish a specific version of a module, run:
+
+`./gradlew moduleName:assembleRelease`
+`./gradlew moduleName:publishLibPublicationTo*RepositoryName*Repository`
+
+By default, the `publishRepoName`, `publishUrl`, `publishUserName` and `publishPassword` are read from the `local.properties` file.
+They can however be overriden by passing gardle properties via the `-P` flag for each property you wish to override.
+Multi repository setup can only be done with the `local.properties file`.
