@@ -73,7 +73,7 @@ App icon made by [Freepik](https://www.freepik.com/?__hstc=57440181.7a5d7d3cc018
 Publishing is done with the `maven-publish` plugin. To publish a specific version of a module, run:
 
 `./gradlew moduleName:assembleRelease`
-`./gradlew moduleName:publishLibPublicationTo*RepositoryName*Repository`
+`./gradlew moduleName:publishLibPublicationTo*publishRepoName*Repository`
 
 By default, the `publishRepoName`, `publishUrl`, `publishUserName` and `publishPassword` are read from the `local.properties` file.
 They can however be overriden by passing gardle properties via the `-P` flag for each property you wish to override.
