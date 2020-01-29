@@ -103,8 +103,6 @@ buildscript {
         publishRepoName = pullProperty('publishRepoName', localProps)
         publishUserName = pullProperty('publishUserName', localProps)
         publishPassword = pullProperty('publishPassword', localProps)
-
-        print("publishUrl: $publishUrl, publishRepoName: $publishRepoName")
     }
 }
 
