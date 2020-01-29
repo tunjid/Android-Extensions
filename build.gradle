@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
@@ -56,17 +58,53 @@ buildscript {
         // Artifactory publishing params
         libProps = new Properties()
         bintrayProps = new Properties()
+        localProps = new Properties()
 
         libProps.load(new FileInputStream(file("libraryVersion.properties")))
-
-        def bintrayFile = file("bintray.properties")
-        if (bintrayFile.exists()) bintrayProps.load(new FileInputStream(bintrayFile))
 
         groupId = libProps['groupId']
         artifactoryUrl = libProps['artifactoryUrl']
 
-        bintrayUser = bintrayProps['user']
-        bintrayApiKey = bintrayProps['apiKey']
+        bintrayUser = ''
+        bintrayApiKey = ''
+        def bintrayFile = file("bintray.properties")
+        if (bintrayFile.exists()) {
+            bintrayProps.load(new FileInputStream(bintrayFile))
+            bintrayUser = bintrayProps['user']
+            bintrayApiKey = bintrayProps['apiKey']
+        }
+
+        // publish properties can be set from the command line or local.properties.
+        // Multiple repository setup can only done in the local.properties file with the following
+        // mapping:
+
+        // repositories=[{
+        // "name": "myRepo",
+        // "url": "myUrl",
+        // "credentials": "username": "user", "password": "hi"
+        // }]
+
+        publishRepositories = []
+        def localPropsFile = file("local.properties")
+        
+        if (localPropsFile.exists()) {
+            localProps.load(new FileInputStream(localPropsFile))
+
+            def slurper = new JsonSlurper()
+            def repos = localProps['repositories']
+            if (repos != null) publishRepositories = slurper.parseText(repos)
+        }
+
+        def pullProperty = { String name, Properties prop ->
+            return project.findProperty(name) ?: prop[name] ?: ""
+        }
+
+        publishUrl = pullProperty('publishUrl', localProps)
+        publishRepoName = pullProperty('publishRepoName', localProps)
+        publishUserName = pullProperty('publishUserName', localProps)
+        publishPassword = pullProperty('publishPassword', localProps)
+
+        print("publishUrl: $publishUrl, publishRepoName: $publishRepoName")
     }
 }
 

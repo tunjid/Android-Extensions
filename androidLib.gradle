@@ -77,8 +77,9 @@ bintray {
 publishing {
     publications {
         lib(MavenPublication) {
-            version = project.version
-            groupId parent.ext.groupId
+            // Default to command line arg before reading from from version.gradle
+            version = project.hasProperty('publish_version') ? "$publish_version" : project.version
+            groupId parent.ext.groupId // from parent root.gradle ext
             artifactId project.getName()
 
             // Tell maven to prepare the generated "*.aar" file for publishing
@@ -110,7 +111,23 @@ publishing {
     }
     repositories {
         maven {
-            url parent.ext.artifactoryUrl
+            name = parent.ext.publishRepoName
+            url = parent.ext.publishUrl
+            credentials {
+                username = parent.ext.publishUserName
+                password = parent.ext.publishPassword
+            }
+        }
+        parent.ext.publishRepositories.each { repo ->
+            def props = (repo as ConfigObject).toProperties()
+            maven {
+                name = props['name']
+                url = props['url']
+                credentials {
+                    username = props['credentials.username']
+                    password = props['credentials.password']
+                }
+            }
         }
     }
 }
