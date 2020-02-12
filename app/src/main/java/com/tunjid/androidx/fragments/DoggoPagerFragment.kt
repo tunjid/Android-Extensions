@@ -63,7 +63,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
         viewPager.adapter = DoggoPagerAdapter(viewModel.doggos, this)
         viewPager.setCurrentItem(Doggo.transitionIndex, false)
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            var current = 0
+            var current = viewPager.currentItem
 
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
                 if (positionOffset != 0f) viewModel.onSwiped(current, positionOffset, position == current)
