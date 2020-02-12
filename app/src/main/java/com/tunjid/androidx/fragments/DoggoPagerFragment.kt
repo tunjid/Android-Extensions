@@ -81,11 +81,9 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
                 indicatorWidth = indicatorSize.toFloat(),
                 indicatorHeight = indicatorSize.toFloat(),
                 indicatorPadding = resources.getDimensionPixelSize(R.dimen.half_margin).toFloat(),
-                drawables = listOf(
-                        BitmapPageIndicator(
-                                active = context.drawableAt(R.drawable.ic_doggo_24dp)!!.toBitmap(),
-                                inActive = context.drawableAt(R.drawable.ic_circle_24dp)!!.toBitmap()
-                        )
+                indicator = BitmapPageIndicator(
+                        active = context.drawableAt(R.drawable.ic_doggo_24dp)!!.toBitmap(),
+                        inActive = context.drawableAt(R.drawable.ic_circle_24dp)!!.toBitmap()
                 )
         ))
 

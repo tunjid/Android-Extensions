@@ -2,7 +2,6 @@ package com.tunjid.androidx.recyclerview.indicators
 
 import android.content.res.Resources
 import android.graphics.Canvas
-import android.graphics.Paint
 import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,7 +14,7 @@ class IndicatorDecoration(
         private val indicatorWidth: Float,
         private val indicatorHeight: Float,
         private val indicatorPadding: Float,
-        private val drawables: List<PageIndicator>
+        private val indicator: PageIndicator
 ) : RecyclerView.ItemDecoration() {
 
     override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
@@ -59,9 +58,7 @@ class IndicatorDecoration(
         val itemWidth = indicatorWidth + indicatorPadding
         var start = indicatorStartX
         repeat(itemCount) {
-            drawables.forEach {
-                it.drawInActive(canvas, start, indicatorPosY, indicatorWidth, indicatorPosY)
-            }
+            indicator.drawInActive(canvas, start, indicatorPosY, indicatorWidth, indicatorPosY)
             start += itemWidth
         }
 
@@ -76,17 +73,15 @@ class IndicatorDecoration(
     ) {
         val itemWidth = indicatorWidth + indicatorPadding
 
-        drawables.forEach {
-            it.drawActive(
-                    canvas = canvas,
-                    left = indicatorStartX + itemWidth * highlightPosition,
-                    top = indicatorPosY,
-                    displacement = itemWidth,
-                    width = indicatorWidth,
-                    height = indicatorPosY,
-                    progress = progress
-            )
-        }
+        indicator.drawActive(
+                canvas = canvas,
+                left = indicatorStartX + itemWidth * highlightPosition,
+                top = indicatorPosY,
+                displacement = itemWidth,
+                width = indicatorWidth,
+                height = indicatorPosY,
+                progress = progress
+        )
     }
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
