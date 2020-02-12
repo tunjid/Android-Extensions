@@ -145,10 +145,9 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
                         ?.let { recyclerView.findViewHolderForItemId(it.hashCode().toLong()) }
                         ?: return
 
-                val currentFragment = childFragmentManager.findFragmentById(viewHolder.itemView.id)
-                val view = currentFragment?.view ?: return
+                val view: View = viewHolder.itemView.findViewById(R.id.doggo_image) ?: return
 
-                sharedElements[names[0]] = view.findViewById(R.id.doggo_image)
+                sharedElements[names[0]] = view
             }
         })
     }
