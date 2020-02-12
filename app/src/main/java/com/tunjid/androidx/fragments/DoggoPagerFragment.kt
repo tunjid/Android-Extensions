@@ -1,34 +1,32 @@
 package com.tunjid.androidx.fragments
 
-import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.SharedElementCallback
+import androidx.core.graphics.drawable.toBitmap
+import androidx.core.view.doOnLayout
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
-import androidx.viewpager.widget.PagerAdapter
-import androidx.viewpager.widget.ViewPager
-import androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.tunjid.androidx.R
 import com.tunjid.androidx.adapters.DoggoPagerAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
-import com.tunjid.androidx.constraintlayout.animator.ViewPagerIndicatorAnimator
+import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.navigation.Navigator
+import com.tunjid.androidx.recyclerview.indicators.BitmapPageIndicator
+import com.tunjid.androidx.recyclerview.indicators.IndicatorDecoration
 import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.androidx.viewmodels.DoggoViewModel
-import java.util.*
-import kotlin.math.abs
-import kotlin.math.cos
-import kotlin.math.max
-import kotlin.math.sin
 
 class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
         Navigator.TransactionModifier {
@@ -57,53 +55,56 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
                 fabClickListener = View.OnClickListener { Doggo.transitionDoggo?.let { navigator.push(AdoptDoggoFragment.newInstance(it)) } }
         )
 
-        val viewPager = view.findViewById<ViewPager>(R.id.view_pager)
+        val viewPager = view.findViewById<ViewPager2>(R.id.view_pager)
         val resources = resources
+        val context = view.context
         val indicatorSize = resources.getDimensionPixelSize(R.dimen.single_and_half_margin)
 
-        viewPager.adapter = DoggoPagerAdapter(viewModel.doggos, childFragmentManager)
-        viewPager.currentItem = Doggo.transitionIndex
-        viewPager.addOnPageChangeListener(object : SimpleOnPageChangeListener() {
+        viewPager.adapter = DoggoPagerAdapter(viewModel.doggos, this)
+        viewPager.setCurrentItem(Doggo.transitionIndex, false)
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            var current = 0
+
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+                if (positionOffset != 0f) viewModel.onSwiped(current, positionOffset, position == current)
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+                if (state == ViewPager2.SCROLL_STATE_IDLE) current = viewPager.currentItem
+            }
+
             override fun onPageSelected(position: Int) = onDoggoSwiped(position)
         })
 
-        val indicatorAnimator = ViewPagerIndicatorAnimator(
-                indicatorWidth = indicatorSize,
-                indicatorHeight = indicatorSize,
-                indicatorPadding = resources.getDimensionPixelSize(R.dimen.half_margin),
-                activeDrawable = R.drawable.ic_doggo_24dp,
-                inActiveDrawable = R.drawable.ic_circle_24dp,
-                guide = view.findViewById(R.id.guide),
-                container = view as ConstraintLayout,
-                viewPager = viewPager
-        )
+        viewPager.addItemDecoration(IndicatorDecoration(
+                verticalOffset = resources.getDimension(R.dimen.octuple_margin),
+                indicatorWidth = indicatorSize.toFloat(),
+                indicatorHeight = indicatorSize.toFloat(),
+                indicatorPadding = resources.getDimensionPixelSize(R.dimen.half_margin).toFloat(),
+                drawables = listOf(
+                        BitmapPageIndicator(
+                                active = context.drawableAt(R.drawable.ic_doggo_24dp)!!.toBitmap(),
+                                inActive = context.drawableAt(R.drawable.ic_circle_24dp)!!.toBitmap()
+                        )
+                )
+        ))
 
-        indicatorAnimator.addIndicatorWatcher { indicator, position, fraction, _ ->
-            val radians = Math.PI * fraction
-            val sine = (-sin(radians)).toFloat()
-            val cosine = cos(radians).toFloat()
-            val maxScale = max(abs(cosine), 0.4f)
-
-            val currentIndicator = indicatorAnimator.getIndicatorAt(position)
-            currentIndicator.scaleX = maxScale
-            currentIndicator.scaleY = maxScale
-            indicator.translationY = indicatorSize * sine
-        }
-
-        indicatorAnimator.addIndicatorWatcher watcher@{ indicator, position, fraction, _ ->
-            if (fraction == 0F) return@watcher
-
-            val static = intArrayOf(0, 0).apply { indicatorAnimator.getIndicatorAt(position).getLocationInWindow(this) }
-            val dynamic = intArrayOf(0, 0).apply { indicator.getLocationInWindow(this) }
-            val toTheRight = dynamic[0] > static[0]
-
-            viewModel.onSwiped(position, fraction, toTheRight)
-        }
+//        indicatorAnimator.addIndicatorWatcher { indicator, position, fraction, _ ->
+//            val radians = Math.PI * fraction
+//            val sine = (-sin(radians)).toFloat()
+//            val cosine = cos(radians).toFloat()
+//            val maxScale = max(abs(cosine), 0.4f)
+//
+//            val currentIndicator = indicatorAnimator.getIndicatorAt(position)
+//            currentIndicator.scaleX = maxScale
+//            currentIndicator.scaleY = maxScale
+//            indicator.translationY = indicatorSize * sine
+//        }
 
         onDoggoSwiped(viewPager.currentItem)
         prepareSharedElementTransition()
 
-        if (savedInstanceState == null) postponeEnterTransition()
+        postponeEnterTransition()
     }
 
     private fun onDoggoSwiped(position: Int) {
@@ -113,7 +114,11 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
         }
     }
 
-    @SuppressLint("CommitTransaction")
+    override fun startPostponedEnterTransition() {
+        // ViewPager2 likes to take it's time
+        view?.doOnLayout { super.startPostponedEnterTransition() }
+    }
+
     override fun augmentTransaction(transaction: FragmentTransaction, incomingFragment: Fragment) {
         if (incomingFragment !is AdoptDoggoFragment) return
 
@@ -133,12 +138,15 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
 
         setEnterSharedElementCallback(object : SharedElementCallback() {
             override fun onMapSharedElements(names: List<String>?, sharedElements: MutableMap<String, View>?) {
-                val viewPager = view?.findViewById<ViewPager>(R.id.view_pager) ?: return
-                if (names == null || sharedElements == null || view == null) return
+                val recyclerView = view?.findViewById<ViewGroup>(R.id.view_pager)?.get(0) ?: return
+                if (names == null || sharedElements == null || recyclerView !is RecyclerView) return
 
-                val currentFragment = Objects.requireNonNull<PagerAdapter>(viewPager.adapter)
-                        .instantiateItem(viewPager, Doggo.transitionIndex) as Fragment
-                val view = currentFragment.view ?: return
+                val viewHolder = Doggo.transitionDoggo
+                        ?.let { recyclerView.findViewHolderForItemId(it.hashCode().toLong()) }
+                        ?: return
+
+                val currentFragment = childFragmentManager.findFragmentById(viewHolder.itemView.id)
+                val view = currentFragment?.view ?: return
 
                 sharedElements[names[0]] = view.findViewById(R.id.doggo_image)
             }

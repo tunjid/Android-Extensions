@@ -23,7 +23,7 @@ class DoggoFragment : AppBaseFragment(R.layout.fragment_image_detail), DoggoInte
         DoggoViewHolder(view, this).bind(doggo)
     }
 
-    override fun onDoggoImageLoaded(doggo: Doggo) = parentFragment!!.startPostponedEnterTransition()
+    override fun onDoggoImageLoaded(doggo: Doggo) = parentFragment?.startPostponedEnterTransition() ?: Unit
 
     companion object {
 

@@ -72,8 +72,9 @@ dependencies {
     implementation parent.ext.ktxCore
     implementation parent.ext.palette
     implementation parent.ext.material
-    implementation parent.ext.appCompat
     implementation parent.ext.cardView
+    implementation parent.ext.appCompat
+    implementation parent.ext.viewpager2
     implementation parent.ext.recyclerView
     implementation parent.ext.constraintLayout
 
