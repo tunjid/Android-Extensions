@@ -22,7 +22,7 @@ import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.recyclerview.indicators.BitmapPageIndicator
-import com.tunjid.androidx.recyclerview.indicators.IndicatorDecoration
+import com.tunjid.androidx.recyclerview.indicators.indicatorDecoration
 import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
@@ -76,7 +76,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
             override fun onPageSelected(position: Int) = onDoggoSwiped(position)
         })
 
-        viewPager.addItemDecoration(IndicatorDecoration(
+        (viewPager[0] as? RecyclerView)?.indicatorDecoration(
                 verticalOffset = resources.getDimension(R.dimen.octuple_margin),
                 indicatorWidth = indicatorSize.toFloat(),
                 indicatorHeight = indicatorSize.toFloat(),
@@ -84,8 +84,9 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
                 indicator = BitmapPageIndicator(
                         active = context.drawableAt(R.drawable.ic_doggo_24dp)!!.toBitmap(),
                         inActive = context.drawableAt(R.drawable.ic_circle_24dp)!!.toBitmap()
-                )
-        ))
+                ),
+                onIndicatorClicked = viewPager::setCurrentItem
+        )
 
 //        indicatorAnimator.addIndicatorWatcher { indicator, position, fraction, _ ->
 //            val radians = Math.PI * fraction

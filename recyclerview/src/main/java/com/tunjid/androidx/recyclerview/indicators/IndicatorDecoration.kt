@@ -1,31 +1,52 @@
 package com.tunjid.androidx.recyclerview.indicators
 
-import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.Rect
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.max
 
-class IndicatorDecoration(
-        private val horizontalOffset: Float = 0f,
-        private val verticalOffset: Float = 0f,
-        private val indicatorWidth: Float,
-        private val indicatorHeight: Float,
-        private val indicatorPadding: Float,
-        private val indicator: PageIndicator
-) : RecyclerView.ItemDecoration() {
+fun RecyclerView.indicatorDecoration(
+        horizontalOffset: Float = 0f,
+        verticalOffset: Float = 0f,
+        indicatorWidth: Float,
+        indicatorHeight: Float,
+        indicatorPadding: Float,
+        indicator: PageIndicator,
+        onIndicatorClicked: ((Int) -> Unit)? = null
+): () -> Unit {
+    val params = Params(
+            horizontalOffset,
+            verticalOffset,
+            indicatorWidth,
+            indicatorHeight,
+            indicatorPadding
+    )
 
-    override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+    val decoration = IndicatorDecoration(indicator, params)
+    val clickListener = IndicatorClickListener(this, params, onIndicatorClicked)
+
+    addItemDecoration(decoration)
+    addOnItemTouchListener(clickListener)
+
+    return {
+        removeItemDecoration(decoration)
+        removeOnItemTouchListener(clickListener)
+    }
+}
+
+private class IndicatorDecoration(
+        private val indicator: PageIndicator,
+        private val params: Params
+) : RecyclerView.ItemDecoration() {
+    override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) = params.run {
         super.onDrawOver(canvas, parent, state)
         val itemCount = parent.adapter?.itemCount ?: return
 
-        // center horizontally, calculate width and subtract half from center
-        val totalLength = indicatorWidth * itemCount
-        val paddingBetweenItems = max(0, itemCount - 1) * indicatorPadding
-        val indicatorTotalWidth = totalLength + paddingBetweenItems
-        val start = horizontalOffset + ((parent.width - indicatorTotalWidth) / 2f)
+        val start = parent.start(params) ?: return
 
         // center vertically in the allotted space
         drawInactiveIndicators(canvas, start, verticalOffset, itemCount)
@@ -48,12 +69,17 @@ class IndicatorDecoration(
         drawHighlights(canvas, start, verticalOffset, activePosition, progress)
     }
 
+    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+        super.getItemOffsets(outRect, view, parent, state)
+        outRect.bottom = params.indicatorHeight.toInt()
+    }
+
     private fun drawInactiveIndicators(
             canvas: Canvas,
             indicatorStartX: Float,
             indicatorPosY: Float,
             itemCount: Int
-    ) {
+    ) = params.run {
         // width of item indicator including padding
         val itemWidth = indicatorWidth + indicatorPadding
         var start = indicatorStartX
@@ -61,7 +87,6 @@ class IndicatorDecoration(
             indicator.drawInActive(canvas, start, indicatorPosY, indicatorWidth, indicatorPosY)
             start += itemWidth
         }
-
     }
 
     private fun drawHighlights(
@@ -70,7 +95,7 @@ class IndicatorDecoration(
             indicatorPosY: Float,
             highlightPosition: Int,
             progress: Float
-    ) {
+    ) = params.run {
         val itemWidth = indicatorWidth + indicatorPadding
 
         indicator.drawActive(
@@ -83,14 +108,55 @@ class IndicatorDecoration(
                 progress = progress
         )
     }
+}
 
-    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
-        super.getItemOffsets(outRect, view, parent, state)
-        outRect.bottom = indicatorHeight.toInt()
-    }
+private class IndicatorClickListener(
+        recyclerView: RecyclerView,
+        private val params: Params,
+        private val onIndicatorClicked: ((Int) -> Unit)?
+) : RecyclerView.SimpleOnItemTouchListener() {
 
-    companion object {
-        private val DP = Resources.getSystem().displayMetrics.density
+    private val gestureDetector: GestureDetector = GestureDetector(recyclerView.context, object : GestureDetector.SimpleOnGestureListener() {
+        override fun onSingleTapUp(e: MotionEvent?): Boolean = true
+    })
+
+    override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean = params.run {
+        val x = e.x
+        val y = e.y
+
+        if (y < params.verticalOffset || y > (verticalOffset + indicatorHeight)) return false
+
+        val itemCount = rv.adapter?.itemCount ?: return false
+        val start = rv.start(params) ?: return false
+
+        for (i in 0 until itemCount) {
+            val x1 = start + (i * (indicatorWidth + indicatorPadding))
+            val x2 = x1 + indicatorWidth
+
+            if (x1 >= x || x >= x2 || !gestureDetector.onTouchEvent(e)) continue
+
+            onIndicatorClicked?.invoke(i)
+            break
+        }
+
+        return false
     }
 }
 
+private fun RecyclerView.start(params: Params): Float? = params.run {
+    val itemCount = adapter?.itemCount ?: return null
+
+    val totalLength = indicatorWidth * itemCount
+    val paddingBetweenItems = max(0, itemCount - 1) * indicatorPadding
+    val indicatorTotalWidth = totalLength + paddingBetweenItems
+
+    return horizontalOffset + ((width - indicatorTotalWidth) / 2f)
+}
+
+private data class Params(
+        val horizontalOffset: Float,
+        val verticalOffset: Float,
+        val indicatorWidth: Float,
+        val indicatorHeight: Float,
+        val indicatorPadding: Float
+)
