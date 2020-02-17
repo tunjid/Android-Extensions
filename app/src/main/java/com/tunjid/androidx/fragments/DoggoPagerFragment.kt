@@ -154,7 +154,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
 
 }
 
-class DrawablePageIndicator(
+private class DrawablePageIndicator(
         activeDrawable: Drawable,
         inActiveDrawable: Drawable
 ) : PageIndicator {
@@ -183,13 +183,13 @@ class DrawablePageIndicator(
     private fun Float.bounce(height: Float, progress: Float): Float {
         val radians = Math.PI * progress
         val sine = (-sin(radians)).toFloat()
-        return this + (height * sine)
+        return this + (height * 0.5f * sine)
     }
 
     private fun Bitmap.scale(size: Float, progress: Float): Bitmap {
         val radians = Math.PI * progress
         val cosine = cos(radians).toFloat()
-        val maxScale = max(abs(cosine), 0.4f)
+        val maxScale = max(abs(cosine), 0.8f)
 
         val scaled = (size * maxScale).roundToInt()
         return scale(scaled, scaled)
