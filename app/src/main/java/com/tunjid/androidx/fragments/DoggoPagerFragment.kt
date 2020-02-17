@@ -1,12 +1,16 @@
 package com.tunjid.androidx.fragments
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.app.SharedElementCallback
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.graphics.scale
 import androidx.core.view.doOnLayout
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
@@ -21,12 +25,17 @@ import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.navigation.Navigator
-import com.tunjid.androidx.recyclerview.indicators.BitmapPageIndicator
-import com.tunjid.androidx.recyclerview.indicators.IndicatorDecoration
+import com.tunjid.androidx.recyclerview.indicators.PageIndicator
+import com.tunjid.androidx.recyclerview.indicators.indicatorDecoration
 import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.androidx.viewmodels.DoggoViewModel
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.roundToInt
+import kotlin.math.sin
 
 class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
         Navigator.TransactionModifier {
@@ -76,30 +85,17 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
             override fun onPageSelected(position: Int) = onDoggoSwiped(position)
         })
 
-        viewPager.addItemDecoration(IndicatorDecoration(
+        (viewPager[0] as? RecyclerView)?.indicatorDecoration(
                 verticalOffset = resources.getDimension(R.dimen.octuple_margin),
                 indicatorWidth = indicatorSize.toFloat(),
                 indicatorHeight = indicatorSize.toFloat(),
                 indicatorPadding = resources.getDimensionPixelSize(R.dimen.half_margin).toFloat(),
-                drawables = listOf(
-                        BitmapPageIndicator(
-                                active = context.drawableAt(R.drawable.ic_doggo_24dp)!!.toBitmap(),
-                                inActive = context.drawableAt(R.drawable.ic_circle_24dp)!!.toBitmap()
-                        )
-                )
-        ))
-
-//        indicatorAnimator.addIndicatorWatcher { indicator, position, fraction, _ ->
-//            val radians = Math.PI * fraction
-//            val sine = (-sin(radians)).toFloat()
-//            val cosine = cos(radians).toFloat()
-//            val maxScale = max(abs(cosine), 0.4f)
-//
-//            val currentIndicator = indicatorAnimator.getIndicatorAt(position)
-//            currentIndicator.scaleX = maxScale
-//            currentIndicator.scaleY = maxScale
-//            indicator.translationY = indicatorSize * sine
-//        }
+                indicator = DrawablePageIndicator(
+                        activeDrawable = context.drawableAt(R.drawable.ic_doggo_24dp)!!,
+                        inActiveDrawable = context.drawableAt(R.drawable.ic_circle_24dp)!!
+                ),
+                onIndicatorClicked = viewPager::setCurrentItem
+        )
 
         onDoggoSwiped(viewPager.currentItem)
         prepareSharedElementTransition()
@@ -156,4 +152,46 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
         fun newInstance(): DoggoPagerFragment = DoggoPagerFragment().apply { arguments = Bundle(); prepareSharedElementTransition() }
     }
 
+}
+
+class DrawablePageIndicator(
+        activeDrawable: Drawable,
+        inActiveDrawable: Drawable
+) : PageIndicator {
+
+    private val active = activeDrawable.toBitmap()
+    private val inActive = inActiveDrawable.toBitmap()
+
+    override fun drawInActive(
+            canvas: Canvas,
+            left: Float,
+            top: Float,
+            width: Float,
+            height: Float
+    ) = canvas.drawBitmap(inActive, left, top, null)
+
+    override fun drawActive(
+            canvas: Canvas,
+            left: Float,
+            top: Float,
+            displacement: Float,
+            width: Float,
+            height: Float,
+            progress: Float
+    ) = canvas.drawBitmap(active.scale(width, progress), left + (displacement * progress), top.bounce(height, progress), null)
+
+    private fun Float.bounce(height: Float, progress: Float): Float {
+        val radians = Math.PI * progress
+        val sine = (-sin(radians)).toFloat()
+        return this + (height * sine)
+    }
+
+    private fun Bitmap.scale(size: Float, progress: Float): Bitmap {
+        val radians = Math.PI * progress
+        val cosine = cos(radians).toFloat()
+        val maxScale = max(abs(cosine), 0.4f)
+
+        val scaled = (size * maxScale).roundToInt()
+        return scale(scaled, scaled)
+    }
 }
