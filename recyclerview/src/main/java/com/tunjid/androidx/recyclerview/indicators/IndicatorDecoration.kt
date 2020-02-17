@@ -104,7 +104,7 @@ private class IndicatorDecoration(
                 top = indicatorPosY,
                 displacement = itemWidth,
                 width = indicatorWidth,
-                height = indicatorPosY,
+                height = indicatorHeight,
                 progress = progress
         )
     }
