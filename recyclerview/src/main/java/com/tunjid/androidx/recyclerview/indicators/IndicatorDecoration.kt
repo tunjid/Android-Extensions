@@ -19,11 +19,11 @@ fun RecyclerView.indicatorDecoration(
         onIndicatorClicked: ((Int) -> Unit)? = null
 ): () -> Unit {
     val params = Params(
-            horizontalOffset,
-            verticalOffset,
-            indicatorWidth,
-            indicatorHeight,
-            indicatorPadding
+            horizontalOffset = horizontalOffset,
+            verticalOffset = verticalOffset,
+            indicatorWidth = indicatorWidth,
+            indicatorHeight = indicatorHeight,
+            indicatorPadding = indicatorPadding
     )
 
     val decoration = IndicatorDecoration(indicator, params)
@@ -42,14 +42,9 @@ private class IndicatorDecoration(
         private val indicator: PageIndicator,
         private val params: Params
 ) : RecyclerView.ItemDecoration() {
-    override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) = params.run {
+    override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         super.onDrawOver(canvas, parent, state)
         val itemCount = parent.adapter?.itemCount ?: return
-
-        val start = params.start(itemCount)
-
-        // center vertically in the allotted space
-        drawInactiveIndicators(canvas, start, verticalOffset, itemCount)
 
         // find active page (which should be highlighted)
         val layoutManager = parent.layoutManager as? LinearLayoutManager ?: return
@@ -66,7 +61,9 @@ private class IndicatorDecoration(
         // interpolate offset for smooth animation
 
         val progress = left * -1 / width.toFloat()
-        drawHighlights(canvas, start, verticalOffset, activePosition, progress)
+
+        drawInactiveIndicators(canvas, params, parent.width, itemCount)
+        draActiveIndicator(canvas, params, parent.width, itemCount, activePosition, progress)
     }
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
@@ -76,35 +73,34 @@ private class IndicatorDecoration(
 
     private fun drawInactiveIndicators(
             canvas: Canvas,
-            indicatorStartX: Float,
-            indicatorPosY: Float,
+            params: Params,
+            screenWidth: Int,
             itemCount: Int
-    ) = params.run {
-        // width of item indicator including padding
-        val itemWidth = indicatorWidth + indicatorPadding
-        var start = indicatorStartX
+    ) {
+        var start = params.start(itemCount)
         repeat(itemCount) {
-            indicator.drawInActive(canvas, start, indicatorPosY, indicatorWidth, indicatorPosY)
-            start += itemWidth
+            indicator.drawInActive(canvas, start, params.verticalOffset, params.indicatorWidth, params.verticalOffset)
+            start += params.width
         }
     }
 
-    private fun drawHighlights(
+    private fun draActiveIndicator(
             canvas: Canvas,
-            indicatorStartX: Float,
-            indicatorPosY: Float,
+            params: Params,
+            screenWidth: Int,
+            itemCount: Int,
             highlightPosition: Int,
             progress: Float
-    ) = params.run {
-        val itemWidth = indicatorWidth + indicatorPadding
+    ) {
+        val start = params.start(itemCount)
 
         indicator.drawActive(
                 canvas = canvas,
-                left = indicatorStartX + itemWidth * highlightPosition,
-                top = indicatorPosY,
-                displacement = itemWidth,
-                width = indicatorWidth,
-                height = indicatorHeight,
+                left = start + params.width * highlightPosition,
+                top = params.verticalOffset,
+                displacement = params.width,
+                width = params.indicatorWidth,
+                height = params.indicatorHeight,
                 progress = progress
         )
     }
@@ -155,10 +151,12 @@ val Params.width get() = indicatorWidth + indicatorPadding
 val Params.left get() = indicatorWidth + indicatorPadding
 val Params.top get() = indicatorWidth + indicatorPadding
 
-private fun Params.start(itemCount: Int): Float{
+fun Params.totalWidth(itemCount: Int): Float {
     val totalLength = indicatorWidth * itemCount
     val paddingBetweenItems = max(0, itemCount - 1) * indicatorPadding
-    val indicatorTotalWidth = totalLength + paddingBetweenItems
+    return totalLength + paddingBetweenItems
+}
 
-    return horizontalOffset + ((width - indicatorTotalWidth) / 2f)
+private fun Params.start(itemCount: Int): Float {
+    return horizontalOffset - (totalWidth(itemCount) / 2f)
 }

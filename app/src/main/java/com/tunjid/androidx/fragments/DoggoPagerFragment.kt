@@ -86,6 +86,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
         })
 
         (viewPager[0] as? RecyclerView)?.indicatorDecoration(
+                horizontalOffset = resources.displayMetrics.widthPixels / 2f,
                 verticalOffset = resources.getDimension(R.dimen.octuple_margin),
                 indicatorWidth = indicatorSize.toFloat(),
                 indicatorHeight = indicatorSize.toFloat(),
