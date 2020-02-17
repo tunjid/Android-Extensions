@@ -46,7 +46,7 @@ private class IndicatorDecoration(
         super.onDrawOver(canvas, parent, state)
         val itemCount = parent.adapter?.itemCount ?: return
 
-        val start = parent.start(params) ?: return
+        val start = params.start(itemCount)
 
         // center vertically in the allotted space
         drawInactiveIndicators(canvas, start, verticalOffset, itemCount)
@@ -127,7 +127,7 @@ private class IndicatorClickListener(
         if (y < params.verticalOffset || y > (verticalOffset + indicatorHeight)) return false
 
         val itemCount = rv.adapter?.itemCount ?: return false
-        val start = rv.start(params) ?: return false
+        val start = params.start(itemCount)
 
         for (i in 0 until itemCount) {
             val x1 = start + (i * (indicatorWidth + indicatorPadding))
@@ -143,20 +143,22 @@ private class IndicatorClickListener(
     }
 }
 
-private fun RecyclerView.start(params: Params): Float? = params.run {
-    val itemCount = adapter?.itemCount ?: return null
-
-    val totalLength = indicatorWidth * itemCount
-    val paddingBetweenItems = max(0, itemCount - 1) * indicatorPadding
-    val indicatorTotalWidth = totalLength + paddingBetweenItems
-
-    return horizontalOffset + ((width - indicatorTotalWidth) / 2f)
-}
-
-private data class Params(
+data class Params(
         val horizontalOffset: Float,
         val verticalOffset: Float,
         val indicatorWidth: Float,
         val indicatorHeight: Float,
         val indicatorPadding: Float
 )
+
+val Params.width get() = indicatorWidth + indicatorPadding
+val Params.left get() = indicatorWidth + indicatorPadding
+val Params.top get() = indicatorWidth + indicatorPadding
+
+private fun Params.start(itemCount: Int): Float{
+    val totalLength = indicatorWidth * itemCount
+    val paddingBetweenItems = max(0, itemCount - 1) * indicatorPadding
+    val indicatorTotalWidth = totalLength + paddingBetweenItems
+
+    return horizontalOffset + ((width - indicatorTotalWidth) / 2f)
+}
