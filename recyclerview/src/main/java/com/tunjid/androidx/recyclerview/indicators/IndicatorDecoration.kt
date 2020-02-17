@@ -7,7 +7,6 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlin.math.max
 
 fun RecyclerView.indicatorDecoration(
         horizontalOffset: Float = 0f,
@@ -62,8 +61,8 @@ private class IndicatorDecoration(
 
         val progress = left * -1 / width.toFloat()
 
-        drawInactiveIndicators(canvas, params, parent.width, itemCount)
-        draActiveIndicator(canvas, params, parent.width, itemCount, activePosition, progress)
+        drawInactiveIndicators(canvas, params, itemCount)
+        draActiveIndicator(canvas, params, itemCount, activePosition, progress)
     }
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
@@ -74,7 +73,6 @@ private class IndicatorDecoration(
     private fun drawInactiveIndicators(
             canvas: Canvas,
             params: Params,
-            screenWidth: Int,
             itemCount: Int
     ) {
         var start = params.start(itemCount)
@@ -87,16 +85,15 @@ private class IndicatorDecoration(
     private fun draActiveIndicator(
             canvas: Canvas,
             params: Params,
-            screenWidth: Int,
             itemCount: Int,
-            highlightPosition: Int,
+            index: Int,
             progress: Float
     ) {
         val start = params.start(itemCount)
 
         indicator.drawActive(
                 canvas = canvas,
-                left = start + params.width * highlightPosition,
+                left = start + params.width * index,
                 top = params.verticalOffset,
                 displacement = params.width,
                 width = params.indicatorWidth,
@@ -137,26 +134,4 @@ private class IndicatorClickListener(
 
         return false
     }
-}
-
-data class Params(
-        val horizontalOffset: Float,
-        val verticalOffset: Float,
-        val indicatorWidth: Float,
-        val indicatorHeight: Float,
-        val indicatorPadding: Float
-)
-
-val Params.width get() = indicatorWidth + indicatorPadding
-val Params.left get() = indicatorWidth + indicatorPadding
-val Params.top get() = indicatorWidth + indicatorPadding
-
-fun Params.totalWidth(itemCount: Int): Float {
-    val totalLength = indicatorWidth * itemCount
-    val paddingBetweenItems = max(0, itemCount - 1) * indicatorPadding
-    return totalLength + paddingBetweenItems
-}
-
-private fun Params.start(itemCount: Int): Float {
-    return horizontalOffset - (totalWidth(itemCount) / 2f)
 }
