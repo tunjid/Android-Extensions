@@ -26,7 +26,10 @@ import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.recyclerview.indicators.PageIndicator
+import com.tunjid.androidx.recyclerview.indicators.Params
 import com.tunjid.androidx.recyclerview.indicators.indicatorDecoration
+import com.tunjid.androidx.recyclerview.indicators.start
+import com.tunjid.androidx.recyclerview.indicators.width
 import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
@@ -165,21 +168,29 @@ private class DrawablePageIndicator(
 
     override fun drawInActive(
             canvas: Canvas,
-            left: Float,
-            top: Float,
-            width: Float,
-            height: Float
-    ) = canvas.drawBitmap(inActive, left, top, null)
+            params: Params,
+            index: Int,
+            count: Int,
+            progress: Float
+    ) {
+        val start = params.start(count)
+        for (i in 0 until count) {
+            canvas.drawBitmap(inActive, start + (params.width * i), params.verticalOffset, null)
+        }
+    }
 
     override fun drawActive(
             canvas: Canvas,
-            left: Float,
-            top: Float,
-            displacement: Float,
-            width: Float,
-            height: Float,
+            params: Params,
+            index: Int,
+            count: Int,
             progress: Float
-    ) = canvas.drawBitmap(active.scale(width, progress), left + (displacement * progress), top.bounce(height, progress), null)
+    ) = canvas.drawBitmap(
+            active.scale(params.indicatorWidth, progress),
+            params.start(count) + (params.width * index) + (params.width * progress),
+            params.verticalOffset.bounce(params.indicatorHeight, progress),
+            null
+    )
 
     private fun Float.bounce(height: Float, progress: Float): Float {
         val radians = Math.PI * progress

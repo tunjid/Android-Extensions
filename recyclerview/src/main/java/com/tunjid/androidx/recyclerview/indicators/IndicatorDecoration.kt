@@ -61,45 +61,13 @@ private class IndicatorDecoration(
 
         val progress = left * -1 / width.toFloat()
 
-        drawInactiveIndicators(canvas, params, itemCount)
-        draActiveIndicator(canvas, params, itemCount, activePosition, progress)
+        indicator.drawInActive(canvas = canvas, params = params, index = activePosition, count = itemCount, progress = progress)
+        indicator.drawActive(canvas = canvas, params = params, index = activePosition, count = itemCount, progress = progress)
     }
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         super.getItemOffsets(outRect, view, parent, state)
         outRect.bottom = params.indicatorHeight.toInt()
-    }
-
-    private fun drawInactiveIndicators(
-            canvas: Canvas,
-            params: Params,
-            itemCount: Int
-    ) {
-        var start = params.start(itemCount)
-        repeat(itemCount) {
-            indicator.drawInActive(canvas, start, params.verticalOffset, params.indicatorWidth, params.verticalOffset)
-            start += params.width
-        }
-    }
-
-    private fun draActiveIndicator(
-            canvas: Canvas,
-            params: Params,
-            itemCount: Int,
-            index: Int,
-            progress: Float
-    ) {
-        val start = params.start(itemCount)
-
-        indicator.drawActive(
-                canvas = canvas,
-                left = start + params.width * index,
-                top = params.verticalOffset,
-                displacement = params.width,
-                width = params.indicatorWidth,
-                height = params.indicatorHeight,
-                progress = progress
-        )
     }
 }
 
