@@ -14,8 +14,9 @@ import com.tunjid.androidx.navigation.multiStackNavigationController
 import com.tunjid.androidx.uidrivers.GlobalUiController
 import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
 import com.tunjid.androidx.uidrivers.UiState
-import com.tunjid.androidx.uidrivers.crossFade
 import com.tunjid.androidx.uidrivers.globalUiDriver
+import com.tunjid.androidx.uidrivers.materialFadeThroughTransition
+import com.tunjid.androidx.uidrivers.materialDepthAxisTransition
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiController, Navigator.Controller {
 
@@ -48,12 +49,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
             ), true)
 
             navigator.stackSelectedListener = { menu.findItem(tabs[it])?.isChecked = true }
-            navigator.transactionModifier = { incomingFragment ->
-                val current = navigator.current
-                if (current is Navigator.TransactionModifier) current.augmentTransaction(this, incomingFragment)
-                else crossFade()
-            }
-            navigator.stackTransactionModifier = { crossFade() }
+            navigator.stackTransactionModifier = navigator.materialFadeThroughTransition()
+            navigator.transactionModifier = navigator.materialDepthAxisTransition()
 
             setOnApplyWindowInsetsListener { _: View?, windowInsets: WindowInsets? -> windowInsets }
             setOnNavigationItemSelectedListener { navigator.show(tabs.indexOf(it.itemId)).let { true } }
