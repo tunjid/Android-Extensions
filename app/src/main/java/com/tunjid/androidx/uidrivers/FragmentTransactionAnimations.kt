@@ -27,7 +27,7 @@ fun MultiStackNavigator.materialFadeThroughTransition(): FragmentTransaction.(In
 
     rootFragmentManager.findFragmentByTag(activeIndex.toString())?.apply {
         enterTransition = null
-        if (enterTransition !is MaterialFadeThrough) exitTransition = MaterialFadeThrough.create(requireContext()).setDuration(300)
+        if (exitTransition !is MaterialFadeThrough) exitTransition = MaterialFadeThrough.create(requireContext()).setDuration(300)
     }
     rootFragmentManager.findFragmentByTag(index.toString())?.apply {
         exitTransition = null
