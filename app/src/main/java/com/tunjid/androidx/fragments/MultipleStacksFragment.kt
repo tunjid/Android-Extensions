@@ -74,7 +74,7 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
         }
 
         tabs.setOnCheckedChangeListener { _, checkedId ->
-            if (checkedId != -1) innerNavigator.show(DESTINATIONS.indexOf(checkedId))
+            if (checkedId != View.NO_ID) innerNavigator.show(DESTINATIONS.indexOf(checkedId))
         }
 
         view.findViewById<ChipGroup>(R.id.options).setOnCheckedChangeListener { _, checkedId ->
