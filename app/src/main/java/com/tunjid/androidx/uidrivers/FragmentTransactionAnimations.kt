@@ -5,8 +5,6 @@ import android.transition.ChangeImageTransform
 import android.transition.ChangeTransform
 import android.transition.Transition
 import android.transition.TransitionSet
-import androidx.core.transition.doOnCancel
-import androidx.core.transition.doOnEnd
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.transition.MaterialFadeThrough
