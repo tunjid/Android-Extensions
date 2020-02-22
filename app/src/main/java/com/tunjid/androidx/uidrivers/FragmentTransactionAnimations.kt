@@ -28,12 +28,12 @@ fun MultiStackNavigator.materialFadeThroughTransition(): FragmentTransaction.(In
     val rootFragmentManager = current?.activity?.supportFragmentManager ?: return@fade
 
     rootFragmentManager.findFragmentByTag(activeIndex.toString())?.apply {
-        enter = null
-        if (exit !is MaterialFadeThrough) exit = MaterialFadeThrough.create(requireContext()).setDuration(300)
+        enterTransition = null
+        if (enterTransition !is MaterialFadeThrough) exitTransition = MaterialFadeThrough.create(requireContext()).setDuration(300)
     }
     rootFragmentManager.findFragmentByTag(index.toString())?.apply {
-        exit = null
-        if (enter !is MaterialFadeThrough) enter = MaterialFadeThrough.create(requireContext()).setDuration(300)
+        exitTransition = null
+        if (enterTransition !is MaterialFadeThrough) enterTransition = MaterialFadeThrough.create(requireContext()).setDuration(300)
     }
 }
 
@@ -43,12 +43,12 @@ fun MultiStackNavigator.materialDepthAxisTransition(): FragmentTransaction.(Frag
     if (current is Navigator.TransactionModifier) current.augmentTransaction(this, incomingFragment)
     else {
         current.apply {
-            enter = MaterialSharedAxis.create(context, MaterialSharedAxis.Z, false)
-            exit = MaterialSharedAxis.create(context, MaterialSharedAxis.Z, true)
+            enterTransition = MaterialSharedAxis.create(context, MaterialSharedAxis.Z, false)
+            exitTransition = MaterialSharedAxis.create(context, MaterialSharedAxis.Z, true)
         }
         incomingFragment.apply {
-            enter = MaterialSharedAxis.create(context, MaterialSharedAxis.Z, true)
-            exit = MaterialSharedAxis.create(context, MaterialSharedAxis.Z, false)
+            enterTransition = MaterialSharedAxis.create(context, MaterialSharedAxis.Z, true)
+            exitTransition = MaterialSharedAxis.create(context, MaterialSharedAxis.Z, false)
         }
     }
 }
@@ -66,21 +66,3 @@ fun baseSharedTransition(): Transition = TransitionSet()
         .addTransition(ChangeTransform())
         .addTransition(ChangeBounds())
         .setDuration(InsetLifecycleCallbacks.ANIMATION_DURATION.toLong())
-
-private var Fragment.enter: Transition?
-    get() = enterTransition as? Transition
-    set(value) {
-        enterTransition = value?.apply {
-            doOnCancel { enterTransition = null }
-            doOnEnd { enterTransition = null }
-        }
-    }
-
-private var Fragment.exit: Transition?
-    get() = exitTransition as? Transition
-    set(value) {
-        exitTransition = value?.apply {
-            doOnCancel { exitTransition = null }
-            doOnEnd { exitTransition = null }
-        }
-    }
