@@ -9,8 +9,6 @@ import android.text.style.ForegroundColorSpan
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
-import android.view.animation.AccelerateDecelerateInterpolator
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
@@ -19,6 +17,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.ViewCompat
+import androidx.core.view.children
 import androidx.core.view.forEach
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.fragment.app.Fragment
@@ -222,29 +221,22 @@ class GlobalUiDriver(
         show()
     }
 
-    private fun Toolbar.update(@MenuRes menu: Int, invalidatedAlone: Boolean, title: CharSequence) = when {
-        invalidatedAlone -> refreshMenu()
-        visibility != View.VISIBLE || this.title == null -> {
-            setTitle(title)
-            refreshMenu(menu)
-            updateIcons()
-        }
-        else -> for (i in 0 until childCount) {
-            val child = getChildAt(i)
-            if (child is ImageView) continue
+    private fun Toolbar.update(@MenuRes menu: Int, invalidatedAlone: Boolean, title: CharSequence) {
+        if (invalidatedAlone) return refreshMenu()
 
-            child.animate().alpha(0F).setDuration(TOOLBAR_ANIM_DELAY).withEndAction {
-                if (child is TextView) setTitle(title)
-                else if (child is ActionMenuView) refreshMenu(menu)
+        val currentTitle = this.title?.toString() ?: ""
+        if (currentTitle.isNotBlank()) TransitionManager.beginDelayedTransition(this, AutoTransition().apply {
+            // We only want to animate the title, but it's lazy initialized.
+            // If it's there, use it, else fuzzy match to it's initialization
+            val titleTextView = children.filterIsInstance<TextView>()
+                    .filter { it.text?.toString() == currentTitle }
+                    .firstOrNull()
+            if (titleTextView != null) addTarget(titleTextView) else addTarget(TextView::class.java)
+        })
 
-                child.animate()
-                        .setDuration(TOOLBAR_ANIM_DELAY)
-                        .setInterpolator(AccelerateDecelerateInterpolator())
-                        .withEndAction { updateIcons() }
-                        .alpha(1F)
-                        .start()
-            }.start()
-        }
+        this.title = if (title.isEmpty()) " " else title
+        refreshMenu(menu)
+        updateIcons()
     }
 
     private fun Toolbar.refreshMenu(menu: Int? = null) {
@@ -256,7 +248,7 @@ class GlobalUiDriver(
     }
 
     private fun Toolbar.updateIcons() {
-        TransitionManager.beginDelayedTransition(this, AutoTransition().setDuration(100))
+        TransitionManager.beginDelayedTransition(this, AutoTransition().setDuration(100).addTarget(ActionMenuView::class.java))
         val tint = titleTint
 
         menu.forEach {
@@ -279,7 +271,6 @@ class GlobalUiDriver(
         } ?: context.themeColorAt(R.attr.prominent_text_color)
 
     companion object {
-        private const val TOOLBAR_ANIM_DELAY = 200L
         private const val DEFAULT_SYSTEM_UI_FLAGS =
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                         View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
