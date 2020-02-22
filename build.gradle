@@ -22,7 +22,7 @@ buildscript {
         targetSdkVersion = 29
         minSdkVersion = 21
 
-        material = 'com.google.android.material:material:1.2.0-alpha02'
+        material = 'com.google.android.material:material:1.2.0-alpha05'
         palette = 'androidx.palette:palette:1.0.0'
         cardView = 'androidx.cardview:cardview:1.0.0'
         appCompat = 'androidx.appcompat:appcompat:1.1.0'
