@@ -43,9 +43,8 @@ class StaticSizer(
         var offset = displacement
         var position = 0
         while (offset > 0) {
-            val sizeAtPosition = appContext?.resources?.getDimensionPixelSize(R.dimen.sexdecuple_margin)
-            offset -= (sizeAtPosition ?: -1)
-            if (sizeAtPosition != null) position++
+            offset -= sizeAt(position)
+            position++
         }
 
         Log.i("TEST", "Syncing. position: $position; offset: $offset")
