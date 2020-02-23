@@ -6,7 +6,6 @@ import android.view.View
 import androidx.core.view.children
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
-import com.tunjid.androidx.recyclerview.R
 
 @UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)
 class StaticSizer(
