@@ -91,9 +91,8 @@ class DynamicSizer(
         return if (isHorizontal) measuredWidth else measuredHeight
     }
 
-    private fun RecyclerView.childIn(column: Int): View? {
-        return this.findViewHolderForAdapterPosition(column)?.itemView
-    }
+    private fun RecyclerView.childIn(column: Int): View? =
+            findViewHolderForLayoutPosition(column)?.itemView
 
     private fun View.setSizer() {
         val existing = getTag(R.id.recyclerview_pre_draw) as? ViewTreeObserver.OnPreDrawListener
