@@ -5,7 +5,6 @@ import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.core.view.doOnLayout
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 
 @Experimental
