@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
-import com.tunjid.androidx.R
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
 
@@ -50,13 +49,6 @@ fun MultiStackNavigator.materialDepthAxisTransition(): FragmentTransaction.(Frag
         }
     }
 }
-
-fun FragmentTransaction.slide(toTheRight: Boolean) = setCustomAnimations(
-        if (toTheRight) R.anim.slide_in_right else R.anim.slide_in_left,
-        if (toTheRight) R.anim.slide_out_left else R.anim.slide_out_right,
-        if (toTheRight) R.anim.slide_in_left else R.anim.slide_in_right,
-        if (toTheRight) R.anim.slide_out_right else R.anim.slide_out_left
-)
 
 fun baseSharedTransition(): Transition = TransitionSet()
         .setOrdering(TransitionSet.ORDERING_TOGETHER)

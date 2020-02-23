@@ -3,6 +3,7 @@ package com.tunjid.androidx.fragments
 import android.graphics.Color
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
+import android.transition.Transition
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +11,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.transition.MaterialFadeThrough
+import com.google.android.material.transition.MaterialSharedAxis
+import com.google.android.material.transition.MaterialSharedAxis.X
 import com.tunjid.androidx.MutedColors
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
@@ -31,7 +36,6 @@ import com.tunjid.androidx.navigation.childMultiStackNavigationController
 import com.tunjid.androidx.uidrivers.GlobalUiController
 import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.uidrivers.crossFade
-import com.tunjid.androidx.uidrivers.slide
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.routeName
 
@@ -68,12 +72,7 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
 
         innerNavigator.stackSelectedListener = { tabs.check(DESTINATIONS[it]) }
         innerNavigator.transactionModifier = { crossFade() }
-        innerNavigator.stackTransactionModifier = { index ->
-            when (transitionOption) {
-                R.id.slide -> slide(index > innerNavigator.activeIndex)
-                R.id.cross_fade -> crossFade()
-            }
-        }
+        innerNavigator.stackTransactionModifier = stackTransactionAnimator()
 
         tabs.setOnCheckedChangeListener { _, checkedId ->
             if (checkedId != View.NO_ID && !childFragmentManager.isStateSaved) innerNavigator.show(DESTINATIONS.indexOf(checkedId))
@@ -111,6 +110,28 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
     }
 
     private fun getChildName(index: Int) = resources.getResourceEntryName(DESTINATIONS[index])
+
+    @Suppress("USELESS_CAST")
+    private fun stackTransactionAnimator(): FragmentTransaction.(Int) -> Unit = transition@{ toIndex ->
+        val context = requireContext()
+        val fromIndex = innerNavigator.activeIndex
+        val isForward = toIndex > fromIndex
+        val isSliding = transitionOption == R.id.slide
+
+        val from = childFragmentManager.findFragmentByTag(fromIndex.toString()) ?: return@transition
+        val to = childFragmentManager.findFragmentByTag(toIndex.toString()) ?: return@transition
+
+        // Casting is necessary for over enthusiastic Kotlin compiler CHECKCAST generation
+        val (enterFrom, exitFrom, enterTo, exitTo) = arrayOf(
+                if (isSliding) MaterialSharedAxis.create(context, X, !isForward) else null,
+                if (isSliding) MaterialSharedAxis.create(context, X, isForward) else MaterialFadeThrough.create(context) as Transition,
+                if (isSliding) MaterialSharedAxis.create(context, X, isForward) else MaterialFadeThrough.create(context) as Transition,
+                if (isSliding) MaterialSharedAxis.create(context, X, !isForward) else null
+        )
+
+        from.apply { enterTransition = enterFrom; exitTransition = exitFrom }
+        to.apply { enterTransition = enterTo; exitTransition = exitTo }
+    }
 
     companion object {
 
