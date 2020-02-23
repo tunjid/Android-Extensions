@@ -1,9 +1,9 @@
 package com.tunjid.androidx.recyclerview.multiscroll
 
 import android.content.Context
-import android.util.Log
 import android.view.View
 import androidx.core.view.children
+import androidx.core.view.doOnNextLayout
 import androidx.recyclerview.widget.RecyclerView
 
 @UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)
@@ -49,10 +49,11 @@ class StaticSizer(
     }
 
     private fun includeChild(child: View) {
-        child.updateSize(sizeAt(child.currentColumn))
+        val currentColumn = child.currentColumn
+
+        if (currentColumn != Sizer.UNKNOWN) child.updateSize(sizeAt(child.currentColumn))
+        else child.doOnNextLayout(this::includeChild)
     }
 
-    private fun excludeChild(child: View) {
-        child.updateSize(80)
-    }
+    private fun excludeChild(child: View) = child.updateSize(80)
 }

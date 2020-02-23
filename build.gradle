@@ -53,7 +53,7 @@ buildscript {
         espressoContrib = 'androidx.test.espresso:espresso-contrib:3.1.0'
         espressoIdlingResource = 'androidx.test.espresso.idling:idling-concurrent:3.1.0'
 
-        ktxCore = 'androidx.core:core-ktx:1.1.0'
+        ktxCore = 'androidx.core:core-ktx:1.2.0'
         kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
         // Artifactory publishing params

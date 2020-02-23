@@ -135,9 +135,6 @@ class DynamicSizer(
         return this.findViewHolderForAdapterPosition(column)?.itemView
     }
 
-    private val View.parentRecyclerView: RecyclerView?
-        get() = parent as? RecyclerView
-
     private var View.layoutSize: Int
         get() =
             if (orientation == RecyclerView.HORIZONTAL) minimumWidth
