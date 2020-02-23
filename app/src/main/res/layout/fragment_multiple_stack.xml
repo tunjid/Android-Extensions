@@ -14,44 +14,50 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.chip.ChipGroup
+    <com.google.android.material.button.MaterialButtonToggleGroup
         android:id="@+id/tabs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/quintuple_margin"
+        app:checkedButton="@+id/first"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:singleLine="true"
+        app:selectionRequired="true"
         app:singleSelection="true">
 
-        <com.google.android.material.chip.Chip
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/first"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
+            android:textAllCaps="false"
+            android:textSize="@dimen/regular_text"
             android:text="@string/first"
-            android:textSize="@dimen/regular_text" />
+            app:strokeColor="@color/white_75" />
 
-        <com.google.android.material.chip.Chip
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/second"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:textSize="@dimen/regular_text"
             android:text="@string/second"
-            android:textSize="@dimen/regular_text" />
+            app:strokeColor="@color/white_75" />
 
-        <com.google.android.material.chip.Chip
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/third"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
-
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:textSize="@dimen/regular_text"
             android:text="@string/third"
-            android:textSize="@dimen/regular_text" />
+            app:strokeColor="@color/white_75" />
 
-    </com.google.android.material.chip.ChipGroup>
+    </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/options"
