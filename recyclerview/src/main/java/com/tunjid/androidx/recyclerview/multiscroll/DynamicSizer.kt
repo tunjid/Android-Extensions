@@ -83,10 +83,10 @@ class DynamicSizer(
     }
 
     private fun View.measure(): Int {
-        val noOp = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.EXACTLY)
-        val unspecified = View.MeasureSpec.makeMeasureSpec(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-
-        measure(if (isHorizontal) unspecified else noOp, if (isHorizontal) noOp else unspecified)
+        measure(
+                View.MeasureSpec.makeMeasureSpec(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        )
 
         return if (isHorizontal) measuredWidth else measuredHeight
     }
