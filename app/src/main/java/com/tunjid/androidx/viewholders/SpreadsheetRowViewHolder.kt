@@ -5,8 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.R
 import com.tunjid.androidx.model.Row
-import com.tunjid.androidx.recyclerview.ExperimentalRecyclerViewMultiScrolling
-import com.tunjid.androidx.recyclerview.RecyclerViewMultiScroller
+import com.tunjid.androidx.recyclerview.multiscroll.ExperimentalRecyclerViewMultiScrolling
+import com.tunjid.androidx.recyclerview.multiscroll.RecyclerViewMultiScroller
 import com.tunjid.androidx.recyclerview.horizontalLayoutManager
 import com.tunjid.androidx.recyclerview.listAdapterOf
 

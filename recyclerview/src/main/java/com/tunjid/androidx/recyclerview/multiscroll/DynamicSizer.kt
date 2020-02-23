@@ -1,10 +1,12 @@
-package com.tunjid.androidx.recyclerview
+package com.tunjid.androidx.recyclerview.multiscroll
 
 import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import androidx.core.view.children
 import androidx.recyclerview.widget.RecyclerView
+import com.tunjid.androidx.recyclerview.R
+import com.tunjid.androidx.recyclerview.notifyItemChanged
 import kotlin.math.max
 
 @UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)

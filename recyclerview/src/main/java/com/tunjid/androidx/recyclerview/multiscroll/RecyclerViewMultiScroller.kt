@@ -1,4 +1,4 @@
-package com.tunjid.androidx.recyclerview
+package com.tunjid.androidx.recyclerview.multiscroll
 
 import android.view.MotionEvent
 import android.view.View

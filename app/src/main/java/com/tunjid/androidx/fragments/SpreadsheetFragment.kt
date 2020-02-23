@@ -8,8 +8,8 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
-import com.tunjid.androidx.recyclerview.ExperimentalRecyclerViewMultiScrolling
-import com.tunjid.androidx.recyclerview.RecyclerViewMultiScroller
+import com.tunjid.androidx.recyclerview.multiscroll.ExperimentalRecyclerViewMultiScrolling
+import com.tunjid.androidx.recyclerview.multiscroll.RecyclerViewMultiScroller
 import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.view.util.InsetFlags
