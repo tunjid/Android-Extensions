@@ -10,7 +10,7 @@ import com.tunjid.androidx.recyclerview.notifyItemChanged
 import kotlin.math.max
 
 @UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)
-internal class DynamicSizer(
+class DynamicSizer(
         @RecyclerView.Orientation private val orientation: Int = RecyclerView.HORIZONTAL
 ) : RecyclerViewMultiScroller.Sizer {
 

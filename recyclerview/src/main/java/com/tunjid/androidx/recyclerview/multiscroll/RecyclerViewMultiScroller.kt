@@ -2,6 +2,7 @@ package com.tunjid.androidx.recyclerview.multiscroll
 
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.view.ViewCompat
 import androidx.core.view.doOnLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
@@ -96,6 +97,7 @@ class RecyclerViewMultiScroller(
             recyclerView.addOnScrollListener(onScrollListener)
             recyclerView.addOnItemTouchListener(onItemTouchListener)
         }
+        if (!ViewCompat.isLaidOut(recyclerView) || recyclerView.isLayoutRequested) recyclerView.requestLayout()
     }
 
     private fun exclude(recyclerView: RecyclerView, removeFromSet: Boolean = true) {
@@ -114,8 +116,6 @@ class RecyclerViewMultiScroller(
         if (childSize == 0) return
 
         val (position, offset) = sizeUpdater.positionAndOffsetForDisplacement(displacement)
-//        val position = displacement / childSize
-//        val offset = displacement - (position * childSize)
 
         val linearLayoutManager = layoutManager as LinearLayoutManager
         linearLayoutManager.scrollToPositionWithOffset(position, -offset)
