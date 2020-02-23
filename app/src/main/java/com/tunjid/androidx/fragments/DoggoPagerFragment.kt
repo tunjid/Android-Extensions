@@ -49,7 +49,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.getColors(Color.TRANSPARENT).observe(this) { view?.setBackgroundColor(it) }
+        viewModel.colors.observe(this) { view?.setBackgroundColor(it) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -7,7 +7,6 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.palette.graphics.Palette
 import com.tunjid.androidx.App
 import com.tunjid.androidx.model.Doggo
@@ -29,14 +28,16 @@ class DoggoViewModel(application: Application) : AndroidViewModel(application) {
     private val processor = PublishProcessor.create<Int>()
     private val disposables = CompositeDisposable()
     private val colorEvaluator = ArgbEvaluator()
-    private val liveData = processor.toLiveData()
+    val colors = processor.toLiveData()
 
     val doggos = Doggo.doggos
 
-    fun getColors(startColor: Int): LiveData<Int> = disposables.add(when (val doggo = Doggo.transitionDoggo) {
-        null -> Maybe.empty<Int>()
-        else -> colorMap.getOrPut(doggo) { doggo.calculateColor() }
-    }.subscribe { endColor -> animate(startColor, endColor) }).let { liveData }
+    init {
+        disposables.add(when (val doggo = Doggo.transitionDoggo) {
+            null -> Maybe.empty<Int>()
+            else -> colorMap.getOrPut(doggo) { doggo.calculateColor() }
+        }.subscribe { endColor -> animate(endColor) }).let { colors }
+    }
 
     fun onSwiped(current: Int, fraction: Float, toTheRight: Boolean) {
         val percentage = if (toTheRight) fraction else 1 - fraction
@@ -51,7 +52,7 @@ class DoggoViewModel(application: Application) : AndroidViewModel(application) {
         )
     }
 
-    private fun animate(startColor: Int, endColor: Int?) = ValueAnimator.ofObject(colorEvaluator, startColor, endColor).apply {
+    private fun animate(endColor: Int?) = ValueAnimator.ofObject(colorEvaluator, Color.TRANSPARENT, endColor).apply {
         addUpdateListener { processor.onNext(it.animatedValue as Int) }
         duration = BACKGROUND_TINT_DURATION
         start()
