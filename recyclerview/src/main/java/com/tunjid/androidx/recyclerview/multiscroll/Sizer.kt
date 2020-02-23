@@ -23,15 +23,19 @@ interface Sizer {
 
     companion object {
         const val UNKNOWN = -1
+        const val DETACHED_SIZE = 80
     }
 }
 
 internal interface ViewModifier {
     val orientation: Int
 
+    val isHorizontal get() = orientation == RecyclerView.HORIZONTAL
+
+    val View.size get() = if (isHorizontal) width else height
+
     fun View.updateSize(updatedSize: Int) {
         val layoutParams = layoutParams
-        val isHorizontal = orientation == RecyclerView.HORIZONTAL
         val currentSize = if (isHorizontal) layoutParams.width else layoutParams.height
 
         if (currentSize == updatedSize) return
@@ -40,7 +44,7 @@ internal interface ViewModifier {
         invalidate()
         updateLayoutParams { if (isHorizontal) width = updatedSize else height = updatedSize }
 
-        Handler().repeat(parentRecyclerView){ requestLayout() }
+        Handler().repeat(parentRecyclerView) { requestLayout() }
     }
 }
 
@@ -54,12 +58,6 @@ internal val View.currentColumn: Int
 
 internal val View.parentRecyclerView: RecyclerView?
     get() = parent as? RecyclerView
-
-internal fun View.log(action: String) {
-    (this as? ViewGroup)?.children?.filterIsInstance<TextView>()?.firstOrNull()?.let {
-        Log.i("TEST", "$action ${it.text}")
-    }
-}
 
 private fun Handler.repeat(view: RecyclerView, action: () -> Unit) {
     val runnable = object : Runnable {
@@ -80,4 +78,10 @@ private fun Handler.repeat(view: RecyclerView, action: () -> Unit) {
 private fun Handler.cancel(runnable: Runnable) {
     removeCallbacks(runnable)
     removeCallbacksAndMessages(null)
+}
+
+internal fun View.log(action: String) {
+    (this as? ViewGroup)?.children?.filterIsInstance<TextView>()?.firstOrNull()?.let {
+        Log.i("TEST", "$action ${it.text}")
+    }
 }

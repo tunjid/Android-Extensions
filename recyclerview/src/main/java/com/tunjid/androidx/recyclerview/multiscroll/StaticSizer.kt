@@ -55,5 +55,5 @@ class StaticSizer(
         else child.doOnNextLayout(this::includeChild)
     }
 
-    private fun excludeChild(child: View) = child.updateSize(80)
+    private fun excludeChild(child: View) = child.updateSize(Sizer.DETACHED_SIZE)
 }
