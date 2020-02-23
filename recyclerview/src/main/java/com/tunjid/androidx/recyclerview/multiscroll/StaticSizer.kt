@@ -4,14 +4,13 @@ import android.content.Context
 import android.util.Log
 import android.view.View
 import androidx.core.view.children
-import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 
 @UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)
 class StaticSizer(
-        @RecyclerView.Orientation private val orientation: Int = RecyclerView.HORIZONTAL,
+        @RecyclerView.Orientation override val orientation: Int = RecyclerView.HORIZONTAL,
         private val sizeLookup: (Int) -> Int
-) : Sizer {
+) : Sizer, ViewModifier {
 
     private var appContext: Context? = null
     private val syncedScrollers = mutableSetOf<RecyclerView>()
@@ -57,9 +56,5 @@ class StaticSizer(
 
     private fun excludeChild(child: View) {
         child.updateSize(80)
-    }
-
-    private fun View.updateSize(updatedSize: Int) = updateLayoutParams {
-        if (orientation == RecyclerView.HORIZONTAL) width = updatedSize else height = updatedSize
     }
 }

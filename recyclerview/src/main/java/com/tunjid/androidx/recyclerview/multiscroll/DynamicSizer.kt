@@ -11,7 +11,7 @@ import kotlin.math.max
 
 @UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)
 class DynamicSizer(
-        @RecyclerView.Orientation private val orientation: Int = RecyclerView.HORIZONTAL
+        @RecyclerView.Orientation override val orientation: Int = RecyclerView.HORIZONTAL
 ) : Sizer {
 
     private val columnSizeMap = mutableMapOf<Int, Int>()
