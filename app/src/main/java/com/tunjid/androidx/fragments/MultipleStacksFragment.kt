@@ -35,7 +35,7 @@ import com.tunjid.androidx.navigation.addOnBackPressedCallback
 import com.tunjid.androidx.navigation.childMultiStackNavigationController
 import com.tunjid.androidx.uidrivers.GlobalUiController
 import com.tunjid.androidx.uidrivers.activityGlobalUiController
-import com.tunjid.androidx.uidrivers.crossFade
+import com.tunjid.androidx.uidrivers.materialDepthAxisTransition
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.routeName
 
@@ -71,7 +71,7 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
         val tabs = view.findViewById<ChipGroup>(R.id.tabs)
 
         innerNavigator.stackSelectedListener = { tabs.check(DESTINATIONS[it]) }
-        innerNavigator.transactionModifier = { crossFade() }
+        innerNavigator.transactionModifier = innerNavigator.materialDepthAxisTransition()
         innerNavigator.stackTransactionModifier = stackTransactionAnimator()
 
         tabs.setOnCheckedChangeListener { _, checkedId ->
