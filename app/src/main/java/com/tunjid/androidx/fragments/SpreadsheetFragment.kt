@@ -61,7 +61,7 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_route) {
     private val scroller by lazy {
         RecyclerViewMultiScroller(sizeUpdater = when {
             isDynamic -> DynamicSizer()
-            else -> StaticSizer(this@SpreadsheetFragment::staticSizeAt)
+            else -> StaticSizer(sizeLookup = this@SpreadsheetFragment::staticSizeAt)
         })
     }
 
@@ -92,7 +92,7 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_route) {
     }
 
     private fun staticSizeAt(position: Int) = requireContext().resources.getDimensionPixelSize(when (position) {
-        0 -> R.dimen.single_and_half_margin
+        0 -> R.dimen.triple_and_half_margin
         else -> R.dimen.sexdecuple_margin
     })
 

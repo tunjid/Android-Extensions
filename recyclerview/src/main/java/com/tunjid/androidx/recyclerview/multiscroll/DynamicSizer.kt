@@ -12,7 +12,7 @@ import kotlin.math.max
 @UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)
 class DynamicSizer(
         @RecyclerView.Orientation private val orientation: Int = RecyclerView.HORIZONTAL
-) : RecyclerViewMultiScroller.Sizer {
+) : Sizer {
 
     private val columnSizeMap = mutableMapOf<Int, Int>()
     private val syncedScrollers = mutableSetOf<RecyclerView>()
@@ -153,12 +153,4 @@ class DynamicSizer(
     private var View.previousColumn: Int
         get() = getTag(R.id.recyclerview_previous_column) as? Int ?: -1
         set(value) = setTag(R.id.recyclerview_previous_column, value)
-
-    private val View.currentColumn: Int
-        get() {
-            val recyclerView = parent as? RecyclerView ?: return -1
-            val viewHolder = recyclerView.getChildViewHolder(this) ?: return -1
-
-            return viewHolder.adapterPosition
-        }
 }

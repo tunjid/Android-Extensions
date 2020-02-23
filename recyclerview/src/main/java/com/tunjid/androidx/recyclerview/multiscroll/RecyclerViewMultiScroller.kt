@@ -121,13 +121,4 @@ class RecyclerViewMultiScroller(
         linearLayoutManager.scrollToPositionWithOffset(position, -offset)
     }
 
-    interface Sizer {
-        fun sizeAt(position: Int) : Int
-
-        fun include(recyclerView: RecyclerView)
-
-        fun exclude(recyclerView: RecyclerView)
-
-        fun positionAndOffsetForDisplacement(displacement: Int): Pair<Int, Int>
-    }
 }
