@@ -5,7 +5,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 
 interface Sizer {
-    val orientation : Int
+    val orientation: Int
 
     fun sizeAt(position: Int): Int
 
@@ -17,10 +17,15 @@ interface Sizer {
 }
 
 internal interface ViewModifier {
-    val orientation : Int
+    val orientation: Int
 
     fun View.updateSize(updatedSize: Int) = updateLayoutParams {
-        if (orientation == RecyclerView.HORIZONTAL) width = updatedSize else height = updatedSize
+        val isHorizontal = orientation == RecyclerView.HORIZONTAL
+        val currentSize = if (isHorizontal) width else height
+        if (isHorizontal) width = updatedSize else height = updatedSize
+        if (currentSize != updatedSize) {
+            requestLayout()
+        }
     }
 }
 

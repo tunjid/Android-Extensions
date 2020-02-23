@@ -7,8 +7,8 @@
     android:layout_height="wrap_content"
     app:cardCornerRadius="0dp"
     app:cardForegroundColor="@color/transparent"
-    app:strokeColor="@color/black"
-    app:strokeWidth="2dp">
+    app:strokeColor="@color/dark_grey"
+    app:strokeWidth="1px">
 
     <TextView
         android:id="@+id/cell"

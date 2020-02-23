@@ -45,8 +45,6 @@ class StaticSizer(
             position++
         }
 
-        Log.i("TEST", "Syncing. position: $position; offset: $offset")
-
         return position to offset
     }
 
