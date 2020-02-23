@@ -122,6 +122,8 @@ class RecyclerViewMultiScroller(
     }
 
     interface Sizer {
+        fun sizeAt(position: Int) : Int
+
         fun include(recyclerView: RecyclerView)
 
         fun exclude(recyclerView: RecyclerView)

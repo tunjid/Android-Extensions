@@ -2,15 +2,18 @@ package com.tunjid.androidx.recyclerview.multiscroll
 
 import android.content.Context
 import android.util.Log
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.recyclerview.R
 
 @UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)
 class StaticSizer(
-        @RecyclerView.Orientation private val orientation: Int = RecyclerView.HORIZONTAL
+        private val sizeLookup: (Int) -> Int
 ) : RecyclerViewMultiScroller.Sizer {
 
     private var appContext: Context? = null
+
+    override fun sizeAt(position: Int): Int = sizeLookup(position)
 
     override fun include(recyclerView: RecyclerView) {
         appContext = recyclerView.context.applicationContext

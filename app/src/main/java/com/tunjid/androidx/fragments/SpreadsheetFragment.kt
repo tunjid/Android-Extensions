@@ -59,7 +59,10 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_route) {
     private val viewModel by viewModels<SpreadsheetViewModel>()
 
     private val scroller by lazy {
-        RecyclerViewMultiScroller(sizeUpdater = if (isDynamic) DynamicSizer() else StaticSizer())
+        RecyclerViewMultiScroller(sizeUpdater = when {
+            isDynamic -> DynamicSizer()
+            else -> StaticSizer { position -> requireContext().resources.getDimensionPixelSize(if (position == 0) R.dimen.single_and_half_margin else R.dimen.sexdecuple_margin) }
+        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

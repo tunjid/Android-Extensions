@@ -23,6 +23,8 @@ class DynamicSizer(
         override fun onChildViewAttachedToWindow(view: View) = includeChild(view)
     }
 
+    override fun sizeAt(position: Int): Int = columnSizeMap[position] ?: 0
+
     override fun include(recyclerView: RecyclerView) {
         syncedScrollers.add(recyclerView)
         recyclerView.addOnChildAttachStateChangeListener(onChildAttachStateChangeListener)
