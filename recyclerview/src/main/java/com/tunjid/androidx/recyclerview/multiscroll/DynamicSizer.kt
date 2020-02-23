@@ -1,6 +1,5 @@
 package com.tunjid.androidx.recyclerview.multiscroll
 
-import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import androidx.core.view.children
@@ -45,8 +44,6 @@ class DynamicSizer(
             if (sizeAtPosition != null) position++
         }
 
-        Log.i("TEST", "Syncing. position: $position; offset: $offset")
-
         return position to offset
     }
 
@@ -62,26 +59,6 @@ class DynamicSizer(
     private fun excludeChild(child: View) {
         child.removeSizer()
         child.updateSize(Sizer.DETACHED_SIZE)
-    }
-
-    private fun View.setSizer() {
-        val existing = getTag(R.id.recyclerview_pre_draw) as? ViewTreeObserver.OnPreDrawListener
-        if (existing != null) return
-
-        val listener = ViewTreeObserver.OnPreDrawListener {
-            dynamicResize()
-            true
-        }
-
-        viewTreeObserver.addOnPreDrawListener(listener)
-        setTag(R.id.recyclerview_pre_draw, listener)
-    }
-
-    private fun View.removeSizer() {
-        val listener = getTag(R.id.recyclerview_pre_draw) as? ViewTreeObserver.OnPreDrawListener
-                ?: return
-        viewTreeObserver.removeOnPreDrawListener(listener)
-        setTag(R.id.recyclerview_pre_draw, null)
     }
 
     private fun View.dynamicResize() {
@@ -105,7 +82,6 @@ class DynamicSizer(
         }
     }
 
-
     private fun View.measure(): Int {
         val noOp = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.EXACTLY)
         val unspecified = View.MeasureSpec.makeMeasureSpec(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
@@ -119,4 +95,23 @@ class DynamicSizer(
         return this.findViewHolderForAdapterPosition(column)?.itemView
     }
 
+    private fun View.setSizer() {
+        val existing = getTag(R.id.recyclerview_pre_draw) as? ViewTreeObserver.OnPreDrawListener
+        if (existing != null) return
+
+        val listener = ViewTreeObserver.OnPreDrawListener {
+            dynamicResize()
+            true
+        }
+
+        viewTreeObserver.addOnPreDrawListener(listener)
+        setTag(R.id.recyclerview_pre_draw, listener)
+    }
+
+    private fun View.removeSizer() {
+        val listener = getTag(R.id.recyclerview_pre_draw) as? ViewTreeObserver.OnPreDrawListener
+                ?: return
+        viewTreeObserver.removeOnPreDrawListener(listener)
+        setTag(R.id.recyclerview_pre_draw, null)
+    }
 }
