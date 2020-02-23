@@ -81,7 +81,7 @@ class RecyclerViewMultiScroller(
     fun add(recyclerView: RecyclerView) {
         if (syncedScrollers.contains(recyclerView)) return
 
-        LinearSnapHelper().attachToRecyclerView(recyclerView)
+//        LinearSnapHelper().attachToRecyclerView(recyclerView)
         recyclerView.calculateChildSize()
 
         include(recyclerView)
