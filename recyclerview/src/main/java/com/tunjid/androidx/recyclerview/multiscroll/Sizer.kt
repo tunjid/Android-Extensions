@@ -80,8 +80,10 @@ private fun Handler.cancel(runnable: Runnable) {
     removeCallbacksAndMessages(null)
 }
 
-internal fun View.log(action: String) {
-    (this as? ViewGroup)?.children?.filterIsInstance<TextView>()?.firstOrNull()?.let {
-        Log.i("TEST", "$action ${it.text}")
-    }
+internal fun View.log(action: String, filter: (String) -> Boolean = { true }) {
+    (this as? ViewGroup)?.children
+            ?.filterIsInstance<TextView>()
+            ?.filter { filter(it.text.toString()) }
+            ?.firstOrNull()
+            ?.let { Log.i("TEST", "$action ${it.text}") }
 }
