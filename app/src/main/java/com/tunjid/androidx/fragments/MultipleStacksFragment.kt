@@ -28,6 +28,8 @@ import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.addOnBackPressedCallback
 import com.tunjid.androidx.navigation.childMultiStackNavigationController
+import com.tunjid.androidx.uidrivers.GlobalUiController
+import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.uidrivers.crossFade
 import com.tunjid.androidx.uidrivers.slide
 import com.tunjid.androidx.view.util.InsetFlags
@@ -103,6 +105,11 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
         view?.apply { transitionOption = findViewById<ChipGroup>(R.id.options).checkedChipId }
     }
 
+    override fun onPause() {
+        super.onPause()
+        uiState = uiState.copy(backgroundColor = Color.TRANSPARENT)
+    }
+
     private fun getChildName(index: Int) = resources.getResourceEntryName(DESTINATIONS[index])
 
     companion object {
@@ -114,10 +121,13 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
 
 }
 
-class MultipleStackChildFragment : Fragment(), Navigator.TagProvider {
+class MultipleStackChildFragment : Fragment(),
+        GlobalUiController,
+        Navigator.TagProvider {
 
-    override val stableTag: String
-        get() = "${javaClass.simpleName}-$name-$depth"
+    override val stableTag: String get() = "${javaClass.simpleName}-$name-$depth"
+
+    override var uiState by activityGlobalUiController()
 
     var name: String by args()
 
@@ -140,8 +150,12 @@ class MultipleStackChildFragment : Fragment(), Navigator.TagProvider {
         gravity = Gravity.CENTER
         textSize = resources.getDimensionPixelSize(R.dimen.large_text).toFloat()
         movementMethod = LinkMovementMethod.getInstance()
-        setBackgroundColor(MutedColors.colorAt(context.isDarkTheme, depth))
         setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+    }
+
+    override fun onResume() {
+        super.onResume()
+        uiState = uiState.copy(backgroundColor = MutedColors.colorAt(requireContext().isDarkTheme, depth))
     }
 
     companion object {

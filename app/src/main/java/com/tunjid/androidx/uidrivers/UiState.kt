@@ -11,16 +11,21 @@ import androidx.annotation.MenuRes
 import androidx.dynamicanimation.animation.SpringAnimation
 
 data class UiState(
-        @MenuRes val toolBarMenu: Int,
+        @MenuRes
+        val toolBarMenu: Int,
         val toolbarShows: Boolean,
         val toolbarInvalidated: Boolean,
         val toolbarTitle: CharSequence,
-        @DrawableRes val fabIcon: Int,
+        @DrawableRes
+        val fabIcon: Int,
         val fabShows: Boolean,
         val fabExtended: Boolean,
         val fabText: CharSequence,
+        @ColorInt
+        val backgroundColor: Int,
         val snackbarText: CharSequence,
-        @ColorInt val navBarColor: Int,
+        @ColorInt
+        val navBarColor: Int,
         val lightStatusBar: Boolean,
         val showsBottomNav: Boolean,
         val fabClickListener: View.OnClickListener?,
@@ -35,6 +40,7 @@ data class UiState(
              lightStatusBarConsumer: (Boolean) -> Unit,
              fabStateConsumer: (Int, CharSequence) -> Unit,
              fabExtendedConsumer: (Boolean) -> Unit,
+             backgroundColorConsumer: (Int) -> Unit,
              snackbarTextConsumer: (CharSequence) -> Unit,
              toolbarStateConsumer: (Int, Boolean, CharSequence) -> Unit,
              fabClickListenerConsumer: (View.OnClickListener?) -> Unit,
@@ -52,6 +58,7 @@ data class UiState(
         onChanged(newState, UiState::showsBottomNav) { showsBottomNavConsumer(showsBottomNav) }
         onChanged(newState, UiState::fabShows) { showsFabConsumer(fabShows) }
         onChanged(newState, UiState::fabExtended) { fabExtendedConsumer(fabExtended) }
+        onChanged(newState, UiState::backgroundColor) { backgroundColorConsumer(backgroundColor) }
         onChanged(newState, UiState::snackbarText) { snackbarTextConsumer(snackbarText) }
         onChanged(newState, UiState::toolbarShows) { showsToolbarConsumer(toolbarShows) }
         onChanged(newState, UiState::navBarColor) { navBarColorConsumer(navBarColor) }
@@ -73,6 +80,7 @@ data class UiState(
             fabShows = `in`.readByte().toInt() != 0x00,
             fabExtended = `in`.readByte().toInt() != 0x00,
             fabText = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(`in`),
+            backgroundColor = `in`.readInt(),
             snackbarText = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(`in`),
             navBarColor = `in`.readInt(),
             lightStatusBar = `in`.readByte().toInt() != 0x00,
@@ -92,6 +100,7 @@ data class UiState(
         dest.writeByte((if (fabShows) 0x01 else 0x00).toByte())
         dest.writeByte((if (fabExtended) 0x01 else 0x00).toByte())
         TextUtils.writeToParcel(fabText, dest, 0)
+        dest.writeInt(backgroundColor)
         TextUtils.writeToParcel(snackbarText, dest, 0)
         dest.writeInt(navBarColor)
         dest.writeByte((if (showsBottomNav) 0x01 else 0x00).toByte())
@@ -108,6 +117,7 @@ data class UiState(
                 showsBottomNav = true,
                 fabShows = true,
                 fabExtended = true,
+                backgroundColor = Color.TRANSPARENT,
                 toolbarShows = true,
                 snackbarText = "",
                 toolbarInvalidated = false,

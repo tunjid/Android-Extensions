@@ -1,15 +1,19 @@
 package com.tunjid.androidx.uidrivers
 
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
 import androidx.appcompat.widget.ActionMenuView
@@ -57,18 +61,20 @@ fun FragmentActivity.globalUiDriver(
         bottomNavId: Int = R.id.bottom_navigation,
         navBackgroundId: Int = R.id.nav_background,
         coordinatorLayoutId: Int = R.id.coordinator_layout,
+        backgroundId: Int = R.id.constraint_layout,
         navigatorSupplier: () -> Navigator
 ) = object : ReadWriteProperty<FragmentActivity, UiState> {
 
     private val driver by lazy {
         GlobalUiDriver(
-                this@globalUiDriver,
-                toolbarId,
-                fabId,
-                bottomNavId,
-                navBackgroundId,
-                coordinatorLayoutId,
-                navigatorSupplier
+                host = this@globalUiDriver,
+                toolbarId = toolbarId,
+                fabId = fabId,
+                bottomNavId = bottomNavId,
+                navBackgroundId = navBackgroundId,
+                backgroundId = backgroundId,
+                coordinatorLayoutId = coordinatorLayoutId,
+                navigatorSupplier = navigatorSupplier
         )
     }
 
@@ -109,6 +115,7 @@ class GlobalUiDriver(
         fabId: Int,
         bottomNavId: Int,
         navBackgroundId: Int,
+        backgroundId: Int,
         coordinatorLayoutId: Int,
         private val navigatorSupplier: () -> Navigator
 ) : GlobalUiController {
@@ -141,6 +148,9 @@ class GlobalUiDriver(
     private val coordinatorLayout: CoordinatorLayout =
             host.findViewById(coordinatorLayoutId)
 
+    private val backgroundView: View =
+            host.findViewById(backgroundId)
+
     private var state: UiState = UiState.freshState()
 
     override var uiState: UiState
@@ -149,18 +159,19 @@ class GlobalUiDriver(
             val previous = state.copy()
             state = value.copy(toolbarInvalidated = false, snackbarText = "") // Reset after firing once
             previous.diff(
-                    value,
-                    bottomNavHider::set,
-                    fabHider::set,
-                    toolbarHider::set,
-                    this::setNavBarColor,
-                    this::setLightStatusBar,
-                    this::setFabIcon,
-                    fabExtensionAnimator::isExtended::set,
-                    this::showSnackBar,
-                    this::updateMainToolBar,
-                    this::setFabClickListener,
-                    this::setFabTransitionOptions
+                    newState = value,
+                    showsBottomNavConsumer = bottomNavHider::set,
+                    showsFabConsumer = fabHider::set,
+                    showsToolbarConsumer = toolbarHider::set,
+                    navBarColorConsumer = this::setNavBarColor,
+                    lightStatusBarConsumer = this::setLightStatusBar,
+                    fabStateConsumer = this::setFabIcon,
+                    fabExtendedConsumer = fabExtensionAnimator::isExtended::set,
+                    backgroundColorConsumer = backgroundView::animateBackground,
+                    snackbarTextConsumer = this::showSnackBar,
+                    toolbarStateConsumer = this::updateMainToolBar,
+                    fabClickListenerConsumer = this::setFabClickListener,
+                    fabTransitionOptionConsumer = this::setFabTransitionOptions
             )
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
@@ -277,6 +288,20 @@ class GlobalUiDriver(
                         View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                         WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
     }
+}
+
+private fun View.animateBackground(@ColorInt to: Int) {
+    val animator = getTag(R.id.doggo_image) as? ValueAnimator
+            ?: ValueAnimator().apply {
+                setTag(R.id.doggo_image, this)
+                setIntValues(Color.TRANSPARENT)
+                setEvaluator(ArgbEvaluator())
+                addUpdateListener { setBackgroundColor(it.animatedValue as Int) }
+            }
+
+    if (animator.isRunning) animator.cancel()
+    animator.setIntValues(animator.animatedValue as Int, to)
+    animator.start()
 }
 
 private val Int.isBrightColor get() = ColorUtils.calculateLuminance(this) > 0.5
