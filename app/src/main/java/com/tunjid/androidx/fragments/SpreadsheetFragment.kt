@@ -33,6 +33,8 @@ class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_
         super.onViewCreated(view, savedInstanceState)
 
         val viewPager = view.findViewById<ViewPager2>(R.id.view_pager)
+
+        viewPager.isUserInputEnabled = false
         viewPager.adapter = object : FragmentStateAdapter(this) {
             override fun getItemCount(): Int = 2
 
@@ -42,7 +44,7 @@ class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_
         }
 
         TabLayoutMediator(view.findViewById(R.id.tabs), viewPager) { tab, position ->
-            tab.text = if (position == 0) "Static" else "Dynamic"
+            tab.text = context?.getString(if (position == 0) R.string.static_cells else R.string.dynamic_cells)
         }.attach()
     }
 
