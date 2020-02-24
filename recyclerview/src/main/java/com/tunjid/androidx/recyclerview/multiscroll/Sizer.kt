@@ -9,6 +9,7 @@ import androidx.core.view.children
 import androidx.core.view.doOnDetach
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
+import com.tunjid.androidx.recyclerview.R
 
 interface Sizer {
     val orientation: Int
@@ -44,7 +45,18 @@ internal interface ViewModifier {
         invalidate()
         updateLayoutParams { if (isHorizontal) width = updatedSize else height = updatedSize }
 
-        Handler().repeat(parentRecyclerView) { requestLayout() }
+        sizingHandler.cancel()
+        sizingHandler.repeat(parentRecyclerView) { requestLayout() }
+    }
+
+    fun View.log(action: String, filter: (String) -> Boolean = { true }) {
+        if (this@ViewModifier is StaticSizer) return
+
+        (this as? ViewGroup)?.children
+                ?.filterIsInstance<TextView>()
+                ?.filter { filter(it.text.toString()) }
+                ?.firstOrNull()
+                ?.let { Log.i("TEST", "$action ${it.text}") }
     }
 }
 
@@ -75,15 +87,11 @@ private fun Handler.repeat(view: RecyclerView, action: () -> Unit) {
     view.doOnDetach { cancel(runnable) }
 }
 
-private fun Handler.cancel(runnable: Runnable) {
-    removeCallbacks(runnable)
+private fun Handler.cancel(runnable: Runnable? = null) {
+    if (runnable != null) removeCallbacks(runnable)
     removeCallbacksAndMessages(null)
 }
 
-internal fun View.log(action: String, filter: (String) -> Boolean = { true }) {
-    (this as? ViewGroup)?.children
-            ?.filterIsInstance<TextView>()
-            ?.filter { filter(it.text.toString()) }
-            ?.firstOrNull()
-            ?.let { Log.i("TEST", "$action ${it.text}") }
-}
+private val View.sizingHandler: Handler
+    get() = getTag(R.id.recyclerview_dynamic_sizing_handler) as? Handler
+            ?: Handler().apply { setTag(R.id.recyclerview_dynamic_sizing_handler, this) }

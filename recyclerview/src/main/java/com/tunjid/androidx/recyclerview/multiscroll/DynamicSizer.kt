@@ -51,7 +51,7 @@ class DynamicSizer(
         child.setSizer()
 
         val column = child.currentColumn
-        val lastSize = (if (column != Sizer.UNKNOWN) columnSizeMap[column] else null) ?: return
+        val lastSize = ((if (column != Sizer.UNKNOWN) columnSizeMap[column] else null)) ?: return
 
         child.updateSize(lastSize)
     }
@@ -74,11 +74,13 @@ class DynamicSizer(
 
         columnSizeMap[column] = newMaxSize
 
+        log("currentSize: $currentSize; old: $oldMaxSize; new: $newMaxSize          ") { it == "10" }
+
         if (currentSize != newMaxSize) updateSize(newMaxSize)
 
         if (oldMaxSize != newMaxSize) for (it in syncedScrollers) {
             if (it == recyclerView) continue
-            it.childIn(column)?.updateSize(newMaxSize)
+//            it.childIn(column)?.updateSize(newMaxSize)
         }
     }
 
