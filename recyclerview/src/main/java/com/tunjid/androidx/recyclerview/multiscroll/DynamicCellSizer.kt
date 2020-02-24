@@ -8,9 +8,9 @@ import com.tunjid.androidx.recyclerview.R
 import kotlin.math.max
 
 @UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)
-class DynamicSizer(
+class DynamicCellSizer(
         @RecyclerView.Orientation override val orientation: Int = RecyclerView.HORIZONTAL
-) : Sizer, ViewModifier {
+) : CellSizer, ViewModifier {
 
     private val columnSizeMap = mutableMapOf<Int, Int>()
     private val syncedScrollers = mutableSetOf<RecyclerView>()
@@ -23,7 +23,7 @@ class DynamicSizer(
 
     override fun clear() = syncedScrollers.clear(this::exclude)
 
-    override fun sizeAt(position: Int): Int = columnSizeMap[position] ?: Sizer.UNKNOWN
+    override fun sizeAt(position: Int): Int = columnSizeMap[position] ?: CellSizer.UNKNOWN
 
     override fun include(recyclerView: RecyclerView) {
         syncedScrollers.add(recyclerView)
@@ -37,35 +37,23 @@ class DynamicSizer(
         recyclerView.children.forEach { excludeChild(it) }
     }
 
-    override fun positionAndOffsetForDisplacement(displacement: Int): Pair<Int, Int> {
-        var offset = displacement
-        var position = 0
-        while (offset > 0) {
-            val sizeAtPosition = columnSizeMap[position]
-            offset -= (sizeAtPosition ?: -1)
-            if (sizeAtPosition != null) position++
-        }
-
-        return position to offset
-    }
-
     private fun includeChild(child: View) {
         child.ensureDynamicSizer()
 
         val column = child.currentColumn
-        val lastSize = (if (column != Sizer.UNKNOWN) columnSizeMap[column] else null) ?: return
+        val lastSize = (if (column != CellSizer.UNKNOWN) columnSizeMap[column] else null) ?: return
 
         child.updateSize(lastSize)
     }
 
     private fun excludeChild(child: View) {
         child.removeDynamicSizer()
-        child.updateSize(Sizer.DETACHED_SIZE)
+        child.updateSize(CellSizer.DETACHED_SIZE)
     }
 
     private fun View.dynamicResize() {
         val column = currentColumn
-        if (column == Sizer.UNKNOWN) return
+        if (column == CellSizer.UNKNOWN) return
 
         val currentSize = measureSize()
 

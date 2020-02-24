@@ -7,10 +7,10 @@ import androidx.core.view.doOnNextLayout
 import androidx.recyclerview.widget.RecyclerView
 
 @UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)
-class StaticSizer(
+class StaticCellSizer(
         @RecyclerView.Orientation override val orientation: Int = RecyclerView.HORIZONTAL,
         private val sizeLookup: (Int) -> Int
-) : Sizer, ViewModifier {
+) : CellSizer, ViewModifier {
 
     private var appContext: Context? = null
     private val syncedScrollers = mutableSetOf<RecyclerView>()
@@ -39,23 +39,12 @@ class StaticSizer(
         recyclerView.children.forEach { excludeChild(it) }
     }
 
-    override fun positionAndOffsetForDisplacement(displacement: Int): Pair<Int, Int> {
-        var offset = displacement
-        var position = 0
-        while (offset > 0) {
-            offset -= sizeAt(position)
-            position++
-        }
-
-        return position to offset
-    }
-
     private fun includeChild(child: View) {
         val currentColumn = child.currentColumn
 
-        if (currentColumn != Sizer.UNKNOWN) child.updateSize(sizeAt(child.currentColumn))
+        if (currentColumn != CellSizer.UNKNOWN) child.updateSize(sizeAt(child.currentColumn))
         else child.doOnNextLayout(this::includeChild)
     }
 
-    private fun excludeChild(child: View) = child.updateSize(Sizer.DETACHED_SIZE)
+    private fun excludeChild(child: View) = child.updateSize(CellSizer.DETACHED_SIZE)
 }

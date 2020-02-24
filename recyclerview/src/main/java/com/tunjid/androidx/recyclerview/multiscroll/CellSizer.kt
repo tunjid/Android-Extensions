@@ -10,7 +10,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.recyclerview.R
 
-interface Sizer {
+interface CellSizer {
     val orientation: Int
 
     fun clear()
@@ -20,8 +20,6 @@ interface Sizer {
     fun include(recyclerView: RecyclerView)
 
     fun exclude(recyclerView: RecyclerView)
-
-    fun positionAndOffsetForDisplacement(displacement: Int): Pair<Int, Int>
 
     companion object {
         const val UNKNOWN = -1
@@ -45,7 +43,7 @@ internal interface ViewModifier {
     }
 
     fun View.log(action: String, filter: (String) -> Boolean = { true }) {
-        if (this@ViewModifier is StaticSizer) return
+        if (this@ViewModifier is StaticCellSizer) return
 
         (this as? ViewGroup)?.children
                 ?.filterIsInstance<TextView>()
@@ -59,8 +57,8 @@ internal inline val ViewModifier.isHorizontal get() = orientation == RecyclerVie
 
 internal inline val View.currentColumn: Int
     get() {
-        val recyclerView = parentRecyclerView ?: return Sizer.UNKNOWN
-        val viewHolder = recyclerView.getChildViewHolder(this) ?: return Sizer.UNKNOWN
+        val recyclerView = parentRecyclerView ?: return CellSizer.UNKNOWN
+        val viewHolder = recyclerView.getChildViewHolder(this) ?: return CellSizer.UNKNOWN
 
         return viewHolder.layoutPosition
     }

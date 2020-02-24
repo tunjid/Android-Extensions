@@ -14,10 +14,10 @@ import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.recyclerview.adapterOf
-import com.tunjid.androidx.recyclerview.multiscroll.DynamicSizer
+import com.tunjid.androidx.recyclerview.multiscroll.DynamicCellSizer
 import com.tunjid.androidx.recyclerview.multiscroll.ExperimentalRecyclerViewMultiScrolling
 import com.tunjid.androidx.recyclerview.multiscroll.RecyclerViewMultiScroller
-import com.tunjid.androidx.recyclerview.multiscroll.StaticSizer
+import com.tunjid.androidx.recyclerview.multiscroll.StaticCellSizer
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
@@ -61,9 +61,9 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_route) {
     private val viewModel by viewModels<SpreadsheetViewModel>()
 
     private val scroller by lazy {
-        RecyclerViewMultiScroller(sizeUpdater = when {
-            isDynamic -> DynamicSizer()
-            else -> StaticSizer(sizeLookup = this@SpreadsheetFragment::staticSizeAt)
+        RecyclerViewMultiScroller(cellSizer = when {
+            isDynamic -> DynamicCellSizer()
+            else -> StaticCellSizer(sizeLookup = this@SpreadsheetFragment::staticSizeAt)
         })
     }
 

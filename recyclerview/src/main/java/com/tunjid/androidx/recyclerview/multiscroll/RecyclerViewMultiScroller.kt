@@ -22,7 +22,7 @@ annotation class ExperimentalRecyclerViewMultiScrolling
 @ExperimentalRecyclerViewMultiScrolling
 class RecyclerViewMultiScroller(
         @RecyclerView.Orientation private val orientation: Int = RecyclerView.HORIZONTAL,
-        private val sizeUpdater: Sizer = DynamicSizer(orientation)
+        private val cellSizer: CellSizer = DynamicCellSizer(orientation)
 ) {
     var displacement = 0
         private set
@@ -72,7 +72,7 @@ class RecyclerViewMultiScroller(
             exclude(it)
             it.removeOnAttachStateChangeListener(onAttachStateChangeListener)
         }
-        sizeUpdater.clear()
+        cellSizer.clear()
     }
 
     fun add(recyclerView: RecyclerView) {
@@ -89,7 +89,7 @@ class RecyclerViewMultiScroller(
             if (syncedScrollers.contains(recyclerView)) return@doOnLayout
             recyclerView.sync()
             syncedScrollers.add(recyclerView)
-            sizeUpdater.include(recyclerView)
+            cellSizer.include(recyclerView)
             recyclerView.addOnScrollListener(onScrollListener)
             recyclerView.addOnItemTouchListener(onItemTouchListener)
         }
@@ -99,7 +99,7 @@ class RecyclerViewMultiScroller(
     private fun exclude(recyclerView: RecyclerView) {
         recyclerView.removeOnItemTouchListener(onItemTouchListener)
         recyclerView.removeOnScrollListener(onScrollListener)
-        sizeUpdater.exclude(recyclerView)
+        cellSizer.exclude(recyclerView)
         syncedScrollers.remove(recyclerView)
     }
 
@@ -111,9 +111,15 @@ class RecyclerViewMultiScroller(
     private fun RecyclerView.sync() {
         if (childSize == 0) return
 
-        val (position, offset) = sizeUpdater.positionAndOffsetForDisplacement(displacement)
+        var offset = displacement
+        var position = 0
+        while (offset > 0) {
+            offset -= cellSizer.sizeAt(position)
+            position++
+        }
 
         val linearLayoutManager = layoutManager as LinearLayoutManager
         linearLayoutManager.scrollToPositionWithOffset(position, -offset)
     }
 }
+Sizer
