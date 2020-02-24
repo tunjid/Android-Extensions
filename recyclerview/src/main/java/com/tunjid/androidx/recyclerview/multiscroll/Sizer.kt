@@ -44,7 +44,7 @@ internal interface ViewModifier {
         updateLayoutParams { if (isHorizontal) width = updatedSize else height = updatedSize }
 
         sizingHandler.cancel()
-        sizingHandler.repeat(parentRecyclerView) { requestLayout() }
+        sizingHandler.onIdle(parentRecyclerView) { requestLayout() }
     }
 
     fun View.log(action: String, filter: (String) -> Boolean = { true }) {
@@ -77,7 +77,7 @@ private inline val View.sizingHandler: Handler
 
 internal inline val RecyclerView.isBusy get() = !isLaidOut || isLayoutRequested || isComputingLayout
 
-private fun Handler.repeat(view: RecyclerView, action: () -> Unit) {
+private fun Handler.onIdle(view: RecyclerView, action: () -> Unit) {
     val runnable = object : Runnable {
         override fun run() {
             if (view.isBusy) {
