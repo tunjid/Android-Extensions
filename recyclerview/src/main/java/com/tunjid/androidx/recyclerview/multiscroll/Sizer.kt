@@ -30,8 +30,6 @@ interface Sizer {
 internal interface ViewModifier {
     val orientation: Int
 
-    val View.size get() = if (isHorizontal) width else height
-
     fun View.updateSize(updatedSize: Int) {
         val layoutParams = layoutParams
         val currentSize = if (isHorizontal) layoutParams.width else layoutParams.height
