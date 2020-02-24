@@ -122,4 +122,3 @@ class RecyclerViewMultiScroller(
         linearLayoutManager.scrollToPositionWithOffset(position, -offset)
     }
 }
-Sizer
