@@ -31,8 +31,6 @@ interface Sizer {
 internal interface ViewModifier {
     val orientation: Int
 
-    val isHorizontal get() = orientation == RecyclerView.HORIZONTAL
-
     val View.size get() = if (isHorizontal) width else height
 
     fun View.updateSize(updatedSize: Int) {
@@ -60,16 +58,22 @@ internal interface ViewModifier {
     }
 }
 
-internal val View.currentColumn: Int
+internal inline val ViewModifier.isHorizontal get() = orientation == RecyclerView.HORIZONTAL
+
+internal inline val View.currentColumn: Int
     get() {
-        val recyclerView = parent as? RecyclerView ?: return -1
-        val viewHolder = recyclerView.getChildViewHolder(this) ?: return -1
+        val recyclerView = parentRecyclerView ?: return Sizer.UNKNOWN
+        val viewHolder = recyclerView.getChildViewHolder(this) ?: return Sizer.UNKNOWN
 
         return viewHolder.layoutPosition
     }
 
-internal val View.parentRecyclerView: RecyclerView?
+internal inline val View.parentRecyclerView: RecyclerView?
     get() = parent as? RecyclerView
+
+private inline val View.sizingHandler: Handler
+    get() = getTag(R.id.recyclerview_dynamic_sizing_handler) as? Handler
+            ?: Handler().apply { setTag(R.id.recyclerview_dynamic_sizing_handler, this) }
 
 private fun Handler.repeat(view: RecyclerView, action: () -> Unit) {
     val runnable = object : Runnable {
@@ -91,7 +95,3 @@ private fun Handler.cancel(runnable: Runnable? = null) {
     if (runnable != null) removeCallbacks(runnable)
     removeCallbacksAndMessages(null)
 }
-
-private val View.sizingHandler: Handler
-    get() = getTag(R.id.recyclerview_dynamic_sizing_handler) as? Handler
-            ?: Handler().apply { setTag(R.id.recyclerview_dynamic_sizing_handler, this) }
