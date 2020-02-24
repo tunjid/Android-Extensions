@@ -24,7 +24,7 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
                     RouteItem.Destination(DoggoRankFragment::class.java.routeName, formatRoute(R.string.route_doggo_rank)),
                     RouteItem.Destination(ShiftingTilesFragment::class.java.routeName, formatRoute(R.string.route_shifting_tile)),
                     RouteItem.Destination(EndlessTilesFragment::class.java.routeName, formatRoute(R.string.route_endless_tile)),
-                    RouteItem.Destination(SpreadsheetFragment::class.java.routeName, formatRoute(R.string.route_spreadsheet)),
+                    RouteItem.Destination(SpreadSheetParentFragment::class.java.routeName, formatRoute(R.string.route_spreadsheet)),
                     RouteItem.Spacer
             ),
             listOf(

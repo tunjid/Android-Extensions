@@ -14,7 +14,7 @@ class SpreadsheetViewModel(application: Application) : AndroidViewModel(applicat
                 Cell(
                         columnIndex,
                         if (columnIndex == 0) rowIndex.toString()
-                        else "$columnIndex-$rowIndex: ${Doggo.doggos.map(Doggo::name).random()}"
+                        else "$rowIndex-$columnIndex: ${Doggo.doggos.map(Doggo::name).random()}"
                 )
             })
         }
@@ -22,6 +22,6 @@ class SpreadsheetViewModel(application: Application) : AndroidViewModel(applicat
 
     companion object {
 
-        const val NUM_ROWS = 100
+        const val NUM_ROWS = 40
     }
 }

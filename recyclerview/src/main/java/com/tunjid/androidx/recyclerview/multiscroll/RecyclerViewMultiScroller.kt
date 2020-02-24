@@ -1,10 +1,10 @@
-package com.tunjid.androidx.recyclerview
+package com.tunjid.androidx.recyclerview.multiscroll
 
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.view.ViewCompat
 import androidx.core.view.doOnLayout
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 
 @Experimental
@@ -80,7 +80,7 @@ class RecyclerViewMultiScroller(
     fun add(recyclerView: RecyclerView) {
         if (syncedScrollers.contains(recyclerView)) return
 
-        LinearSnapHelper().attachToRecyclerView(recyclerView)
+//        LinearSnapHelper().attachToRecyclerView(recyclerView)
         recyclerView.calculateChildSize()
 
         include(recyclerView)
@@ -96,6 +96,7 @@ class RecyclerViewMultiScroller(
             recyclerView.addOnScrollListener(onScrollListener)
             recyclerView.addOnItemTouchListener(onItemTouchListener)
         }
+        if (!ViewCompat.isLaidOut(recyclerView) || recyclerView.isLayoutRequested) recyclerView.requestLayout()
     }
 
     private fun exclude(recyclerView: RecyclerView, removeFromSet: Boolean = true) {
@@ -114,18 +115,9 @@ class RecyclerViewMultiScroller(
         if (childSize == 0) return
 
         val (position, offset) = sizeUpdater.positionAndOffsetForDisplacement(displacement)
-//        val position = displacement / childSize
-//        val offset = displacement - (position * childSize)
 
         val linearLayoutManager = layoutManager as LinearLayoutManager
         linearLayoutManager.scrollToPositionWithOffset(position, -offset)
     }
 
-    interface Sizer {
-        fun include(recyclerView: RecyclerView)
-
-        fun exclude(recyclerView: RecyclerView)
-
-        fun positionAndOffsetForDisplacement(displacement: Int): Pair<Int, Int>
-    }
 }

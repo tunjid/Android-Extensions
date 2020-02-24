@@ -2,15 +2,22 @@ package com.tunjid.androidx.fragments
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayoutMediator
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
+import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
-import com.tunjid.androidx.recyclerview.ExperimentalRecyclerViewMultiScrolling
-import com.tunjid.androidx.recyclerview.RecyclerViewMultiScroller
 import com.tunjid.androidx.recyclerview.adapterOf
+import com.tunjid.androidx.recyclerview.multiscroll.DynamicSizer
+import com.tunjid.androidx.recyclerview.multiscroll.ExperimentalRecyclerViewMultiScrolling
+import com.tunjid.androidx.recyclerview.multiscroll.RecyclerViewMultiScroller
+import com.tunjid.androidx.recyclerview.multiscroll.StaticSizer
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
@@ -18,14 +25,45 @@ import com.tunjid.androidx.viewholders.SpreadsheetRowViewHolder
 import com.tunjid.androidx.viewmodels.SpreadsheetViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
-@UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)
-class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_route) {
-
-    private val viewModel by viewModels<SpreadsheetViewModel>()
+class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_parent) {
 
     override val insetFlags: InsetFlags = NO_BOTTOM
 
-    private val scroller = RecyclerViewMultiScroller()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val viewPager = view.findViewById<ViewPager2>(R.id.view_pager)
+        viewPager.adapter = object : FragmentStateAdapter(this) {
+            override fun getItemCount(): Int = 2
+
+            override fun createFragment(position: Int): Fragment =
+                    if (position == 0) SpreadsheetFragment.newInstance(false)
+                    else SpreadsheetFragment.newInstance(true)
+        }
+
+        TabLayoutMediator(view.findViewById(R.id.tabs), viewPager) { tab, position ->
+            tab.text = if (position == 0) "Static" else "Dynamic"
+        }.attach()
+    }
+
+    companion object {
+        fun newInstance(): SpreadSheetParentFragment = SpreadSheetParentFragment().apply { arguments = Bundle() }
+    }
+}
+
+@UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)
+class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_route) {
+
+    private var isDynamic by args<Boolean>()
+
+    private val viewModel by viewModels<SpreadsheetViewModel>()
+
+    private val scroller by lazy {
+        RecyclerViewMultiScroller(sizeUpdater = when {
+            isDynamic -> DynamicSizer()
+            else -> StaticSizer(sizeLookup = this@SpreadsheetFragment::staticSizeAt)
+        })
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -53,12 +91,17 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_route) {
         }
     }
 
+    private fun staticSizeAt(position: Int) = requireContext().resources.getDimensionPixelSize(when (position) {
+        0 -> R.dimen.triple_and_half_margin
+        else -> R.dimen.sexdecuple_margin
+    })
+
     override fun onDestroyView() {
         super.onDestroyView()
         scroller.clear()
     }
 
     companion object {
-        fun newInstance(): SpreadsheetFragment = SpreadsheetFragment().apply { arguments = Bundle() }
+        fun newInstance(isDynamic: Boolean): SpreadsheetFragment = SpreadsheetFragment().apply { this.isDynamic = isDynamic }
     }
 }

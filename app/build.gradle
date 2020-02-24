@@ -57,7 +57,7 @@ android {
         jvmTarget = '1.8'
         freeCompilerArgs += [
                 "-Xuse-experimental=kotlin.Experimental",
-                "-Xuse-experimental=com.tunjid.androidx.recyclerview.ExperimentalRecyclerViewMultiScrolling"
+                "-Xuse-experimental=com.tunjid.androidx.recyclerview.multiscroll.ExperimentalRecyclerViewMultiScrolling"
         ]
     }
 }

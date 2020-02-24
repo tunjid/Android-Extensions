@@ -7,15 +7,17 @@
     android:layout_height="wrap_content"
     app:cardCornerRadius="0dp"
     app:cardForegroundColor="@color/transparent"
-    app:strokeColor="@color/black"
-    app:strokeWidth="2dp">
+    app:strokeColor="@color/dark_grey"
+    app:strokeWidth="1px">
 
     <TextView
         android:id="@+id/cell"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/transparent"
+        android:ellipsize="end"
         android:minHeight="@dimen/triple_margin"
         android:padding="@dimen/single_margin"
+        android:singleLine="true"
         tools:text="hello" />
 </com.google.android.material.card.MaterialCardView>
