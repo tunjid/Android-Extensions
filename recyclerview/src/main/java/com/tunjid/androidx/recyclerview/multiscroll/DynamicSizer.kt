@@ -52,6 +52,7 @@ class DynamicSizer(
 
         val column = child.currentColumn
         val lastSize = ((if (column != Sizer.UNKNOWN) columnSizeMap[column] else null)) ?: return
+//        val lastSize = ((if (column != Sizer.UNKNOWN) columnSizeMap.getOrPut(column, Sizer.Companion::DETACHED_SIZE) else null)) ?: return
 
         child.updateSize(lastSize)
     }
