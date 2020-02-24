@@ -48,23 +48,20 @@ class DynamicSizer(
     }
 
     private fun includeChild(child: View) {
-        child.setSizer()
+        child.ensureDynamicSizer()
 
         val column = child.currentColumn
-        val lastSize = ((if (column != Sizer.UNKNOWN) columnSizeMap[column] else null)) ?: return
-//        val lastSize = ((if (column != Sizer.UNKNOWN) columnSizeMap.getOrPut(column, Sizer.Companion::DETACHED_SIZE) else null)) ?: return
+        val lastSize = (if (column != Sizer.UNKNOWN) columnSizeMap[column] else null) ?: return
 
         child.updateSize(lastSize)
     }
 
     private fun excludeChild(child: View) {
-        child.removeSizer()
+        child.removeDynamicSizer()
         child.updateSize(Sizer.DETACHED_SIZE)
     }
 
     private fun View.dynamicResize() {
-        val recyclerView = parentRecyclerView ?: return
-
         val column = currentColumn
         if (column == Sizer.UNKNOWN) return
 
@@ -75,14 +72,7 @@ class DynamicSizer(
 
         columnSizeMap[column] = newMaxSize
 
-        log("currentSize: $currentSize; old: $oldMaxSize; new: $newMaxSize          ") { it == "10" }
-
-        if (currentSize != newMaxSize) updateSize(newMaxSize)
-
-        if (oldMaxSize != newMaxSize) for (it in syncedScrollers) {
-            if (it == recyclerView) continue
-//            it.childIn(column)?.updateSize(newMaxSize)
-        }
+        if (oldMaxSize != newMaxSize) for (it in syncedScrollers) it.childIn(column)?.updateSize(newMaxSize)
     }
 
     private fun View.measure(): Int {
@@ -97,7 +87,7 @@ class DynamicSizer(
     private fun RecyclerView.childIn(column: Int): View? =
             findViewHolderForLayoutPosition(column)?.itemView
 
-    private fun View.setSizer() {
+    private fun View.ensureDynamicSizer() {
         val existing = getTag(R.id.recyclerview_pre_draw) as? ViewTreeObserver.OnPreDrawListener
         if (existing != null) return
 
@@ -110,7 +100,7 @@ class DynamicSizer(
         setTag(R.id.recyclerview_pre_draw, listener)
     }
 
-    private fun View.removeSizer() {
+    private fun View.removeDynamicSizer() {
         val listener = getTag(R.id.recyclerview_pre_draw) as? ViewTreeObserver.OnPreDrawListener
                 ?: return
         viewTreeObserver.removeOnPreDrawListener(listener)
