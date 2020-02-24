@@ -65,7 +65,7 @@ class DynamicSizer(
         val column = currentColumn
         if (column == Sizer.UNKNOWN) return
 
-        val currentSize = measure()
+        val currentSize = measureSize()
 
         val oldMaxSize = columnSizeMap[column] ?: 0
         val newMaxSize = max(oldMaxSize, currentSize)
@@ -75,7 +75,7 @@ class DynamicSizer(
         if (oldMaxSize != newMaxSize) for (it in syncedScrollers) it.childIn(column)?.updateSize(newMaxSize)
     }
 
-    private fun View.measure(): Int {
+    private fun View.measureSize(): Int {
         measure(
                 View.MeasureSpec.makeMeasureSpec(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
@@ -83,9 +83,6 @@ class DynamicSizer(
 
         return if (isHorizontal) measuredWidth else measuredHeight
     }
-
-    private fun RecyclerView.childIn(column: Int): View? =
-            findViewHolderForLayoutPosition(column)?.itemView
 
     private fun View.ensureDynamicSizer() {
         val existing = getTag(R.id.recyclerview_pre_draw) as? ViewTreeObserver.OnPreDrawListener
@@ -107,3 +104,6 @@ class DynamicSizer(
         setTag(R.id.recyclerview_pre_draw, null)
     }
 }
+
+private fun RecyclerView.childIn(column: Int): View? =
+        findViewHolderForLayoutPosition(column)?.itemView

@@ -75,10 +75,12 @@ private inline val View.sizingHandler: Handler
     get() = getTag(R.id.recyclerview_dynamic_sizing_handler) as? Handler
             ?: Handler().apply { setTag(R.id.recyclerview_dynamic_sizing_handler, this) }
 
+internal inline val RecyclerView.isBusy get() = !isLaidOut || isLayoutRequested || isComputingLayout
+
 private fun Handler.repeat(view: RecyclerView, action: () -> Unit) {
     val runnable = object : Runnable {
         override fun run() {
-            if (!view.isLaidOut || view.isLayoutRequested || view.isComputingLayout) {
+            if (view.isBusy) {
                 post(this)
             } else {
                 action()
