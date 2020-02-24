@@ -70,7 +70,10 @@ internal inline val View.parentRecyclerView: RecyclerView?
 
 private inline var View.sizingRunnable: Runnable?
     get() = getTag(R.id.recyclerview_dynamic_sizing_handler) as? Runnable
-    set(value) = setTag(R.id.recyclerview_dynamic_sizing_handler, value)
+    set(value) {
+        (getTag(R.id.recyclerview_dynamic_sizing_handler) as? Runnable)?.let(this::removeCallbacks)
+        setTag(R.id.recyclerview_dynamic_sizing_handler, value)
+    }
 
 internal inline val RecyclerView.isBusy get() = !isLaidOut || isLayoutRequested || isComputingLayout
 
@@ -82,14 +85,12 @@ private inline fun View.onParentIdle(crossinline action: () -> Unit) {
             else {
                 if (parent != null) action()
                 sizingRunnable = null
-                removeCallbacks(this)
             }
         }
     }
 
-    sizingRunnable?.let(this::removeCallbacks)
     sizingRunnable = runnable
 
     post(runnable)
-    doOnDetach { it.removeCallbacks(runnable); it.sizingRunnable = null }
+    doOnDetach { it.sizingRunnable = null }
 }
