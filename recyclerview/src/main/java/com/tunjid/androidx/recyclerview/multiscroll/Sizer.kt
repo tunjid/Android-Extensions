@@ -1,6 +1,5 @@
 package com.tunjid.androidx.recyclerview.multiscroll
 
-import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -38,13 +37,11 @@ internal interface ViewModifier {
         val currentSize = if (isHorizontal) layoutParams.width else layoutParams.height
 
         if (currentSize == updatedSize) return
-        val parentRecyclerView = parentRecyclerView ?: return
 
         invalidate()
         updateLayoutParams { if (isHorizontal) width = updatedSize else height = updatedSize }
 
-        sizingHandler.cancel()
-        parentRecyclerView.onIdle(sizingHandler) { requestLayout() }
+        onParentIdle { requestLayout() }
     }
 
     fun View.log(action: String, filter: (String) -> Boolean = { true }) {
@@ -71,29 +68,28 @@ internal inline val View.currentColumn: Int
 internal inline val View.parentRecyclerView: RecyclerView?
     get() = parent as? RecyclerView
 
-private inline val View.sizingHandler: Handler
-    get() = getTag(R.id.recyclerview_dynamic_sizing_handler) as? Handler
-            ?: Handler().apply { setTag(R.id.recyclerview_dynamic_sizing_handler, this) }
+private inline var View.sizingRunnable: Runnable?
+    get() = getTag(R.id.recyclerview_dynamic_sizing_handler) as? Runnable
+    set(value) = setTag(R.id.recyclerview_dynamic_sizing_handler, value)
 
 internal inline val RecyclerView.isBusy get() = !isLaidOut || isLayoutRequested || isComputingLayout
 
-private inline fun RecyclerView.onIdle(handler: Handler, crossinline action: () -> Unit) {
+private inline fun View.onParentIdle(crossinline action: () -> Unit) {
     val runnable = object : Runnable {
         override fun run() {
-            if (isBusy) {
-                handler.post(this)
-            } else {
-                action()
-                handler.cancel(this)
+            val parent = parentRecyclerView
+            if (parent != null && parent.isBusy) post(this)
+            else {
+                if (parent != null) action()
+                sizingRunnable = null
+                removeCallbacks(this)
             }
         }
     }
 
-    handler.post(runnable)
-    doOnDetach { handler.cancel(runnable) }
-}
+    sizingRunnable?.let(this::removeCallbacks)
+    sizingRunnable = runnable
 
-private fun Handler.cancel(runnable: Runnable? = null) {
-    if (runnable != null) removeCallbacks(runnable)
-    removeCallbacksAndMessages(null)
+    post(runnable)
+    doOnDetach { it.removeCallbacks(runnable); it.sizingRunnable = null }
 }
