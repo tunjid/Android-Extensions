@@ -21,6 +21,8 @@ class StaticSizer(
         override fun onChildViewAttachedToWindow(view: View) = includeChild(view)
     }
 
+    override fun clear() = syncedScrollers.clear(this::exclude)
+
     override fun sizeAt(position: Int): Int = sizeLookup(position)
 
     override fun include(recyclerView: RecyclerView) {

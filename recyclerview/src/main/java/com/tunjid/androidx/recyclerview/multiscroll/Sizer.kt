@@ -13,6 +13,8 @@ import com.tunjid.androidx.recyclerview.R
 interface Sizer {
     val orientation: Int
 
+    fun clear()
+
     fun sizeAt(position: Int): Int
 
     fun include(recyclerView: RecyclerView)
@@ -91,4 +93,13 @@ private inline fun View.onParentIdle(crossinline action: () -> Unit) {
 
     post(runnable)
     doOnDetach { it.sizingRunnable = null }
+}
+
+internal inline fun <T>  MutableCollection<T>.clear(afterRemove: (T) -> Unit) {
+    val iterator = iterator()
+    while (iterator.hasNext()) {
+        val next = iterator.next()
+        iterator.remove()
+        afterRemove(next)
+    }
 }

@@ -68,13 +68,11 @@ class RecyclerViewMultiScroller(
 
     fun clear() {
         active = null
-        val iterator = syncedScrollers.iterator()
-        while (iterator.hasNext()) {
-            val next = iterator.next()
-            exclude(recyclerView = next, removeFromSet = false)
-            next.removeOnAttachStateChangeListener(onAttachStateChangeListener)
-            iterator.remove()
+        syncedScrollers.clear {
+            exclude(it)
+            it.removeOnAttachStateChangeListener(onAttachStateChangeListener)
         }
+        sizeUpdater.clear()
     }
 
     fun add(recyclerView: RecyclerView) {
@@ -98,11 +96,11 @@ class RecyclerViewMultiScroller(
         if (!ViewCompat.isLaidOut(recyclerView) || recyclerView.isLayoutRequested) recyclerView.requestLayout()
     }
 
-    private fun exclude(recyclerView: RecyclerView, removeFromSet: Boolean = true) {
+    private fun exclude(recyclerView: RecyclerView) {
         recyclerView.removeOnItemTouchListener(onItemTouchListener)
         recyclerView.removeOnScrollListener(onScrollListener)
         sizeUpdater.exclude(recyclerView)
-        if (removeFromSet) syncedScrollers.remove(recyclerView) // Concurrent modification in clear()
+        syncedScrollers.remove(recyclerView)
     }
 
     private fun RecyclerView.calculateChildSize() = doOnLayout {
