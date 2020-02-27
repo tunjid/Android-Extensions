@@ -8,12 +8,12 @@ import android.view.View
 import android.widget.ImageView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.R
 import com.tunjid.androidx.adapters.DoggoInteractionListener
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.databinding.FragmentAdoptDoggoBinding
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
@@ -55,7 +55,7 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo),
 
         val items = listOf(*resources.getStringArray(R.array.adoption_items))
 
-        view.findViewById<RecyclerView>(R.id.model_list).apply {
+        FragmentAdoptDoggoBinding.bind(view).modelList.apply {
             layoutManager = verticalLayoutManager()
             adapter = adapterOf(
                     itemsSource = { items },
