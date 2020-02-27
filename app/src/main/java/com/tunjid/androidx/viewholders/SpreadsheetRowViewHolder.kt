@@ -4,11 +4,14 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.R
+import com.tunjid.androidx.databinding.ViewholderSpreadsheetCellBinding
+import com.tunjid.androidx.model.Cell
 import com.tunjid.androidx.model.Row
 import com.tunjid.androidx.recyclerview.horizontalLayoutManager
 import com.tunjid.androidx.recyclerview.listAdapterOf
 import com.tunjid.androidx.recyclerview.multiscroll.ExperimentalRecyclerViewMultiScrolling
 import com.tunjid.androidx.recyclerview.multiscroll.RecyclerViewMultiScroller
+import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 
 @UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)
 class SpreadsheetRowViewHolder(
@@ -29,8 +32,8 @@ class SpreadsheetRowViewHolder(
     ): () -> Unit = itemView.findViewById<RecyclerView>(R.id.recycler_view).run {
         val adapter = listAdapterOf(
                 initialItems = items,
-                viewHolderCreator = { viewGroup, _ -> SpreadsheetCellViewHolder(viewGroup) },
-                viewHolderBinder = { holder, item, _ -> holder.bind(item) },
+                viewHolderCreator = { viewGroup, _ -> viewGroup.viewHolderFrom(ViewholderSpreadsheetCellBinding::inflate)},
+                viewHolderBinder = { holder, item, _ -> holder.binding.bind(item) },
                 itemIdFunction = { it.index.toLong() }
         )
         this.itemAnimator = null
@@ -49,4 +52,8 @@ class SpreadsheetRowViewHolder(
         this.row = row
         refresh()
     }
+}
+
+private fun ViewholderSpreadsheetCellBinding.bind(item: Cell) {
+    cell.text = item.text
 }
