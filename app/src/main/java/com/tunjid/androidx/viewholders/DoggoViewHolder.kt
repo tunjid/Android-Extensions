@@ -5,12 +5,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.ViewCompat.setTransitionName
 import androidx.core.view.postDelayed
-import androidx.viewbinding.ViewBinding
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.RequestCreator
 import com.tunjid.androidx.model.Doggo
-import com.tunjid.androidx.recyclerview.viewbinding.propertyMap
 import com.tunjid.androidx.view.util.hashTransitionName
 
 /**
@@ -52,5 +50,3 @@ private fun onSuccess(runnable: () -> Unit): Callback = object : Callback {
 
 private const val FULL_SIZE_DELAY = 100
 private const val THUMBNAIL_SIZE = 250
-
-const val DOGGO_BINDING_KEY = "DOGGO_BINDING"

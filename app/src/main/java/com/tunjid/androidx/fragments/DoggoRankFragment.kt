@@ -22,12 +22,10 @@ import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.recyclerview.*
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
-import com.tunjid.androidx.recyclerview.viewbinding.propertyMap
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
-import com.tunjid.androidx.viewholders.DOGGO_BINDING_KEY
 import com.tunjid.androidx.viewholders.DoggoBinder
 import com.tunjid.androidx.viewholders.bind
 import com.tunjid.androidx.viewmodels.DoggoRankViewModel
@@ -150,11 +148,7 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
     }
 }
 
-var BindingViewHolder<ViewholderDoggoRankBinding>.doggoBinder: DoggoBinder?
-    get() = propertyMap[DOGGO_BINDING_KEY] as? DoggoBinder
-    set(value) {
-        propertyMap[DOGGO_BINDING_KEY] = value
-    }
+var BindingViewHolder<ViewholderDoggoRankBinding>.doggoBinder by BindingViewHolder.Prop<DoggoBinder?>()
 
 fun BindingViewHolder<ViewholderDoggoRankBinding>.createDoggoBinder(
         onThumbnailLoaded: (Doggo) -> Unit,
@@ -164,7 +158,7 @@ fun BindingViewHolder<ViewholderDoggoRankBinding>.createDoggoBinder(
         itemView.setOnClickListener { doggo?.let(onDoggoClicked) }
     }
 
-    override var doggo: Doggo? by propertyMap
+    override var doggo: Doggo? = null
     override val doggoName: TextView get() = binding.doggoName
     override val fullSize: ImageView? get() = null
     override val thumbnail: ImageView get() = binding.doggoImage
