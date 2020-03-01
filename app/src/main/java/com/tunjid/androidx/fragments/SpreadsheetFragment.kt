@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -14,12 +15,12 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.databinding.FragmentRouteBinding
 import com.tunjid.androidx.databinding.ViewholderSpreadsheetCellBinding
 import com.tunjid.androidx.databinding.ViewholderSpreadsheetRowBinding
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.model.Cell
 import com.tunjid.androidx.model.Row
-import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.horizontalLayoutManager
 import com.tunjid.androidx.recyclerview.listAdapterOf
 import com.tunjid.androidx.recyclerview.multiscroll.DynamicCellSizer
@@ -89,16 +90,19 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_route) {
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )
 
-        view.findViewById<RecyclerView>(R.id.recycler_view).apply {
+        FragmentRouteBinding.bind(view).recyclerView.apply {
             val viewPool = RecyclerView.RecycledViewPool()
-
-            layoutManager = verticalLayoutManager()
-            adapter = adapterOf(
-                    itemsSource = viewModel::rows,
+            val columnAdapter = listAdapterOf(
+                    initialItems = viewModel.rows.value ?: listOf(),
                     viewHolderCreator = { parent, _ -> parent.spreadSheetRow(viewPool, scroller) },
-                    viewHolderBinder = { viewHolder, tile, _ -> viewHolder.bind(tile) },
+                    viewHolderBinder = { viewHolder, row, _ -> viewHolder.bind(row) },
                     itemIdFunction = { it.index.toLong() }
             )
+
+            layoutManager = verticalLayoutManager()
+            adapter = columnAdapter
+
+            viewModel.rows.observe(viewLifecycleOwner, columnAdapter::submitList)
         }
     }
 

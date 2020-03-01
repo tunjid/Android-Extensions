@@ -2,26 +2,34 @@ package com.tunjid.androidx.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import com.tunjid.androidx.R
 import com.tunjid.androidx.model.Cell
-import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.model.Row
+import com.tunjid.androidx.toLiveData
+import io.reactivex.Flowable
+import io.reactivex.schedulers.Schedulers
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
+import java.nio.charset.Charset
+
 
 class SpreadsheetViewModel(application: Application) : AndroidViewModel(application) {
 
-    val rows by lazy {
-        (0 until NUM_ROWS).map { rowIndex ->
-            Row(rowIndex, (0 until NUM_ROWS).map { columnIndex ->
-                Cell(
-                        columnIndex,
-                        if (columnIndex == 0) rowIndex.toString()
-                        else "$rowIndex-$columnIndex: ${Doggo.doggos.map(Doggo::name).random()}"
-                )
-            })
+    val rows
+        get() = Flowable.fromCallable { readData() }
+                .subscribeOn(Schedulers.io())
+                .toLiveData()
+
+    private fun readData(): List<Row> {
+        val inputStream = getApplication<Application>().resources.openRawResource(R.raw.spreadsheet_data)
+        val reader = BufferedReader(InputStreamReader(inputStream, Charset.forName("UTF-8")))
+        return try {
+            generateSequence { reader.readLine() }
+                    .mapIndexed { index: Int, line: String -> Row(index, line.split(",").mapIndexed(::Cell)) }
+                    .toList()
+        } catch (e1: IOException) {
+            listOf()
         }
-    }
-
-    companion object {
-
-        const val NUM_ROWS = 40
     }
 }
