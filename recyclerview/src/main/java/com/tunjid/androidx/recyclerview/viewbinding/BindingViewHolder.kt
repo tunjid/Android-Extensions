@@ -1,5 +1,6 @@
 package com.tunjid.androidx.recyclerview.viewbinding
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +23,7 @@ open class BindingViewHolder<T : ViewBinding> private constructor(
 
     class Prop<T> : ReadWriteProperty<BindingViewHolder<*>, T> {
         override fun getValue(thisRef: BindingViewHolder<*>, property: KProperty<*>): T {
+            @Suppress("UNCHECKED_CAST")
             return thisRef.propertyMap[property.name] as T
         }
 
@@ -34,6 +36,7 @@ open class BindingViewHolder<T : ViewBinding> private constructor(
 fun <T : ViewBinding> ViewGroup.viewHolderFrom(creator: (inflater: LayoutInflater, root: ViewGroup, attachToRoot: Boolean) -> T) =
         BindingViewHolder(this, creator)
 
+@Suppress("UNCHECKED_CAST")
 private inline val BindingViewHolder<*>.propertyMap
     get() = itemView.getTag(R.id.recyclerview_view_binding_map) as? MutableMap<String, Any?>
             ?: mutableMapOf<String, Any?>().also { itemView.setTag(R.id.recyclerview_view_binding_map, it) }
