@@ -5,20 +5,24 @@ import android.view.View
 import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
-import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.databinding.FragmentRouteBinding
+import com.tunjid.androidx.databinding.ViewholderTileBinding
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.recyclerview.acceptDiff
 import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.gridLayoutManager
+import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
 import com.tunjid.androidx.uidrivers.SlideInItemAnimator
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
-import com.tunjid.androidx.view.util.inflate
-import com.tunjid.androidx.viewholders.TileViewHolder
+import com.tunjid.androidx.viewholders.bind
+import com.tunjid.androidx.viewholders.tile
+import com.tunjid.androidx.viewholders.tileViewHolder
+import com.tunjid.androidx.viewholders.unbind
 import com.tunjid.androidx.viewmodels.ShiftingTileViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
@@ -56,17 +60,17 @@ class ShiftingTilesFragment : AppBaseFragment(R.layout.fragment_route) {
         val tileAdapter = adapterOf(
                 itemsSource = viewModel::tiles,
                 viewHolderCreator = { parent, _ ->
-                    TileViewHolder(parent.inflate(R.layout.viewholder_tile)) { tile ->
-                        uiState = uiState.copy(snackbarText = tile.diffId)
+                    parent.tileViewHolder().apply {
+                        itemView.setOnClickListener { uiState = uiState.copy(snackbarText = tile.diffId) }
                     }
                 },
                 viewHolderBinder = { viewHolder, tile, _ -> viewHolder.bind(tile) },
                 itemIdFunction = { it.hashCode().toLong() },
-                onViewHolderRecycled = TileViewHolder::unbind,
-                onViewHolderDetached = TileViewHolder::unbind
+                onViewHolderRecycled = BindingViewHolder<ViewholderTileBinding>::unbind,
+                onViewHolderDetached = BindingViewHolder<ViewholderTileBinding>::unbind
         )
 
-        view.findViewById<RecyclerView>(R.id.recycler_view).apply {
+        FragmentRouteBinding.bind(view).recyclerView.apply {
             adapter = tileAdapter
             layoutManager = gridLayoutManager(4)
             itemAnimator = SlideInItemAnimator()

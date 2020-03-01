@@ -2,14 +2,17 @@ package com.tunjid.androidx.fragments
 
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import com.tunjid.androidx.R
-import com.tunjid.androidx.adapters.DoggoInteractionListener
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
+import com.tunjid.androidx.databinding.FragmentImageDetailBinding
 import com.tunjid.androidx.model.Doggo
-import com.tunjid.androidx.viewholders.DoggoViewHolder
+import com.tunjid.androidx.viewholders.DoggoBinder
+import com.tunjid.androidx.viewholders.bind
 
-class DoggoFragment : AppBaseFragment(R.layout.fragment_image_detail), DoggoInteractionListener {
+class DoggoFragment : AppBaseFragment(R.layout.fragment_image_detail) {
 
     override val stableTag: String
         get() = super.stableTag + "-" + doggo
@@ -20,10 +23,19 @@ class DoggoFragment : AppBaseFragment(R.layout.fragment_image_detail), DoggoInte
         super.onViewCreated(view, savedInstanceState)
 
         view.tag = doggo
-        DoggoViewHolder(view, this).bind(doggo)
-    }
 
-    override fun onDoggoImageLoaded(doggo: Doggo) = parentFragment?.startPostponedEnterTransition() ?: Unit
+        val binding = FragmentImageDetailBinding.bind(view)
+        object : DoggoBinder {
+            override var doggo: Doggo?
+                get() = this@DoggoFragment.doggo
+                set(_) = Unit
+            override val doggoName: TextView get() = binding.doggoName
+            override val thumbnail: ImageView get() = binding.doggoImage
+            override val fullResolution: ImageView? get() = binding.fullSize
+            override fun onDoggoThumbnailLoaded(doggo: Doggo) = parentFragment?.startPostponedEnterTransition()
+                    ?: Unit
+        }.bind(doggo)
+    }
 
     companion object {
 

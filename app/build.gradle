@@ -60,6 +60,10 @@ android {
                 "-Xuse-experimental=com.tunjid.androidx.recyclerview.multiscroll.ExperimentalRecyclerViewMultiScrolling"
         ]
     }
+
+    viewBinding {
+        enabled = true
+    }
 }
 
 dependencies {

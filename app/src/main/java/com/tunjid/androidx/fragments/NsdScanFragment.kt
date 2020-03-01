@@ -15,25 +15,24 @@ import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
-import com.tunjid.androidx.adapters.ServiceClickedListener
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.databinding.ViewholderNsdListBinding
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.recyclerview.acceptDiff
 import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
+import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
+import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
 import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
-import com.tunjid.androidx.view.util.inflate
-import com.tunjid.androidx.viewholders.NSDViewHolder
 import com.tunjid.androidx.viewmodels.NsdViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
 /**
  * A [Fragment] listing supported NSD servers
  */
-class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan),
-        ServiceClickedListener {
+class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan) {
 
     private val viewModel by viewModels<NsdViewModel>()
 
@@ -55,11 +54,11 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan),
         val placeHolder = PlaceHolder(view.findViewById(R.id.placeholder_container))
         placeHolder.bind(PlaceHolder.State(R.string.no_nsd_devices, R.drawable.ic_signal_wifi__24dp))
 
-        recyclerView=   view.findViewById<RecyclerView>(R.id.list).apply {
+        recyclerView = view.findViewById<RecyclerView>(R.id.list).apply {
             layoutManager = verticalLayoutManager()
             adapter = adapterOf(
                     itemsSource = viewModel::services,
-                    viewHolderCreator = { parent, _ -> NSDViewHolder(parent.inflate(R.layout.viewholder_nsd_list), this@NsdScanFragment) },
+                    viewHolderCreator = { parent, _ -> parent.viewHolderFrom(ViewholderNsdListBinding::inflate) },
                     viewHolderBinder = { viewHolder, service, _ -> viewHolder.bind(service) }
             )
 
@@ -104,10 +103,6 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan),
         else -> super.onOptionsItemSelected(item)
     }
 
-    override fun onServiceClicked(serviceInfo: NsdServiceInfo) = Unit
-
-    override fun isSelf(serviceInfo: NsdServiceInfo): Boolean = false
-
     private fun scanDevices(enable: Boolean) =
             if (enable) viewModel.findDevices()
             else viewModel.stopScanning()
@@ -115,4 +110,19 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan),
     companion object {
         fun newInstance(): NsdScanFragment = NsdScanFragment().apply { arguments = Bundle() }
     }
+}
+
+private var BindingViewHolder<ViewholderNsdListBinding>.serviceInfo by BindingViewHolder.Prop<NsdServiceInfo>()
+
+fun BindingViewHolder<ViewholderNsdListBinding>.bind(info: NsdServiceInfo) {
+    serviceInfo = info
+
+    val stringBuilder = StringBuilder()
+    stringBuilder.append(info.serviceName).append("\n")
+            .append(if (info.host != null) info.host.hostAddress else "")
+
+    val color = itemView.context.themeColorAt(R.attr.prominent_text_color)
+
+    binding.text.setTextColor(color)
+    binding.text.text = stringBuilder.toString()
 }

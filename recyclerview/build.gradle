@@ -6,6 +6,9 @@ android {
                 "-Xuse-experimental=kotlin.Experimental"
         ]
     }
+    viewBinding {
+        enabled = true
+    }
 }
 
 dependencies {
