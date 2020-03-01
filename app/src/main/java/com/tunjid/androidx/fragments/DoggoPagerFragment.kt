@@ -11,6 +11,7 @@ import android.widget.ImageView
 import androidx.core.app.SharedElementCallback
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.scale
+import androidx.core.view.doOnDetach
 import androidx.core.view.doOnLayout
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
@@ -88,7 +89,10 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
             override fun onPageSelected(position: Int) = onDoggoSwiped(position)
         })
 
-        (viewPager[0] as? RecyclerView)?.indicatorDecoration(
+        val recyclerView = viewPager[0] as RecyclerView
+
+        recyclerView.doOnDetach { recyclerView.adapter?.onDetachedFromRecyclerView(recyclerView) }
+        recyclerView.indicatorDecoration(
                 horizontalOffset = resources.displayMetrics.widthPixels / 2f,
                 verticalOffset = resources.getDimension(R.dimen.octuple_margin),
                 indicatorWidth = indicatorSize.toFloat(),

@@ -1,9 +1,11 @@
 package com.tunjid.androidx.viewholders
 
-import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.ViewCompat.setTransitionName
+import androidx.core.view.doOnAttach
+import androidx.core.view.doOnDetach
+import androidx.core.view.isVisible
 import androidx.core.view.postDelayed
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -28,24 +30,26 @@ fun DoggoBinder.bind(doggo: Doggo) {
     setTransitionName(thumbnail, thumbnail.hashTransitionName(doggo))
     doggo.imageCreator()
             .resize(THUMBNAIL_SIZE, THUMBNAIL_SIZE)
-            .into(thumbnail, onSuccess {
+            .into(thumbnail) thumbnail@{
                 onDoggoThumbnailLoaded(doggo)
-                fullResolution?.postDelayed(FULL_SIZE_DELAY.toLong()) {
+                val full = fullResolution ?: return@thumbnail
+                full.postDelayed(FULL_SIZE_DELAY.toLong()) {
                     doggo.imageCreator()
                             .fit()
-                            .into(fullResolution, onSuccess { fullResolution?.visibility = View.VISIBLE })
+                            .into(full) { full.isVisible = false }
                 }
-            })
+            }
 
     doggoName.text = doggo.name
 }
 
 private fun Doggo.imageCreator(): RequestCreator = Picasso.get().load(imageRes).centerCrop()
 
-private fun onSuccess(runnable: () -> Unit): Callback = object : Callback {
-    override fun onSuccess() = runnable.invoke()
-
-    override fun onError(e: Exception) = e.printStackTrace()
+private fun RequestCreator.into(imageView: ImageView, onSuccess: () -> Unit) = imageView.doOnAttach {
+    into(imageView, object : Callback.EmptyCallback() {
+        override fun onSuccess() = onSuccess()
+    })
+    imageView.doOnDetach { Picasso.get().cancelRequest(imageView) }
 }
 
 private const val FULL_SIZE_DELAY = 100
