@@ -33,7 +33,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
     public override fun onCreate(savedInstanceState: Bundle?) {
         AppWatcher.config = AppWatcher.config.copy(watchDurationMillis = TimeUnit.SECONDS.toMillis(8))
 
-
         // Add this before on create to make sure fragment callbacks are added after.
         // This makes Fragment back pressed callbacks take higher precedence.
         onBackPressedDispatcher.addCallback(this) { if (!navigator.pop()) finish() }
