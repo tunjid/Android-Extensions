@@ -23,6 +23,7 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.communications.bluetooth.ScanResultCompat
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.databinding.FragmentBleScanBinding
 import com.tunjid.androidx.databinding.ViewholderScanBinding
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.recyclerview.acceptDiff
@@ -57,7 +58,7 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan) {
         val placeHolder = PlaceHolder(view.findViewById(R.id.placeholder_container))
         placeHolder.bind(PlaceHolder.State(R.string.no_ble_devices, R.drawable.ic_bluetooth_24dp))
 
-        recyclerView = view.findViewById<RecyclerView>(R.id.list).apply {
+        recyclerView = FragmentBleScanBinding.bind(view).list.apply {
             layoutManager = verticalLayoutManager()
             adapter = adapterOf(
                     itemsSource = viewModel::scanResults,

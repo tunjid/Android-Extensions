@@ -121,7 +121,7 @@ fun BindingViewHolder<ViewholderNsdListBinding>.bind(info: NsdServiceInfo) {
     stringBuilder.append(info.serviceName).append("\n")
             .append(if (info.host != null) info.host.hostAddress else "")
 
-    val color = itemView.context.themeColorAt(com.tunjid.androidx.R.attr.prominent_text_color)
+    val color = itemView.context.themeColorAt(R.attr.prominent_text_color)
 
     binding.text.setTextColor(color)
     binding.text.text = stringBuilder.toString()
