@@ -13,8 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 annotation class ExperimentalRecyclerViewMultiScrolling
 
 /**
- * A class that synchronizes scrolling multiple [RecyclerView]s. Useful for horizontally scrolling
- * layouts like stats.
+ * A class that synchronizes scrolling multiple [RecyclerView]s, useful for creating tables.
  *
  * The synchronized RecyclerViews must have child items that are equal in size around the specified
  * orientation, have the same amount of items and also use a [LinearLayoutManager]
@@ -85,8 +84,8 @@ class RecyclerViewMultiScroller(
     }
 
     private fun include(recyclerView: RecyclerView) {
-        recyclerView.doOnLayout {
-            if (syncedScrollers.contains(recyclerView)) return@doOnLayout
+        recyclerView.onIdle {
+            if (syncedScrollers.contains(recyclerView)) return@onIdle
             recyclerView.sync()
             syncedScrollers.add(recyclerView)
             cellSizer.include(recyclerView)

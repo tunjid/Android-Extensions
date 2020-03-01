@@ -41,16 +41,6 @@ internal interface ViewModifier {
 
         onParentIdle { requestLayout() }
     }
-
-    fun View.log(action: String, filter: (String) -> Boolean = { true }) {
-        if (this@ViewModifier is StaticCellSizer) return
-
-        (this as? ViewGroup)?.children
-                ?.filterIsInstance<TextView>()
-                ?.filter { filter(it.text.toString()) }
-                ?.firstOrNull()
-                ?.let { Log.i("TEST", "$action ${it.text}") }
-    }
 }
 
 internal inline val ViewModifier.isHorizontal get() = orientation == RecyclerView.HORIZONTAL
@@ -66,7 +56,7 @@ internal inline val View.currentColumn: Int
 internal inline val View.parentRecyclerView: RecyclerView?
     get() = parent as? RecyclerView
 
-private inline var View.sizingRunnable: Runnable?
+private inline var View.loopingRunnable: Runnable?
     get() = getTag(R.id.recyclerview_dynamic_sizing_handler) as? Runnable
     set(value) {
         (getTag(R.id.recyclerview_dynamic_sizing_handler) as? Runnable)?.let(this::removeCallbacks)
@@ -75,25 +65,32 @@ private inline var View.sizingRunnable: Runnable?
 
 internal inline val RecyclerView.isBusy get() = !isLaidOut || isLayoutRequested || isComputingLayout
 
-private inline fun View.onParentIdle(crossinline action: () -> Unit) {
-    val runnable = object : Runnable {
-        override fun run() {
-            val parent = parentRecyclerView
-            if (parent != null && parent.isBusy) post(this)
-            else {
-                if (parent != null) action()
-                sizingRunnable = null
-            }
+private inline fun View.onParentIdle(crossinline action: () -> Unit) = loop(object : Runnable {
+    override fun run() {
+        val parent = parentRecyclerView
+        if (parent != null && parent.isBusy) post(this)
+        else {
+            if (parent != null) action()
+            loopingRunnable = null
         }
     }
+})
 
-    sizingRunnable = runnable
+internal inline fun RecyclerView.onIdle(crossinline action: () -> Unit) = loop(object : Runnable {
+    override fun run() {
+        if (isBusy) post(this)
+        else action()
+    }
+})
+
+private fun View.loop(runnable: Runnable) {
+    loopingRunnable = runnable
 
     post(runnable)
-    doOnDetach { it.sizingRunnable = null }
+    doOnDetach { it.loopingRunnable = null }
 }
 
-internal inline fun <T>  MutableCollection<T>.clear(afterRemove: (T) -> Unit) {
+internal inline fun <T> MutableCollection<T>.clear(afterRemove: (T) -> Unit) {
     val iterator = iterator()
     while (iterator.hasNext()) {
         val next = iterator.next()
