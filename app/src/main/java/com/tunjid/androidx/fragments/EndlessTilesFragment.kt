@@ -10,7 +10,6 @@ import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.FragmentRouteBinding
 import com.tunjid.androidx.databinding.ViewholderTileBinding
 import com.tunjid.androidx.isDarkTheme
-import com.tunjid.androidx.model.Tile
 import com.tunjid.androidx.recyclerview.acceptDiff
 import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.addScrollListener
@@ -53,8 +52,6 @@ class EndlessTilesFragment : AppBaseFragment(R.layout.fragment_route) {
                 }
         )
 
-        val onTileClicked = { tile: Tile -> uiState = uiState.copy(snackbarText = tile.toString()) }
-
         FragmentRouteBinding.bind(view).recyclerView.apply {
             itemAnimator = SlideInItemAnimator()
             layoutManager = gridLayoutManager(3)
@@ -62,7 +59,7 @@ class EndlessTilesFragment : AppBaseFragment(R.layout.fragment_route) {
                     itemsSource = viewModel::tiles,
                     viewHolderCreator = { parent, _ ->
                         parent.tileViewHolder().apply {
-                            itemView.setOnClickListener { onTileClicked(tile) }
+                            itemView.setOnClickListener { uiState = uiState.copy(snackbarText = tile.toString()) }
                         }
                     },
                     viewHolderBinder = { viewHolder, tile, _ -> viewHolder.bind(tile) },
