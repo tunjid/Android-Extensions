@@ -8,6 +8,7 @@ import android.transition.TransitionSet
 import android.view.View
 import android.view.View.OnLayoutChangeListener
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.app.SharedElementCallback
 import androidx.core.content.ContextCompat.getDrawable
 import androidx.core.view.doOnLayout
@@ -18,10 +19,11 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.R
-import com.tunjid.androidx.adapters.DoggoInteractionListener
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.graphics.drawable.withTint
+import com.tunjid.androidx.databinding.FragmentDoggoListBinding
+import com.tunjid.androidx.databinding.ViewholderDoggoListBinding
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.navigation.Navigator
@@ -29,17 +31,20 @@ import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.addScrollListener
 import com.tunjid.androidx.recyclerview.gridLayoutManager
 import com.tunjid.androidx.recyclerview.viewHolderForItemId
+import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
+import com.tunjid.androidx.recyclerview.viewbinding.propertyMap
+import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
-import com.tunjid.androidx.view.util.inflate
-import com.tunjid.androidx.viewholders.DoggoViewHolder
+import com.tunjid.androidx.viewholders.DOGGO_BINDING_KEY
+import com.tunjid.androidx.viewholders.DoggoBinder
+import com.tunjid.androidx.viewholders.bind
 import com.tunjid.androidx.viewmodels.routeName
 import java.util.Objects.requireNonNull
 import kotlin.math.abs
 
 class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
-        DoggoInteractionListener,
         Navigator.TransactionModifier {
 
     override val insetFlags: InsetFlags = InsetFlags.ALL
@@ -49,10 +54,10 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
     private val transitionImage: ImageView?
         get() {
             val doggo = Doggo.transitionDoggo ?: return null
-            val holder = recyclerView?.viewHolderForItemId<DoggoViewHolder>(doggo.hashCode().toLong())
+            val holder: BindingViewHolder<ViewholderDoggoListBinding> = recyclerView?.viewHolderForItemId(doggo.hashCode().toLong())
                     ?: return null
 
-            return holder.thumbnail
+            return holder.binding.doggoImage
         }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -72,12 +77,23 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
                 fabClickListener = View.OnClickListener { uiState = uiState.copy(fabExtended = !uiState.fabExtended) }
         )
 
-        recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view).apply {
+        FragmentDoggoListBinding.bind(view).recyclerView.apply {
+            recyclerView = this
             layoutManager = gridLayoutManager(2)
             adapter = adapterOf(
                     itemsSource = Doggo.Companion::doggos,
-                    viewHolderCreator = { parent, _ -> DoggoViewHolder(parent.inflate(R.layout.viewholder_doggo_list), this@DoggoListFragment) },
-                    viewHolderBinder = { viewHolder, doggo, _ -> viewHolder.bind(doggo) },
+                    viewHolderCreator = { parent, _ ->
+                        parent.viewHolderFrom(ViewholderDoggoListBinding::inflate).apply {
+                            doggoBinder = createDoggoBinder(
+                                    onThumbnailLoaded = { if (it == Doggo.transitionDoggo) view.doOnLayout { startPostponedEnterTransition() } },
+                                    onDoggoClicked = {
+                                        Doggo.transitionDoggo = it
+                                        navigator.push(DoggoPagerFragment.newInstance())
+                                    }
+                            )
+                        }
+                    },
+                    viewHolderBinder = { viewHolder, doggo, _ -> viewHolder.doggoBinder?.bind(doggo) },
                     itemIdFunction = { it.hashCode().toLong() }
             )
 
@@ -95,15 +111,6 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
     override fun onDestroyView() {
         super.onDestroyView()
         recyclerView = null
-    }
-
-    override fun onDoggoClicked(doggo: Doggo) {
-        Doggo.transitionDoggo = doggo
-        navigator.push(DoggoPagerFragment.newInstance())
-    }
-
-    override fun onDoggoImageLoaded(doggo: Doggo) {
-        if (doggo == Doggo.transitionDoggo) view?.doOnLayout { startPostponedEnterTransition() }
     }
 
     private fun getDivider(orientation: Int): RecyclerView.ItemDecoration = requireContext().run {
@@ -162,4 +169,25 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
     companion object {
         fun newInstance(): DoggoListFragment = DoggoListFragment().apply { arguments = Bundle() }
     }
+}
+
+var BindingViewHolder<ViewholderDoggoListBinding>.doggoBinder: DoggoBinder?
+    get() = propertyMap[DOGGO_BINDING_KEY] as? DoggoBinder
+    set(value) {
+        propertyMap[DOGGO_BINDING_KEY] = value
+    }
+
+fun BindingViewHolder<ViewholderDoggoListBinding>.createDoggoBinder(
+        onThumbnailLoaded: (Doggo) -> Unit,
+        onDoggoClicked: (Doggo) -> Unit
+) = object : DoggoBinder {
+    init {
+        this@createDoggoBinder.itemView.setOnClickListener { doggo?.let(onDoggoClicked) }
+    }
+
+    override var doggo: Doggo? by this@createDoggoBinder.propertyMap
+    override val doggoName: TextView get() = binding.doggoName
+    override val fullSize: ImageView? get() = null
+    override val thumbnail: ImageView get() = binding.doggoImage
+    override fun onDoggoThumbnailLoaded(doggo: Doggo) = onThumbnailLoaded(doggo)
 }

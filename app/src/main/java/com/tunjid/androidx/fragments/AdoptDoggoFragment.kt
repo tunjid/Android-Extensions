@@ -6,10 +6,10 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.tunjid.androidx.R
-import com.tunjid.androidx.adapters.DoggoInteractionListener
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.themeColorAt
@@ -21,11 +21,11 @@ import com.tunjid.androidx.uidrivers.BACKGROUND_TINT_DURATION
 import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.inflate
-import com.tunjid.androidx.viewholders.DoggoViewHolder
+import com.tunjid.androidx.viewholders.DoggoBinder
 import com.tunjid.androidx.viewholders.InputViewHolder
+import com.tunjid.androidx.viewholders.bind
 
-class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo),
-        DoggoInteractionListener {
+class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo) {
 
     override val insetFlags: InsetFlags = InsetFlags.NO_TOP
 
@@ -55,7 +55,9 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo),
 
         val items = listOf(*resources.getStringArray(R.array.adoption_items))
 
-        FragmentAdoptDoggoBinding.bind(view).modelList.apply {
+        val binding = FragmentAdoptDoggoBinding.bind(view)
+
+        binding.modelList.apply {
             layoutManager = verticalLayoutManager()
             adapter = adapterOf(
                     itemsSource = { items },
@@ -67,11 +69,18 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo),
             )
         }
 
-        val viewHolder = DoggoViewHolder(view, this)
-        viewHolder.bind(doggo)
+        object : DoggoBinder {
+            override var doggo: Doggo?
+                get() = null
+                set(_) = Unit
+            override val doggoName: TextView get() = binding.doggoName
+            override val fullSize: ImageView? get() = binding.fullSize
+            override val thumbnail: ImageView get() = binding.doggoImage
+            override fun onDoggoThumbnailLoaded(doggo: Doggo) = Unit
+        }.bind(doggo)
 
-        viewHolder.thumbnail.tint(R.color.black_50) { color, imageView -> this.setColorFilter(color, imageView) }
-        viewHolder.fullSize?.let { viewHolder.fullSize.tint(R.color.black_50) { color, imageView -> this.setColorFilter(color, imageView) } }
+        binding.doggoImage.tint(R.color.black_50) { color, imageView -> this.setColorFilter(color, imageView) }
+        binding.fullSize.tint(R.color.black_50) { color, imageView -> this.setColorFilter(color, imageView) }
     }
 
     private fun setColorFilter(color: Int, imageView: ImageView) = imageView.setColorFilter(color)
@@ -100,5 +109,4 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo),
             prepareSharedElementTransition()
         }
     }
-
 }
