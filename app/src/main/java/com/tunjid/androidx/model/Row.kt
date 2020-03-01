@@ -4,7 +4,7 @@ import com.tunjid.androidx.recyclerview.diff.Differentiable
 
 data class Row(
         val index: Int,
-        val items: List<Cell>
+        val cells: List<Cell>
 ): Differentiable {
     override val diffId: String get() = index.toString()
 }

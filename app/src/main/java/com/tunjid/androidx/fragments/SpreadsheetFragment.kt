@@ -3,6 +3,7 @@ package com.tunjid.androidx.fragments
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
@@ -15,12 +16,14 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.themeColorAt
-import com.tunjid.androidx.databinding.FragmentRouteBinding
+import com.tunjid.androidx.databinding.FragmentSpreadsheetChildBinding
 import com.tunjid.androidx.databinding.ViewholderSpreadsheetCellBinding
 import com.tunjid.androidx.databinding.ViewholderSpreadsheetRowBinding
 import com.tunjid.androidx.isDarkTheme
+import com.tunjid.androidx.map
 import com.tunjid.androidx.model.Cell
 import com.tunjid.androidx.model.Row
+import com.tunjid.androidx.recyclerview.addScrollListener
 import com.tunjid.androidx.recyclerview.horizontalLayoutManager
 import com.tunjid.androidx.recyclerview.listAdapterOf
 import com.tunjid.androidx.recyclerview.multiscroll.DynamicCellSizer
@@ -64,7 +67,7 @@ class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_
 }
 
 @UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)
-class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_route) {
+class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child) {
 
     private var isDynamic by args<Boolean>()
 
@@ -90,19 +93,36 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_route) {
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )
 
-        FragmentRouteBinding.bind(view).recyclerView.apply {
-            val viewPool = RecyclerView.RecycledViewPool()
-            val columnAdapter = listAdapterOf(
-                    initialItems = viewModel.rows.value ?: listOf(),
+        val binding = FragmentSpreadsheetChildBinding.bind(view)
+        val viewPool = RecyclerView.RecycledViewPool()
+
+        val rowLiveData = viewModel.rows
+
+        binding.stickyHeaderRow.apply {
+            val cellAdapter = cellAdapter(rowLiveData.value.headers)
+
+            layoutManager = horizontalLayoutManager()
+            adapter = cellAdapter
+
+            scroller.add(this)
+            rowLiveData.map(List<Row>::headers).observe(viewLifecycleOwner, cellAdapter::submitList)
+        }
+
+        binding.mainRows.apply {
+            val verticalLayoutManager = verticalLayoutManager()
+            val rowAdapter = listAdapterOf(
+                    initialItems = rowLiveData.value ?: listOf(),
                     viewHolderCreator = { parent, _ -> parent.spreadSheetRow(viewPool, scroller) },
                     viewHolderBinder = { viewHolder, row, _ -> viewHolder.bind(row) },
                     itemIdFunction = { it.index.toLong() }
             )
 
-            layoutManager = verticalLayoutManager()
-            adapter = columnAdapter
+            layoutManager = verticalLayoutManager
+            adapter = rowAdapter
 
-            viewModel.rows.observe(viewLifecycleOwner, columnAdapter::submitList)
+            rowLiveData.observe(viewLifecycleOwner, rowAdapter::submitList)
+
+            addScrollListener { _, _ -> binding.stickyHeaderRow.isVisible = verticalLayoutManager.findFirstCompletelyVisibleItemPosition() > 0 }
         }
     }
 
@@ -135,19 +155,16 @@ private fun ViewGroup.spreadSheetRow(
 
 private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.scroller by BindingViewHolder.Prop<RecyclerViewMultiScroller>()
 private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.row by BindingViewHolder.Prop<Row?>()
-private val BindingViewHolder<ViewholderSpreadsheetRowBinding>.items get() = row?.items ?: listOf()
+private val BindingViewHolder<ViewholderSpreadsheetRowBinding>.cells get() = row?.cells ?: listOf()
 
 private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.refresh(): Unit = binding.recyclerView.run {
     // Lazy initialize
     @Suppress("UNCHECKED_CAST")
-    val rowAdapter = adapter as? ListAdapter<Cell, *> ?: listAdapterOf(
-            initialItems = items,
-            viewHolderCreator = { viewGroup, _ -> viewGroup.viewHolderFrom(ViewholderSpreadsheetCellBinding::inflate) },
-            viewHolderBinder = { holder, item, _ -> holder.binding.bind(item) },
-            itemIdFunction = { it.index.toLong() }
-    ).also { adapter = it; scroller.add(this) }
+    val columnAdapter =
+            adapter as? ListAdapter<Cell, *>
+                    ?: cellAdapter(cells).also { adapter = it; scroller.add(this) }
 
-    rowAdapter.submitList(items)
+    columnAdapter.submitList(cells)
 }
 
 private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.bind(row: Row) {
@@ -155,6 +172,15 @@ private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.bind(row: Row) {
     refresh()
 }
 
-private fun ViewholderSpreadsheetCellBinding.bind(item: Cell) {
-    cell.text = item.text
+private fun ViewholderSpreadsheetCellBinding.bind(cell: Cell) {
+    this.cell.text = cell.text
 }
+
+private fun cellAdapter(cells: List<Cell>) = listAdapterOf(
+        initialItems = cells,
+        viewHolderCreator = { viewGroup, _ -> viewGroup.viewHolderFrom(ViewholderSpreadsheetCellBinding::inflate) },
+        viewHolderBinder = { holder, item, _ -> holder.binding.bind(item) },
+        itemIdFunction = { it.index.toLong() }
+)
+
+private val List<Row>?.headers get() = this?.firstOrNull()?.cells ?: listOf()
