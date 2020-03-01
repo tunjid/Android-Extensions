@@ -9,11 +9,11 @@ import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.databinding.FragmentRouteBinding
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.model.RouteItem
 import com.tunjid.androidx.recyclerview.adapterOf
@@ -49,7 +49,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )
 
-        view.findViewById<RecyclerView>(R.id.recycler_view).apply {
+        FragmentRouteBinding.bind(view).recyclerView.apply {
             layoutManager = verticalLayoutManager()
             adapter = adapterOf(
                     itemsSource = { viewModel[tabIndex] },

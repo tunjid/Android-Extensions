@@ -2,8 +2,10 @@ package com.tunjid.androidx.fragments
 
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -12,16 +14,23 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.databinding.ViewholderSpreadsheetCellBinding
+import com.tunjid.androidx.databinding.ViewholderSpreadsheetRowBinding
 import com.tunjid.androidx.isDarkTheme
+import com.tunjid.androidx.model.Cell
+import com.tunjid.androidx.model.Row
 import com.tunjid.androidx.recyclerview.adapterOf
+import com.tunjid.androidx.recyclerview.horizontalLayoutManager
+import com.tunjid.androidx.recyclerview.listAdapterOf
 import com.tunjid.androidx.recyclerview.multiscroll.DynamicCellSizer
 import com.tunjid.androidx.recyclerview.multiscroll.ExperimentalRecyclerViewMultiScrolling
 import com.tunjid.androidx.recyclerview.multiscroll.RecyclerViewMultiScroller
 import com.tunjid.androidx.recyclerview.multiscroll.StaticCellSizer
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
+import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
+import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
-import com.tunjid.androidx.viewholders.SpreadsheetRowViewHolder
 import com.tunjid.androidx.viewmodels.SpreadsheetViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
@@ -86,7 +95,7 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_route) {
             layoutManager = verticalLayoutManager()
             adapter = adapterOf(
                     itemsSource = viewModel::rows,
-                    viewHolderCreator = { parent, _ -> SpreadsheetRowViewHolder(parent, scroller, viewPool) },
+                    viewHolderCreator = { parent, _ -> parent.spreadSheetRow(viewPool, scroller) },
                     viewHolderBinder = { viewHolder, tile, _ -> viewHolder.bind(tile) },
                     itemIdFunction = { it.index.toLong() }
             )
@@ -106,4 +115,42 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_route) {
     companion object {
         fun newInstance(isDynamic: Boolean): SpreadsheetFragment = SpreadsheetFragment().apply { this.isDynamic = isDynamic }
     }
+}
+
+private fun ViewGroup.spreadSheetRow(
+        recycledViewPool: RecyclerView.RecycledViewPool,
+        scroller: RecyclerViewMultiScroller
+) = viewHolderFrom(ViewholderSpreadsheetRowBinding::inflate).apply {
+    this.scroller = scroller
+    binding.recyclerView.apply {
+        itemAnimator = null
+        layoutManager = horizontalLayoutManager()
+        setRecycledViewPool(recycledViewPool)
+    }
+}
+
+private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.scroller by BindingViewHolder.Prop<RecyclerViewMultiScroller>()
+private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.row by BindingViewHolder.Prop<Row?>()
+private val BindingViewHolder<ViewholderSpreadsheetRowBinding>.items get() = row?.items ?: listOf()
+
+private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.refresh(): Unit = binding.recyclerView.run {
+    // Lazy initialize
+    @Suppress("UNCHECKED_CAST")
+    val rowAdapter = adapter as? ListAdapter<Cell, *> ?: listAdapterOf(
+            initialItems = items,
+            viewHolderCreator = { viewGroup, _ -> viewGroup.viewHolderFrom(ViewholderSpreadsheetCellBinding::inflate) },
+            viewHolderBinder = { holder, item, _ -> holder.binding.bind(item) },
+            itemIdFunction = { it.index.toLong() }
+    ).also { adapter = it; scroller.add(this) }
+
+    rowAdapter.submitList(items)
+}
+
+private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.bind(row: Row) {
+    this.row = row
+    refresh()
+}
+
+private fun ViewholderSpreadsheetCellBinding.bind(item: Cell) {
+    cell.text = item.text
 }
