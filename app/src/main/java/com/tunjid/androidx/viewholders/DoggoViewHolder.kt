@@ -17,8 +17,8 @@ import com.tunjid.androidx.view.util.hashTransitionName
 interface DoggoBinder {
     var doggo: Doggo?
     val doggoName: TextView
-    val fullSize: ImageView?
     val thumbnail: ImageView
+    val fullResolution: ImageView?
     fun onDoggoThumbnailLoaded(doggo: Doggo)
 }
 
@@ -30,10 +30,10 @@ fun DoggoBinder.bind(doggo: Doggo) {
             .resize(THUMBNAIL_SIZE, THUMBNAIL_SIZE)
             .into(thumbnail, onSuccess {
                 onDoggoThumbnailLoaded(doggo)
-                fullSize?.postDelayed(FULL_SIZE_DELAY.toLong()) {
+                fullResolution?.postDelayed(FULL_SIZE_DELAY.toLong()) {
                     doggo.imageCreator()
                             .fit()
-                            .into(fullSize, onSuccess { fullSize?.visibility = View.VISIBLE })
+                            .into(fullResolution, onSuccess { fullResolution?.visibility = View.VISIBLE })
                 }
             })
 

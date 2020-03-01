@@ -181,7 +181,7 @@ fun BindingViewHolder<ViewholderDoggoListBinding>.createDoggoBinder(
 
     override var doggo: Doggo? = null
     override val doggoName: TextView get() = binding.doggoName
-    override val fullSize: ImageView? get() = null
     override val thumbnail: ImageView get() = binding.doggoImage
+    override val fullResolution: ImageView? get() = null
     override fun onDoggoThumbnailLoaded(doggo: Doggo) = onThumbnailLoaded(doggo)
 }

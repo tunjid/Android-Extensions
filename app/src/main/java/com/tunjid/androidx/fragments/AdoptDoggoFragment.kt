@@ -74,8 +74,8 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo) {
                 get() = null
                 set(_) = Unit
             override val doggoName: TextView get() = binding.doggoName
-            override val fullSize: ImageView? get() = binding.fullSize
             override val thumbnail: ImageView get() = binding.doggoImage
+            override val fullResolution: ImageView? get() = binding.fullSize
             override fun onDoggoThumbnailLoaded(doggo: Doggo) = Unit
         }.bind(doggo)
 
