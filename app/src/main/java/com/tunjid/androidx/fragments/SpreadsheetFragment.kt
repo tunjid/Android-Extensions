@@ -52,12 +52,12 @@ class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_
             override fun getItemCount(): Int = 2
 
             override fun createFragment(position: Int): Fragment =
-                    if (position == 0) SpreadsheetFragment.newInstance(false)
-                    else SpreadsheetFragment.newInstance(true)
+                    if (position == 0) SpreadsheetFragment.newInstance(true)
+                    else SpreadsheetFragment.newInstance(false)
         }
 
         TabLayoutMediator(view.findViewById(R.id.tabs), viewPager) { tab, position ->
-            tab.text = context?.getString(if (position == 0) R.string.static_cells else R.string.dynamic_cells)
+            tab.text = context?.getString(if (position == 0) R.string.dynamic_cells else R.string.static_cells)
         }.attach()
     }
 
