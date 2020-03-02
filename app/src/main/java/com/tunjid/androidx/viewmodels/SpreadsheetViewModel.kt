@@ -17,10 +17,9 @@ import java.nio.charset.Charset
 
 class SpreadsheetViewModel(application: Application) : AndroidViewModel(application) {
 
-    val rows
-        get() = Flowable.fromCallable { readData() }
-                .subscribeOn(Schedulers.io())
-                .toLiveData()
+    val rows = Flowable.fromCallable { readData() }
+            .subscribeOn(Schedulers.io())
+            .toLiveData()
 
     private fun readData(): List<Row> {
         val inputStream = getApplication<Application>().resources.openRawResource(R.raw.spreadsheet_data)
