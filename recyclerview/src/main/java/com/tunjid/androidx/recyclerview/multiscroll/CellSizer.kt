@@ -1,10 +1,6 @@
 package com.tunjid.androidx.recyclerview.multiscroll
 
-import android.util.Log
 import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
-import androidx.core.view.children
 import androidx.core.view.doOnDetach
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView

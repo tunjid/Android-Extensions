@@ -3,7 +3,6 @@ package com.tunjid.androidx.recyclerview.multiscroll
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.view.ViewCompat
-import androidx.core.view.doOnLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -25,7 +24,6 @@ class RecyclerViewMultiScroller(
 ) {
     var displacement = 0
         private set
-    private var childSize = 0
     private var active: RecyclerView? = null
     private val syncedScrollers = mutableSetOf<RecyclerView>()
 
@@ -77,8 +75,6 @@ class RecyclerViewMultiScroller(
     fun add(recyclerView: RecyclerView) {
         if (syncedScrollers.contains(recyclerView)) return
 
-        recyclerView.calculateChildSize()
-
         include(recyclerView)
         recyclerView.addOnAttachStateChangeListener(onAttachStateChangeListener)
     }
@@ -102,14 +98,7 @@ class RecyclerViewMultiScroller(
         syncedScrollers.remove(recyclerView)
     }
 
-    private fun RecyclerView.calculateChildSize() = doOnLayout {
-        val child = getChildAt(0) ?: return@doOnLayout
-        childSize = if (orientation == RecyclerView.HORIZONTAL) child.width else child.height
-    }
-
     private fun RecyclerView.sync() {
-        if (childSize == 0) return
-
         var offset = displacement
         var position = 0
         while (offset > 0) {

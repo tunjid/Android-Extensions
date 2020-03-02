@@ -61,8 +61,10 @@ class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_
             tab.text = context?.getString(if (position == 0) R.string.dynamic_cells else R.string.static_cells)
         }.attach()
 
-        val recyclerView = viewPager[0] as RecyclerView
-        recyclerView.doOnDetach { recyclerView.adapter?.onDetachedFromRecyclerView(recyclerView) }
+        view.doOnDetach {
+            val recyclerView = viewPager[0] as RecyclerView
+            recyclerView.adapter?.onDetachedFromRecyclerView(recyclerView)
+        }
     }
 
     companion object {
