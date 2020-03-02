@@ -3,6 +3,8 @@ package com.tunjid.androidx.fragments
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.doOnDetach
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
@@ -58,6 +60,9 @@ class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_
         TabLayoutMediator(view.findViewById(R.id.tabs), viewPager) { tab, position ->
             tab.text = context?.getString(if (position == 0) R.string.dynamic_cells else R.string.static_cells)
         }.attach()
+
+        val recyclerView = viewPager[0] as RecyclerView
+        recyclerView.doOnDetach { recyclerView.adapter?.onDetachedFromRecyclerView(recyclerView) }
     }
 
     companion object {
