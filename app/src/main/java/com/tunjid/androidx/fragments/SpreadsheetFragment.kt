@@ -47,9 +47,7 @@ class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_
         super.onViewCreated(view, savedInstanceState)
 
         val viewPager = view.findViewById<ViewPager2>(R.id.view_pager)
-
-        viewPager.isUserInputEnabled = false
-        viewPager.adapter = object : FragmentStateAdapter(this) {
+        val pagerAdapter = object : FragmentStateAdapter(this) {
             override fun getItemCount(): Int = 2
 
             override fun createFragment(position: Int): Fragment =
@@ -57,13 +55,16 @@ class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_
                     else SpreadsheetFragment.newInstance(false)
         }
 
+        viewPager.isUserInputEnabled = false
+        viewPager.adapter = pagerAdapter
+
         TabLayoutMediator(view.findViewById(R.id.tabs), viewPager) { tab, position ->
             tab.text = context?.getString(if (position == 0) R.string.dynamic_cells else R.string.static_cells)
         }.attach()
 
         view.doOnDetach {
             val recyclerView = viewPager[0] as RecyclerView
-            recyclerView.adapter?.onDetachedFromRecyclerView(recyclerView)
+            pagerAdapter.onDetachedFromRecyclerView(recyclerView)
         }
     }
 
