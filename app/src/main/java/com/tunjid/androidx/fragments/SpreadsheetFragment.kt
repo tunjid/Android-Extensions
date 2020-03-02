@@ -3,7 +3,6 @@ package com.tunjid.androidx.fragments
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
@@ -122,7 +121,11 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
 
             rowLiveData.observe(viewLifecycleOwner, rowAdapter::submitList)
 
-            addScrollListener { _, _ -> binding.stickyHeaderRow.isVisible = verticalLayoutManager.findFirstCompletelyVisibleItemPosition() > 0 }
+            addScrollListener { _, _ ->
+                binding.stickyHeaderRow.visibility =
+                        if (verticalLayoutManager.findFirstCompletelyVisibleItemPosition() > 0) View.VISIBLE
+                        else View.INVISIBLE
+            }
         }
     }
 

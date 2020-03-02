@@ -117,7 +117,10 @@ class RecyclerViewMultiScroller(
             position++
         }
 
-        val linearLayoutManager = layoutManager as LinearLayoutManager
-        linearLayoutManager.scrollToPositionWithOffset(position, -offset)
+        when (val layoutManager = layoutManager) {
+            null -> Unit
+            is LinearLayoutManager -> layoutManager.scrollToPositionWithOffset(position, -offset)
+            else -> layoutManager.scrollToPosition(position)
+        }
     }
 }
