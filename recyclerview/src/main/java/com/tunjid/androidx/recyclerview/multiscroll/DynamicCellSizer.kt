@@ -3,6 +3,7 @@ package com.tunjid.androidx.recyclerview.multiscroll
 import android.view.View
 import android.view.ViewTreeObserver
 import androidx.core.view.children
+import androidx.core.view.doOnDetach
 import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.recyclerview.R
 import kotlin.math.max
@@ -83,7 +84,15 @@ class DynamicCellSizer(
             true
         }
 
-        viewTreeObserver.addOnPreDrawListener(listener)
+        val observer = viewTreeObserver
+
+        observer.addOnPreDrawListener(listener)
+        doOnDetach {
+            if (observer.isAlive) observer.removeOnPreDrawListener(listener)
+            it.viewTreeObserver.takeIf(ViewTreeObserver::isAlive)?.removeOnPreDrawListener(listener)
+            it.setTag(R.id.recyclerview_pre_draw, null)
+        }
+
         setTag(R.id.recyclerview_pre_draw, listener)
     }
 
