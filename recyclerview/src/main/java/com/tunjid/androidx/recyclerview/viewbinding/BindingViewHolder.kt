@@ -32,8 +32,9 @@ open class BindingViewHolder<T : ViewBinding> private constructor(
     }
 }
 
-fun <T : ViewBinding> ViewGroup.viewHolderFrom(creator: (inflater: LayoutInflater, root: ViewGroup, attachToRoot: Boolean) -> T) =
-        BindingViewHolder(this, creator)
+fun <T : ViewBinding> ViewGroup.viewHolderFrom(
+        creator: (inflater: LayoutInflater, root: ViewGroup, attachToRoot: Boolean) -> T
+): BindingViewHolder<T> = BindingViewHolder(this, creator)
 
 @Suppress("UNCHECKED_CAST")
 private inline val BindingViewHolder<*>.propertyMap

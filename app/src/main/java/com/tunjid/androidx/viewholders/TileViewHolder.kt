@@ -23,15 +23,17 @@ fun BindingViewHolder<ViewholderTileBinding>.bind(tile: Tile) {
     val tileText = binding.tileText
     tileText.text = tile.diffId
 
-    animator.setIntValues(tileText.currentTextColor, tile.color)
-    animator.addUpdateListener(listener)
-    animator.startDelay = START_DELAY.toLong() // Cheeky bit of code to keep scrolling smooth on fling
-    animator.start()
+    animator.apply {
+        setIntValues(tileText.currentTextColor, tile.color)
+        addUpdateListener(listener)
+        startDelay = START_DELAY.toLong() // Cheeky bit of code to keep scrolling smooth on fling
+        start()
+    }
 }
 
-fun BindingViewHolder<ViewholderTileBinding>.unbind() {
-    animator.cancel()
-    animator.removeUpdateListener(listener)
+fun BindingViewHolder<ViewholderTileBinding>.unbind() = animator.run {
+    cancel()
+    removeUpdateListener(listener)
 }
 
 private const val COLOR_CHANGE_DURATION = 1000
