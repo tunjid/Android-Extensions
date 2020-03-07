@@ -8,6 +8,7 @@ import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -16,6 +17,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
+import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.FragmentSpreadsheetChildBinding
 import com.tunjid.androidx.databinding.ViewholderSpreadsheetCellBinding
@@ -113,6 +115,8 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
 
             scroller.add(this)
             rowLiveData.map(List<Row>::headers).observe(viewLifecycleOwner, cellAdapter::submitList)
+
+            addItemDecoration(tableDecoration())
         }
 
         binding.mainRows.apply {
@@ -134,8 +138,14 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
                         if (verticalLayoutManager.findFirstCompletelyVisibleItemPosition() > 0) View.VISIBLE
                         else View.INVISIBLE
             }
+            addItemDecoration(tableDecoration())
         }
     }
+
+    private fun RecyclerView.tableDecoration() =
+            DividerItemDecoration(context, RecyclerView.VERTICAL).apply {
+                setDrawable(context.drawableAt(R.drawable.bg_cell_divider)!!)
+            }
 
     private fun staticSizeAt(position: Int) = requireContext().resources.getDimensionPixelSize(when (position) {
         0 -> R.dimen.triple_and_half_margin
