@@ -3,6 +3,7 @@ package com.tunjid.androidx.fragments
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.view.doOnDetach
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
@@ -20,7 +21,9 @@ import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.core.content.themeColorAt
-import com.tunjid.androidx.core.graphics.drawable.withTint
+import com.tunjid.androidx.core.text.color
+import com.tunjid.androidx.core.text.plus
+import com.tunjid.androidx.core.text.scaleX
 import com.tunjid.androidx.databinding.FragmentSpreadsheetChildBinding
 import com.tunjid.androidx.databinding.ViewholderSpreadsheetCellBinding
 import com.tunjid.androidx.databinding.ViewholderSpreadsheetRowBinding
@@ -46,6 +49,7 @@ import com.tunjid.androidx.viewmodels.routeName
 import kotlin.reflect.KMutableProperty0
 
 private typealias Var<T> = KMutableProperty0<T>
+
 class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_parent) {
 
     override val insetFlags: InsetFlags = NO_BOTTOM
@@ -236,17 +240,19 @@ private fun cellViewHolder(viewGroup: ViewGroup, sort: Var<Sort>): BindingViewHo
 private fun BindingViewHolder<ViewholderSpreadsheetCellBinding>.bind(cell: Cell, sort: Sort) {
     this.cell = cell
     val textView = binding.cell
-    textView.text = cell.text
-    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-            null,
-            null,
-            if (cell.isHeader && cell.column == sort.column) textView.context.drawableAt(
-                    if (sort.ascending) R.drawable.ic_arrow_up_black_24dp
-                    else R.drawable.ic_arrow_down_black_24dp
-            )?.withTint(textView.context.colorAt(R.color.dark_grey))
-            else null,
-            null
-    )
+    textView.text = cell.formatted(sort, textView)
 }
+
+private fun Cell.formatted(sort: Sort, textView: TextView): CharSequence =
+        text as CharSequence +
+                if (isHeader && column == sort.column)
+                    (if (sort.ascending) UP else DOWN)
+                            .scaleX(1.4f)
+                            .color(textView.context.colorAt(R.color.dark_grey))
+                else ""
+
+
+const val UP = "  ▲"
+const val DOWN = "  ▼"
 
 private val List<Row>?.headers get() = this?.firstOrNull()?.cells ?: listOf()
