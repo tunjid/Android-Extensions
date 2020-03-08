@@ -83,6 +83,7 @@
     <!-- Spreadsheet -->
     <string name="static_cells">Static</string>
     <string name="dynamic_cells">Dynamic</string>
+    <string name="cell_formatter">%1$s%2$s</string>
 
     <!-- HardServiceConnection -->
     <string name="bind_service">Bind Service</string>

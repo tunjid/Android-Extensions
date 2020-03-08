@@ -6,8 +6,9 @@ data class Row(
         val index: Int,
         val items: List<String>
 ) : Differentiable {
-    private val isHeader get() = items.first() == "Id"
-    val cells: List<Cell> get() = items.mapIndexed { index, item -> Cell(isHeader, index, item) }
+    val isHeader get() = items.first() == "Id"
+    val idCell get() = Cell(isHeader, 0, items.first())
+    val otherCells: List<Cell> get() = items.drop(1).mapIndexed { index, item -> Cell(isHeader, index + 1, item) }
 
     override val diffId: String get() = index.toString()
     override fun areContentsTheSame(other: Differentiable): Boolean =

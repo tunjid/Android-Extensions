@@ -50,9 +50,6 @@ data class Sort(
         val ascending: Boolean
 )
 
-private val Row.id
-    get() = items.first().toIntOrNull() ?: 0
-
 private fun Row.byNumber(sort: Sort) =
         items[sort.column].toIntOrNull() ?: 0
 
@@ -64,7 +61,7 @@ private fun List<Row>.sortedBy(sort: Sort): List<Row> {
     val body = (this - header).sortedWith(compareBy(
             { it.byNumber(sort) },
             { it.byText(sort) },
-            Row::id
+            { it.idCell.text.toIntOrNull() ?: 0 }
     ))
     return listOf(header) + if (sort.ascending) body else body.reversed()
 }
