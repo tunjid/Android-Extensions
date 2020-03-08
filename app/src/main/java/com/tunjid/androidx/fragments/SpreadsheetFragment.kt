@@ -153,7 +153,7 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
             }
 
     private fun staticSizeAt(position: Int) = requireContext().resources.getDimensionPixelSize(when (position) {
-        0 -> R.dimen.triple_and_half_margin
+        0, 1, 3 -> R.dimen.septuple_margin
         else -> R.dimen.sexdecuple_margin
     })
 
