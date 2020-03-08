@@ -151,6 +151,6 @@ private fun BindingViewHolder<ViewholderRouteBinding>.changeVisibility() {
     val visible = binding.description.isVisible
     setIcons(visible)
 
-    binding.description.isVisible = visible
+    binding.description.isVisible = !visible
     (binding.destination.compoundDrawablesRelative[2] as AnimatedVectorDrawableCompat).start()
 }
