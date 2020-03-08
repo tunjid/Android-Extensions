@@ -7,6 +7,7 @@
     android:background="@color/colorSurface"
     android:ellipsize="end"
     android:minHeight="@dimen/triple_margin"
+    android:drawablePadding="@dimen/single_margin"
     android:padding="@dimen/single_margin"
     android:singleLine="true"
     tools:text="hello" />

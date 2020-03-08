@@ -3,6 +3,8 @@ package com.tunjid.androidx.fragments
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.core.view.doOnDetach
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
@@ -17,8 +19,12 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
+import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.text.color
+import com.tunjid.androidx.core.text.formatSpanned
+import com.tunjid.androidx.core.text.scaleX
 import com.tunjid.androidx.databinding.FragmentSpreadsheetChildBinding
 import com.tunjid.androidx.databinding.ViewholderSpreadsheetCellBinding
 import com.tunjid.androidx.databinding.ViewholderSpreadsheetRowBinding
@@ -38,8 +44,12 @@ import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
+import com.tunjid.androidx.viewmodels.Sort
 import com.tunjid.androidx.viewmodels.SpreadsheetViewModel
 import com.tunjid.androidx.viewmodels.routeName
+import kotlin.reflect.KMutableProperty0
+
+private typealias Var<T> = KMutableProperty0<T>
 
 class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_parent) {
 
@@ -103,38 +113,33 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
         )
 
         val binding = FragmentSpreadsheetChildBinding.bind(view)
+        val container = binding.container
         val viewPool = RecyclerView.RecycledViewPool()
 
         val rowLiveData = viewModel.rows
 
-        binding.stickyHeaderRow.apply {
-            val cellAdapter = cellAdapter(rowLiveData.value.headers)
-
-            layoutManager = horizontalLayoutManager()
-            adapter = cellAdapter
-
-            scroller.add(this)
-            rowLiveData.map(List<Row>::headers).observe(viewLifecycleOwner, cellAdapter::submitList)
-
-            addItemDecoration(tableDecoration())
+        val stickyHeader = container.rowViewHolder(viewPool, scroller, viewModel::sort).apply {
+            container.addView(itemView, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT))
+            rowLiveData.map(List<Row>::header).observe(viewLifecycleOwner, this::bind)
         }
 
         binding.mainRows.apply {
             val verticalLayoutManager = verticalLayoutManager()
-            val rowAdapter = listAdapterOf(
+            val tableAdapter = listAdapterOf(
                     initialItems = rowLiveData.value ?: listOf(),
-                    viewHolderCreator = { parent, _ -> parent.spreadSheetRow(viewPool, scroller) },
+                    viewHolderCreator = { parent, _ -> parent.rowViewHolder(viewPool, scroller, viewModel::sort) },
                     viewHolderBinder = { viewHolder, row, _ -> viewHolder.bind(row) },
                     itemIdFunction = { it.index.toLong() }
             )
 
+            itemAnimator = null
             layoutManager = verticalLayoutManager
-            adapter = rowAdapter
+            adapter = tableAdapter
 
-            rowLiveData.observe(viewLifecycleOwner, rowAdapter::submitList)
+            rowLiveData.observe(viewLifecycleOwner, tableAdapter::submitList)
 
             addScrollListener { _, _ ->
-                binding.stickyHeaderRow.visibility =
+                stickyHeader.itemView.visibility =
                         if (verticalLayoutManager.findFirstCompletelyVisibleItemPosition() > 0) View.VISIBLE
                         else View.INVISIBLE
             }
@@ -162,11 +167,21 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
     }
 }
 
-private fun ViewGroup.spreadSheetRow(
+// Row properties
+
+private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.sort by BindingViewHolder.Prop<Var<Sort>>()
+private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.scroller by BindingViewHolder.Prop<RecyclerViewMultiScroller>()
+private val BindingViewHolder<ViewholderSpreadsheetRowBinding>.cells get() = row.otherCells
+private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.row by BindingViewHolder.Prop<Row>()
+
+private fun ViewGroup.rowViewHolder(
         recycledViewPool: RecyclerView.RecycledViewPool,
-        scroller: RecyclerViewMultiScroller
+        scroller: RecyclerViewMultiScroller,
+        sort: Var<Sort>
 ) = viewHolderFrom(ViewholderSpreadsheetRowBinding::inflate).apply {
     this.scroller = scroller
+    this.sort = sort
+    binding.cell.cell.setOnClickListener { if (row.isHeader) this.sort.update(row.idCell) }
     binding.recyclerView.apply {
         itemAnimator = null
         layoutManager = horizontalLayoutManager()
@@ -174,34 +189,73 @@ private fun ViewGroup.spreadSheetRow(
     }
 }
 
-private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.scroller by BindingViewHolder.Prop<RecyclerViewMultiScroller>()
-private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.row by BindingViewHolder.Prop<Row?>()
-private val BindingViewHolder<ViewholderSpreadsheetRowBinding>.cells get() = row?.cells ?: listOf()
+private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.bind(row: Row) {
+    this.row = row
+    binding.cell.cell.bind(row.idCell, sort.get())
+    refresh()
+}
 
 private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.refresh(): Unit = binding.recyclerView.run {
     // Lazy initialize
     @Suppress("UNCHECKED_CAST")
     val columnAdapter =
             adapter as? ListAdapter<Cell, *>
-                    ?: cellAdapter(cells).also { adapter = it; scroller.add(this) }
+                    ?: rowAdapter(cells, this@refresh.sort)
+                            .also { adapter = it; scroller.add(this) }
 
     columnAdapter.submitList(cells)
 }
 
-private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.bind(row: Row) {
-    this.row = row
-    refresh()
-}
+// Cell properties
 
-private fun ViewholderSpreadsheetCellBinding.bind(cell: Cell) {
-    this.cell.text = cell.text
-}
-
-private fun cellAdapter(cells: List<Cell>) = listAdapterOf(
+private fun rowAdapter(
+        cells: List<Cell>,
+        sort: Var<Sort>
+) = listAdapterOf(
         initialItems = cells,
-        viewHolderCreator = { viewGroup, _ -> viewGroup.viewHolderFrom(ViewholderSpreadsheetCellBinding::inflate) },
-        viewHolderBinder = { holder, item, _ -> holder.binding.bind(item) },
-        itemIdFunction = { it.index.toLong() }
+        viewHolderCreator = { viewGroup, _ -> cellViewHolder(viewGroup, sort) },
+        viewHolderBinder = { holder, item, _ -> holder.bind(item, sort.get()) },
+        itemIdFunction = { it.column.toLong() }
 )
 
-private val List<Row>?.headers get() = this?.firstOrNull()?.cells ?: listOf()
+
+private var BindingViewHolder<ViewholderSpreadsheetCellBinding>.cell by BindingViewHolder.Prop<Cell>()
+
+private fun cellViewHolder(viewGroup: ViewGroup, sort: Var<Sort>): BindingViewHolder<ViewholderSpreadsheetCellBinding> {
+    val viewHolder = viewGroup.viewHolderFrom(ViewholderSpreadsheetCellBinding::inflate)
+    viewHolder.itemView.setOnClickListener {
+        val cell = viewHolder.cell
+        if (!cell.isHeader) return@setOnClickListener
+        sort.update(cell)
+    }
+    return viewHolder
+}
+
+private fun BindingViewHolder<ViewholderSpreadsheetCellBinding>.bind(cell: Cell, sort: Sort) {
+    this.cell = cell
+    binding.cell.bind(cell, sort)
+}
+
+private fun TextView.bind(cell: Cell, sort: Sort) {
+    text = resources.getString(R.string.cell_formatter).formatSpanned(
+            cell.text,
+            if (cell.isHeader && cell.column == sort.column)
+                (if (sort.ascending) UP else DOWN)
+                        .scaleX(1.4f)
+                        .color(context.colorAt(R.color.dark_grey))
+            else ""
+    )
+}
+
+private fun Var<Sort>.update(cell: Cell) {
+    val currentSort = get()
+    val ascending =
+            if (currentSort.column == cell.column) !currentSort.ascending
+            else currentSort.ascending
+    set(Sort(column = cell.column, ascending = ascending))
+}
+
+const val UP = "  ▲"
+const val DOWN = "  ▼"
+
+private val List<Row>.header get() = this.first()
