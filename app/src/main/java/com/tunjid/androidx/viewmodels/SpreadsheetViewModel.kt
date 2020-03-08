@@ -55,11 +55,14 @@ private val Row.headerValue
         if (cells.first().isHeader) -1
         else 1
 
+private val Row.id
+    get() = items.first().toIntOrNull() ?: 0
+
 private fun Row.byNumber(sort: Sort) =
-        cells[sort.column].text.toIntOrNull() ?: 0
+        items[sort.column].toIntOrNull() ?: 0
 
 private fun Row.byText(sort: Sort) =
-        cells[sort.column].text
+        items[sort.column]
 
 private inline fun <T : Comparable<T>> Sort.check(
         invert: Boolean = false,
@@ -77,5 +80,6 @@ private fun List<Row>.sortedWith(sort: Sort) = this.sortedWith(Comparator { row1
     return@Comparator sort.check(left = row1, right = row2) { headerValue }
             ?: sort.check(invert = true, left = row1, right = row2, selector = Row::byNumber)
             ?: sort.check(invert = true, left = row1, right = row2, selector = Row::byText)
+            ?: sort.check(invert = true, left = row1, right = row2) { id }
             ?: 0
 })
