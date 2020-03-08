@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import com.opencsv.CSVReader
 import com.tunjid.androidx.R
-import com.tunjid.androidx.model.Cell
 import com.tunjid.androidx.model.Row
 import com.tunjid.androidx.toLiveData
 import io.reactivex.Flowable
@@ -38,12 +37,7 @@ class SpreadsheetViewModel(application: Application) : AndroidViewModel(applicat
         val csvReader = CSVReader(reader)
         return try {
             generateSequence { csvReader.readNext() }
-                    .mapIndexed { index, columns ->
-                        val isHeader = columns.isHeader
-                        Row(isHeader, index, columns.mapIndexed { column, text ->
-                            Cell(isHeader, column, text)
-                        })
-                    }
+                    .mapIndexed { index, columns -> Row(index, columns.asList()) }
                     .toList()
         } catch (e1: IOException) {
             listOf()
@@ -55,8 +49,6 @@ data class Sort(
         val column: Int,
         val ascending: Boolean
 )
-
-private val Array<String>.isHeader get() = first() == "Id"
 
 private val Row.headerValue
     get() =

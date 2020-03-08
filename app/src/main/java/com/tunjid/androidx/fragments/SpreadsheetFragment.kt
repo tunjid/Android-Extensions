@@ -119,6 +119,7 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
         binding.stickyHeaderRow.apply {
             val rowAdapter = rowAdapter(rowLiveData.value.headers, viewModel::sort)
 
+            itemAnimator = null
             layoutManager = horizontalLayoutManager()
             adapter = rowAdapter
 
@@ -137,6 +138,7 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
                     itemIdFunction = { it.index.toLong() }
             )
 
+            itemAnimator = null
             layoutManager = verticalLayoutManager
             adapter = tableAdapter
 
