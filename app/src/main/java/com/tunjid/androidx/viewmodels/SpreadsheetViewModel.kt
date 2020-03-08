@@ -23,7 +23,7 @@ class SpreadsheetViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     val rows = Flowables.combineLatest(Flowable.fromCallable { readData() }, sortProcessor)
-    { rows, sort -> rows.sortedWith(sort) }
+    { rows, sort -> rows.sortedBy(sort) }
             .subscribeOn(Schedulers.io())
             .toLiveData()
 
@@ -50,11 +50,6 @@ data class Sort(
         val ascending: Boolean
 )
 
-private val Row.headerValue
-    get() =
-        if (cells.first().isHeader) -1
-        else 1
-
 private val Row.id
     get() = items.first().toIntOrNull() ?: 0
 
@@ -64,22 +59,12 @@ private fun Row.byNumber(sort: Sort) =
 private fun Row.byText(sort: Sort) =
         items[sort.column]
 
-private inline fun <T : Comparable<T>> Sort.check(
-        invert: Boolean = false,
-        left: Row,
-        right: Row,
-        selector: Row.(sort: Sort) -> T
-): Int? {
-    val leftValue = selector(left, this)
-    val rightValue = selector(right, this)
-    return (leftValue.compareTo(rightValue) * if (invert && !this.ascending) -1 else 1)
-            .takeIf { it != 0 }
+private fun List<Row>.sortedBy(sort: Sort): List<Row> {
+    val header = first()
+    val body = (this - header).sortedWith(compareBy(
+            { it.byNumber(sort) },
+            { it.byText(sort) },
+            Row::id
+    ))
+    return listOf(header) + if (sort.ascending) body else body.reversed()
 }
-
-private fun List<Row>.sortedWith(sort: Sort) = this.sortedWith(Comparator { row1: Row, row2: Row ->
-    return@Comparator sort.check(left = row1, right = row2) { headerValue }
-            ?: sort.check(invert = true, left = row1, right = row2, selector = Row::byNumber)
-            ?: sort.check(invert = true, left = row1, right = row2, selector = Row::byText)
-            ?: sort.check(invert = true, left = row1, right = row2) { id }
-            ?: 0
-})
