@@ -121,7 +121,7 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
         val rowLiveData = viewModel.rows
         val visibleRows = mutableListOf<BindingViewHolder<ViewholderSpreadsheetRowBinding>>()
 
-        scroller.addDisplacementListener { displacement -> visibleRows.forEach { it.onScrolled(displacement) } }
+        scroller.addDisplacementListener { displacement -> visibleRows.forEach { it.updateElevation(displacement) } }
 
         val stickyHeader = container.rowViewHolder(viewPool, scroller, viewModel::sort).apply {
             container.addView(itemView, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT))
@@ -202,11 +202,13 @@ private fun ViewGroup.rowViewHolder(
 private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.bind(row: Row) {
     this.row = row
     binding.cell.cell.bind(row.idCell, sort.get())
+    updateElevation(scroller.displacement)
     refresh()
 }
 
-private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.onScrolled(displacement: Int) = binding.elevation.spring(DynamicAnimation.ALPHA, SpringForce.STIFFNESS_LOW)
-        .animateToFinalPosition(if (displacement > 20) 1F else 0F)
+private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.updateElevation(displacement: Int) =
+        binding.elevation.spring(DynamicAnimation.ALPHA, SpringForce.STIFFNESS_LOW)
+                .animateToFinalPosition(if (displacement > 20) 1F else 0F)
 
 private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.refresh(): Unit = binding.recyclerView.run {
     // Lazy initialize
