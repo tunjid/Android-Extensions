@@ -90,8 +90,6 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
         })
 
         val recyclerView = viewPager[0] as RecyclerView
-
-        recyclerView.doOnDetach { recyclerView.adapter?.onDetachedFromRecyclerView(recyclerView) }
         recyclerView.indicatorDecoration(
                 horizontalOffset = resources.displayMetrics.widthPixels / 2f,
                 verticalOffset = resources.getDimension(R.dimen.octuple_margin),
@@ -104,6 +102,8 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
                 ),
                 onIndicatorClicked = viewPager::setCurrentItem
         )
+
+        view.doOnDetach { viewPager.adapter = null }
 
         onDoggoSwiped(viewPager.currentItem)
         prepareSharedElementTransition()

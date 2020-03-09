@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.doOnDetach
-import androidx.core.view.get
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.fragment.app.Fragment
@@ -78,10 +77,7 @@ class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_
             tab.text = context?.getString(if (position == 0) R.string.dynamic_cells else R.string.static_cells)
         }.attach()
 
-        view.doOnDetach {
-            val recyclerView = viewPager[0] as RecyclerView
-            pagerAdapter.onDetachedFromRecyclerView(recyclerView)
-        }
+        view.doOnDetach { viewPager.adapter = null }
     }
 
     companion object {
