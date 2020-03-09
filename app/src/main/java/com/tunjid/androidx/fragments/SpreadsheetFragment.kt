@@ -7,6 +7,8 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.doOnDetach
 import androidx.core.view.get
+import androidx.dynamicanimation.animation.DynamicAnimation
+import androidx.dynamicanimation.animation.SpringForce
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
@@ -44,6 +46,7 @@ import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
+import com.tunjid.androidx.view.util.spring
 import com.tunjid.androidx.viewmodels.Sort
 import com.tunjid.androidx.viewmodels.SpreadsheetViewModel
 import com.tunjid.androidx.viewmodels.routeName
@@ -51,6 +54,7 @@ import kotlin.reflect.KMutableProperty0
 
 private typealias Var<T> = KMutableProperty0<T>
 
+//region Parent Fragment
 class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_parent) {
 
     override val insetFlags: InsetFlags = NO_BOTTOM
@@ -84,7 +88,9 @@ class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_
         fun newInstance(): SpreadSheetParentFragment = SpreadSheetParentFragment().apply { arguments = Bundle() }
     }
 }
+//endregion
 
+//region Inner Fragment
 @UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)
 class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child) {
 
@@ -117,6 +123,9 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
         val viewPool = RecyclerView.RecycledViewPool()
 
         val rowLiveData = viewModel.rows
+        val visibleRows = mutableListOf<BindingViewHolder<ViewholderSpreadsheetRowBinding>>()
+
+        scroller.addDisplacementListener { displacement -> visibleRows.forEach { it.onScrolled(displacement) } }
 
         val stickyHeader = container.rowViewHolder(viewPool, scroller, viewModel::sort).apply {
             container.addView(itemView, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT))
@@ -129,7 +138,10 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
                     initialItems = rowLiveData.value ?: listOf(),
                     viewHolderCreator = { parent, _ -> parent.rowViewHolder(viewPool, scroller, viewModel::sort) },
                     viewHolderBinder = { viewHolder, row, _ -> viewHolder.bind(row) },
-                    itemIdFunction = { it.index.toLong() }
+                    itemIdFunction = { it.index.toLong() },
+                    onViewHolderAttached = { visibleRows.add(it) },
+                    onViewHolderDetached = { visibleRows.remove(it) },
+                    onViewHolderRecycled = { visibleRows.remove(it) }
             )
 
             itemAnimator = null
@@ -166,9 +178,9 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
         fun newInstance(isDynamic: Boolean): SpreadsheetFragment = SpreadsheetFragment().apply { this.isDynamic = isDynamic }
     }
 }
+//endregion
 
-// Row properties
-
+//region Row properties
 private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.sort by BindingViewHolder.Prop<Var<Sort>>()
 private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.scroller by BindingViewHolder.Prop<RecyclerViewMultiScroller>()
 private val BindingViewHolder<ViewholderSpreadsheetRowBinding>.cells get() = row.otherCells
@@ -195,6 +207,9 @@ private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.bind(row: Row) {
     refresh()
 }
 
+private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.onScrolled(displacement: Int) = binding.elevation.spring(DynamicAnimation.ALPHA, SpringForce.STIFFNESS_LOW)
+        .animateToFinalPosition(if (displacement > 20) 1F else 0F)
+
 private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.refresh(): Unit = binding.recyclerView.run {
     // Lazy initialize
     @Suppress("UNCHECKED_CAST")
@@ -205,9 +220,9 @@ private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.refresh(): Unit =
 
     columnAdapter.submitList(cells)
 }
+//endregion
 
-// Cell properties
-
+//region Cell properties
 private fun rowAdapter(
         cells: List<Cell>,
         sort: Var<Sort>
@@ -246,6 +261,7 @@ private fun TextView.bind(cell: Cell, sort: Sort) {
             else ""
     )
 }
+//endregion
 
 private fun Var<Sort>.update(cell: Cell) {
     val currentSort = get()

@@ -26,6 +26,7 @@ class RecyclerViewMultiScroller(
         private set
     private var active: RecyclerView? = null
     private val syncedScrollers = mutableSetOf<RecyclerView>()
+    private val displacementListeners = mutableListOf<(Int) -> Unit>()
 
     private val onScrollListener = object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -37,11 +38,14 @@ class RecyclerViewMultiScroller(
             active = recyclerView
             syncedScrollers.forEach { if (it != recyclerView) it.scrollBy(dx, dy) }
             displacement += if (orientation == RecyclerView.HORIZONTAL) dx else dy
+            displacementListeners.forEach { it(displacement) }
         }
 
         override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-            if (active != recyclerView || newState != RecyclerView.SCROLL_STATE_IDLE) return
-            active = null
+            if (active != recyclerView) return
+
+            displacementListeners.forEach { it(displacement) }
+            if (newState == RecyclerView.SCROLL_STATE_IDLE) active = null
         }
     }
 
@@ -65,10 +69,8 @@ class RecyclerViewMultiScroller(
 
     fun clear() {
         active = null
-        syncedScrollers.clear {
-            exclude(it)
-            it.removeOnAttachStateChangeListener(onAttachStateChangeListener)
-        }
+        displacementListeners.clear()
+        syncedScrollers.clear(this::remove)
         cellSizer.clear()
     }
 
@@ -77,6 +79,22 @@ class RecyclerViewMultiScroller(
 
         include(recyclerView)
         recyclerView.addOnAttachStateChangeListener(onAttachStateChangeListener)
+    }
+
+    fun remove(recyclerView: RecyclerView) {
+        exclude(recyclerView)
+        recyclerView.removeOnAttachStateChangeListener(onAttachStateChangeListener)
+    }
+
+    fun addDisplacementListener(listener: (Int) -> Unit) {
+        if (displacementListeners.contains(listener)) return
+        displacementListeners.add(listener)
+        listener(displacement)
+    }
+
+    @Suppress("unused")
+    fun removeDisplacementListener(listener: (Int) -> Unit) {
+        displacementListeners.remove(listener)
     }
 
     private fun include(recyclerView: RecyclerView) {
