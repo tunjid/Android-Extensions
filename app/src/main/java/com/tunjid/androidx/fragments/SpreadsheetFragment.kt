@@ -130,6 +130,7 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
         val stickyHeader = container.rowViewHolder(viewPool, scroller, viewModel::sort).apply {
             container.addView(itemView, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT))
             rowLiveData.map(List<Row>::header).observe(viewLifecycleOwner, this::bind)
+            visibleRows.add(this)
         }
 
         binding.mainRows.apply {
@@ -156,6 +157,7 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
                         else View.INVISIBLE
             }
             addItemDecoration(tableDecoration())
+            view.doOnDetach { visibleRows.clear() }
         }
     }
 
