@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.FrameLayout.LayoutParams.MATCH_PARENT
+import android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
 import android.widget.TextView
 import androidx.core.view.doOnDetach
 import androidx.dynamicanimation.animation.DynamicAnimation
@@ -124,7 +126,7 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
         scroller.addDisplacementListener { displacement -> visibleRows.forEach { it.updateElevation(displacement) } }
 
         val stickyHeader = container.rowViewHolder(viewPool, scroller, viewModel::sort).apply {
-            container.addView(itemView, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT))
+            container.addView(itemView, FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
             rowLiveData.map(List<Row>::header).observe(viewLifecycleOwner, this::bind)
             visibleRows.add(this)
         }
@@ -153,7 +155,6 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
                         else View.INVISIBLE
             }
             addItemDecoration(tableDecoration())
-            view.doOnDetach { visibleRows.clear() }
         }
     }
 
@@ -254,10 +255,10 @@ private fun BindingViewHolder<ViewholderSpreadsheetCellBinding>.bind(cell: Cell,
 private fun TextView.bind(cell: Cell, sort: Sort) {
     text = resources.getString(R.string.cell_formatter).formatSpanned(
             cell.text,
-            if (cell.isHeader && cell.column == sort.column)
+            if (cell.isHeader)
                 (if (sort.ascending) UP else DOWN)
                         .scaleX(1.4f)
-                        .color(context.colorAt(R.color.dark_grey))
+                        .color(context.colorAt(if(cell.column == sort.column) R.color.dark_grey else R.color.transparent))
             else ""
     )
 }

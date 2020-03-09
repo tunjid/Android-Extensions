@@ -6,5 +6,5 @@
     <color name="colorSurface">#121212</color>
     <color name="nav_bar_color">@color/black_50</color>
     <color name="prominent_text_color">#BB86FC</color>
-    <color name="table_elevation">#616161</color>
+    <color name="table_elevation">#424242</color>
 </resources>
