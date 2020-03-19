@@ -4,7 +4,6 @@
     android:id="@+id/cell"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@color/colorSurface"
     android:ellipsize="end"
     android:minHeight="@dimen/triple_margin"
     android:drawablePadding="@dimen/single_margin"

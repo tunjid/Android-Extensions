@@ -10,6 +10,8 @@ import android.widget.TextView
 import androidx.core.view.doOnDetach
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringForce
+import androidx.dynamicanimation.animation.springAnimationOf
+import androidx.dynamicanimation.animation.withSpringForceProperties
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
@@ -18,6 +20,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.tabs.TabLayoutMediator
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
@@ -125,11 +128,26 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
 
         scroller.addDisplacementListener { displacement -> visibleRows.forEach { it.updateElevation(displacement) } }
 
+        val context = view.context
+        val stickyHeaderElevation = context.resources.getDimensionPixelSize(R.dimen.single_margin).toFloat()
+        val stickyHeaderBackground = MaterialShapeDrawable.createWithElevationOverlay(context, 0f).apply {
+            setTint(context.colorAt(R.color.colorSurface))
+        }
         val stickyHeader = container.rowViewHolder(viewPool, scroller, viewModel::sort).apply {
             container.addView(itemView, FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
             rowLiveData.map(List<Row>::header).observe(viewLifecycleOwner, this::bind)
+            itemView.background = stickyHeaderBackground
+            itemView.elevation = stickyHeaderElevation
             visibleRows.add(this)
         }
+        val stickyHeaderSpringAnimation = springAnimationOf(stickyHeaderBackground::setElevation, stickyHeaderBackground::getElevation, stickyHeaderElevation)
+                .withSpringForceProperties {
+                    stiffness = SpringForce.STIFFNESS_VERY_LOW
+                    dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+                }
+                .addEndListener { _, _, value, _ ->
+                    if (value == 0f) stickyHeader.itemView.visibility = View.INVISIBLE
+                }
 
         binding.mainRows.apply {
             val verticalLayoutManager = verticalLayoutManager()
@@ -150,9 +168,9 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
             rowLiveData.observe(viewLifecycleOwner, tableAdapter::submitList)
 
             addScrollListener { _, _ ->
-                stickyHeader.itemView.visibility =
-                        if (verticalLayoutManager.findFirstCompletelyVisibleItemPosition() > 0) View.VISIBLE
-                        else View.INVISIBLE
+                val stickyHeaderVisible = verticalLayoutManager.findFirstCompletelyVisibleItemPosition() > 0
+                if (stickyHeaderVisible) stickyHeader.itemView.visibility = View.VISIBLE
+                stickyHeaderSpringAnimation.animateToFinalPosition(if (stickyHeaderVisible) stickyHeaderElevation else 0f)
             }
             addItemDecoration(tableDecoration())
         }
@@ -258,7 +276,7 @@ private fun TextView.bind(cell: Cell, sort: Sort) {
             if (cell.isHeader)
                 (if (sort.ascending) UP else DOWN)
                         .scaleX(1.4f)
-                        .color(context.colorAt(if(cell.column == sort.column) R.color.dark_grey else R.color.transparent))
+                        .color(context.colorAt(if (cell.column == sort.column) R.color.dark_grey else R.color.transparent))
             else ""
     )
 }
