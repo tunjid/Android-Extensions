@@ -1,5 +1,7 @@
 package com.tunjid.androidx.fragments
 
+import android.content.Context
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -7,7 +9,6 @@ import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
 import android.widget.TextView
-import androidx.core.view.doOnDetach
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.dynamicanimation.animation.springAnimationOf
@@ -67,7 +68,7 @@ class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_
         super.onViewCreated(view, savedInstanceState)
 
         val viewPager = view.findViewById<ViewPager2>(R.id.view_pager)
-        val pagerAdapter = object : FragmentStateAdapter(this) {
+        val pagerAdapter = object : FragmentStateAdapter(this.childFragmentManager, viewLifecycleOwner.lifecycle) {
             override fun getItemCount(): Int = 2
 
             override fun createFragment(position: Int): Fragment =
@@ -81,8 +82,6 @@ class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_
         TabLayoutMediator(view.findViewById(R.id.tabs), viewPager) { tab, position ->
             tab.text = context?.getString(if (position == 0) R.string.dynamic_cells else R.string.static_cells)
         }.attach()
-
-        view.doOnDetach { viewPager.adapter = null }
     }
 
     companion object {
@@ -133,7 +132,7 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
         val stickyHeaderBackground = MaterialShapeDrawable.createWithElevationOverlay(context, 0f).apply {
             setTint(context.colorAt(R.color.colorSurface))
         }
-        val stickyHeader = container.rowViewHolder(viewPool, scroller, viewModel::sort).apply {
+        val stickyHeader = container.rowViewHolder(viewPool, scroller, viewModel::sort, true).apply {
             container.addView(itemView, FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
             rowLiveData.map(List<Row>::header).observe(viewLifecycleOwner, this::bind)
             itemView.background = stickyHeaderBackground
@@ -169,8 +168,10 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
 
             addScrollListener { _, _ ->
                 val stickyHeaderVisible = verticalLayoutManager.findFirstCompletelyVisibleItemPosition() > 0
-                if (stickyHeaderVisible) stickyHeader.itemView.visibility = View.VISIBLE
-                stickyHeaderSpringAnimation.animateToFinalPosition(if (stickyHeaderVisible) stickyHeaderElevation else 0f)
+                if (context.isDarkTheme) {
+                    if (stickyHeaderVisible) stickyHeader.itemView.visibility = View.VISIBLE
+                    stickyHeaderSpringAnimation.animateToFinalPosition(if (stickyHeaderVisible) stickyHeaderElevation else 0f)
+                } else stickyHeader.itemView.visibility = if (stickyHeaderVisible) View.VISIBLE else View.INVISIBLE
             }
             addItemDecoration(tableDecoration())
         }
@@ -206,10 +207,12 @@ private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.row by BindingVie
 private fun ViewGroup.rowViewHolder(
         recycledViewPool: RecyclerView.RecycledViewPool,
         scroller: RecyclerViewMultiScroller,
-        sort: Var<Sort>
+        sort: Var<Sort>,
+        isHeader: Boolean = false
 ) = viewHolderFrom(ViewholderSpreadsheetRowBinding::inflate).apply {
     this.scroller = scroller
     this.sort = sort
+    binding.elevation.background = itemView.context.elevationDrawable(isHeader)
     binding.cell.cell.setOnClickListener { if (row.isHeader) this.sort.update(row.idCell) }
     binding.recyclerView.apply {
         itemAnimator = null
@@ -224,6 +227,12 @@ private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.bind(row: Row) {
     updateElevation(scroller.displacement)
     refresh()
 }
+
+private fun Context.elevationDrawable(isHeader: Boolean) = GradientDrawable(
+        GradientDrawable.Orientation.LEFT_RIGHT,
+        if (isHeader && isDarkTheme) intArrayOf(colorAt(R.color.colorSurface), colorAt(R.color.table_elevation))
+        else intArrayOf(colorAt(R.color.table_elevation), colorAt(R.color.colorSurface))
+)
 
 private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.updateElevation(displacement: Int) =
         binding.elevation.spring(DynamicAnimation.ALPHA, SpringForce.STIFFNESS_LOW)

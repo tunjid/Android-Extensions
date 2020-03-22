@@ -103,8 +103,6 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
                 onIndicatorClicked = viewPager::setCurrentItem
         )
 
-        view.doOnDetach { viewPager.adapter = null }
-
         onDoggoSwiped(viewPager.currentItem)
         prepareSharedElementTransition()
 

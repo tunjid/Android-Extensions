@@ -6,7 +6,7 @@ import com.tunjid.androidx.fragments.DoggoFragment
 import com.tunjid.androidx.model.Doggo
 
 class DoggoPagerAdapter(private val doggos: List<Doggo>, fragment: Fragment)
-    : FragmentStateAdapter(fragment) {
+    : FragmentStateAdapter(fragment.childFragmentManager, fragment.viewLifecycleOwner.lifecycle) {
 
     override fun getItemCount(): Int = this.doggos.size
 
