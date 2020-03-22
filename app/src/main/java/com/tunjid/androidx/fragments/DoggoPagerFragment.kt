@@ -11,7 +11,6 @@ import android.widget.ImageView
 import androidx.core.app.SharedElementCallback
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.scale
-import androidx.core.view.doOnDetach
 import androidx.core.view.doOnLayout
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
@@ -19,9 +18,9 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.tunjid.androidx.R
-import com.tunjid.androidx.adapters.DoggoPagerAdapter
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.model.Doggo
@@ -208,4 +207,16 @@ private class DrawablePageIndicator(
         val scaled = (size * maxScale).roundToInt()
         return scale(scaled, scaled)
     }
+}
+
+private class DoggoPagerAdapter(private val doggos: List<Doggo>, fragment: Fragment)
+    : FragmentStateAdapter(fragment.childFragmentManager, fragment.viewLifecycleOwner.lifecycle) {
+
+    override fun getItemCount(): Int = this.doggos.size
+
+    override fun getItemId(position: Int): Long = doggos[position].hashCode().toLong()
+
+    override fun containsItem(itemId: Long): Boolean = doggos.map(Doggo::hashCode).contains(itemId.toInt())
+
+    override fun createFragment(position: Int): Fragment = DoggoFragment.newInstance(doggos[position])
 }
