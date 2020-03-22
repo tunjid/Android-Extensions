@@ -27,6 +27,10 @@ Convenience methods for dispatching updates to the RecyclerView are also exposed
 
 A class that makes infinite scrolling for a RecyclerView easier
 
+## RecyclerViewMultiScroller
+
+A class that synchronizes scrolling multiple [RecyclerView]s, useful for creating tables.
+
 ## ListPlaceholder
 
 Interface for displaying a placeholder in an empty RecyclerView with a ListManager
