@@ -6,18 +6,12 @@ import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-@Experimental
-@Retention(AnnotationRetention.BINARY)
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-annotation class ExperimentalRecyclerViewMultiScrolling
-
 /**
  * A class that synchronizes scrolling multiple [RecyclerView]s, useful for creating tables.
  *
  * It is optimized around usage with a [LinearLayoutManager]. The [CellSizer] provides information
  * on how large a cell is in any row to keep all [RecyclerView] instances synchronized
  */
-@ExperimentalRecyclerViewMultiScrolling
 class RecyclerViewMultiScroller(
         @RecyclerView.Orientation private val orientation: Int = RecyclerView.HORIZONTAL,
         private val cellSizer: CellSizer = DynamicCellSizer(orientation)

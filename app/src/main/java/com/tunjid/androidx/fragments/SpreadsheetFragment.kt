@@ -44,7 +44,6 @@ import com.tunjid.androidx.recyclerview.addScrollListener
 import com.tunjid.androidx.recyclerview.horizontalLayoutManager
 import com.tunjid.androidx.recyclerview.listAdapterOf
 import com.tunjid.androidx.recyclerview.multiscroll.DynamicCellSizer
-import com.tunjid.androidx.recyclerview.multiscroll.ExperimentalRecyclerViewMultiScrolling
 import com.tunjid.androidx.recyclerview.multiscroll.RecyclerViewMultiScroller
 import com.tunjid.androidx.recyclerview.multiscroll.StaticCellSizer
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
@@ -92,7 +91,6 @@ class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_
 //endregion
 
 //region Inner Fragment
-@UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)
 class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child) {
 
     private var isDynamic by args<Boolean>()

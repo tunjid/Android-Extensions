@@ -13,7 +13,6 @@ import kotlin.math.max
  * instances in the [RecyclerViewMultiScroller] match up to it. Each individual cell may be
  * arbitrarily sized.
  */
-@UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)
 class DynamicCellSizer(
         @RecyclerView.Orientation override val orientation: Int = RecyclerView.HORIZONTAL
 ) : CellSizer, ViewModifier {

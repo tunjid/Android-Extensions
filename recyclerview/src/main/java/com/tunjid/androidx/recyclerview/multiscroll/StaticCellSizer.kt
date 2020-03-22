@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
  * A [CellSizer] that fixes the size of each cell to the size provided by the [sizeLookup]
  * function at each index.
  */
-@UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)
 class StaticCellSizer(
         @RecyclerView.Orientation override val orientation: Int = RecyclerView.HORIZONTAL,
         private val sizeLookup: (Int) -> Int
