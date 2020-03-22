@@ -6,4 +6,5 @@
     <color name="colorSurface">#FFFFFF</color>
     <color name="nav_bar_color">@color/white_75</color>
     <color name="prominent_text_color">#3F51B5</color>
+    <color name="table_elevation">#E0E0E0</color>
 </resources>

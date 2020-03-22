@@ -5,11 +5,15 @@ import android.content.res.Configuration
 import android.view.MenuItem
 import android.widget.ProgressBar
 import androidx.annotation.ColorInt
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataReactiveStreams
+import androidx.lifecycle.Transformations
 import com.tunjid.androidx.core.graphics.drawable.withTint
 import io.reactivex.Flowable
 
 fun <T> Flowable<T>.toLiveData() = LiveDataReactiveStreams.fromPublisher(this)
+
+fun <T, R> LiveData<T>.map(mapper: (T) -> R) = Transformations.map(this, mapper)
 
 inline fun <T> Iterable<T>.modifiableForEach(action: (T) -> Unit) =
         iterator().run { while (hasNext()) next().apply(action); Unit }

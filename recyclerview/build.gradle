@@ -6,6 +6,9 @@ android {
                 "-Xuse-experimental=kotlin.Experimental"
         ]
     }
+    viewBinding {
+        enabled = true
+    }
 }
 
 dependencies {
@@ -17,6 +20,7 @@ dependencies {
     implementation parent.ext.recyclerView
     implementation parent.ext.swipeRefreshLayout
 
+    implementation project(':core')
     implementation project(':view')
     implementation project(':functions')
 

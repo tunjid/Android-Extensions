@@ -21,19 +21,13 @@ abstract class AppBaseFragment(
         Navigator.TagProvider,
         Navigator.Controller {
 
-    private var activityUiState by activityGlobalUiController()
-
     override val insetFlags: InsetFlags = InsetFlags.ALL
 
     override val stableTag: String = javaClass.simpleName
 
     override val navigator by activityNavigatorController<MultiStackNavigator>()
 
-    override var uiState: UiState
-        get() = activityUiState
-        set(value) {
-            if (navigator.current === this) activityUiState = value
-        }
+    override var uiState: UiState by activityGlobalUiController()
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.menu_reset -> navigator.clearAll().let { true }

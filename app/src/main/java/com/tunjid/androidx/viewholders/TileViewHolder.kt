@@ -3,49 +3,38 @@ package com.tunjid.androidx.viewholders
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.graphics.Color
-import android.view.View
-import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
-import com.tunjid.androidx.R
+import android.view.ViewGroup
+import com.tunjid.androidx.databinding.ViewholderTileBinding
 import com.tunjid.androidx.model.Tile
+import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
+import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 
-class TileViewHolder(
-        itemView: View,
-        private val onClick: (tile: Tile) -> Unit
-) : RecyclerView.ViewHolder(itemView) {
+fun ViewGroup.tileViewHolder() = viewHolderFrom(ViewholderTileBinding::inflate).apply {
+    animator = ValueAnimator.ofObject(ArgbEvaluator(), Color.RED).setDuration(COLOR_CHANGE_DURATION.toLong())
+    listener = ValueAnimator.AnimatorUpdateListener { binding.tileText.setTextColor(it.animatedValue as Int) }
+}
 
-    private lateinit var tile: Tile
-    private val text: TextView = itemView.findViewById(R.id.tile_text)
-    private val animator: ValueAnimator = ValueAnimator.ofObject(ArgbEvaluator(), Color.RED)
-    private val listener: ValueAnimator.AnimatorUpdateListener = ValueAnimator.AnimatorUpdateListener(this::updateTextColor)
+var BindingViewHolder<ViewholderTileBinding>.tile by BindingViewHolder.Prop<Tile>()
+private var BindingViewHolder<ViewholderTileBinding>.animator by BindingViewHolder.Prop<ValueAnimator>()
+private var BindingViewHolder<ViewholderTileBinding>.listener by BindingViewHolder.Prop<ValueAnimator.AnimatorUpdateListener>()
 
-    init {
-        animator.duration = COLOR_CHANGE_DURATION.toLong()
-        itemView.setOnClickListener { onClick(tile) }
-    }
+fun BindingViewHolder<ViewholderTileBinding>.bind(tile: Tile) {
+    this.tile = tile
+    val tileText = binding.tileText
+    tileText.text = tile.diffId
 
-    fun bind(tile: Tile) {
-        this.tile = tile
-        text.text = tile.diffId
-
-        animator.setIntValues(text.currentTextColor, tile.color)
-        animator.addUpdateListener(listener)
-        animator.startDelay = START_DELAY.toLong() // Cheeky bit of code to keep scrolling smooth on fling
-        animator.start()
-    }
-
-    fun unbind() {
-        animator.cancel()
-        animator.removeUpdateListener(listener)
-    }
-
-    private fun updateTextColor(animation: ValueAnimator) {
-        text.setTextColor(animation.animatedValue as Int)
-    }
-
-    companion object {
-
-        private const val COLOR_CHANGE_DURATION = 1000
-        private const val START_DELAY = 300
+    animator.apply {
+        setIntValues(tileText.currentTextColor, tile.color)
+        addUpdateListener(listener)
+        startDelay = START_DELAY.toLong() // Cheeky bit of code to keep scrolling smooth on fling
+        start()
     }
 }
+
+fun BindingViewHolder<ViewholderTileBinding>.unbind() = animator.run {
+    cancel()
+    removeUpdateListener(listener)
+}
+
+private const val COLOR_CHANGE_DURATION = 1000
+private const val START_DELAY = 300

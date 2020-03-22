@@ -56,9 +56,6 @@ class IndependentStacksFragment : AppBaseFragment(R.layout.fragment_independent_
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-            super.onCreateView(inflater, container, savedInstanceState)?.apply { setBackgroundColor(MutedColors.colorAt(inflater.context.isDarkTheme, 0)) }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -76,6 +73,16 @@ class IndependentStacksFragment : AppBaseFragment(R.layout.fragment_independent_
                 lightStatusBar = false,
                 navBarColor = requireContext().colorAt(R.color.transparent)
         )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        uiState = uiState.copy(backgroundColor = MutedColors.colorAt(requireContext().isDarkTheme, 0))
+    }
+
+    override fun onPause() {
+        super.onPause()
+        uiState = uiState.copy(backgroundColor = Color.TRANSPARENT)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

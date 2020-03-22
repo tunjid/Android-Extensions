@@ -14,8 +14,11 @@ import com.tunjid.androidx.navigation.multiStackNavigationController
 import com.tunjid.androidx.uidrivers.GlobalUiController
 import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
 import com.tunjid.androidx.uidrivers.UiState
-import com.tunjid.androidx.uidrivers.crossFade
 import com.tunjid.androidx.uidrivers.globalUiDriver
+import com.tunjid.androidx.uidrivers.materialFadeThroughTransition
+import com.tunjid.androidx.uidrivers.materialDepthAxisTransition
+import leakcanary.AppWatcher
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiController, Navigator.Controller {
 
@@ -28,6 +31,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
     override var uiState: UiState by globalUiDriver { navigator.activeNavigator }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
+        AppWatcher.config = AppWatcher.config.copy(watchDurationMillis = TimeUnit.SECONDS.toMillis(8))
 
         // Add this before on create to make sure fragment callbacks are added after.
         // This makes Fragment back pressed callbacks take higher precedence.
@@ -48,12 +52,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
             ), true)
 
             navigator.stackSelectedListener = { menu.findItem(tabs[it])?.isChecked = true }
-            navigator.transactionModifier = { incomingFragment ->
-                val current = navigator.current
-                if (current is Navigator.TransactionModifier) current.augmentTransaction(this, incomingFragment)
-                else crossFade()
-            }
-            navigator.stackTransactionModifier = { crossFade() }
+            navigator.stackTransactionModifier = navigator.materialFadeThroughTransition()
+            navigator.transactionModifier = navigator.materialDepthAxisTransition()
 
             setOnApplyWindowInsetsListener { _: View?, windowInsets: WindowInsets? -> windowInsets }
             setOnNavigationItemSelectedListener { navigator.show(tabs.indexOf(it.itemId)).let { true } }

@@ -1,17 +1,19 @@
 package com.tunjid.androidx.uidrivers
 
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
-import android.view.animation.AccelerateDecelerateInterpolator
-import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
 import androidx.appcompat.widget.ActionMenuView
@@ -19,6 +21,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.ViewCompat
+import androidx.core.view.children
 import androidx.core.view.forEach
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.fragment.app.Fragment
@@ -58,18 +61,20 @@ fun FragmentActivity.globalUiDriver(
         bottomNavId: Int = R.id.bottom_navigation,
         navBackgroundId: Int = R.id.nav_background,
         coordinatorLayoutId: Int = R.id.coordinator_layout,
+        backgroundId: Int = R.id.constraint_layout,
         navigatorSupplier: () -> Navigator
 ) = object : ReadWriteProperty<FragmentActivity, UiState> {
 
     private val driver by lazy {
         GlobalUiDriver(
-                this@globalUiDriver,
-                toolbarId,
-                fabId,
-                bottomNavId,
-                navBackgroundId,
-                coordinatorLayoutId,
-                navigatorSupplier
+                host = this@globalUiDriver,
+                toolbarId = toolbarId,
+                fabId = fabId,
+                bottomNavId = bottomNavId,
+                navBackgroundId = navBackgroundId,
+                backgroundId = backgroundId,
+                coordinatorLayoutId = coordinatorLayoutId,
+                navigatorSupplier = navigatorSupplier
         )
     }
 
@@ -110,6 +115,7 @@ class GlobalUiDriver(
         fabId: Int,
         bottomNavId: Int,
         navBackgroundId: Int,
+        backgroundId: Int,
         coordinatorLayoutId: Int,
         private val navigatorSupplier: () -> Navigator
 ) : GlobalUiController {
@@ -142,6 +148,9 @@ class GlobalUiDriver(
     private val coordinatorLayout: CoordinatorLayout =
             host.findViewById(coordinatorLayoutId)
 
+    private val backgroundView: View =
+            host.findViewById(backgroundId)
+
     private var state: UiState = UiState.freshState()
 
     override var uiState: UiState
@@ -150,18 +159,19 @@ class GlobalUiDriver(
             val previous = state.copy()
             state = value.copy(toolbarInvalidated = false, snackbarText = "") // Reset after firing once
             previous.diff(
-                    value,
-                    bottomNavHider::set,
-                    fabHider::set,
-                    toolbarHider::set,
-                    this::setNavBarColor,
-                    this::setLightStatusBar,
-                    this::setFabIcon,
-                    fabExtensionAnimator::isExtended::set,
-                    this::showSnackBar,
-                    this::updateMainToolBar,
-                    this::setFabClickListener,
-                    this::setFabTransitionOptions
+                    newState = value,
+                    showsBottomNavConsumer = bottomNavHider::set,
+                    showsFabConsumer = fabHider::set,
+                    showsToolbarConsumer = toolbarHider::set,
+                    navBarColorConsumer = this::setNavBarColor,
+                    lightStatusBarConsumer = this::setLightStatusBar,
+                    fabStateConsumer = this::setFabIcon,
+                    fabExtendedConsumer = fabExtensionAnimator::isExtended::set,
+                    backgroundColorConsumer = backgroundView::animateBackground,
+                    snackbarTextConsumer = this::showSnackBar,
+                    toolbarStateConsumer = this::updateMainToolBar,
+                    fabClickListenerConsumer = this::setFabClickListener,
+                    fabTransitionOptionConsumer = this::setFabTransitionOptions
             )
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
@@ -222,29 +232,22 @@ class GlobalUiDriver(
         show()
     }
 
-    private fun Toolbar.update(@MenuRes menu: Int, invalidatedAlone: Boolean, title: CharSequence) = when {
-        invalidatedAlone -> refreshMenu()
-        visibility != View.VISIBLE || this.title == null -> {
-            setTitle(title)
-            refreshMenu(menu)
-            updateIcons()
-        }
-        else -> for (i in 0 until childCount) {
-            val child = getChildAt(i)
-            if (child is ImageView) continue
+    private fun Toolbar.update(@MenuRes menu: Int, invalidatedAlone: Boolean, title: CharSequence) {
+        if (invalidatedAlone) return refreshMenu()
 
-            child.animate().alpha(0F).setDuration(TOOLBAR_ANIM_DELAY).withEndAction {
-                if (child is TextView) setTitle(title)
-                else if (child is ActionMenuView) refreshMenu(menu)
+        val currentTitle = this.title?.toString() ?: ""
+        if (currentTitle.isNotBlank()) TransitionManager.beginDelayedTransition(this, AutoTransition().apply {
+            // We only want to animate the title, but it's lazy initialized.
+            // If it's there, use it, else fuzzy match to it's initialization
+            val titleTextView = children.filterIsInstance<TextView>()
+                    .filter { it.text?.toString() == currentTitle }
+                    .firstOrNull()
+            if (titleTextView != null) addTarget(titleTextView) else addTarget(TextView::class.java)
+        })
 
-                child.animate()
-                        .setDuration(TOOLBAR_ANIM_DELAY)
-                        .setInterpolator(AccelerateDecelerateInterpolator())
-                        .withEndAction { updateIcons() }
-                        .alpha(1F)
-                        .start()
-            }.start()
-        }
+        this.title = if (title.isEmpty()) " " else title
+        refreshMenu(menu)
+        updateIcons()
     }
 
     private fun Toolbar.refreshMenu(menu: Int? = null) {
@@ -256,7 +259,7 @@ class GlobalUiDriver(
     }
 
     private fun Toolbar.updateIcons() {
-        TransitionManager.beginDelayedTransition(this, AutoTransition().setDuration(100))
+        TransitionManager.beginDelayedTransition(this, AutoTransition().setDuration(100).addTarget(ActionMenuView::class.java))
         val tint = titleTint
 
         menu.forEach {
@@ -279,13 +282,26 @@ class GlobalUiDriver(
         } ?: context.themeColorAt(R.attr.prominent_text_color)
 
     companion object {
-        private const val TOOLBAR_ANIM_DELAY = 200L
         private const val DEFAULT_SYSTEM_UI_FLAGS =
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                         View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
                         View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                         WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
     }
+}
+
+private fun View.animateBackground(@ColorInt to: Int) {
+    val animator = getTag(R.id.doggo_image) as? ValueAnimator
+            ?: ValueAnimator().apply {
+                setTag(R.id.doggo_image, this)
+                setIntValues(Color.TRANSPARENT)
+                setEvaluator(ArgbEvaluator())
+                addUpdateListener { setBackgroundColor(it.animatedValue as Int) }
+            }
+
+    if (animator.isRunning) animator.cancel()
+    animator.setIntValues(animator.animatedValue as Int, to)
+    animator.start()
 }
 
 private val Int.isBrightColor get() = ColorUtils.calculateLuminance(this) > 0.5

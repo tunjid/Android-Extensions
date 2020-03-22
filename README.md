@@ -9,7 +9,7 @@ There are 10 modules:
 | 2  | [Core (1.1.0)](https://github.com/tunjid/Android-Extensions/blob/develop/core/README.md)  | A few added utilities to the core Android KTX libraries.  Includes extension methods on objects to side step ContextCompat, DrawableCompat, and a fluent SpannableString API | ![](https://i.imgur.com/AFZpZ1K.png)  | ![](https://miro.medium.com/max/4904/1*o4p71Uid8vzAHvHH7W_LjQ.png)  |
 | 3  | [Navigation (1.1.0)](https://github.com/tunjid/Android-Extensions/blob/develop/navigation/README.md)  | Interfaces and implementations of Fragment based Navigators, including single and multiple stacks. The APIs allow for hooking into the raw `FragmentTransactions` that run allow you to customize it toyour heart's content. Suspending APIs are also available to preform navigation actions sequentially without having to deal with the asynchrosity of the `FragmentManager`.| ![](https://i.imgur.com/2Ai74xI.png)  | ![](https://cdn-images-1.medium.com/max/1600/1*q1WqvY91CWlmAjdEiwbA_g.gif)  |
 | 4  | [View (1.0.0)](https://github.com/tunjid/Android-Extensions/blob/develop/view/README.md)  | A module containing UI building blocks, like animators and helper methods for views.  Butilt mostly around the `SpringAnimation` from the Jetpack `DynamicAnimation` library. In the examplr to the right, it is responsible for moving the Toolbar and Floating action button for each navigation destination change.| ![](https://miro.medium.com/max/1200/1*noooyqRaR2qvGRlz9FuJgw.gif)  |   |
-| 5  | [RecyclerView (1.1.0-alpha01)](https://github.com/tunjid/Android-Extensions/blob/develop/recyclerview/README.md)  | Utility classes for the ```RecyclerView``` ```ViewGroup``` like drag and drop, swipe gestures, endless scrolling, a composable adapter, diffing and much more.  | ![](https://miro.medium.com/max/580/1*SjjLx1ghigvJP7kax-K6gA.gif)  |   |
+| 5  | [RecyclerView (1.1.0-beta01)](https://github.com/tunjid/Android-Extensions/blob/develop/recyclerview/README.md)  | Utility classes for the ```RecyclerView``` ```ViewGroup``` like drag and drop, swipe gestures, endless scrolling, a composable adapter, diffing, tables and much more.  | ![](https://miro.medium.com/max/580/1*SjjLx1ghigvJP7kax-K6gA.gif)  |   |
 | 6  | [Material (1.0.0-rc06)](https://github.com/tunjid/Android-Extensions/blob/develop/material/README.md)  | Utility classes around Google's Material Design components including an expandable floating action button.  | ![](https://miro.medium.com/max/648/1*NHgDmR6QVqQwj7VJToQE5w.gif)  |   |
 | 7  | [Communications (1.0.0)](https://github.com/tunjid/Android-Extensions/blob/develop/communications/README.md)  | Utility classes for Near Service Discovery (NSD) and Bluetooth Low Energy (BLE) communication.  |   |   |
 | 8  | [Saved State (1.0.0)](https://github.com/tunjid/Android-Extensions/blob/develop/savedstate/README.md)  | Delegated implementation of Android Jetpack's Saved State Registry for Components that also have a lifecycle.  |   |   |
@@ -32,8 +32,7 @@ build.gradle lines
 Projects that use This library include:
 
 1. [DigiLux Fingerprint gestures app](https://play.google.com/store/apps/details?id=com.tunjid.fingergestures)
-2. [Teammate Sports Management and Tournament Bracket App](https://play.google.com/store/apps/details?id=com.mainstreetcode.teammate)
-3. [BluetoothRcSwitch IOT Github project](https://github.com/tunjid/BluetoothRcSwitch)
+2. [BluetoothRcSwitch IOT Github project](https://github.com/tunjid/BluetoothRcSwitch)
 
 ## Core
 Read more about the core module, classes and components [here](https://github.com/tunjid/Android-Extensions/blob/develop/core/README.md).
@@ -68,3 +67,14 @@ You can read more about the testing module and classes [here](https://github.com
 
 Image attribution
 App icon made by [Freepik](https://www.freepik.com/?__hstc=57440181.7a5d7d3cc018b38de5851a6c095932c9.1558869007278.1558869007278.1558869007278.1&__hssc=57440181.5.1558869007279&__hsfp=1983466168 "Freepik") from [www.flaticon.com](https://www.flaticon.com/ "Flaticon") is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/ "Creative Commons BY 3.0"
+
+## Publishing
+
+Publishing is done with the `maven-publish` plugin. To publish a specific version of a module, run:
+
+`./gradlew moduleName:assembleRelease`
+`./gradlew moduleName:publishLibPublicationTo*publishRepoName*Repository`
+
+By default, the `publishRepoName`, `publishUrl`, `publishUserName` and `publishPassword` are read from the `local.properties` file.
+They can however be overriden by passing gardle properties via the `-P` flag for each property you wish to override.
+Multi repository setup can only be done with the `local.properties file`.

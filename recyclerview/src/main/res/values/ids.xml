@@ -3,7 +3,7 @@
     <public />
     <item name="recyclerview_swipe_drag" type="id" />
     <item name="recyclerview_endless_scroller" type="id" />
-    <item name="recyclerview_was_detached" type="id" />
+    <item name="recyclerview_dynamic_sizing_handler" type="id" />
     <item name="recyclerview_pre_draw" type="id" />
-    <item name="recyclerview_previous_column" type="id" />
+    <item name="recyclerview_view_binding_map" type="id" />
 </resources>

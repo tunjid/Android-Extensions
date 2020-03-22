@@ -21,15 +21,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
+import com.tunjid.androidx.communications.bluetooth.ScanResultCompat
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.databinding.FragmentBleScanBinding
+import com.tunjid.androidx.databinding.ViewholderScanBinding
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.recyclerview.acceptDiff
 import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
+import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
+import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
 import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
-import com.tunjid.androidx.view.util.inflate
-import com.tunjid.androidx.viewholders.ScanViewHolder
 import com.tunjid.androidx.viewmodels.BleViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
@@ -55,11 +58,15 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan) {
         val placeHolder = PlaceHolder(view.findViewById(R.id.placeholder_container))
         placeHolder.bind(PlaceHolder.State(R.string.no_ble_devices, R.drawable.ic_bluetooth_24dp))
 
-        recyclerView = view.findViewById<RecyclerView>(R.id.list).apply {
+        recyclerView = FragmentBleScanBinding.bind(view).list.apply {
             layoutManager = verticalLayoutManager()
             adapter = adapterOf(
                     itemsSource = viewModel::scanResults,
-                    viewHolderCreator = { parent, _ -> ScanViewHolder(parent.inflate(R.layout.viewholder_scan), ::onBluetoothDeviceClicked) },
+                    viewHolderCreator = { parent, _ ->
+                        parent.viewHolderFrom(ViewholderScanBinding::inflate).apply {
+                            itemView.setOnClickListener { onBluetoothDeviceClicked(result.device) }
+                        }
+                    },
                     viewHolderBinder = { viewHolder, scanResult, _ -> viewHolder.bind(scanResult) }
             )
 
@@ -164,4 +171,14 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan) {
         fun newInstance(): BleScanFragment = BleScanFragment().apply { arguments = Bundle() }
     }
 
+}
+
+private var BindingViewHolder<ViewholderScanBinding>.result by BindingViewHolder.Prop<ScanResultCompat>()
+
+fun BindingViewHolder<ViewholderScanBinding>.bind(result: ScanResultCompat) {
+    this.result = result
+    if (result.scanRecord != null) binding.apply {
+        deviceName.text = result.scanRecord!!.deviceName
+        deviceAddress.text = result.device.address
+    }
 }
