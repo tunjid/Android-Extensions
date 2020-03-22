@@ -8,6 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.recyclerview.R
 import kotlin.math.max
 
+/**
+ * A [CellSizer] instance that measures the largest cell and makes sure all [RecyclerView]
+ * instances in the [RecyclerViewMultiScroller] match up to it. Each individual cell may be
+ * arbitrarily sized.
+ */
 @UseExperimental(ExperimentalRecyclerViewMultiScrolling::class)
 class DynamicCellSizer(
         @RecyclerView.Orientation override val orientation: Int = RecyclerView.HORIZONTAL

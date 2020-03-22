@@ -14,8 +14,8 @@ annotation class ExperimentalRecyclerViewMultiScrolling
 /**
  * A class that synchronizes scrolling multiple [RecyclerView]s, useful for creating tables.
  *
- * The synchronized RecyclerViews must have child items that are equal in size around the specified
- * orientation, have the same amount of items and also use a [LinearLayoutManager]
+ * It is optimized around usage with a [LinearLayoutManager]. The [CellSizer] provides information
+ * on how large a cell is in any row to keep all [RecyclerView] instances synchronized
  */
 @ExperimentalRecyclerViewMultiScrolling
 class RecyclerViewMultiScroller(

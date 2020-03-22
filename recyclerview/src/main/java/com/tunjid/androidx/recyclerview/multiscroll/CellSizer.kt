@@ -6,15 +6,41 @@ import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.recyclerview.R
 
+/**
+ * Provides information used to synchronize [RecyclerView] instances in a
+ * [RecyclerViewMultiScroller]
+ */
 interface CellSizer {
+    /**
+     * One of [RecyclerView.HORIZONTAL] or [RecyclerView.VERTICAL]
+     */
     val orientation: Int
 
+    /**
+     * Called when [RecyclerViewMultiScroller.clear] is. If any references to [RecyclerView]
+     * instances are kept in your implementation, they should be cleared out here.
+     */
     fun clear()
 
+    /**
+     * The size of a Cell at a particular index. Used to synchronize [RecyclerView] scroll
+     * positions
+     */
     fun sizeAt(position: Int): Int
 
+    /**
+     * Called when a [RecyclerView] instance is added to be synchronized. Logic for updating or
+     * measuring child views in the [RecyclerView] run here.
+     */
     fun include(recyclerView: RecyclerView)
 
+    /**
+     * Called when a [RecyclerView] instance is removed from synchronization, usually when it is
+     * detached from the [View] window as a result of recycling or [RecyclerViewMultiScroller.clear].
+     *
+     * If this [RecyclerView] was used to ascertain some cell properties, it should not be used for
+     * it anymore as it is not currently visible to the user.
+     */
     fun exclude(recyclerView: RecyclerView)
 
     companion object {
