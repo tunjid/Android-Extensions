@@ -9,6 +9,7 @@ import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
 import android.widget.TextView
+import androidx.core.view.postDelayed
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.dynamicanimation.animation.springAnimationOf
@@ -256,9 +257,9 @@ private fun rowAdapter(
         sort: Var<Sort>
 ) = listAdapterOf(
         initialItems = cells,
+        itemIdFunction = { it.column.toLong() },
         viewHolderCreator = { viewGroup, _ -> cellViewHolder(viewGroup, sort) },
-        viewHolderBinder = { holder, item, _ -> holder.bind(item, sort.get()) },
-        itemIdFunction = { it.column.toLong() }
+        viewHolderBinder = { holder, item, _ -> holder.bind(item, sort.get()) }
 )
 
 
@@ -277,6 +278,8 @@ private fun cellViewHolder(viewGroup: ViewGroup, sort: Var<Sort>): BindingViewHo
 private fun BindingViewHolder<ViewholderSpreadsheetCellBinding>.bind(cell: Cell, sort: Sort) {
     this.cell = cell
     binding.cell.bind(cell, sort)
+    itemView.visibility = View.INVISIBLE
+    itemView.postDelayed(80L) { itemView.visibility = View.VISIBLE }
 }
 
 private fun TextView.bind(cell: Cell, sort: Sort) {
