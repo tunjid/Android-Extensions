@@ -5,8 +5,8 @@ import android.view.View
 import android.view.WindowInsets
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tunjid.androidx.R
+import com.tunjid.androidx.databinding.ActivityMainBinding
 import com.tunjid.androidx.fragments.RouteFragment
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
@@ -15,12 +15,12 @@ import com.tunjid.androidx.uidrivers.GlobalUiController
 import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.globalUiDriver
-import com.tunjid.androidx.uidrivers.materialFadeThroughTransition
 import com.tunjid.androidx.uidrivers.materialDepthAxisTransition
+import com.tunjid.androidx.uidrivers.materialFadeThroughTransition
 import leakcanary.AppWatcher
 import java.util.concurrent.TimeUnit
 
-class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiController, Navigator.Controller {
+class MainActivity : AppCompatActivity(), GlobalUiController, Navigator.Controller {
 
     override val navigator: MultiStackNavigator by multiStackNavigationController(
             tabs.size,
@@ -39,22 +39,21 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), GlobalUiControll
 
         super.onCreate(savedInstanceState)
 
-        findViewById<BottomNavigationView>(R.id.bottom_navigation).apply {
+        val mainActivityBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(mainActivityBinding.root)
 
-            supportFragmentManager.registerFragmentLifecycleCallbacks(InsetLifecycleCallbacks(
-                    this@MainActivity,
-                    this@MainActivity.findViewById(R.id.constraint_layout),
-                    this@MainActivity.findViewById(R.id.content_container),
-                    this@MainActivity.findViewById(R.id.coordinator_layout),
-                    this@MainActivity.findViewById(R.id.toolbar),
-                    this,
-                    this@MainActivity.navigator::activeNavigator
-            ), true)
+        supportFragmentManager.registerFragmentLifecycleCallbacks(InsetLifecycleCallbacks(
+                globalUiController = this@MainActivity,
+                binding = mainActivityBinding,
+                stackNavigatorSource = this@MainActivity.navigator::activeNavigator
+        ), true)
 
+        mainActivityBinding.bottomNavigation.apply {
             navigator.stackSelectedListener = { menu.findItem(tabs[it])?.isChecked = true }
             navigator.stackTransactionModifier = navigator.materialFadeThroughTransition()
             navigator.transactionModifier = navigator.materialDepthAxisTransition()
 
+            // Swallow insets, don't allow default behavior
             setOnApplyWindowInsetsListener { _: View?, windowInsets: WindowInsets? -> windowInsets }
             setOnNavigationItemSelectedListener { navigator.show(tabs.indexOf(it.itemId)).let { true } }
             setOnNavigationItemReselectedListener { navigator.activeNavigator.clear() }
