@@ -30,6 +30,8 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+        // Reduce META-INF file conflicts
+        kotlinOptions.freeCompilerArgs += ['-module-name', "${parent.ext.groupId}.${project.getName()}"]
     }
 
     kotlinOptions {
