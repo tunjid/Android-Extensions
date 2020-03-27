@@ -17,6 +17,7 @@ import com.tunjid.androidx.recyclerview.gridLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
 import com.tunjid.androidx.uidrivers.SlideInItemAnimator
+import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidx.viewholders.bind
@@ -51,9 +52,9 @@ class ShiftingTilesFragment : AppBaseFragment(R.layout.fragment_route) {
                 fabText = fabText,
                 lightStatusBar = !requireContext().isDarkTheme,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
-                fabClickListener = View.OnClickListener {
+                fabClickListener = {
                     viewModel.toggleChanges()
-                    uiState = uiState.copy(fabIcon = fabIconRes, fabText = fabText)
+                    ::uiState.update { copy(fabIcon = fabIconRes, fabText = fabText) }
                 }
         )
 

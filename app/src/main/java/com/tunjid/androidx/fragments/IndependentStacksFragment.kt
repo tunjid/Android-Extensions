@@ -68,7 +68,6 @@ class IndependentStacksFragment : AppBaseFragment(R.layout.fragment_independent_
                 toolBarMenu = 0,
                 toolbarShows = true,
                 fabShows = false,
-                fabClickListener = View.OnClickListener {},
                 showsBottomNav = true,
                 lightStatusBar = false,
                 navBarColor = requireContext().colorAt(R.color.transparent)

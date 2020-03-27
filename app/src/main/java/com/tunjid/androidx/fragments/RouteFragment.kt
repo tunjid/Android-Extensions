@@ -53,7 +53,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
                 fabShows = true,
                 fabIcon = R.drawable.ic_dice_24dp,
                 fabText = getString(R.string.route_feeling_lucky),
-                fabClickListener = View.OnClickListener { goSomewhereRandom() },
+                fabClickListener = { goSomewhereRandom() },
                 showsBottomNav = true,
                 lightStatusBar = !requireContext().isDarkTheme,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)

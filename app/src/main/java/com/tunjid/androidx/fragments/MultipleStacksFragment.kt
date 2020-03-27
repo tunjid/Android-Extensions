@@ -100,7 +100,7 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
                 fabText = getString(R.string.go_deeper),
                 fabIcon = R.drawable.ic_bullseye_24dp,
                 fabShows = true,
-                fabClickListener = View.OnClickListener {
+                fabClickListener = {
                     val current = innerNavigator.current as? MultipleStackChildFragment
                     if (current != null) innerNavigator.push(MultipleStackChildFragment.newInstance(current.name, current.depth + 1))
                 },

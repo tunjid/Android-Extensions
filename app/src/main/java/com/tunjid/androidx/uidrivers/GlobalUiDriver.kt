@@ -8,7 +8,6 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
@@ -26,6 +25,8 @@ import androidx.core.view.forEach
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -151,15 +152,27 @@ class GlobalUiDriver(
     private val backgroundView: View =
             host.findViewById(backgroundId)
 
+    private val shortestAvailableLifecycle
+        get() = when (val fragment = navigatorSupplier().current) {
+            null -> host.lifecycle
+            else -> when (fragment.view) {
+                null -> fragment.lifecycle
+                else -> fragment.viewLifecycleOwner.lifecycle
+            }
+        }
     private var state: UiState = UiState.freshState()
 
     override var uiState: UiState
         get() = state
         set(value) {
             val previous = state.copy()
-            state = value.copy(toolbarInvalidated = false, snackbarText = "") // Reset after firing once
+            val updated = value.copy(
+                    fabClickListener = value.fabClickListener?.lifecycleAware(),
+                    fabTransitionOptions = value.fabTransitionOptions?.lifecycleAware()
+            )
+            state = updated.copy(toolbarInvalidated = false, snackbarText = "") // Reset after firing once
             previous.diff(
-                    newState = value,
+                    newState = updated,
                     showsBottomNavConsumer = bottomNavHider::set,
                     showsFabConsumer = fabHider::set,
                     showsToolbarConsumer = toolbarHider::set,
@@ -219,7 +232,7 @@ class GlobalUiDriver(
         if (icon != 0 && title.isNotBlank()) fabExtensionAnimator.updateGlyphs(title, icon)
     }
 
-    private fun setFabClickListener(onClickListener: View.OnClickListener?) =
+    private fun setFabClickListener(onClickListener: ((View) -> Unit)?) =
             fabHider.view.setOnClickListener(onClickListener)
 
     private fun setFabTransitionOptions(options: (SpringAnimation.() -> Unit)?) {
@@ -288,6 +301,13 @@ class GlobalUiDriver(
                         View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                         WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
     }
+
+    /**
+     * Wraps an action with the shortest available lifecycle to make sure nothing leaks.
+     * If [this] is already a [LifeCycleAwareCallback], it was previously wrapped and will NO-OP.
+     */
+    private fun <T> ((T) -> Unit).lifecycleAware(): (T) -> Unit =
+            if (this is LifeCycleAwareCallback) this else LifeCycleAwareCallback(shortestAvailableLifecycle, this)
 }
 
 private fun View.animateBackground(@ColorInt to: Int) {
@@ -309,3 +329,15 @@ private val Int.isBrightColor get() = ColorUtils.calculateLuminance(this) > 0.5
 private fun ViewHider<*>.set(show: Boolean) =
         if (show) show()
         else hide()
+
+private class LifeCycleAwareCallback<T>(lifecycle: Lifecycle, implementation: (T) -> Unit) : (T) -> Unit {
+    private var callback: (T) -> Unit = implementation
+
+    init {
+        lifecycle.addObserver(LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_DESTROY) callback = {}
+        })
+    }
+
+    override fun invoke(type: T) = callback.invoke(type)
+}

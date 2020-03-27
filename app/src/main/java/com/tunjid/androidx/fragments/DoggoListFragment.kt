@@ -34,6 +34,7 @@ import com.tunjid.androidx.recyclerview.viewHolderForItemId
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
+import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.androidx.viewholders.DoggoBinder
@@ -72,7 +73,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
                 lightStatusBar = !requireContext().isDarkTheme,
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
-                fabClickListener = View.OnClickListener { uiState = uiState.copy(fabExtended = !uiState.fabExtended) }
+                fabClickListener = { ::uiState.update { copy(fabExtended = !uiState.fabExtended) } }
         )
 
         FragmentDoggoListBinding.bind(view).recyclerView.apply {

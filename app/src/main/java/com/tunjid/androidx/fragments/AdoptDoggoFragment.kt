@@ -19,6 +19,7 @@ import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.uidrivers.BACKGROUND_TINT_DURATION
 import com.tunjid.androidx.uidrivers.baseSharedTransition
+import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.inflate
 import com.tunjid.androidx.viewholders.DoggoBinder
@@ -48,8 +49,8 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo) {
                 showsBottomNav = true,
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
-                fabClickListener = View.OnClickListener {
-                    uiState = uiState.copy(snackbarText = getString(R.string.adopted_doggo, doggo.name))
+                fabClickListener = {
+                    ::uiState.update { copy(snackbarText = getString(R.string.adopted_doggo, doggo.name)) }
                 }
         )
 

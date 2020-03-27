@@ -55,7 +55,7 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
                 lightStatusBar = !requireContext().isDarkTheme,
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
-                fabClickListener = View.OnClickListener { viewModel.resetList() }
+                fabClickListener = { viewModel.resetList() }
         )
 
         recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view).apply {

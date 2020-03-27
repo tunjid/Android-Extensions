@@ -17,6 +17,7 @@ import com.tunjid.androidx.recyclerview.gridLayoutManager
 import com.tunjid.androidx.recyclerview.setEndlessScrollListener
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.uidrivers.SlideInItemAnimator
+import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidx.viewholders.bind
@@ -47,9 +48,7 @@ class EndlessTilesFragment : AppBaseFragment(R.layout.fragment_route) {
                 showsBottomNav = false,
                 lightStatusBar = !requireContext().isDarkTheme,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
-                fabClickListener = View.OnClickListener {
-                    uiState = uiState.copy(snackbarText = "There are ${viewModel.tiles.size} tiles")
-                }
+                fabClickListener = { ::uiState.update { copy(snackbarText = "There are ${viewModel.tiles.size} tiles") } }
         )
 
         FragmentRouteBinding.bind(view).recyclerView.apply {

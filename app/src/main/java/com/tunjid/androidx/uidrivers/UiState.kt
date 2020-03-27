@@ -9,6 +9,9 @@ import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
 import androidx.dynamicanimation.animation.SpringAnimation
+import kotlin.reflect.KMutableProperty0
+
+fun KMutableProperty0<UiState>.update(updater: UiState.() -> UiState) = set(updater.invoke(get()))
 
 data class UiState(
         @MenuRes
@@ -28,7 +31,7 @@ data class UiState(
         val navBarColor: Int,
         val lightStatusBar: Boolean,
         val showsBottomNav: Boolean,
-        val fabClickListener: View.OnClickListener?,
+        val fabClickListener: ((View) -> Unit)?,
         val fabTransitionOptions: (SpringAnimation.() -> Unit)?
 ) : Parcelable {
 
@@ -43,7 +46,7 @@ data class UiState(
              backgroundColorConsumer: (Int) -> Unit,
              snackbarTextConsumer: (CharSequence) -> Unit,
              toolbarStateConsumer: (Int, Boolean, CharSequence) -> Unit,
-             fabClickListenerConsumer: (View.OnClickListener?) -> Unit,
+             fabClickListenerConsumer: (((View) -> Unit)?) -> Unit,
              fabTransitionOptionConsumer: ((SpringAnimation.() -> Unit)?) -> Unit
     ): UiState {
 
