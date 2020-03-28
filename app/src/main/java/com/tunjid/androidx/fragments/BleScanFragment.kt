@@ -13,7 +13,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.core.app.ActivityCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -32,7 +31,6 @@ import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
-import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.BleViewModel
 import com.tunjid.androidx.viewmodels.routeName
@@ -73,7 +71,6 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan) {
             )
 
             addItemDecoration(DividerItemDecoration(requireActivity(), DividerItemDecoration.VERTICAL))
-            updatePadding(bottom = InsetLifecycleCallbacks.bottomInset)
 
             viewModel.devices.observe(viewLifecycleOwner) {
                 placeHolder.toggle(viewModel.scanResults.isEmpty())

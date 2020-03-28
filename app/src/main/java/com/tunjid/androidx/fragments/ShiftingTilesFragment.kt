@@ -73,8 +73,6 @@ class ShiftingTilesFragment : AppBaseFragment(R.layout.fragment_route) {
             adapter = tileAdapter
             layoutManager = gridLayoutManager(4)
             itemAnimator = SlideInItemAnimator()
-
-            updatePadding(bottom = InsetLifecycleCallbacks.bottomInset)
         }
 
         viewModel.watchTiles().observe(viewLifecycleOwner, tileAdapter::acceptDiff)

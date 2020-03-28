@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.core.view.isVisible
-import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.AutoTransition
@@ -30,7 +29,6 @@ import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
-import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.RouteViewModel
 import com.tunjid.androidx.viewmodels.routeName
@@ -75,7 +73,6 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
                     viewHolderBinder = { routeViewHolder, route, _ -> routeViewHolder.bind(route) },
                     itemIdFunction = { it.hashCode().toLong() }
             )
-            updatePadding(bottom = InsetLifecycleCallbacks.bottomInset)
         }
     }
 

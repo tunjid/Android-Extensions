@@ -58,8 +58,6 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
         )
 
         recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view).apply {
-            updatePadding(bottom = InsetLifecycleCallbacks.bottomInset)
-
             layoutManager = verticalLayoutManager()
             adapter = adapterOf(
                     itemsSource = viewModel::doggos,

@@ -1,18 +1,15 @@
 package com.tunjid.androidx.uidrivers
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import android.widget.EditText
 import androidx.core.view.doOnLayout
 import androidx.core.view.updatePadding
-import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.dynamicanimation.animation.springAnimationOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import com.tunjid.androidx.R
 import com.tunjid.androidx.databinding.ActivityMainBinding
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.view.util.InsetFlags
@@ -29,14 +26,22 @@ class InsetLifecycleCallbacks(
     private var rightInset: Int = 0
     private var insetsApplied: Boolean = false
     private var lastWindowInsets: WindowInsets? = null
-    private var lastInsetDispatch: InsetDispatch? = InsetDispatch()
 
     private val bottomNavHeight get() = binding.bottomNavigation.height
+
+    private val topContentSpring =
+            binding.contentContainer.paddingSpringAnimation(View::getPaddingTop) { updatePadding(top = it)}
+
+    private val bottomContentSpring =
+            binding.contentContainer.paddingSpringAnimation(View::getPaddingBottom) { updatePadding(bottom = it)}
+
+    private val bottomCoordinatorSpring =
+            binding.coordinatorLayout.paddingSpringAnimation(View::getPaddingBottom) { updatePadding(bottom = it)}
 
     init {
         binding.constraintLayout.setOnApplyWindowInsetsListener { _, insets -> onInsetsApplied(insets) }
         binding.bottomNavigation.doOnLayout { lastWindowInsets?.let(this::consumeFragmentInsets) }
-        binding.contentContainer.bottomPaddingSpring {
+        bottomContentSpring.apply {
             addEndListener { _, _, _, _ ->
                 val input = binding.contentContainer.innermostFocusedChild as? EditText
                         ?: return@addEndListener
@@ -54,15 +59,15 @@ class InsetLifecycleCallbacks(
     private fun onInsetsApplied(insets: WindowInsets): WindowInsets {
         if (this.insetsApplied) return insets
 
-        topInset = insets.systemWindowInsetTop
+        statusBarSize = insets.systemWindowInsetTop
         leftInset = insets.systemWindowInsetLeft
         rightInset = insets.systemWindowInsetRight
-        bottomInset = insets.systemWindowInsetBottom
+        navBarSize = insets.systemWindowInsetBottom
 
-        binding.toolbar.marginLayoutParams.topMargin = topInset
-        binding.bottomNavigation.marginLayoutParams.bottomMargin = bottomInset
+        binding.toolbar.marginLayoutParams.topMargin = statusBarSize
+        binding.bottomNavigation.marginLayoutParams.bottomMargin = navBarSize
 
-        adjustInsetForFragment(stackNavigatorSource()?.current)
+        lastWindowInsets?.let(::consumeFragmentInsets)
 
         this.insetsApplied = true
         return insets
@@ -70,7 +75,7 @@ class InsetLifecycleCallbacks(
 
     private fun onFragmentViewCreated(v: View, fragment: Fragment) {
         if (isNotInCurrentFragmentContainer(fragment)) return
-        adjustInsetForFragment(fragment)
+        lastWindowInsets?.let(::consumeFragmentInsets)
 
         v.setOnApplyWindowInsetsListener { _, insets -> consumeFragmentInsets(insets) }
     }
@@ -78,92 +83,48 @@ class InsetLifecycleCallbacks(
     private fun consumeFragmentInsets(insets: WindowInsets): WindowInsets = insets.apply {
         lastWindowInsets = this
 
-        binding.coordinatorLayout.ifBottomInsetChanged(coordinatorInsetReducer(systemWindowInsetBottom)) {
-            bottomPaddingSpring().animateToFinalPosition(it.toFloat())
-        }
-
-        binding.contentContainer.ifBottomInsetChanged(contentInsetReducer(systemWindowInsetBottom)) {
-            bottomPaddingSpring().animateToFinalPosition(it.toFloat())
-        }
-
         val current = stackNavigatorSource()?.current ?: return@apply
         if (isNotInCurrentFragmentContainer(current)) return@apply
 
-        val large = systemWindowInsetBottom > bottomInset + bottomNavHeight.given(uiState.showsBottomNav)
-        val bottom = if (large) bottomInset else fragmentInsetReducer(uiState.insetFlags)
+        val large = systemWindowInsetBottom > navBarSize + bottomNavHeight.given(uiState.showsBottomNav)
+        val bottom = if (large) navBarSize else fragmentInsetReducer(uiState.insetFlags)
 
-        current.view?.apply { ifBottomInsetChanged(bottom) { updatePadding(bottom = it) } }
+        val contentTop = (statusBarSize given uiState.insetFlags.hasTopInset).toFloat()
+        val contentBottom = bottom + contentInsetReducer(systemWindowInsetBottom).toFloat()
+
+        topContentSpring.animateToFinalPosition(contentTop)
+        bottomContentSpring.animateToFinalPosition(contentBottom)
+        bottomCoordinatorSpring.animateToFinalPosition(coordinatorInsetReducer(systemWindowInsetBottom).toFloat())
 
         return insets
     }
 
-    @SuppressLint("InlinedApi")
-    fun adjustInsetForFragment(fragment: Fragment?) {
-        if (fragment == null || isNotInCurrentFragmentContainer(fragment)) return
-
-        uiState.insetFlags.dispatch(fragment.tag) {
-            if (insetFlags == null || lastInsetDispatch == this) return
-
-            binding.constraintLayout.updatePadding(
-                    left = this.leftInset given insetFlags.hasLeftInset,
-                    right = this.rightInset given insetFlags.hasRightInset
-            )
-
-            fragment.view?.updatePadding(
-                    top = topInset given insetFlags.hasTopInset,
-                    bottom = fragmentInsetReducer(insetFlags)
-            )
-
-            lastInsetDispatch = this
-        }
-    }
-
-    private inline fun InsetFlags.dispatch(tag: String?, receiver: InsetDispatch.() -> Unit) =
-            receiver.invoke(InsetDispatch(tag, leftInset, topInset, rightInset, bottomInset, this))
-
     private fun contentInsetReducer(systemBottomInset: Int) =
-            systemBottomInset - bottomInset
+            systemBottomInset - navBarSize
 
     private fun coordinatorInsetReducer(systemBottomInset: Int) =
-            if (systemBottomInset > bottomInset) systemBottomInset
-            else bottomInset + (binding.bottomNavigation.height given uiState.showsBottomNav)
+            if (systemBottomInset > navBarSize) systemBottomInset
+            else navBarSize + (binding.bottomNavigation.height given uiState.showsBottomNav)
 
-    private fun fragmentInsetReducer(insetFlags: InsetFlags): Int {
-        return bottomNavHeight.given(uiState.showsBottomNav) + bottomInset.given(insetFlags.hasBottomInset)
-    }
+    private fun fragmentInsetReducer(insetFlags: InsetFlags): Int =
+            bottomNavHeight.given(uiState.showsBottomNav) + navBarSize.given(insetFlags.hasBottomInset)
 
     companion object {
         const val ANIMATION_DURATION = 300
 
-        var topInset: Int = 0
-        var bottomInset: Int = 0
+        var statusBarSize: Int = 0
+        var navBarSize: Int = 0
     }
-
-    private data class InsetDispatch(
-            val tag: String? = null,
-            val leftInset: Int = 0,
-            val topInset: Int = 0,
-            val rightInset: Int = 0,
-            val bottomInset: Int = 0,
-            val insetFlags: InsetFlags? = null
-    )
 }
 
 private infix fun Int.given(flag: Boolean) = if (flag) this else 0
 
-private fun View.ifBottomInsetChanged(newInset: Int, action: View.(Int) -> Unit) {
-    if (paddingBottom != newInset) action(newInset)
-}
-
-private fun View.bottomPaddingSpring(modifier: SpringAnimation.() -> Unit = {}): SpringAnimation {
-    return getTag(R.id.bottom_padding) as? SpringAnimation ?: springAnimationOf(
-            { updatePadding(bottom = it.toInt()); invalidate() },
-            { paddingBottom.toFloat() },
-            0F
+private fun View.paddingSpringAnimation(getter: (View) -> Int, setter: View.(Int) -> Unit) =
+    springAnimationOf(
+            getter = { getter(this).toFloat() },
+            setter = { setter(it.toInt()) },
+            finalPosition = 0f
     ).apply {
-        setTag(R.id.bottom_padding, this@apply)
-        spring.stiffness = SpringForce.STIFFNESS_MEDIUM
+        spring.stiffness = SpringForce.STIFFNESS_LOW
         spring.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
-        modifier(this)
     }
-}

@@ -65,7 +65,6 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan) {
             )
 
             addItemDecoration(DividerItemDecoration(requireActivity(), VERTICAL))
-            updatePadding(bottom = InsetLifecycleCallbacks.bottomInset)
 
             viewModel.scanChanges.observe(viewLifecycleOwner) {
                 placeHolder.toggle(viewModel.services.isEmpty())

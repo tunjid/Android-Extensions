@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="bottom_padding" type="id" />
     <item name="speed_dial_color" type="id" />
     <item name="speed_dial_stroke" type="id" />
 </resources>
