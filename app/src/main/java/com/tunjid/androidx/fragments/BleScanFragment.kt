@@ -33,6 +33,7 @@ import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
 import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
+import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.BleViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
@@ -51,6 +52,7 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan) {
                 toolbarShows = true,
                 fabShows = false,
                 showsBottomNav = false,
+                insetFlags = InsetFlags.ALL,
                 lightStatusBar = !requireContext().isDarkTheme,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )

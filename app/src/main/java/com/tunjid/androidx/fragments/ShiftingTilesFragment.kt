@@ -18,7 +18,6 @@ import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
 import com.tunjid.androidx.uidrivers.SlideInItemAnimator
 import com.tunjid.androidx.uidrivers.update
-import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidx.viewholders.bind
 import com.tunjid.androidx.viewholders.tile
@@ -28,8 +27,6 @@ import com.tunjid.androidx.viewmodels.ShiftingTileViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
 class ShiftingTilesFragment : AppBaseFragment(R.layout.fragment_route) {
-
-    override val insetFlags: InsetFlags = NO_BOTTOM
 
     private val viewModel by viewModels<ShiftingTileViewModel>()
 
@@ -50,6 +47,7 @@ class ShiftingTilesFragment : AppBaseFragment(R.layout.fragment_route) {
                 showsBottomNav = false,
                 fabIcon = fabIconRes,
                 fabText = fabText,
+                insetFlags = NO_BOTTOM,
                 lightStatusBar = !requireContext().isDarkTheme,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
                 fabClickListener = {

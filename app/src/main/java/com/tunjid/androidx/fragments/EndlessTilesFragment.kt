@@ -19,7 +19,6 @@ import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.uidrivers.SlideInItemAnimator
 import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags
-import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidx.viewholders.bind
 import com.tunjid.androidx.viewholders.tile
 import com.tunjid.androidx.viewholders.tileViewHolder
@@ -33,8 +32,6 @@ class EndlessTilesFragment : AppBaseFragment(R.layout.fragment_route) {
 
     private val viewModel by viewModels<EndlessTileViewModel>()
 
-    override val insetFlags: InsetFlags = NO_BOTTOM
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -46,6 +43,7 @@ class EndlessTilesFragment : AppBaseFragment(R.layout.fragment_route) {
                 fabIcon = R.drawable.ic_info_outline_24dp,
                 fabText = getString(R.string.tile_info),
                 showsBottomNav = false,
+                insetFlags = InsetFlags.NO_BOTTOM,
                 lightStatusBar = !requireContext().isDarkTheme,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
                 fabClickListener = { ::uiState.update { copy(snackbarText = "There are ${viewModel.tiles.size} tiles") } }

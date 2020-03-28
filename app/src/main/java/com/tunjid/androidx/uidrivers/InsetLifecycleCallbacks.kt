@@ -3,9 +3,8 @@ package com.tunjid.androidx.uidrivers
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import android.view.WindowInsets
 import android.widget.EditText
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnLayout
 import androidx.core.view.updatePadding
 import androidx.dynamicanimation.animation.SpringAnimation
@@ -29,13 +28,13 @@ class InsetLifecycleCallbacks(
     private var leftInset: Int = 0
     private var rightInset: Int = 0
     private var insetsApplied: Boolean = false
-    private var lastWindowInsets: WindowInsetsCompat? = null
+    private var lastWindowInsets: WindowInsets? = null
     private var lastInsetDispatch: InsetDispatch? = InsetDispatch()
 
     private val bottomNavHeight get() = binding.bottomNavigation.height
 
     init {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.constraintLayout) { _, insets -> onInsetsApplied(insets) }
+        binding.constraintLayout.setOnApplyWindowInsetsListener { _, insets -> onInsetsApplied(insets) }
         binding.bottomNavigation.doOnLayout { lastWindowInsets?.let(this::consumeFragmentInsets) }
         binding.contentContainer.bottomPaddingSpring {
             addEndListener { _, _, _, _ ->
@@ -52,7 +51,7 @@ class InsetLifecycleCallbacks(
     private fun isNotInCurrentFragmentContainer(fragment: Fragment): Boolean =
             stackNavigatorSource()?.run { fragment.id != containerId } ?: true
 
-    private fun onInsetsApplied(insets: WindowInsetsCompat): WindowInsetsCompat {
+    private fun onInsetsApplied(insets: WindowInsets): WindowInsets {
         if (this.insetsApplied) return insets
 
         topInset = insets.systemWindowInsetTop
@@ -70,13 +69,13 @@ class InsetLifecycleCallbacks(
     }
 
     private fun onFragmentViewCreated(v: View, fragment: Fragment) {
-        if (fragment !is InsetProvider || isNotInCurrentFragmentContainer(fragment)) return
+        if (isNotInCurrentFragmentContainer(fragment)) return
         adjustInsetForFragment(fragment)
 
-        ViewCompat.setOnApplyWindowInsetsListener(v) { _, insets -> consumeFragmentInsets(insets) }
+        v.setOnApplyWindowInsetsListener { _, insets -> consumeFragmentInsets(insets) }
     }
 
-    private fun consumeFragmentInsets(insets: WindowInsetsCompat): WindowInsetsCompat = insets.apply {
+    private fun consumeFragmentInsets(insets: WindowInsets): WindowInsets = insets.apply {
         lastWindowInsets = this
 
         binding.coordinatorLayout.ifBottomInsetChanged(coordinatorInsetReducer(systemWindowInsetBottom)) {
@@ -89,10 +88,9 @@ class InsetLifecycleCallbacks(
 
         val current = stackNavigatorSource()?.current ?: return@apply
         if (isNotInCurrentFragmentContainer(current)) return@apply
-        if (current !is InsetProvider) return@apply
 
         val large = systemWindowInsetBottom > bottomInset + bottomNavHeight.given(uiState.showsBottomNav)
-        val bottom = if (large) bottomInset else fragmentInsetReducer(current.insetFlags)
+        val bottom = if (large) bottomInset else fragmentInsetReducer(uiState.insetFlags)
 
         current.view?.apply { ifBottomInsetChanged(bottom) { updatePadding(bottom = it) } }
 
@@ -101,9 +99,9 @@ class InsetLifecycleCallbacks(
 
     @SuppressLint("InlinedApi")
     fun adjustInsetForFragment(fragment: Fragment?) {
-        if (fragment !is InsetProvider || isNotInCurrentFragmentContainer(fragment)) return
+        if (fragment == null || isNotInCurrentFragmentContainer(fragment)) return
 
-        fragment.insetFlags.dispatch(fragment.tag) {
+        uiState.insetFlags.dispatch(fragment.tag) {
             if (insetFlags == null || lastInsetDispatch == this) return
 
             binding.constraintLayout.updatePadding(

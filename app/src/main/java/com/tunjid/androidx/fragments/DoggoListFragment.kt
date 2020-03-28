@@ -46,8 +46,6 @@ import kotlin.math.abs
 class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
         Navigator.TransactionModifier {
 
-    override val insetFlags: InsetFlags = InsetFlags.ALL
-
     private var recyclerView: RecyclerView? = null
 
     private val transitionImage: ImageView?
@@ -70,6 +68,7 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
                 fabText = getString(R.string.collapse_prompt),
                 fabShows = true,
                 showsBottomNav = true,
+                insetFlags = InsetFlags.ALL,
                 lightStatusBar = !requireContext().isDarkTheme,
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),

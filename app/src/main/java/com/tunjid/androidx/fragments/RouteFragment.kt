@@ -31,6 +31,7 @@ import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
+import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.RouteViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
@@ -54,6 +55,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
                 fabIcon = R.drawable.ic_dice_24dp,
                 fabText = getString(R.string.route_feeling_lucky),
                 fabClickListener = { goSomewhereRandom() },
+                insetFlags = InsetFlags.ALL,
                 showsBottomNav = true,
                 lightStatusBar = !requireContext().isDarkTheme,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)

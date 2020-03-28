@@ -7,6 +7,7 @@ import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.view.animator.ViewHider
+import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.routeName
 
 /**
@@ -32,6 +33,7 @@ class HidingViewsFragment : AppBaseFragment(R.layout.fragment_hiding_view) {
                 toolBarMenu = 0,
                 fabShows = false,
                 showsBottomNav = false,
+                insetFlags = InsetFlags.ALL,
                 lightStatusBar = !requireContext().isDarkTheme,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )

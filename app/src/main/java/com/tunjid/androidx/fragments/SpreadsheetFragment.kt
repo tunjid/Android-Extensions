@@ -49,8 +49,8 @@ import com.tunjid.androidx.recyclerview.multiscroll.StaticCellSizer
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
+import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags
-import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidx.view.util.spring
 import com.tunjid.androidx.viewmodels.Sort
 import com.tunjid.androidx.viewmodels.SpreadsheetViewModel
@@ -62,10 +62,10 @@ private typealias Var<T> = KMutableProperty0<T>
 //region Parent Fragment
 class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_parent) {
 
-    override val insetFlags: InsetFlags = NO_BOTTOM
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        ::uiState.update { copy(insetFlags = InsetFlags.ALL) }
 
         val viewPager = view.findViewById<ViewPager2>(R.id.view_pager)
         val pagerAdapter = object : FragmentStateAdapter(this.childFragmentManager, viewLifecycleOwner.lifecycle) {

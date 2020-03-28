@@ -28,8 +28,6 @@ import com.tunjid.androidx.viewholders.bind
 
 class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo) {
 
-    override val insetFlags: InsetFlags = InsetFlags.NO_TOP
-
     override val stableTag: String
         get() = "${super.stableTag}-${doggo.hashCode()}"
 
@@ -47,6 +45,7 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo) {
                 fabShows = true,
                 lightStatusBar = false,
                 showsBottomNav = true,
+                insetFlags = InsetFlags.NO_TOP,
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
                 fabClickListener = {

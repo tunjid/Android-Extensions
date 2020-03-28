@@ -43,8 +43,6 @@ import kotlin.math.sin
 class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
         Navigator.TransactionModifier {
 
-    override val insetFlags: InsetFlags = InsetFlags.NONE
-
     private val viewModel by viewModels<DoggoViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +61,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
                 showsBottomNav = false,
                 lightStatusBar = false,
+                insetFlags = InsetFlags.NONE,
                 navBarColor = Color.TRANSPARENT,
                 fabClickListener = { Doggo.transitionDoggo?.let { navigator.push(AdoptDoggoFragment.newInstance(it)) } }
         )

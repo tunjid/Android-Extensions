@@ -26,6 +26,7 @@ import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
 import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
+import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.NsdViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
@@ -47,6 +48,7 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan) {
                 toolBarMenu = R.menu.menu_nsd_scan,
                 fabShows = false,
                 showsBottomNav = true,
+                insetFlags = InsetFlags.ALL,
                 lightStatusBar = !requireContext().isDarkTheme,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )

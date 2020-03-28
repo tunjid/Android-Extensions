@@ -35,8 +35,6 @@ import kotlin.math.abs
 class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
         Navigator.TransactionModifier {
 
-    override val insetFlags: InsetFlags = InsetFlags.ALL
-
     private val viewModel by viewModels<DoggoRankViewModel>()
 
     private var recyclerView: RecyclerView? = null
@@ -52,6 +50,7 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
                 fabIcon = R.drawable.ic_restore_24dp,
                 fabShows = true,
                 showsBottomNav = true,
+                insetFlags = InsetFlags.ALL,
                 lightStatusBar = !requireContext().isDarkTheme,
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
