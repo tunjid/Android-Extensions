@@ -107,7 +107,9 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
                 ?: return
 
         val binding = holder.binding
-        transaction.addSharedElement(binding.doggoImage, binding.doggoImage.hashTransitionName(doggo))
+        transaction
+                .setReorderingAllowed(true)
+                .addSharedElement(binding.doggoImage, binding.doggoImage.hashTransitionName(doggo))
     }
 
     private fun moveDoggo(start: BindingViewHolder<*>, end: BindingViewHolder<*>) {
