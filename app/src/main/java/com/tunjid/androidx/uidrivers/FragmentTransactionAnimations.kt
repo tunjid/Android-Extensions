@@ -57,5 +57,4 @@ fun baseSharedTransition(
         .addTransition(ChangeImageTransform())
         .addTransition(ChangeTransform())
         .addTransition(InsetAwareChangeBounds(before, after))
-
         .setDuration(GlobalUiDriver.ANIMATION_DURATION.toLong())

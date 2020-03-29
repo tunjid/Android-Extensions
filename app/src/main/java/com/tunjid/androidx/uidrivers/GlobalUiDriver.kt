@@ -75,7 +75,7 @@ fun FragmentActivity.globalUiDriver(
         GlobalUiDriver(
                 host = this@globalUiDriver,
                 binding = bindingSupplier(),
-                navigatorSupplier = navigatorSupplier
+                navigator = navigatorSupplier()
         )
     }
 
@@ -113,7 +113,7 @@ fun Fragment.activityGlobalUiController() = object : ReadWriteProperty<Fragment,
 class GlobalUiDriver(
         private val host: FragmentActivity,
         private val binding: ActivityMainBinding,
-        private val navigatorSupplier: () -> Navigator
+        private val navigator: Navigator
 ) : GlobalUiController {
 
     private var statusBarSize: Int = 0
@@ -125,7 +125,7 @@ class GlobalUiDriver(
 
     private val toolbarHider: ViewHider<Toolbar> = binding.toolbar.run {
         setOnMenuItemClickListener(this@GlobalUiDriver::onMenuItemClicked)
-        setNavigationOnClickListener { navigatorSupplier().pop() }
+        setNavigationOnClickListener { navigator.pop() }
         ViewHider.of(this).setDirection(ViewHider.TOP).build()
     }
 
@@ -153,7 +153,7 @@ class GlobalUiDriver(
             binding.coordinatorLayout.paddingSpringAnimation(View::getPaddingBottom) { updatePadding(bottom = it) }
 
     private val shortestAvailableLifecycle
-        get() = when (val fragment = navigatorSupplier().current) {
+        get() = when (val fragment = navigator.current) {
             null -> host.lifecycle
             else -> when (fragment.view) {
                 null -> fragment.lifecycle
@@ -220,7 +220,7 @@ class GlobalUiDriver(
     }
 
     private fun isNotInCurrentFragmentContainer(fragment: Fragment): Boolean =
-            navigatorSupplier().run { fragment.id != containerId }
+            navigator.run { fragment.id != containerId }
 
     private fun onInsetsApplied(insets: WindowInsets): WindowInsets {
         if (this.insetsApplied) return insets
@@ -242,7 +242,7 @@ class GlobalUiDriver(
     private fun consumeFragmentInsets(insets: WindowInsets): WindowInsets = insets.apply {
         lastWindowInsets = this
 
-        val current = navigatorSupplier().current ?: return@apply
+        val current = navigator.current ?: return@apply
         if (isNotInCurrentFragmentContainer(current)) return@apply
 
         val large = systemWindowInsetBottom > navBarSize + bottomNavHeight.given(uiState.showsBottomNav)
@@ -269,7 +269,7 @@ class GlobalUiDriver(
             bottomNavHeight.given(uiState.showsBottomNav) + navBarSize.given(insetFlags.hasBottomInset)
 
     private fun onMenuItemClicked(item: MenuItem): Boolean {
-        val fragment = navigatorSupplier().current
+        val fragment = navigator.current
         val selected = fragment != null && fragment.onOptionsItemSelected(item)
 
         return selected || host.onOptionsItemSelected(item)
@@ -295,7 +295,7 @@ class GlobalUiDriver(
 
     private fun updateMainToolBar(menu: Int, invalidatedAlone: Boolean, title: CharSequence) = toolbarHider.view.run {
         update(menu, invalidatedAlone, title)
-        navigatorSupplier().current?.onPrepareOptionsMenu(this.menu)
+        navigator.current?.onPrepareOptionsMenu(this.menu)
         Unit
     }
 
@@ -339,7 +339,7 @@ class GlobalUiDriver(
             this.menu.clear()
             if (menu != 0) inflateMenu(menu)
         }
-        navigatorSupplier().current?.onPrepareOptionsMenu(this.menu)
+        navigator.current?.onPrepareOptionsMenu(this.menu)
     }
 
     private fun Toolbar.updateIcons() {
@@ -354,7 +354,7 @@ class GlobalUiDriver(
 
         overflowIcon = overflowIcon?.withTint(tint)
         navigationIcon =
-                if (navigatorSupplier().previous == null) null
+                if (navigator.previous == null) null
                 else context.drawableAt(R.drawable.ic_arrow_back_24dp)?.withTint(tint)
     }
 
