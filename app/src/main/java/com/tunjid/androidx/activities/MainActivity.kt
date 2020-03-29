@@ -61,5 +61,4 @@ class MainActivity : AppCompatActivity(), GlobalUiController, Navigator.Controll
     companion object {
         val tabs = intArrayOf(R.id.menu_navigation, R.id.menu_recyclerview, R.id.menu_communications, R.id.menu_misc)
     }
-
 }
