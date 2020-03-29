@@ -12,7 +12,6 @@ import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.multiStackNavigationController
 import com.tunjid.androidx.uidrivers.GlobalUiController
-import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.globalUiDriver
 import com.tunjid.androidx.uidrivers.materialDepthAxisTransition
@@ -22,13 +21,15 @@ import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity(), GlobalUiController, Navigator.Controller {
 
+    private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+
     override val navigator: MultiStackNavigator by multiStackNavigationController(
             tabs.size,
             R.id.content_container,
             RouteFragment.Companion::newInstance
     )
 
-    override var uiState: UiState by globalUiDriver { navigator.activeNavigator }
+    override var uiState: UiState by globalUiDriver({ binding }) { navigator.activeNavigator }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         AppWatcher.config = AppWatcher.config.copy(watchDurationMillis = TimeUnit.SECONDS.toMillis(8))
@@ -39,16 +40,9 @@ class MainActivity : AppCompatActivity(), GlobalUiController, Navigator.Controll
 
         super.onCreate(savedInstanceState)
 
-        val mainActivityBinding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(mainActivityBinding.root)
+        setContentView(binding.root)
 
-        supportFragmentManager.registerFragmentLifecycleCallbacks(InsetLifecycleCallbacks(
-                globalUiController = this@MainActivity,
-                binding = mainActivityBinding,
-                stackNavigatorSource = this@MainActivity.navigator::activeNavigator
-        ), true)
-
-        mainActivityBinding.bottomNavigation.apply {
+        binding.bottomNavigation.apply {
             navigator.stackSelectedListener = { menu.findItem(tabs[it])?.isChecked = true }
             navigator.stackTransactionModifier = navigator.materialFadeThroughTransition()
             navigator.transactionModifier = navigator.materialDepthAxisTransition()

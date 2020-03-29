@@ -58,4 +58,4 @@ fun baseSharedTransition(
         .addTransition(ChangeTransform())
         .addTransition(InsetAwareChangeBounds(before, after))
 
-        .setDuration(InsetLifecycleCallbacks.ANIMATION_DURATION.toLong())
+        .setDuration(GlobalUiDriver.ANIMATION_DURATION.toLong())

@@ -6,30 +6,36 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
+import android.os.Bundle
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowInsets
 import android.view.WindowManager
+import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
 import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.Toolbar
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.ViewCompat
 import androidx.core.view.children
+import androidx.core.view.doOnLayout
 import androidx.core.view.forEach
+import androidx.core.view.updatePadding
 import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
+import androidx.dynamicanimation.animation.springAnimationOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidx.R
@@ -38,9 +44,13 @@ import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.graphics.drawable.withTint
 import com.tunjid.androidx.core.text.color
+import com.tunjid.androidx.databinding.ActivityMainBinding
 import com.tunjid.androidx.material.animator.FabExtensionAnimator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.view.animator.ViewHider
+import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.view.util.innermostFocusedChild
+import com.tunjid.androidx.view.util.marginLayoutParams
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -57,24 +67,14 @@ interface GlobalUiController {
  * [GlobalUiController]
  */
 fun FragmentActivity.globalUiDriver(
-        toolbarId: Int = R.id.toolbar,
-        fabId: Int = R.id.fab,
-        bottomNavId: Int = R.id.bottom_navigation,
-        navBackgroundId: Int = R.id.nav_background,
-        coordinatorLayoutId: Int = R.id.coordinator_layout,
-        backgroundId: Int = R.id.constraint_layout,
+        bindingSupplier: () -> ActivityMainBinding,
         navigatorSupplier: () -> Navigator
 ) = object : ReadWriteProperty<FragmentActivity, UiState> {
 
     private val driver by lazy {
         GlobalUiDriver(
                 host = this@globalUiDriver,
-                toolbarId = toolbarId,
-                fabId = fabId,
-                bottomNavId = bottomNavId,
-                navBackgroundId = navBackgroundId,
-                backgroundId = backgroundId,
-                coordinatorLayoutId = coordinatorLayoutId,
+                binding = bindingSupplier(),
                 navigatorSupplier = navigatorSupplier
         )
     }
@@ -112,45 +112,45 @@ fun Fragment.activityGlobalUiController() = object : ReadWriteProperty<Fragment,
  */
 class GlobalUiDriver(
         private val host: FragmentActivity,
-        toolbarId: Int,
-        fabId: Int,
-        bottomNavId: Int,
-        navBackgroundId: Int,
-        backgroundId: Int,
-        coordinatorLayoutId: Int,
+        private val binding: ActivityMainBinding,
         private val navigatorSupplier: () -> Navigator
 ) : GlobalUiController {
 
-    init {
-        host.window.statusBarColor = host.colorAt(R.color.transparent)
-        host.window.decorView.systemUiVisibility = DEFAULT_SYSTEM_UI_FLAGS
-    }
+    private var statusBarSize: Int = 0
+    private var navBarSize: Int = 0
+    private var leftInset: Int = 0
+    private var rightInset: Int = 0
+    private var insetsApplied: Boolean = false
+    private var lastWindowInsets: WindowInsets? = null
 
-    private val toolbarHider: ViewHider<Toolbar> = host.findViewById<Toolbar>(toolbarId).run {
+    private val toolbarHider: ViewHider<Toolbar> = binding.toolbar.run {
         setOnMenuItemClickListener(this@GlobalUiDriver::onMenuItemClicked)
         setNavigationOnClickListener { navigatorSupplier().pop() }
         ViewHider.of(this).setDirection(ViewHider.TOP).build()
     }
 
-    private val fabHider: ViewHider<MaterialButton> = host.findViewById<MaterialButton>(fabId).run {
+    private val fabHider: ViewHider<MaterialButton> = binding.fab.run {
         ViewHider.of(this).setDirection(ViewHider.BOTTOM).build()
     }
 
-    private val bottomNavHider: ViewHider<*> = host.findViewById<BottomNavigationView>(bottomNavId).run {
+    private val bottomNavHider: ViewHider<*> = binding.bottomNavigation.run {
+        doOnLayout { lastWindowInsets?.let(::consumeFragmentInsets) }
         ViewHider.of(this).setDirection(ViewHider.BOTTOM).build()
     }
 
     private val fabExtensionAnimator: FabExtensionAnimator =
             FabExtensionAnimator(fabHider.view).apply { isExtended = true }
 
-    private val navBackgroundView: View =
-            host.findViewById<View>(navBackgroundId)
+    private val bottomNavHeight get() = bottomNavHider.view.height
 
-    private val coordinatorLayout: CoordinatorLayout =
-            host.findViewById(coordinatorLayoutId)
+    private val topContentSpring =
+            host.findViewById<View>(R.id.content_container).paddingSpringAnimation(View::getPaddingTop) { updatePadding(top = it) }
 
-    private val backgroundView: View =
-            host.findViewById(backgroundId)
+    private val bottomContentSpring =
+            host.findViewById<View>(R.id.content_container).paddingSpringAnimation(View::getPaddingBottom) { updatePadding(bottom = it) }
+
+    private val bottomCoordinatorSpring =
+            binding.coordinatorLayout.paddingSpringAnimation(View::getPaddingBottom) { updatePadding(bottom = it) }
 
     private val shortestAvailableLifecycle
         get() = when (val fragment = navigatorSupplier().current) {
@@ -180,7 +180,7 @@ class GlobalUiDriver(
                     lightStatusBarConsumer = this::setLightStatusBar,
                     fabStateConsumer = this::setFabIcon,
                     fabExtendedConsumer = fabExtensionAnimator::isExtended::set,
-                    backgroundColorConsumer = backgroundView::animateBackground,
+                    backgroundColorConsumer = binding.constraintLayout::animateBackground,
                     snackbarTextConsumer = this::showSnackBar,
                     toolbarStateConsumer = this::updateMainToolBar,
                     fabClickListenerConsumer = this::setFabClickListener,
@@ -197,6 +197,77 @@ class GlobalUiDriver(
             host.window.navigationBarColor = value.navBarColor
         }
 
+    init {
+        host.window.statusBarColor = host.colorAt(R.color.transparent)
+        host.window.decorView.systemUiVisibility = DEFAULT_SYSTEM_UI_FLAGS
+        host.supportFragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
+            override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
+                if (isNotInCurrentFragmentContainer(f)) return
+                lastWindowInsets?.let(::consumeFragmentInsets)
+
+                v.setOnApplyWindowInsetsListener { _, insets -> consumeFragmentInsets(insets) }
+            }
+        }, true)
+
+        host.findViewById<View>(R.id.constraint_layout).setOnApplyWindowInsetsListener { _, insets -> onInsetsApplied(insets) }
+        bottomContentSpring.apply {
+            addEndListener { _, _, _, _ ->
+                val input = binding.contentContainer.innermostFocusedChild as? EditText
+                        ?: return@addEndListener
+                input.text = input.text // Scroll to text that has focus
+            }
+        }
+    }
+
+    private fun isNotInCurrentFragmentContainer(fragment: Fragment): Boolean =
+            navigatorSupplier().run { fragment.id != containerId }
+
+    private fun onInsetsApplied(insets: WindowInsets): WindowInsets {
+        if (this.insetsApplied) return insets
+
+        statusBarSize = insets.systemWindowInsetTop
+        leftInset = insets.systemWindowInsetLeft
+        rightInset = insets.systemWindowInsetRight
+        navBarSize = insets.systemWindowInsetBottom
+
+        toolbarHider.view.marginLayoutParams.topMargin = statusBarSize
+        bottomNavHider.view.marginLayoutParams.bottomMargin = navBarSize
+
+        lastWindowInsets?.let(::consumeFragmentInsets)
+
+        this.insetsApplied = true
+        return insets
+    }
+
+    private fun consumeFragmentInsets(insets: WindowInsets): WindowInsets = insets.apply {
+        lastWindowInsets = this
+
+        val current = navigatorSupplier().current ?: return@apply
+        if (isNotInCurrentFragmentContainer(current)) return@apply
+
+        val large = systemWindowInsetBottom > navBarSize + bottomNavHeight.given(uiState.showsBottomNav)
+        val bottom = if (large) navBarSize else fragmentInsetReducer(uiState.insetFlags)
+
+        val contentTop = (statusBarSize given uiState.insetFlags.hasTopInset).toFloat()
+        val contentBottom = bottom + contentInsetReducer(systemWindowInsetBottom).toFloat()
+
+        topContentSpring.animateToFinalPosition(contentTop)
+        bottomContentSpring.animateToFinalPosition(contentBottom)
+        bottomCoordinatorSpring.animateToFinalPosition(coordinatorInsetReducer(systemWindowInsetBottom).toFloat())
+
+        return insets
+    }
+
+    private fun contentInsetReducer(systemBottomInset: Int) =
+            systemBottomInset - navBarSize
+
+    private fun coordinatorInsetReducer(systemBottomInset: Int) =
+            if (systemBottomInset > navBarSize) systemBottomInset
+            else navBarSize + (bottomNavHider.view.height given uiState.showsBottomNav)
+
+    private fun fragmentInsetReducer(insetFlags: InsetFlags): Int =
+            bottomNavHeight.given(uiState.showsBottomNav) + navBarSize.given(insetFlags.hasBottomInset)
+
     private fun onMenuItemClicked(item: MenuItem): Boolean {
         val fragment = navigatorSupplier().current
         val selected = fragment != null && fragment.onOptionsItemSelected(item)
@@ -205,7 +276,7 @@ class GlobalUiDriver(
     }
 
     private fun setNavBarColor(color: Int) {
-        navBackgroundView.background = GradientDrawable(
+        binding.navBackground.background = GradientDrawable(
                 GradientDrawable.Orientation.BOTTOM_TOP,
                 intArrayOf(color, Color.TRANSPARENT))
     }
@@ -239,7 +310,7 @@ class GlobalUiDriver(
         if (options != null) fabExtensionAnimator.configureSpring(options)
     }
 
-    private fun showSnackBar(message: CharSequence) = Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_SHORT).run {
+    private fun showSnackBar(message: CharSequence) = Snackbar.make(binding.coordinatorLayout, message, Snackbar.LENGTH_SHORT).run {
         // Necessary to remove snackbar padding for keyboard on older versions of Android
         ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets -> insets }
         show()
@@ -295,6 +366,7 @@ class GlobalUiDriver(
         } ?: context.themeColorAt(R.attr.prominent_text_color)
 
     companion object {
+        const val ANIMATION_DURATION = 300
         private const val DEFAULT_SYSTEM_UI_FLAGS =
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                         View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
@@ -323,6 +395,18 @@ private fun View.animateBackground(@ColorInt to: Int) {
     animator.setIntValues(animator.animatedValue as Int, to)
     animator.start()
 }
+
+private fun View.paddingSpringAnimation(getter: (View) -> Int, setter: View.(Int) -> Unit) =
+        springAnimationOf(
+                getter = { getter(this).toFloat() },
+                setter = { setter(it.toInt()) },
+                finalPosition = 0f
+        ).apply {
+            spring.stiffness = SpringForce.STIFFNESS_LOW
+            spring.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+        }
+
+private infix fun Int.given(flag: Boolean) = if (flag) this else 0
 
 private val Int.isBrightColor get() = ColorUtils.calculateLuminance(this) > 0.5
 
