@@ -1,6 +1,5 @@
 package com.tunjid.androidx.uidrivers
 
-import android.transition.ChangeBounds
 import android.transition.ChangeImageTransform
 import android.transition.ChangeTransform
 import android.transition.Transition
@@ -50,9 +49,13 @@ fun MultiStackNavigator.materialDepthAxisTransition(): FragmentTransaction.(Frag
     }
 }
 
-fun baseSharedTransition(): Transition = TransitionSet()
+fun baseSharedTransition(
+        before: UiState? = null,
+        after: UiState? = null
+): Transition = TransitionSet()
         .setOrdering(TransitionSet.ORDERING_TOGETHER)
         .addTransition(ChangeImageTransform())
         .addTransition(ChangeTransform())
-        .addTransition(ChangeBounds())
+        .addTransition(InsetAwareChangeBounds(before, after))
+
         .setDuration(InsetLifecycleCallbacks.ANIMATION_DURATION.toLong())
