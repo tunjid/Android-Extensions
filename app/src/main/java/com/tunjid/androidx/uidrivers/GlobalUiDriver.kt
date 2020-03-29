@@ -21,7 +21,6 @@ import androidx.annotation.MenuRes
 import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.graphics.ColorUtils
-import androidx.core.view.ViewCompat
 import androidx.core.view.children
 import androidx.core.view.doOnLayout
 import androidx.core.view.forEach
@@ -93,10 +92,10 @@ class GlobalUiDriver(
 
     private var statusBarSize: Int = 0
     private var navBarSize: Int = 0
-    private var leftInset: Int = 0
-    private var rightInset: Int = 0
+    private var systemLeftInset: Int = 0
+    private var systemRightInset: Int = 0
     private var insetsApplied: Boolean = false
-    private var lastWindowInsets: WindowInsets? = null
+    private var lastFragmentInsets: WindowInsets? = null
 
     private val toolbarHider: ViewHider<Toolbar> = binding.toolbar.run {
         setOnMenuItemClickListener(this@GlobalUiDriver::onMenuItemClicked)
@@ -109,7 +108,7 @@ class GlobalUiDriver(
     }
 
     private val bottomNavHider: ViewHider<*> = binding.bottomNavigation.run {
-        doOnLayout { lastWindowInsets?.let(::consumeFragmentInsets) }
+        doOnLayout { lastFragmentInsets?.let(::onFragmentInsetsReceived) }
         ViewHider.of(this).setDirection(ViewHider.BOTTOM).build()
     }
 
@@ -123,6 +122,8 @@ class GlobalUiDriver(
 
     private val bottomContentSpring =
             binding.contentContainer.paddingSpringAnimation(View::getPaddingBottom) { updatePadding(bottom = it) }
+                    // Scroll to text that has focus
+                    .apply { addEndListener { _, _, _, _ -> (binding.contentContainer.innermostFocusedChild as? EditText)?.let { it.text = it.text } } }
 
     private val bottomCoordinatorSpring =
             binding.coordinatorLayout.paddingSpringAnimation(View::getPaddingBottom) { updatePadding(bottom = it) }
@@ -177,48 +178,35 @@ class GlobalUiDriver(
         host.window.decorView.systemUiVisibility = DEFAULT_SYSTEM_UI_FLAGS
         host.supportFragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
             override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
-                if (isNotInCurrentFragmentContainer(f)) return
-                lastWindowInsets?.let(::consumeFragmentInsets)
+                if (f != navigator.current) return
 
-                v.setOnApplyWindowInsetsListener { _, insets -> consumeFragmentInsets(insets) }
+                lastFragmentInsets?.let(::onFragmentInsetsReceived)
+                v.setOnApplyWindowInsetsListener { _, insets -> onFragmentInsetsReceived(insets) }
             }
         }, true)
 
-        binding.constraintLayout.setOnApplyWindowInsetsListener { _, insets -> onInsetsApplied(insets) }
-        bottomContentSpring.apply {
-            addEndListener { _, _, _, _ ->
-                val input = binding.contentContainer.innermostFocusedChild as? EditText
-                        ?: return@addEndListener
-                input.text = input.text // Scroll to text that has focus
-            }
-        }
+        binding.root.setOnApplyWindowInsetsListener { _, insets -> onSystemInsetsReceived(insets) }
     }
 
-    private fun isNotInCurrentFragmentContainer(fragment: Fragment): Boolean =
-            navigator.run { fragment != navigator.current }
-
-    private fun onInsetsApplied(insets: WindowInsets): WindowInsets {
+    private fun onSystemInsetsReceived(insets: WindowInsets): WindowInsets {
         if (this.insetsApplied) return insets
 
         statusBarSize = insets.systemWindowInsetTop
-        leftInset = insets.systemWindowInsetLeft
-        rightInset = insets.systemWindowInsetRight
+        systemLeftInset = insets.systemWindowInsetLeft
+        systemRightInset = insets.systemWindowInsetRight
         navBarSize = insets.systemWindowInsetBottom
 
         toolbarHider.view.marginLayoutParams.topMargin = statusBarSize
         bottomNavHider.view.marginLayoutParams.bottomMargin = navBarSize
 
-        lastWindowInsets?.let(::consumeFragmentInsets)
+        lastFragmentInsets?.let(::onFragmentInsetsReceived)
 
         this.insetsApplied = true
         return insets
     }
 
-    private fun consumeFragmentInsets(insets: WindowInsets): WindowInsets = insets.apply {
-        lastWindowInsets = this
-
-        val current = navigator.current ?: return@apply
-        if (isNotInCurrentFragmentContainer(current)) return@apply
+    private fun onFragmentInsetsReceived(insets: WindowInsets): WindowInsets = insets.apply {
+        lastFragmentInsets = this
 
         val large = systemWindowInsetBottom > navBarSize + bottomNavHeight.given(uiState.showsBottomNav)
         val bottom = if (large) navBarSize else fragmentInsetReducer(uiState.insetFlags)
@@ -229,8 +217,6 @@ class GlobalUiDriver(
         topContentSpring.animateToFinalPosition(contentTop)
         bottomContentSpring.animateToFinalPosition(contentBottom)
         bottomCoordinatorSpring.animateToFinalPosition(coordinatorInsetReducer(systemWindowInsetBottom).toFloat())
-
-        return insets
     }
 
     private fun contentInsetReducer(systemBottomInset: Int) =
@@ -287,7 +273,7 @@ class GlobalUiDriver(
 
     private fun showSnackBar(message: CharSequence) = Snackbar.make(binding.coordinatorLayout, message, Snackbar.LENGTH_SHORT).run {
         // Necessary to remove snackbar padding for keyboard on older versions of Android
-        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets -> insets }
+        view.setOnApplyWindowInsetsListener { _, insets -> insets }
         show()
     }
 
