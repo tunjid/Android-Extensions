@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity(), GlobalUiController, Navigator.Controll
             RouteFragment.Companion::newInstance
     )
 
-    override var uiState: UiState by globalUiDriver({ binding }) { navigator.activeNavigator }
+    override var uiState: UiState by globalUiDriver({ binding }) { navigator }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         AppWatcher.config = AppWatcher.config.copy(watchDurationMillis = TimeUnit.SECONDS.toMillis(8))

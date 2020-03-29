@@ -220,7 +220,7 @@ class GlobalUiDriver(
     }
 
     private fun isNotInCurrentFragmentContainer(fragment: Fragment): Boolean =
-            navigator.run { fragment.id != containerId }
+            navigator.run { fragment != navigator.current }
 
     private fun onInsetsApplied(insets: WindowInsets): WindowInsets {
         if (this.insetsApplied) return insets
