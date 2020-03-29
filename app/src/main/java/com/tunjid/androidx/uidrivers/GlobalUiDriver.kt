@@ -144,10 +144,10 @@ class GlobalUiDriver(
     private val bottomNavHeight get() = bottomNavHider.view.height
 
     private val topContentSpring =
-            host.findViewById<View>(R.id.content_container).paddingSpringAnimation(View::getPaddingTop) { updatePadding(top = it) }
+            binding.contentContainer.paddingSpringAnimation(View::getPaddingTop) { updatePadding(top = it) }
 
     private val bottomContentSpring =
-            host.findViewById<View>(R.id.content_container).paddingSpringAnimation(View::getPaddingBottom) { updatePadding(bottom = it) }
+            binding.contentContainer.paddingSpringAnimation(View::getPaddingBottom) { updatePadding(bottom = it) }
 
     private val bottomCoordinatorSpring =
             binding.coordinatorLayout.paddingSpringAnimation(View::getPaddingBottom) { updatePadding(bottom = it) }
@@ -209,7 +209,7 @@ class GlobalUiDriver(
             }
         }, true)
 
-        host.findViewById<View>(R.id.constraint_layout).setOnApplyWindowInsetsListener { _, insets -> onInsetsApplied(insets) }
+        binding.constraintLayout.setOnApplyWindowInsetsListener { _, insets -> onInsetsApplied(insets) }
         bottomContentSpring.apply {
             addEndListener { _, _, _, _ ->
                 val input = binding.contentContainer.innermostFocusedChild as? EditText
