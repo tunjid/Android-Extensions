@@ -63,31 +63,6 @@ interface GlobalUiController {
 }
 
 /**
- * Convenience method for [FragmentActivity] delegation to a [GlobalUiDriver] when implementing
- * [GlobalUiController]
- */
-fun FragmentActivity.globalUiDriver(
-        bindingSupplier: () -> ActivityMainBinding,
-        navigatorSupplier: () -> Navigator
-) = object : ReadWriteProperty<FragmentActivity, UiState> {
-
-    private val driver by lazy {
-        GlobalUiDriver(
-                host = this@globalUiDriver,
-                binding = bindingSupplier(),
-                navigator = navigatorSupplier()
-        )
-    }
-
-    override operator fun getValue(thisRef: FragmentActivity, property: KProperty<*>): UiState =
-            driver.uiState
-
-    override fun setValue(thisRef: FragmentActivity, property: KProperty<*>, value: UiState) {
-        driver.uiState = value
-    }
-}
-
-/**
  * Convenience method for [Fragment] delegation to a [FragmentActivity] when implementing
  * [GlobalUiController]
  */

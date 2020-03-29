@@ -12,8 +12,8 @@ import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.multiStackNavigationController
 import com.tunjid.androidx.uidrivers.GlobalUiController
+import com.tunjid.androidx.uidrivers.GlobalUiDriver
 import com.tunjid.androidx.uidrivers.UiState
-import com.tunjid.androidx.uidrivers.globalUiDriver
 import com.tunjid.androidx.uidrivers.materialDepthAxisTransition
 import com.tunjid.androidx.uidrivers.materialFadeThroughTransition
 import leakcanary.AppWatcher
@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit
 class MainActivity : AppCompatActivity(), GlobalUiController, Navigator.Controller {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    private val globalUiDriver by lazy { GlobalUiDriver(this, binding, navigator) }
 
     override val navigator: MultiStackNavigator by multiStackNavigationController(
             tabs.size,
@@ -29,7 +30,11 @@ class MainActivity : AppCompatActivity(), GlobalUiController, Navigator.Controll
             RouteFragment.Companion::newInstance
     )
 
-    override var uiState: UiState by globalUiDriver({ binding }) { navigator }
+    override var uiState: UiState
+        get() = globalUiDriver.uiState
+        set(value) {
+            globalUiDriver.uiState = value
+        }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         AppWatcher.config = AppWatcher.config.copy(watchDurationMillis = TimeUnit.SECONDS.toMillis(8))
@@ -39,7 +44,6 @@ class MainActivity : AppCompatActivity(), GlobalUiController, Navigator.Controll
         onBackPressedDispatcher.addCallback(this) { if (!navigator.pop()) finish() }
 
         super.onCreate(savedInstanceState)
-
         setContentView(binding.root)
 
         binding.bottomNavigation.apply {
