@@ -107,26 +107,26 @@ class GlobalUiDriver(
         ViewHider.of(this).setDirection(ViewHider.BOTTOM).build()
     }
 
-    private val bottomNavHider: ViewHider<*> = binding.bottomNavigation.run {
-        doOnLayout { lastFragmentInsets?.let(::onFragmentInsetsReceived) }
-        ViewHider.of(this).setDirection(ViewHider.BOTTOM).build()
-    }
-
     private val fabExtensionAnimator: FabExtensionAnimator =
             FabExtensionAnimator(fabHider.view).apply { isExtended = true }
 
-    private val bottomNavHeight get() = bottomNavHider.view.height
+    private val bottomNavHeight get() = binding.bottomNavigation.height
+
+    private val bottomNavSpring = binding.bottomNavigation.run {
+        doOnLayout { lastFragmentInsets?.let(::onFragmentInsetsReceived) }
+        springAnimationOf(View::getTranslationY) { translationY = it.toFloat() }
+    }
 
     private val topContentSpring =
-            binding.contentContainer.paddingSpringAnimation(View::getPaddingTop) { updatePadding(top = it) }
+            binding.contentContainer.springAnimationOf(View::getPaddingTop) { updatePadding(top = it) }
 
     private val bottomContentSpring =
-            binding.contentContainer.paddingSpringAnimation(View::getPaddingBottom) { updatePadding(bottom = it) }
+            binding.contentContainer.springAnimationOf(View::getPaddingBottom) { updatePadding(bottom = it) }
                     // Scroll to text that has focus
                     .apply { addEndListener { _, _, _, _ -> (binding.contentContainer.innermostFocusedChild as? EditText)?.let { it.text = it.text } } }
 
     private val bottomCoordinatorSpring =
-            binding.coordinatorLayout.paddingSpringAnimation(View::getPaddingBottom) { updatePadding(bottom = it) }
+            binding.coordinatorLayout.springAnimationOf(View::getPaddingBottom) { updatePadding(bottom = it) }
 
     private val shortestAvailableLifecycle
         get() = when (val current = navigator.current) {
@@ -147,7 +147,7 @@ class GlobalUiDriver(
             backingUiState = updated.copy(toolbarInvalidated = false, snackbarText = "") // Reset after firing once
             previous.diff(
                     newState = updated,
-                    showsBottomNavConsumer = bottomNavHider::set,
+                    showsBottomNavConsumer = { bottomNavSpring.animateToFinalPosition((if (it) 0 else bottomNavHeight + navBarSize).toFloat()) },
                     showsFabConsumer = fabHider::set,
                     showsToolbarConsumer = toolbarHider::set,
                     navBarColorConsumer = this::setNavBarColor,
@@ -169,6 +169,7 @@ class GlobalUiDriver(
             }
 
             host.window.navigationBarColor = value.navBarColor
+            lastFragmentInsets?.let(::onFragmentInsetsReceived)
         }
 
     init {
@@ -195,7 +196,7 @@ class GlobalUiDriver(
         navBarSize = insets.systemWindowInsetBottom
 
         toolbarHider.view.marginLayoutParams.topMargin = statusBarSize
-        bottomNavHider.view.marginLayoutParams.bottomMargin = navBarSize
+        binding.bottomNavigation.marginLayoutParams.bottomMargin = navBarSize
 
         lastFragmentInsets?.let(::onFragmentInsetsReceived)
 
@@ -221,7 +222,7 @@ class GlobalUiDriver(
 
     private fun coordinatorInsetReducer(systemBottomInset: Int) =
             if (systemBottomInset > navBarSize) systemBottomInset
-            else navBarSize + (bottomNavHider.view.height given uiState.showsBottomNav)
+            else navBarSize + (bottomNavHeight given uiState.showsBottomNav)
 
     private fun fragmentInsetReducer(insetFlags: InsetFlags): Int =
             bottomNavHeight.given(uiState.showsBottomNav) + navBarSize.given(insetFlags.hasBottomInset)
@@ -354,7 +355,7 @@ private fun View.animateBackground(@ColorInt to: Int) {
     animator.start()
 }
 
-private fun View.paddingSpringAnimation(getter: (View) -> Int, setter: View.(Int) -> Unit) =
+private fun View.springAnimationOf(getter: (View) -> Number, setter: View.(Int) -> Unit) =
         springAnimationOf(
                 getter = { getter(this).toFloat() },
                 setter = { setter(it.toInt()) },
