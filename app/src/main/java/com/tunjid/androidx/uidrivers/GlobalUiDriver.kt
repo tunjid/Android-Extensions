@@ -129,24 +129,22 @@ class GlobalUiDriver(
             binding.coordinatorLayout.paddingSpringAnimation(View::getPaddingBottom) { updatePadding(bottom = it) }
 
     private val shortestAvailableLifecycle
-        get() = when (val fragment = navigator.current) {
+        get() = when (val current = navigator.current) {
             null -> host.lifecycle
-            else -> when (fragment.view) {
-                null -> fragment.lifecycle
-                else -> fragment.viewLifecycleOwner.lifecycle
-            }
+            else -> if (current.view == null) current.lifecycle else current.viewLifecycleOwner.lifecycle
         }
-    private var state: UiState = UiState.freshState()
+
+    private var backingUiState: UiState = UiState.freshState()
 
     override var uiState: UiState
-        get() = state
+        get() = backingUiState
         set(value) {
-            val previous = state.copy()
+            val previous = backingUiState.copy()
             val updated = value.copy(
                     fabClickListener = value.fabClickListener?.lifecycleAware(),
                     fabTransitionOptions = value.fabTransitionOptions?.lifecycleAware()
             )
-            state = updated.copy(toolbarInvalidated = false, snackbarText = "") // Reset after firing once
+            backingUiState = updated.copy(toolbarInvalidated = false, snackbarText = "") // Reset after firing once
             previous.diff(
                     newState = updated,
                     showsBottomNavConsumer = bottomNavHider::set,
@@ -188,8 +186,8 @@ class GlobalUiDriver(
         binding.root.setOnApplyWindowInsetsListener { _, insets -> onSystemInsetsReceived(insets) }
     }
 
-    private fun onSystemInsetsReceived(insets: WindowInsets): WindowInsets {
-        if (this.insetsApplied) return insets
+    private fun onSystemInsetsReceived(insets: WindowInsets): WindowInsets = insets.apply {
+        if (insetsApplied) return insets
 
         statusBarSize = insets.systemWindowInsetTop
         systemLeftInset = insets.systemWindowInsetLeft
@@ -201,8 +199,7 @@ class GlobalUiDriver(
 
         lastFragmentInsets?.let(::onFragmentInsetsReceived)
 
-        this.insetsApplied = true
-        return insets
+        insetsApplied = true
     }
 
     private fun onFragmentInsetsReceived(insets: WindowInsets): WindowInsets = insets.apply {
