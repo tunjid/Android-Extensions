@@ -38,8 +38,6 @@ class IndependentStacksFragment : AppBaseFragment(R.layout.fragment_independent_
     private val navigators = mutableMapOf<Int, StackNavigator>()
     private val visitOrder = ArrayDeque<Int>()
 
-    override val insetFlags = InsetFlags.NO_TOP
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         savedInstanceState?.getIntArray(ORDER)?.apply { visitOrder.addAll(this.asList()) }
@@ -70,6 +68,7 @@ class IndependentStacksFragment : AppBaseFragment(R.layout.fragment_independent_
                 fabShows = false,
                 showsBottomNav = true,
                 lightStatusBar = false,
+                insetFlags = InsetFlags.NO_TOP,
                 navBarColor = requireContext().colorAt(R.color.transparent)
         )
     }

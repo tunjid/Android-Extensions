@@ -14,6 +14,7 @@ import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.services.HardServiceConnection
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
+import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.routeName
 
 
@@ -37,6 +38,7 @@ class HardServiceConnectionFragment : AppBaseFragment(R.layout.fragment_hard_ser
                 fabIcon = R.drawable.ic_connect_24dp,
                 fabText = getText(R.string.bind_service),
                 fabClickListener = { toggleService() },
+                insetFlags = InsetFlags.ALL,
                 showsBottomNav = true,
                 lightStatusBar = !requireContext().isDarkTheme,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)

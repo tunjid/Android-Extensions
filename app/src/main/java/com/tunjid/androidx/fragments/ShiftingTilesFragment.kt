@@ -2,7 +2,6 @@ package com.tunjid.androidx.fragments
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import com.tunjid.androidx.R
@@ -15,10 +14,8 @@ import com.tunjid.androidx.recyclerview.acceptDiff
 import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.gridLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
-import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
 import com.tunjid.androidx.uidrivers.SlideInItemAnimator
 import com.tunjid.androidx.uidrivers.update
-import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidx.viewholders.bind
 import com.tunjid.androidx.viewholders.tile
@@ -28,8 +25,6 @@ import com.tunjid.androidx.viewmodels.ShiftingTileViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
 class ShiftingTilesFragment : AppBaseFragment(R.layout.fragment_route) {
-
-    override val insetFlags: InsetFlags = NO_BOTTOM
 
     private val viewModel by viewModels<ShiftingTileViewModel>()
 
@@ -50,6 +45,7 @@ class ShiftingTilesFragment : AppBaseFragment(R.layout.fragment_route) {
                 showsBottomNav = false,
                 fabIcon = fabIconRes,
                 fabText = fabText,
+                insetFlags = NO_BOTTOM,
                 lightStatusBar = !requireContext().isDarkTheme,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
                 fabClickListener = {
@@ -75,8 +71,6 @@ class ShiftingTilesFragment : AppBaseFragment(R.layout.fragment_route) {
             adapter = tileAdapter
             layoutManager = gridLayoutManager(4)
             itemAnimator = SlideInItemAnimator()
-
-            updatePadding(bottom = InsetLifecycleCallbacks.bottomInset)
         }
 
         viewModel.watchTiles().observe(viewLifecycleOwner, tileAdapter::acceptDiff)

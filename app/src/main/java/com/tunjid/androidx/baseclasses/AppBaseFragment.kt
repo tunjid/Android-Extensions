@@ -8,20 +8,15 @@ import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.uidrivers.GlobalUiController
-import com.tunjid.androidx.uidrivers.InsetProvider
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.activityGlobalUiController
-import com.tunjid.androidx.view.util.InsetFlags
 
 abstract class AppBaseFragment(
         @LayoutRes contentLayoutId: Int = 0
 ) : Fragment(contentLayoutId),
-        InsetProvider,
         GlobalUiController,
         Navigator.TagProvider,
         Navigator.Controller {
-
-    override val insetFlags: InsetFlags = InsetFlags.ALL
 
     override val stableTag: String = javaClass.simpleName
 
@@ -33,5 +28,4 @@ abstract class AppBaseFragment(
         R.id.menu_reset -> navigator.clearAll().let { true }
         else -> super.onOptionsItemSelected(item)
     }
-
 }

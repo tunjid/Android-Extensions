@@ -30,6 +30,7 @@ import com.tunjid.androidx.recyclerview.indicators.Params
 import com.tunjid.androidx.recyclerview.indicators.indicatorDecoration
 import com.tunjid.androidx.recyclerview.indicators.start
 import com.tunjid.androidx.recyclerview.indicators.width
+import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
@@ -42,8 +43,6 @@ import kotlin.math.sin
 
 class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
         Navigator.TransactionModifier {
-
-    override val insetFlags: InsetFlags = InsetFlags.NONE
 
     private val viewModel by viewModels<DoggoViewModel>()
 
@@ -63,9 +62,10 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
                 showsBottomNav = false,
                 lightStatusBar = false,
+                insetFlags = InsetFlags.NONE,
                 navBarColor = Color.TRANSPARENT,
                 fabClickListener = { Doggo.transitionDoggo?.let { navigator.push(AdoptDoggoFragment.newInstance(it)) } }
-        )
+        ).also(::prepareSharedElementTransition)
 
         val viewPager = view.findViewById<ViewPager2>(R.id.view_pager)
         val resources = resources
@@ -103,8 +103,6 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
         )
 
         onDoggoSwiped(viewPager.currentItem)
-        prepareSharedElementTransition()
-
         postponeEnterTransition()
     }
 
@@ -133,8 +131,8 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
                 .addSharedElement(imageView, imageView.hashTransitionName(doggo))
     }
 
-    private fun prepareSharedElementTransition() {
-        sharedElementEnterTransition = baseSharedTransition()
+    private fun prepareSharedElementTransition(after: UiState) {
+        sharedElementEnterTransition = baseSharedTransition(uiState, after)
         sharedElementReturnTransition = baseSharedTransition()
 
         setEnterSharedElementCallback(object : SharedElementCallback() {
@@ -154,7 +152,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
     }
 
     companion object {
-        fun newInstance(): DoggoPagerFragment = DoggoPagerFragment().apply { arguments = Bundle(); prepareSharedElementTransition() }
+        fun newInstance(): DoggoPagerFragment = DoggoPagerFragment().apply { arguments = Bundle() }
     }
 
 }

@@ -9,6 +9,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
 import androidx.dynamicanimation.animation.SpringAnimation
+import com.tunjid.androidx.view.util.InsetFlags
 import kotlin.reflect.KMutableProperty0
 
 fun KMutableProperty0<UiState>.update(updater: UiState.() -> UiState) = set(updater.invoke(get()))
@@ -31,6 +32,7 @@ data class UiState(
         val navBarColor: Int,
         val lightStatusBar: Boolean,
         val showsBottomNav: Boolean,
+        val insetFlags: InsetFlags,
         val fabClickListener: ((View) -> Unit)?,
         val fabTransitionOptions: (SpringAnimation.() -> Unit)?
 ) : Parcelable {
@@ -88,6 +90,12 @@ data class UiState(
             navBarColor = `in`.readInt(),
             lightStatusBar = `in`.readByte().toInt() != 0x00,
             showsBottomNav = `in`.readByte().toInt() != 0x00,
+            insetFlags = InsetFlags(
+                    hasLeftInset = `in`.readByte().toInt() != 0x00,
+                    hasTopInset = `in`.readByte().toInt() != 0x00,
+                    hasRightInset = `in`.readByte().toInt() != 0x00,
+                    hasBottomInset = `in`.readByte().toInt() != 0x00
+            ),
             fabClickListener = null,
             fabTransitionOptions = null
     )
@@ -107,6 +115,10 @@ data class UiState(
         TextUtils.writeToParcel(snackbarText, dest, 0)
         dest.writeInt(navBarColor)
         dest.writeByte((if (showsBottomNav) 0x01 else 0x00).toByte())
+        dest.writeByte((if (insetFlags.hasLeftInset) 0x01 else 0x00).toByte())
+        dest.writeByte((if (insetFlags.hasTopInset) 0x01 else 0x00).toByte())
+        dest.writeByte((if (insetFlags.hasRightInset) 0x01 else 0x00).toByte())
+        dest.writeByte((if (insetFlags.hasBottomInset) 0x01 else 0x00).toByte())
     }
 
     companion object {
@@ -126,7 +138,8 @@ data class UiState(
                 toolbarInvalidated = false,
                 toolbarTitle = "",
                 fabClickListener = null,
-                fabTransitionOptions = null
+                fabTransitionOptions = null,
+                insetFlags = InsetFlags.ALL
         )
 
         @JvmField

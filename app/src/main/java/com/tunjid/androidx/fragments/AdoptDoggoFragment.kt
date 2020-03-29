@@ -18,6 +18,7 @@ import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.uidrivers.BACKGROUND_TINT_DURATION
+import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags
@@ -27,8 +28,6 @@ import com.tunjid.androidx.viewholders.InputViewHolder
 import com.tunjid.androidx.viewholders.bind
 
 class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo) {
-
-    override val insetFlags: InsetFlags = InsetFlags.NO_TOP
 
     override val stableTag: String
         get() = "${super.stableTag}-${doggo.hashCode()}"
@@ -47,12 +46,13 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo) {
                 fabShows = true,
                 lightStatusBar = false,
                 showsBottomNav = true,
+                insetFlags = InsetFlags.NO_TOP,
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
                 fabClickListener = {
                     ::uiState.update { copy(snackbarText = getString(R.string.adopted_doggo, doggo.name)) }
                 }
-        )
+        ).also(::prepareSharedElementTransition)
 
         val items = listOf(*resources.getStringArray(R.array.adoption_items))
 
@@ -98,16 +98,15 @@ class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo) {
         animator.start()
     }
 
-    private fun prepareSharedElementTransition() {
+    private fun prepareSharedElementTransition(after: UiState) {
         sharedElementEnterTransition = baseSharedTransition()
-        sharedElementReturnTransition = baseSharedTransition()
+        sharedElementReturnTransition = baseSharedTransition(uiState, after)
     }
 
     companion object {
 
         fun newInstance(doggo: Doggo): AdoptDoggoFragment = AdoptDoggoFragment().apply {
             this.doggo = doggo
-            prepareSharedElementTransition()
         }
     }
 }
