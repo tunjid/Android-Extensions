@@ -38,8 +38,6 @@ data class UiState(
 ) : Parcelable {
 
     fun diff(newState: UiState,
-             showsBottomNavConsumer: (Boolean) -> Unit,
-             showsFabConsumer: (Boolean) -> Unit,
              showsToolbarConsumer: (Boolean) -> Unit,
              navBarColorConsumer: (Int) -> Unit,
              lightStatusBarConsumer: (Boolean) -> Unit,
@@ -60,8 +58,6 @@ data class UiState(
         }
 
         onChanged(newState, UiState::fabIcon, UiState::fabText) { fabStateConsumer(fabIcon, fabText) }
-        onChanged(newState, UiState::showsBottomNav) { showsBottomNavConsumer(showsBottomNav) }
-        onChanged(newState, UiState::fabShows) { showsFabConsumer(fabShows) }
         onChanged(newState, UiState::fabExtended) { fabExtendedConsumer(fabExtended) }
         onChanged(newState, UiState::backgroundColor) { backgroundColorConsumer(backgroundColor) }
         onChanged(newState, UiState::snackbarText) { snackbarTextConsumer(snackbarText) }

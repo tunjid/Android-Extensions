@@ -11,6 +11,7 @@ import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.widget.EditText
@@ -24,6 +25,8 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.view.children
 import androidx.core.view.doOnLayout
 import androidx.core.view.forEach
+import androidx.core.view.marginBottom
+import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
@@ -35,7 +38,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.colorAt
@@ -103,12 +105,8 @@ class GlobalUiDriver(
         ViewHider.of(this).setDirection(ViewHider.TOP).build()
     }
 
-    private val fabHider: ViewHider<MaterialButton> = binding.fab.run {
-        ViewHider.of(this).setDirection(ViewHider.BOTTOM).build()
-    }
-
     private val fabExtensionAnimator: FabExtensionAnimator =
-            FabExtensionAnimator(fabHider.view).apply { isExtended = true }
+            FabExtensionAnimator(binding.fab).apply { isExtended = true }
 
     private val bottomNavHeight get() = binding.bottomNavigation.height
 
@@ -125,8 +123,8 @@ class GlobalUiDriver(
                     // Scroll to text that has focus
                     .apply { addEndListener { _, _, _, _ -> (binding.contentContainer.innermostFocusedChild as? EditText)?.let { it.text = it.text } } }
 
-    private val bottomCoordinatorSpring =
-            binding.coordinatorLayout.springAnimationOf(View::getPaddingBottom) { updatePadding(bottom = it) }
+    private val fabSpring =
+            binding.fab.springAnimationOf(View::marginBottom) { updateLayoutParams<ViewGroup.MarginLayoutParams> { bottomMargin = it } }
 
     private val shortestAvailableLifecycle
         get() = when (val current = navigator.current) {
@@ -147,14 +145,12 @@ class GlobalUiDriver(
             backingUiState = updated.copy(toolbarInvalidated = false, snackbarText = "") // Reset after firing once
             previous.diff(
                     newState = updated,
-                    showsBottomNavConsumer = this::updateBottomNav,
-                    showsFabConsumer = fabHider::set,
                     showsToolbarConsumer = toolbarHider::set,
                     navBarColorConsumer = this::setNavBarColor,
                     lightStatusBarConsumer = this::setLightStatusBar,
                     fabStateConsumer = this::setFabIcon,
                     fabExtendedConsumer = fabExtensionAnimator::isExtended::set,
-                    backgroundColorConsumer = binding.constraintLayout::animateBackground,
+                    backgroundColorConsumer = binding.contentRoot::animateBackground,
                     snackbarTextConsumer = this::showSnackBar,
                     toolbarStateConsumer = this::updateMainToolBar,
                     fabClickListenerConsumer = this::setFabClickListener,
@@ -214,15 +210,21 @@ class GlobalUiDriver(
 
         topContentSpring.animateToFinalPosition(contentTop)
         bottomContentSpring.animateToFinalPosition(contentBottom)
-        bottomCoordinatorSpring.animateToFinalPosition(coordinatorInsetReducer(systemWindowInsetBottom).toFloat())
+        fabSpring.animateToFinalPosition(fabInsetReducer(systemWindowInsetBottom).toFloat())
+        bottomNavSpring.animateToFinalPosition((if (backingUiState.showsBottomNav) 0 else bottomNavHeight + navBarSize).toFloat())
     }
 
     private fun contentInsetReducer(systemBottomInset: Int) =
             systemBottomInset - navBarSize
 
-    private fun coordinatorInsetReducer(systemBottomInset: Int) =
-            if (systemBottomInset > navBarSize) systemBottomInset
-            else navBarSize + (bottomNavHeight given uiState.showsBottomNav)
+    private fun fabInsetReducer(systemBottomInset: Int): Int {
+        val styleMargin = host.resources.getDimensionPixelSize(R.dimen.single_margin)
+        return when {
+            !uiState.fabShows -> -binding.fab.height
+            systemBottomInset > navBarSize -> systemBottomInset + styleMargin
+            else -> navBarSize + styleMargin + (bottomNavHeight given backingUiState.showsBottomNav)
+        }
+    }
 
     private fun fragmentInsetReducer(insetFlags: InsetFlags): Int =
             bottomNavHeight.given(uiState.showsBottomNav) + navBarSize.given(insetFlags.hasBottomInset)
@@ -233,9 +235,6 @@ class GlobalUiDriver(
 
         return selected || host.onOptionsItemSelected(item)
     }
-
-    private fun updateBottomNav(it: Boolean) =
-            bottomNavSpring.animateToFinalPosition((if (it) 0 else bottomNavHeight + navBarSize).toFloat())
 
     private fun setNavBarColor(color: Int) {
         binding.navBackground.background = GradientDrawable(
@@ -266,13 +265,13 @@ class GlobalUiDriver(
     }
 
     private fun setFabClickListener(onClickListener: ((View) -> Unit)?) =
-            fabHider.view.setOnClickListener(onClickListener)
+            binding.fab.setOnClickListener(onClickListener)
 
     private fun setFabTransitionOptions(options: (SpringAnimation.() -> Unit)?) {
         if (options != null) fabExtensionAnimator.configureSpring(options)
     }
 
-    private fun showSnackBar(message: CharSequence) = Snackbar.make(binding.coordinatorLayout, message, Snackbar.LENGTH_SHORT).run {
+    private fun showSnackBar(message: CharSequence) = Snackbar.make(binding.contentRoot, message, Snackbar.LENGTH_SHORT).run {
         // Necessary to remove snackbar padding for keyboard on older versions of Android
         view.setOnApplyWindowInsetsListener { _, insets -> insets }
         show()
