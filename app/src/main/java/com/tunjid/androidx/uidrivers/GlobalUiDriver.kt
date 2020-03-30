@@ -49,7 +49,6 @@ import com.tunjid.androidx.databinding.ActivityMainBinding
 import com.tunjid.androidx.material.animator.FabExtensionAnimator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.view.animator.ViewHider
-import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.innermostFocusedChild
 import com.tunjid.androidx.view.util.marginLayoutParams
 import kotlin.properties.ReadWriteProperty
@@ -202,30 +201,27 @@ class GlobalUiDriver(
     private fun onFragmentInsetsReceived(insets: WindowInsets): WindowInsets = insets.apply {
         lastFragmentInsets = this
 
-        bottomNavSpring.animateToFinalPosition(((bottomNavHeight + navBarSize) given !backingUiState.showsBottomNav).toFloat())
+        bottomNavSpring.animateToFinalPosition(bottomNavPosition())
         topContentSpring.animateToFinalPosition((statusBarSize given uiState.insetFlags.hasTopInset).toFloat())
-        bottomContentSpring.animateToFinalPosition(contentInsetReducer(systemWindowInsetBottom).toFloat())
-        fabSpring.animateToFinalPosition(fabInsetReducer(systemWindowInsetBottom).toFloat())
+        bottomContentSpring.animateToFinalPosition(contentPosition(systemWindowInsetBottom))
+        fabSpring.animateToFinalPosition(fabPosition(systemWindowInsetBottom))
     }
 
-    private fun contentInsetReducer(systemBottomInset: Int): Int {
-        val large = systemBottomInset > navBarSize + bottomNavHeight.given(uiState.showsBottomNav)
-        val bottom = if (large) navBarSize else fragmentInsetReducer(uiState.insetFlags)
+    private fun bottomNavPosition() =
+            bottomNavHeight.plus(navBarSize).given(!backingUiState.showsBottomNav).toFloat()
 
-        return bottom + systemBottomInset - navBarSize
-    }
+    private fun contentPosition(systemBottomInset: Int): Float = when (systemBottomInset > navBarSize + bottomNavHeight.given(uiState.showsBottomNav)) {
+        true -> systemBottomInset
+        else -> (bottomNavHeight given uiState.showsBottomNav) + (navBarSize given uiState.insetFlags.hasBottomInset)
+    }.toFloat()
 
-    private fun fragmentInsetReducer(insetFlags: InsetFlags): Int {
-        return bottomNavHeight.given(uiState.showsBottomNav) + navBarSize.given(insetFlags.hasBottomInset)
-    }
-
-    private fun fabInsetReducer(systemBottomInset: Int): Int {
+    private fun fabPosition(systemBottomInset: Int): Float {
         val styleMargin = host.resources.getDimensionPixelSize(R.dimen.single_margin)
         return when {
             !uiState.fabShows -> -binding.fab.height
             systemBottomInset > navBarSize -> systemBottomInset + styleMargin
             else -> navBarSize + styleMargin + (bottomNavHeight given backingUiState.showsBottomNav)
-        }
+        }.toFloat()
     }
 
     private fun onMenuItemClicked(item: MenuItem): Boolean {
