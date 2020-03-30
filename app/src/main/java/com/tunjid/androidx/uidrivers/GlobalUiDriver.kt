@@ -147,7 +147,7 @@ class GlobalUiDriver(
             backingUiState = updated.copy(toolbarInvalidated = false, snackbarText = "") // Reset after firing once
             previous.diff(
                     newState = updated,
-                    showsBottomNavConsumer = { bottomNavSpring.animateToFinalPosition((if (it) 0 else bottomNavHeight + navBarSize).toFloat()) },
+                    showsBottomNavConsumer = this::updateBottomNav,
                     showsFabConsumer = fabHider::set,
                     showsToolbarConsumer = toolbarHider::set,
                     navBarColorConsumer = this::setNavBarColor,
@@ -233,6 +233,9 @@ class GlobalUiDriver(
 
         return selected || host.onOptionsItemSelected(item)
     }
+
+    private fun updateBottomNav(it: Boolean) =
+            bottomNavSpring.animateToFinalPosition((if (it) 0 else bottomNavHeight + navBarSize).toFloat())
 
     private fun setNavBarColor(color: Int) {
         binding.navBackground.background = GradientDrawable(
