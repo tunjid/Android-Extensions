@@ -202,20 +202,17 @@ class GlobalUiDriver(
     private fun onFragmentInsetsReceived(insets: WindowInsets): WindowInsets = insets.apply {
         lastFragmentInsets = this
 
-        val large = systemWindowInsetBottom > navBarSize + bottomNavHeight.given(uiState.showsBottomNav)
-        val bottom = if (large) navBarSize else fragmentInsetReducer(uiState.insetFlags)
-
-        val contentTop = (statusBarSize given uiState.insetFlags.hasTopInset).toFloat()
-        val contentBottom = bottom + contentInsetReducer(systemWindowInsetBottom).toFloat()
-
-        topContentSpring.animateToFinalPosition(contentTop)
-        bottomContentSpring.animateToFinalPosition(contentBottom)
+        bottomNavSpring.animateToFinalPosition(((bottomNavHeight + navBarSize) given !backingUiState.showsBottomNav).toFloat())
+        topContentSpring.animateToFinalPosition((statusBarSize given uiState.insetFlags.hasTopInset).toFloat())
+        bottomContentSpring.animateToFinalPosition(contentInsetReducer(systemWindowInsetBottom).toFloat())
         fabSpring.animateToFinalPosition(fabInsetReducer(systemWindowInsetBottom).toFloat())
-        bottomNavSpring.animateToFinalPosition((if (backingUiState.showsBottomNav) 0 else bottomNavHeight + navBarSize).toFloat())
     }
 
     private fun contentInsetReducer(systemBottomInset: Int): Int {
-        return systemBottomInset - navBarSize
+        val large = systemBottomInset > navBarSize + bottomNavHeight.given(uiState.showsBottomNav)
+        val bottom = if (large) navBarSize else fragmentInsetReducer(uiState.insetFlags)
+
+        return bottom + systemBottomInset - navBarSize
     }
 
     private fun fragmentInsetReducer(insetFlags: InsetFlags): Int {
