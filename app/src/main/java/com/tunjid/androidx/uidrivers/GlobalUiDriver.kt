@@ -214,8 +214,13 @@ class GlobalUiDriver(
         bottomNavSpring.animateToFinalPosition((if (backingUiState.showsBottomNav) 0 else bottomNavHeight + navBarSize).toFloat())
     }
 
-    private fun contentInsetReducer(systemBottomInset: Int) =
-            systemBottomInset - navBarSize
+    private fun contentInsetReducer(systemBottomInset: Int): Int {
+        return systemBottomInset - navBarSize
+    }
+
+    private fun fragmentInsetReducer(insetFlags: InsetFlags): Int {
+        return bottomNavHeight.given(uiState.showsBottomNav) + navBarSize.given(insetFlags.hasBottomInset)
+    }
 
     private fun fabInsetReducer(systemBottomInset: Int): Int {
         val styleMargin = host.resources.getDimensionPixelSize(R.dimen.single_margin)
@@ -225,9 +230,6 @@ class GlobalUiDriver(
             else -> navBarSize + styleMargin + (bottomNavHeight given backingUiState.showsBottomNav)
         }
     }
-
-    private fun fragmentInsetReducer(insetFlags: InsetFlags): Int =
-            bottomNavHeight.given(uiState.showsBottomNav) + navBarSize.given(insetFlags.hasBottomInset)
 
     private fun onMenuItemClicked(item: MenuItem): Boolean {
         val fragment = navigator.current
