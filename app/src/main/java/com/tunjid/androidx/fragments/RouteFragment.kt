@@ -18,6 +18,7 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.tunjid.androidx.R
 import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
+import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.graphics.drawable.withTint
 import com.tunjid.androidx.core.graphics.drawable.withTintMode
@@ -56,7 +57,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
                 insetFlags = InsetFlags.ALL,
                 showsBottomNav = true,
                 lightStatusBar = !requireContext().isDarkTheme,
-                navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
+                navBarColor = requireContext().colorAt(R.color.colorSurface)
         )
 
         FragmentRouteBinding.bind(view).recyclerView.apply {

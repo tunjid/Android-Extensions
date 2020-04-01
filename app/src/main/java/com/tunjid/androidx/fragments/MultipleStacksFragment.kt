@@ -105,7 +105,7 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
                 },
                 showsBottomNav = true,
                 lightStatusBar = false,
-                navBarColor = requireContext().colorAt(R.color.transparent)
+                navBarColor = requireContext().colorAt(R.color.colorSurface)
         )
     }
 

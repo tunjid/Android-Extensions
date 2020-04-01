@@ -69,7 +69,7 @@ class IndependentStacksFragment : AppBaseFragment(R.layout.fragment_independent_
                 showsBottomNav = true,
                 lightStatusBar = false,
                 insetFlags = InsetFlags.NO_TOP,
-                navBarColor = requireContext().colorAt(R.color.transparent)
+                navBarColor = requireContext().colorAt(R.color.colorSurface)
         )
     }
 
