@@ -15,6 +15,8 @@ fun <T> Flowable<T>.toLiveData() = LiveDataReactiveStreams.fromPublisher(this)
 
 fun <T, R> LiveData<T>.map(mapper: (T) -> R) = Transformations.map(this, mapper)
 
+fun <T> LiveData<T>.distinctUntilChanged() = Transformations.distinctUntilChanged(this)
+
 inline fun <T> Iterable<T>.modifiableForEach(action: (T) -> Unit) =
         iterator().run { while (hasNext()) next().apply(action); Unit }
 

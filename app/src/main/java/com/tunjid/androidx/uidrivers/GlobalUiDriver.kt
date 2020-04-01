@@ -28,6 +28,7 @@ import androidx.core.view.forEach
 import androidx.core.view.marginBottom
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
+import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.dynamicanimation.animation.springAnimationOf
@@ -36,6 +37,10 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.observe
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
@@ -46,11 +51,14 @@ import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.graphics.drawable.withTint
 import com.tunjid.androidx.core.text.color
 import com.tunjid.androidx.databinding.ActivityMainBinding
+import com.tunjid.androidx.distinctUntilChanged
+import com.tunjid.androidx.map
 import com.tunjid.androidx.material.animator.FabExtensionAnimator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.view.animator.ViewHider
 import com.tunjid.androidx.view.util.innermostFocusedChild
 import com.tunjid.androidx.view.util.marginLayoutParams
+import com.tunjid.androidx.view.util.spring
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -131,17 +139,17 @@ class GlobalUiDriver(
             else -> if (current.view == null) current.lifecycle else current.viewLifecycleOwner.lifecycle
         }
 
-    private var backingUiState: UiState = UiState.freshState()
+    private val liveUiState = MutableLiveData(UiState.freshState())
 
     override var uiState: UiState
-        get() = backingUiState
+        get() = liveUiState.value!!
         set(value) {
-            val previous = backingUiState.copy()
+            val previous = liveUiState.value!!.copy()
             val updated = value.copy(
                     fabClickListener = value.fabClickListener?.lifecycleAware(),
                     fabTransitionOptions = value.fabTransitionOptions?.lifecycleAware()
             )
-            backingUiState = updated.copy(toolbarInvalidated = false) // Reset after firing once
+            liveUiState.value = updated.copy(toolbarInvalidated = false) // Reset after firing once
             previous.diff(
                     newState = updated,
                     showsToolbarConsumer = toolbarHider::set,
@@ -208,7 +216,7 @@ class GlobalUiDriver(
     }
 
     private fun bottomNavPosition() =
-            bottomNavHeight.plus(navBarSize).given(!backingUiState.showsBottomNav).toFloat()
+            bottomNavHeight.plus(navBarSize).given(!uiState.showsBottomNav).toFloat()
 
     private fun contentPosition(systemBottomInset: Int): Float = when (systemBottomInset > navBarSize + bottomNavHeight.given(uiState.showsBottomNav)) {
         true -> systemBottomInset
@@ -221,8 +229,8 @@ class GlobalUiDriver(
         if (!uiState.fabShows) return -binding.fab.height.toFloat()
         return when {
             systemBottomInset > navBarSize -> systemBottomInset + styleMargin
-            else -> navBarSize + styleMargin + (bottomNavHeight given backingUiState.showsBottomNav)
-        }.toFloat() + (snackbarClearance given backingUiState.snackbarText.isNotBlank())
+            else -> navBarSize + styleMargin + (bottomNavHeight given uiState.showsBottomNav)
+        }.toFloat() + (snackbarClearance given uiState.snackbarText.isNotBlank())
     }
 
     private fun onMenuItemClicked(item: MenuItem): Boolean {
@@ -270,8 +278,24 @@ class GlobalUiDriver(
     private fun showSnackBar(message: CharSequence) = if (message.isNotBlank()) Snackbar.make(binding.contentRoot, message, Snackbar.LENGTH_SHORT).run {
         // Necessary to remove snackbar padding for keyboard on older versions of Android
         view.setOnApplyWindowInsetsListener { _, insets -> insets }
-        addCallback(object : Snackbar.Callback() {
+        addCallback(object : Snackbar.Callback(), LifecycleOwner {
+            private val lifecycle = LifecycleRegistry(this)
+
+            override fun getLifecycle(): Lifecycle = lifecycle
+
+            override fun onShown(sb: Snackbar?) {
+                lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
+                liveUiState.map(UiState::showsBottomNav)
+                        .distinctUntilChanged()
+                        .observe(this) {
+                            view.spring(DynamicAnimation.TRANSLATION_Y)
+                                    .soften()
+                                    .animateToFinalPosition(if (it) -bottomNavHeight.toFloat() else 0f)
+                        }
+            }
+
             override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
                 ::uiState.update { copy(snackbarText = "") }
             }
         })
@@ -363,10 +387,12 @@ private fun View.springAnimationOf(getter: (View) -> Number, setter: View.(Int) 
                 getter = { getter(this).toFloat() },
                 setter = { setter(it.toInt()) },
                 finalPosition = 0f
-        ).apply {
-            spring.stiffness = SpringForce.STIFFNESS_LOW
-            spring.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
-        }
+        ).soften()
+
+private fun SpringAnimation.soften() = apply {
+    spring.stiffness = SpringForce.STIFFNESS_LOW
+    spring.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+}
 
 private infix fun Int.given(flag: Boolean) = if (flag) this else 0
 
