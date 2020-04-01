@@ -14,6 +14,12 @@ import kotlin.reflect.KMutableProperty0
 
 fun KMutableProperty0<UiState>.update(updater: UiState.() -> UiState) = set(updater.invoke(get()))
 
+typealias ToolbarState = Triple<Int, Boolean, CharSequence>
+typealias FabState = Pair<Int, CharSequence>
+
+val UiState.toolbarState get() = ToolbarState(toolBarMenu, toolbarInvalidated, toolbarTitle)
+val UiState.fabState get() = FabState(fabIcon, fabText)
+
 data class UiState(
         @MenuRes
         val toolBarMenu: Int,
@@ -36,41 +42,6 @@ data class UiState(
         val fabClickListener: ((View) -> Unit)?,
         val fabTransitionOptions: (SpringAnimation.() -> Unit)?
 ) : Parcelable {
-
-    fun diff(newState: UiState,
-             showsToolbarConsumer: (Boolean) -> Unit,
-             navBarColorConsumer: (Int) -> Unit,
-             lightStatusBarConsumer: (Boolean) -> Unit,
-             fabStateConsumer: (Int, CharSequence) -> Unit,
-             fabExtendedConsumer: (Boolean) -> Unit,
-             backgroundColorConsumer: (Int) -> Unit,
-             snackbarTextConsumer: (CharSequence) -> Unit,
-             toolbarStateConsumer: (Int, Boolean, CharSequence) -> Unit,
-             fabClickListenerConsumer: (((View) -> Unit)?) -> Unit,
-             fabTransitionOptionConsumer: ((SpringAnimation.() -> Unit)?) -> Unit
-    ): UiState {
-
-        fabClickListenerConsumer.invoke(newState.fabClickListener)
-        fabTransitionOptionConsumer.invoke(newState.fabTransitionOptions)
-
-        onChanged(newState, UiState::toolBarMenu, UiState::toolbarInvalidated, UiState::toolbarTitle) {
-            toolbarStateConsumer(toolBarMenu, toolbarInvalidated, toolbarTitle)
-        }
-
-        onChanged(newState, UiState::fabIcon, UiState::fabText) { fabStateConsumer(fabIcon, fabText) }
-        onChanged(newState, UiState::fabExtended) { fabExtendedConsumer(fabExtended) }
-        onChanged(newState, UiState::backgroundColor) { backgroundColorConsumer(backgroundColor) }
-        onChanged(newState, UiState::snackbarText) { snackbarTextConsumer(snackbarText) }
-        onChanged(newState, UiState::toolbarShows) { showsToolbarConsumer(toolbarShows) }
-        onChanged(newState, UiState::navBarColor) { navBarColorConsumer(navBarColor) }
-        onChanged(newState, UiState::lightStatusBar) { lightStatusBarConsumer(lightStatusBar) }
-
-        return newState
-    }
-
-    private inline fun onChanged(that: UiState, vararg selectors: (UiState) -> Any?, invocation: UiState.() -> Unit) {
-        if (selectors.any { it(this) != it(that) }) invocation.invoke(that)
-    }
 
     private constructor(`in`: Parcel) : this(
             toolBarMenu = `in`.readInt(),

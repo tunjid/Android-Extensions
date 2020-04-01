@@ -144,25 +144,12 @@ class GlobalUiDriver(
     override var uiState: UiState
         get() = liveUiState.value!!
         set(value) {
-            val previous = liveUiState.value!!.copy()
             val updated = value.copy(
                     fabClickListener = value.fabClickListener?.lifecycleAware(),
                     fabTransitionOptions = value.fabTransitionOptions?.lifecycleAware()
             )
+            liveUiState.value = updated
             liveUiState.value = updated.copy(toolbarInvalidated = false) // Reset after firing once
-            previous.diff(
-                    newState = updated,
-                    showsToolbarConsumer = toolbarHider::set,
-                    navBarColorConsumer = this::setNavBarColor,
-                    lightStatusBarConsumer = this::setLightStatusBar,
-                    fabStateConsumer = this::setFabIcon,
-                    fabExtendedConsumer = fabExtensionAnimator::isExtended::set,
-                    backgroundColorConsumer = binding.contentRoot::animateBackground,
-                    snackbarTextConsumer = this::showSnackBar,
-                    toolbarStateConsumer = this::updateMainToolBar,
-                    fabClickListenerConsumer = this::setFabClickListener,
-                    fabTransitionOptionConsumer = this::setFabTransitionOptions
-            )
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
 
@@ -188,6 +175,18 @@ class GlobalUiDriver(
         }, true)
 
         binding.root.setOnApplyWindowInsetsListener { _, insets -> onSystemInsetsReceived(insets) }
+
+        liveUiState.map(UiState::toolbarShows).distinctUntilChanged().observe(host, toolbarHider::set)
+        liveUiState.map(UiState::fabExtended).distinctUntilChanged().observe(host, fabExtensionAnimator::isExtended::set)
+        liveUiState.map(UiState::backgroundColor).distinctUntilChanged().observe(host, binding.contentRoot::animateBackground)
+
+        liveUiState.map(UiState::fabState).distinctUntilChanged().observe(host, this::setFabIcon)
+        liveUiState.map(UiState::snackbarText).distinctUntilChanged().observe(host, this::showSnackBar)
+        liveUiState.map(UiState::navBarColor).distinctUntilChanged().observe(host, this::setNavBarColor)
+        liveUiState.map(UiState::toolbarState).distinctUntilChanged().observe(host, this::updateMainToolBar)
+        liveUiState.map(UiState::lightStatusBar).distinctUntilChanged().observe(host, this::setLightStatusBar)
+        liveUiState.map(UiState::fabClickListener).distinctUntilChanged().observe(host, this::setFabClickListener)
+        liveUiState.map(UiState::fabTransitionOptions).distinctUntilChanged().observe(host, this::setFabTransitionOptions)
     }
 
     private fun onSystemInsetsReceived(insets: WindowInsets): WindowInsets = insets.apply {
@@ -258,13 +257,14 @@ class GlobalUiDriver(
         systemUiVisibility = tweaker(systemUiVisibility)
     }
 
-    private fun updateMainToolBar(menu: Int, invalidatedAlone: Boolean, title: CharSequence) = toolbarHider.view.run {
-        update(menu, invalidatedAlone, title)
+    private fun updateMainToolBar(toolbarState: ToolbarState) = toolbarHider.view.run {
+        update(toolbarState)
         navigator.current?.onPrepareOptionsMenu(this.menu)
         Unit
     }
 
-    private fun setFabIcon(@DrawableRes icon: Int, title: CharSequence) = host.runOnUiThread {
+    private fun setFabIcon(fabState: FabState) = host.runOnUiThread {
+        val(@DrawableRes icon: Int, title: CharSequence) = fabState
         if (icon != 0 && title.isNotBlank()) fabExtensionAnimator.updateGlyphs(title, icon)
     }
 
@@ -302,7 +302,8 @@ class GlobalUiDriver(
         show()
     } else Unit
 
-    private fun Toolbar.update(@MenuRes menu: Int, invalidatedAlone: Boolean, title: CharSequence) {
+    private fun Toolbar.update(toolbarState: ToolbarState) {
+        val (@MenuRes menu: Int, invalidatedAlone: Boolean, title: CharSequence) = toolbarState
         if (invalidatedAlone) return refreshMenu()
 
         val currentTitle = this.title?.toString() ?: ""
