@@ -115,8 +115,6 @@ class GlobalUiDriver(
     private val fabExtensionAnimator: FabExtensionAnimator =
             FabExtensionAnimator(binding.fab).apply { isExtended = true }
 
-    private val bottomNavHeight get() = binding.bottomNavigation.height
-
     private val bottomNavSpring = binding.bottomNavigation.run {
         doOnLayout { lastFragmentInsets?.let(::onFragmentInsetsReceived) }
         springAnimationOf(View::getTranslationY) { translationY = it.toFloat() }
@@ -215,11 +213,11 @@ class GlobalUiDriver(
     }
 
     private fun bottomNavPosition() =
-            bottomNavHeight.plus(navBarSize).given(!uiState.showsBottomNav).toFloat()
+            binding.bottomNavigation.height.plus(navBarSize).given(!uiState.showsBottomNav).toFloat()
 
-    private fun contentPosition(systemBottomInset: Int): Float = when (systemBottomInset > navBarSize + bottomNavHeight.given(uiState.showsBottomNav)) {
+    private fun contentPosition(systemBottomInset: Int): Float = when (systemBottomInset > navBarSize + binding.bottomNavigation.height.given(uiState.showsBottomNav)) {
         true -> systemBottomInset
-        else -> (bottomNavHeight given uiState.showsBottomNav) + (navBarSize given uiState.insetFlags.hasBottomInset)
+        else -> (binding.bottomNavigation.height given uiState.showsBottomNav) + (navBarSize given uiState.insetFlags.hasBottomInset)
     }.toFloat()
 
     private fun fabPosition(systemBottomInset: Int): Float {
@@ -228,7 +226,7 @@ class GlobalUiDriver(
         if (!uiState.fabShows) return -binding.fab.height.toFloat()
         return when {
             systemBottomInset > navBarSize -> systemBottomInset + styleMargin
-            else -> navBarSize + styleMargin + (bottomNavHeight given uiState.showsBottomNav)
+            else -> navBarSize + styleMargin + (binding.bottomNavigation.height given uiState.showsBottomNav)
         }.toFloat() + (snackbarClearance given uiState.snackbarText.isNotBlank())
     }
 
@@ -290,7 +288,7 @@ class GlobalUiDriver(
                         .observe(this) {
                             view.spring(DynamicAnimation.TRANSLATION_Y)
                                     .soften()
-                                    .animateToFinalPosition(if (it) -bottomNavHeight.toFloat() else 0f)
+                                    .animateToFinalPosition(if (it) -binding.bottomNavigation.height.toFloat() else 0f)
                         }
             }
 
