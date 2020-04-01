@@ -222,7 +222,10 @@ class GlobalUiDriver(
 
     private fun fabPosition(systemBottomInset: Int): Float {
         val styleMargin = host.resources.getDimensionPixelSize(R.dimen.single_margin)
-        val snackbarClearance = host.resources.getDimensionPixelSize(R.dimen.double_and_half_margin)
+        val snackbarClearance = host.resources.getDimensionPixelSize(
+                if (uiState.showsBottomNav) R.dimen.triple_margin
+                else R.dimen.double_and_half_margin
+        )
         if (!uiState.fabShows) return -binding.fab.height.toFloat()
         return when {
             systemBottomInset > navBarSize -> systemBottomInset + styleMargin
@@ -262,7 +265,7 @@ class GlobalUiDriver(
     }
 
     private fun setFabIcon(fabState: FabState) = host.runOnUiThread {
-        val(@DrawableRes icon: Int, title: CharSequence) = fabState
+        val (@DrawableRes icon: Int, title: CharSequence) = fabState
         if (icon != 0 && title.isNotBlank()) fabExtensionAnimator.updateGlyphs(title, icon)
     }
 
@@ -288,7 +291,10 @@ class GlobalUiDriver(
                         .observe(this) {
                             view.spring(DynamicAnimation.TRANSLATION_Y)
                                     .soften()
-                                    .animateToFinalPosition(if (it) -binding.bottomNavigation.height.toFloat() else 0f)
+                                    .animateToFinalPosition(
+                                            if (it) -binding.bottomNavigation.height.toFloat() - host.resources.getDimensionPixelSize(R.dimen.half_margin)
+                                            else 0f
+                                    )
                         }
             }
 
