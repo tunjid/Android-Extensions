@@ -141,7 +141,7 @@ class GlobalUiDriver(
                     fabClickListener = value.fabClickListener?.lifecycleAware(),
                     fabTransitionOptions = value.fabTransitionOptions?.lifecycleAware()
             )
-            backingUiState = updated.copy(toolbarInvalidated = false, snackbarText = "") // Reset after firing once
+            backingUiState = updated.copy(toolbarInvalidated = false) // Reset after firing once
             previous.diff(
                     newState = updated,
                     showsToolbarConsumer = toolbarHider::set,
@@ -217,11 +217,12 @@ class GlobalUiDriver(
 
     private fun fabPosition(systemBottomInset: Int): Float {
         val styleMargin = host.resources.getDimensionPixelSize(R.dimen.single_margin)
+        val snackbarClearance = host.resources.getDimensionPixelSize(R.dimen.double_and_half_margin)
+        if (!uiState.fabShows) return -binding.fab.height.toFloat()
         return when {
-            !uiState.fabShows -> -binding.fab.height
             systemBottomInset > navBarSize -> systemBottomInset + styleMargin
             else -> navBarSize + styleMargin + (bottomNavHeight given backingUiState.showsBottomNav)
-        }.toFloat()
+        }.toFloat() + (snackbarClearance given backingUiState.snackbarText.isNotBlank())
     }
 
     private fun onMenuItemClicked(item: MenuItem): Boolean {
@@ -266,11 +267,16 @@ class GlobalUiDriver(
         if (options != null) fabExtensionAnimator.configureSpring(options)
     }
 
-    private fun showSnackBar(message: CharSequence) = Snackbar.make(binding.contentRoot, message, Snackbar.LENGTH_SHORT).run {
+    private fun showSnackBar(message: CharSequence) = if (message.isNotBlank()) Snackbar.make(binding.contentRoot, message, Snackbar.LENGTH_SHORT).run {
         // Necessary to remove snackbar padding for keyboard on older versions of Android
         view.setOnApplyWindowInsetsListener { _, insets -> insets }
+        addCallback(object : Snackbar.Callback() {
+            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                ::uiState.update { copy(snackbarText = "") }
+            }
+        })
         show()
-    }
+    } else Unit
 
     private fun Toolbar.update(@MenuRes menu: Int, invalidatedAlone: Boolean, title: CharSequence) {
         if (invalidatedAlone) return refreshMenu()

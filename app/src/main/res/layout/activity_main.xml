@@ -29,8 +29,7 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/single_margin"
         android:insetTop="0px"
-        android:insetBottom="0px"
-        app:layout_behavior="@string/bottom_transient_bar_behavior" />
+        android:insetBottom="0px" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
