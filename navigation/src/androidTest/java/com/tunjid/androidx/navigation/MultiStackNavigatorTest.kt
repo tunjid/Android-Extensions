@@ -46,7 +46,7 @@ class MultiStackNavigatorTest {
                     savedStateFor(activity, "test"),
                     activity.supportFragmentManager,
                     activity.containerId
-            ) { NavigationTestFragment.newInstance(TAGS[it]).run { this to stableTag } }
+            ) { NavigationTestFragment.newInstance(TAGS[it]) }
         }
 
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
