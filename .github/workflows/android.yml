@@ -17,7 +17,7 @@ jobs:
 
       - name: Navigation test
         uses: ReactiveCircus/android-emulator-runner@v2.6.2
-        run: ./gradlew :navigation:connectedCheck --stacktrace
         with:
           api-level: 21
           profile: pixel
+          script: ./gradlew :navigation:connectedCheck --stacktrace
