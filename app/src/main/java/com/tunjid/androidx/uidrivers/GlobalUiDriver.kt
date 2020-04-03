@@ -149,20 +149,13 @@ class GlobalUiDriver(
             liveUiState.value = updated
             liveUiState.value = updated.copy(toolbarInvalidated = false) // Reset after firing once
 
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
-
-            uiFlagTweak {
-                if (value.navBarColor.isBrightColor) it or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-                else it and View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR.inv()
-            }
-
-            host.window.navigationBarColor = value.navBarColor
             lastFragmentInsets?.let(::onFragmentInsetsReceived)
         }
 
     init {
-        host.window.statusBarColor = host.colorAt(R.color.transparent)
         host.window.decorView.systemUiVisibility = DEFAULT_SYSTEM_UI_FLAGS
+        host.window.navigationBarColor = host.colorAt(R.color.transparent)
+        host.window.statusBarColor = host.colorAt(R.color.transparent)
         host.supportFragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
             override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
                 if (f != navigator.current) return
@@ -244,6 +237,11 @@ class GlobalUiDriver(
         binding.navBackground.background = GradientDrawable(
                 GradientDrawable.Orientation.BOTTOM_TOP,
                 intArrayOf(color, Color.TRANSPARENT))
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) uiFlagTweak {
+            if (color.isBrightColor) it or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+            else it and View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR.inv()
+        }
     }
 
     private fun setLightStatusBar(lightStatusBar: Boolean) = when {
