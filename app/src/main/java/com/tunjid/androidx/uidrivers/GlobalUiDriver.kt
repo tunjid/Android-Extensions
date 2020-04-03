@@ -148,8 +148,6 @@ class GlobalUiDriver(
             )
             liveUiState.value = updated
             liveUiState.value = updated.copy(toolbarInvalidated = false) // Reset after firing once
-
-            lastFragmentInsets?.let(::onFragmentInsetsReceived)
         }
 
     init {
@@ -178,6 +176,7 @@ class GlobalUiDriver(
         liveUiState.map(UiState::lightStatusBar).distinctUntilChanged().observe(host, this::setLightStatusBar)
         liveUiState.map(UiState::fabClickListener).distinctUntilChanged().observe(host, this::setFabClickListener)
         liveUiState.map(UiState::fabTransitionOptions).distinctUntilChanged().observe(host, this::setFabTransitionOptions)
+        liveUiState.map(UiState::insetFlags).distinctUntilChanged().observe(host) { lastFragmentInsets?.let(::onFragmentInsetsReceived) }
     }
 
     private fun onSystemInsetsReceived(insets: WindowInsets): WindowInsets = insets.apply {
@@ -271,7 +270,7 @@ class GlobalUiDriver(
             binding.fab.setOnClickListener(onClickListener)
 
     private fun setFabTransitionOptions(options: (SpringAnimation.() -> Unit)?) {
-        if (options != null) fabExtensionAnimator.configureSpring(options)
+        options?.let(fabExtensionAnimator::configureSpring)
     }
 
     private fun showSnackBar(message: CharSequence) = if (message.isNotBlank()) Snackbar.make(binding.contentRoot, message, Snackbar.LENGTH_SHORT).run {
