@@ -1,4 +1,4 @@
-name: Navigation Tests
+name: Github Packages Publish
 
 on:
   push:
