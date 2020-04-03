@@ -1,5 +1,7 @@
 # Android Extensions
 
+![Navigation Tests](https://github.com/tunjid/Android-Extensions/workflows/Navigation%20Tests/badge.svg)
+
 This repository is a collection of modules to help bootstrap an Android Application.
 There are 10 modules:
 
