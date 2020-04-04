@@ -37,8 +37,8 @@ buildscript {
         lifecycleViewModel = 'androidx.lifecycle:lifecycle-viewmodel:2.2.0'
         lifeCycleReactiveStreams = 'androidx.lifecycle:lifecycle-reactivestreams:2.2.0'
 
-        fragment = 'androidx.fragment:fragment:1.2.3'
-        fragmentKtx = 'androidx.fragment:fragment-ktx:1.2.3'
+        fragment = 'androidx.fragment:fragment:1.2.4'
+        fragmentKtx = 'androidx.fragment:fragment-ktx:1.2.4'
 
         dynamicAnimations = 'androidx.dynamicanimation:dynamicanimation:1.1.0-alpha02'
         dynamicAnimationsKtx = 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha02'
