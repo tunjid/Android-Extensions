@@ -1,5 +1,4 @@
 package com.tunjid.androidx.uidrivers
-
 import android.graphics.Color
 import android.os.Parcel
 import android.os.Parcelable
@@ -14,11 +13,11 @@ import kotlin.reflect.KMutableProperty0
 
 fun KMutableProperty0<UiState>.update(updater: UiState.() -> UiState) = set(updater.invoke(get()))
 
-typealias PositionalState = Triple<InsetFlags, Boolean, CharSequence>
+typealias PositionalState = List<Any>
 typealias ToolbarState = Triple<Int, Boolean, CharSequence>
 typealias FabState = Pair<Int, CharSequence>
 
-val UiState.positionState get() = PositionalState(insetFlags, showsBottomNav, snackbarText)
+val UiState.positionState: PositionalState get() = listOf(insetFlags, showsBottomNav, fabShows, snackbarText)
 val UiState.toolbarState get() = ToolbarState(toolBarMenu, toolbarInvalidated, toolbarTitle)
 val UiState.fabState get() = FabState(fabIcon, fabText)
 
