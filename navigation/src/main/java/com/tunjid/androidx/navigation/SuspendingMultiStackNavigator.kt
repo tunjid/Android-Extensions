@@ -14,16 +14,11 @@ class SuspendingMultiStackNavigator(
 
     suspend fun show(index: Int) = suspendCancellableCoroutine<Fragment?> { continuation ->
         navigator.stackFragments[navigator.activeIndex].doOnLifecycleEvent(Lifecycle.Event.ON_RESUME) {
-            when (navigator.activeIndex) {
-                index -> continuation.resumeIfActive(navigator.current)
-                else -> {
-                    when (val upcomingStack = navigator.stackFragments.getOrNull(index)) {
-                        null -> continuation.resumeIfActive(null)  // out of index. Throw an exception maybe?
-                        else -> upcomingStack.waitForChild(continuation)
-                    }
-                    navigator.show(index)
-                }
+            when (val upcomingStack = navigator.stackFragments.getOrNull(index)) {
+                null -> continuation.resumeIfActive(null)  // out of index. Throw an exception maybe?
+                else -> upcomingStack.waitForChild(continuation)
             }
+            navigator.show(index)
         }
     }
 
