@@ -14,9 +14,11 @@ import kotlin.reflect.KMutableProperty0
 
 fun KMutableProperty0<UiState>.update(updater: UiState.() -> UiState) = set(updater.invoke(get()))
 
+typealias PositionalState = Triple<InsetFlags, Boolean, CharSequence>
 typealias ToolbarState = Triple<Int, Boolean, CharSequence>
 typealias FabState = Pair<Int, CharSequence>
 
+val UiState.positionState get() = PositionalState(insetFlags, showsBottomNav, snackbarText)
 val UiState.toolbarState get() = ToolbarState(toolBarMenu, toolbarInvalidated, toolbarTitle)
 val UiState.fabState get() = FabState(fabIcon, fabText)
 

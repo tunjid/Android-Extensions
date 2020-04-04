@@ -33,6 +33,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.observe
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.colorAt
@@ -162,7 +163,7 @@ class GlobalUiDriver(
         liveUiState.map(UiState::lightStatusBar).distinctUntilChanged().observe(host, this::setLightStatusBar)
         liveUiState.map(UiState::fabClickListener).distinctUntilChanged().observe(host, this::setFabClickListener)
         liveUiState.map(UiState::fabTransitionOptions).distinctUntilChanged().observe(host, this::setFabTransitionOptions)
-        liveUiState.map(UiState::insetFlags).distinctUntilChanged().observe(host) { lastFragmentInsets?.let(::onFragmentInsetsReceived) }
+        liveUiState.map(UiState::positionState).distinctUntilChanged().observe(host) { lastFragmentInsets?.let(::onFragmentInsetsReceived) }
     }
 
     private fun onSystemInsetsReceived(insets: WindowInsets): WindowInsets = insets.apply {
@@ -269,22 +270,26 @@ class GlobalUiDriver(
 
             override fun onShown(sb: Snackbar?) {
                 lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
-                liveUiState.map(UiState::showsBottomNav)
-                        .distinctUntilChanged()
-                        .observe(this) {
-                            view.spring(DynamicAnimation.TRANSLATION_Y)
-                                    .soften()
-                                    .animateToFinalPosition(
-                                            if (it) -binding.bottomNavigation.height.toFloat() - host.resources.getDimensionPixelSize(R.dimen.half_margin)
-                                            else 0f
-                                    )
-                        }
+                liveUiState.map(UiState::showsBottomNav).distinctUntilChanged().observe(this, ::onBottomNavChanged)
             }
 
             override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                 lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-                ::uiState.update { copy(snackbarText = "") }
+                when (event) {
+                    BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_SWIPE,
+                    BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_ACTION,
+                    BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_TIMEOUT,
+                    BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_MANUAL -> ::uiState.update { copy(snackbarText = "") }
+                    BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_CONSECUTIVE -> Unit
+                }
             }
+
+            private fun onBottomNavChanged(it: Boolean) = view.spring(DynamicAnimation.TRANSLATION_Y)
+                    .soften()
+                    .animateToFinalPosition(
+                            if (it) -binding.bottomNavigation.height.toFloat() - host.resources.getDimensionPixelSize(R.dimen.half_margin)
+                            else 0f
+                    )
         })
         show()
     } else Unit
