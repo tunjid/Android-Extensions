@@ -40,7 +40,7 @@ buildscript {
         fragment = 'androidx.fragment:fragment:1.2.4'
         fragmentKtx = 'androidx.fragment:fragment-ktx:1.2.4'
 
-        dynamicAnimations = 'androidx.dynamicanimation:dynamicanimation:1.1.0-alpha02'
+        dynamicAnimations = 'androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03'
         dynamicAnimationsKtx = 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha02'
 
         testCore = 'androidx.test:core:1.2.0'
