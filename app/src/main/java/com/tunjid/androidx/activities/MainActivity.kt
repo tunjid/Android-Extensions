@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity(), GlobalUiController, Navigator.Controller {
 
+    private val tabs = intArrayOf(R.id.menu_navigation, R.id.menu_recyclerview, R.id.menu_communications, R.id.menu_misc)
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val globalUiDriver by lazy { GlobalUiDriver(this, binding, navigator) }
 
@@ -56,9 +57,5 @@ class MainActivity : AppCompatActivity(), GlobalUiController, Navigator.Controll
             setOnNavigationItemSelectedListener { navigator.show(tabs.indexOf(it.itemId)).let { true } }
             setOnNavigationItemReselectedListener { navigator.activeNavigator.clear() }
         }
-    }
-
-    companion object {
-        val tabs = intArrayOf(R.id.menu_navigation, R.id.menu_recyclerview, R.id.menu_communications, R.id.menu_misc)
     }
 }

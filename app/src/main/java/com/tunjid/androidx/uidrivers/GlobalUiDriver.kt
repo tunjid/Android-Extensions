@@ -175,8 +175,6 @@ class GlobalUiDriver(
         navBarSize = insets.systemWindowInsetBottom
 
         toolbarHider.view.marginLayoutParams.topMargin = statusBarSize
-        binding.bottomNavigation.marginLayoutParams.bottomMargin = navBarSize
-
         lastFragmentInsets?.let(::onFragmentInsetsReceived)
 
         insetsApplied = true
@@ -191,8 +189,10 @@ class GlobalUiDriver(
         fabSpring.animateToFinalPosition(fabPosition(systemWindowInsetBottom))
     }
 
-    private fun bottomNavPosition() =
-            binding.bottomNavigation.height.plus(navBarSize).given(!uiState.showsBottomNav).toFloat()
+    private fun bottomNavPosition() = when {
+        uiState.showsBottomNav -> -(navBarSize.given(uiState.insetFlags.hasBottomInset))
+        else -> binding.bottomNavigation.height
+    }.toFloat()
 
     private fun contentPosition(systemBottomInset: Int): Float = when (systemBottomInset > navBarSize + binding.bottomNavigation.height.given(uiState.showsBottomNav)) {
         true -> systemBottomInset
