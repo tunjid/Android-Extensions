@@ -33,6 +33,7 @@ import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.RouteViewModel
 import com.tunjid.androidx.viewmodels.routeName
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 
 class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
 
@@ -74,6 +75,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
                     viewHolderBinder = { routeViewHolder, route, _ -> routeViewHolder.bind(route) },
                     itemIdFunction = { it.hashCode().toLong() }
             )
+            OverScrollDecoratorHelper.setUpOverScroll(this, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
         }
     }
 

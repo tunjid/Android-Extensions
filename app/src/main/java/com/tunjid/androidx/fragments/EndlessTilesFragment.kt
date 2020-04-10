@@ -26,6 +26,7 @@ import com.tunjid.androidx.viewholders.unbind
 import com.tunjid.androidx.viewmodels.EndlessTileViewModel
 import com.tunjid.androidx.viewmodels.EndlessTileViewModel.Companion.NUM_TILES
 import com.tunjid.androidx.viewmodels.routeName
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import kotlin.math.abs
 
 class EndlessTilesFragment : AppBaseFragment(R.layout.fragment_route) {
@@ -67,6 +68,7 @@ class EndlessTilesFragment : AppBaseFragment(R.layout.fragment_route) {
 
             addScrollListener { _, dy -> if (abs(dy) > 3) uiState = uiState.copy(fabShows = dy < 0) }
             setEndlessScrollListener(NUM_TILES) { viewModel.fetchMore() }
+            OverScrollDecoratorHelper.setUpOverScroll(this, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
 
             viewModel.moreTiles.observe(viewLifecycleOwner, this::acceptDiff)
         }

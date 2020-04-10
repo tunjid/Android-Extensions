@@ -55,6 +55,7 @@ import com.tunjid.androidx.view.util.spring
 import com.tunjid.androidx.viewmodels.Sort
 import com.tunjid.androidx.viewmodels.SpreadsheetViewModel
 import com.tunjid.androidx.viewmodels.routeName
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import kotlin.reflect.KMutableProperty0
 
 private typealias Var<T> = KMutableProperty0<T>
@@ -173,6 +174,7 @@ class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child)
                 } else stickyHeader.itemView.visibility = if (stickyHeaderVisible) View.VISIBLE else View.INVISIBLE
             }
             addItemDecoration(tableDecoration())
+            OverScrollDecoratorHelper.setUpOverScroll(this, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
         }
     }
 
