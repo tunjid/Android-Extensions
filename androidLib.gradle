@@ -43,15 +43,6 @@ android {
             outputFileName = "${project.getName()}-${project.version}.aar"
         }
     }
-
-    afterEvaluate {
-        def debugFile = file("$buildDir/outputs/aar/${project.getName()}-release.aar")
-        tasks.named("assembleRelease").configure {
-            doLast {
-                debugFile.renameTo("$buildDir/outputs/aar/${project.getName()}-${project.version}.aar")
-            }
-        }
-    }
 }
 
 bintray {
@@ -67,7 +58,7 @@ bintray {
         name = 'android-extensions'
         userOrg = user
         licenses = ['MIT']
-        vcsUrl = 'https://github.com/tunjid/android-bootstrap.git'
+        vcsUrl = "${parent.ext.publishUrl}.git"
         version {
             name = project.version
             desc = 'An Android library to bootstrap an Android application.'
@@ -76,58 +67,44 @@ bintray {
     }
 }
 
-publishing {
-    publications {
-        lib(MavenPublication) {
-            // Default to command line arg before reading from from version.gradle
-            version = project.hasProperty('publish_version') ? "$publish_version" : project.version
-            groupId parent.ext.groupId // from parent root.gradle ext
-            artifactId project.getName()
+afterEvaluate {
+    publishing {
+        publications {
+            lib(MavenPublication) {
+                from components.release
 
-            // Tell maven to prepare the generated "*.aar" file for publishing
-            artifact("$buildDir/outputs/aar/${project.getName()}-${project.version}.aar")
+                // Default to command line arg before reading from from version.gradle
+                version = project.hasProperty('publish_version') ? "$publish_version" : project.version
+                groupId parent.ext.groupId // from parent root.gradle ext
+                artifactId project.getName()
 
-            // Add sources too
-            afterEvaluate {
-                artifact(sourcesJar) {
-                    classifier = 'sources'
-                    extension = 'jar'
-                }
-            }
-
-            //The publication doesn't know about our dependencies, so we have to manually add them to the pom
-            pom.withXml {
-                def dependenciesNode = asNode().appendNode('dependencies')
-
-                //Iterate over the compile dependencies (we don't want the test ones), adding a <dependency> node for each
-                configurations.implementation.allDependencies.each {
-                    if (it.group != null && it.name != null && it.name != 'unspecified') {
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', it.group)
-                        dependencyNode.appendNode('artifactId', it.name)
-                        dependencyNode.appendNode('version', it.version)
+                // Add sources too
+                afterEvaluate {
+                    artifact(sourcesJar) {
+                        classifier = 'sources'
+                        extension = 'jar'
                     }
                 }
             }
         }
-    }
-    repositories {
-        maven {
-            name = parent.ext.publishRepoName
-            url = parent.ext.publishUrl
-            credentials {
-                username = parent.ext.publishUserName
-                password = parent.ext.publishPassword
-            }
-        }
-        parent.ext.publishRepositories.each { repo ->
-            def props = (repo as ConfigObject).toProperties()
+        repositories {
             maven {
-                name = props['name']
-                url = props['url']
+                name = parent.ext.publishRepoName
+                url = parent.ext.publishUrl
                 credentials {
-                    username = props['credentials.username']
-                    password = props['credentials.password']
+                    username = parent.ext.publishUserName
+                    password = parent.ext.publishPassword
+                }
+            }
+            parent.ext.publishRepositories.each { repo ->
+                def props = (repo as ConfigObject).toProperties()
+                maven {
+                    name = props['name']
+                    url = props['url']
+                    credentials {
+                        username = props['credentials.username']
+                        password = props['credentials.password']
+                    }
                 }
             }
         }
