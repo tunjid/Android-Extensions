@@ -124,6 +124,7 @@ task clean(type: Delete) {
 
 
 task incrementalPublish {
+    println "Test log ${project.ext.bintrayUser}"
     def libProps = project.ext.libProps
     def artifactExists = { String mavenRepo, String name, String version, boolean addAuth ->
         def group = libProps['groupId'].replace(".", "/")
