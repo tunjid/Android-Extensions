@@ -24,4 +24,6 @@ jobs:
           PUBLISH_URL: https://github.com/tunjid/Android-Extensions
           PUBLISH_USER_NAME: tunjid
           PUBLISH_PASSWORD: {{secrets.GITHUB_TOKEN}}
-        run: bash ./gradlew incrementalPublish -PpublishRepoName="$PUBLISH_REPO_NAME" -PpublishUrl="$PUBLISH_URL" -PpublishUserName="$PUBLISH_USER_NAME" -PpublishPassword="$PUBLISH_PASSWORD" --stacktrace
+          BINTRAY_USER: {{secrets.bintray_user}}
+          BINTRAY_API_KEY: {{secrets.bintray_key}}
+        run: bash ./gradlew incrementalPublish -PpublishRepoName="$PUBLISH_REPO_NAME" -PpublishUrl="$PUBLISH_URL" -PpublishUserName="$PUBLISH_USER_NAME" -PpublishPassword="$PUBLISH_PASSWORD" -PbintrayUser="BINTRAY_USER"-PbintrayApiKey="BINTRAY_API_KEY"--stacktrace
