@@ -86,7 +86,7 @@ buildscript {
 
         publishRepositories = []
         def localPropsFile = file("local.properties")
-        
+
         if (localPropsFile.exists()) {
             localProps.load(new FileInputStream(localPropsFile))
 
@@ -120,4 +120,42 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+
+task incrementalPublish {
+    def libProps = project.ext.libProps
+    def artifactExists = { String name, String version ->
+        def group = libProps['groupId'].replace(".", "/")
+        def url = "${project.ext.publishUrl}/${group}/${name}/${version}/${name}-${version}.aar"
+
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection()
+            String encoded = Base64.getEncoder().encodeToString(("${project.ext.publishUserName}:${project.ext.publishPassword}").getBytes("UTF-8"))
+            connection.setRequestProperty("Authorization", "Basic " + encoded)
+            connection.connect()
+
+            return connection.getResponseCode() == HttpURLConnection.HTTP_OK
+        }
+        catch (ignored) {
+            println "Unable to configure incremental publish, check your internet connection"
+            return true
+        }
+    }
+
+    project.afterEvaluate {
+        libProps.stringPropertyNames()
+                .findAll { name -> name.contains('version') }
+                .each { name ->
+                    def moduleName = name - '_version'
+                    def version = libProps[name]
+                    def exists = artifactExists(moduleName, version)
+
+                    if (!exists) {
+                        println "Adding task :${moduleName}:publishLibPublicationTo${project.ext.publishRepoName}Repository"
+                        dependsOn ":${moduleName}:assemble"
+                        dependsOn ":${moduleName}:publishLibPublicationTo${project.ext.publishRepoName}Repository"
+                    }
+                }
+    }
 }
