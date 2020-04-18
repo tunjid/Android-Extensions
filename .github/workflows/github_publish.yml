@@ -20,8 +20,8 @@ jobs:
           java-version: 1.8
       - name: Github Maven Publish
         env:
-          PUBLISH_REPO_NAME: githubMaven
+          PUBLISH_REPO_NAME: GithubMaven
           PUBLISH_URL: https://github.com/tunjid/Android-Extensions
           PUBLISH_USER_NAME: tunjid
           PUBLISH_PASSWORD: {{secrets.GITHUB_TOKEN}}
-        run: bash ./gradlew publishLibPublicationsToGithubMavenRepository -PpublishRepoName="$PUBLISH_REPO_NAME" -PpublishUrl="$PUBLISH_URL" -PpublishUserName="$PUBLISH_USER_NAME" -PpublishPassword="$PUBLISH_PASSWORD" --stacktrace
+        run: bash ./gradlew incrementalPublish -PpublishRepoName="$PUBLISH_REPO_NAME" -PpublishUrl="$PUBLISH_URL" -PpublishUserName="$PUBLISH_USER_NAME" -PpublishPassword="$PUBLISH_PASSWORD" --stacktrace
