@@ -58,7 +58,7 @@ bintray {
         name = 'android-extensions'
         userOrg = user
         licenses = ['MIT']
-        vcsUrl = 'https://github.com/tunjid/android-bootstrap.git'
+        vcsUrl = "${parent.ext.publishUrl}.git"
         version {
             name = project.version
             desc = 'An Android library to bootstrap an Android application.'

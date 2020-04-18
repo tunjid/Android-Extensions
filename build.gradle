@@ -125,14 +125,16 @@ task clean(type: Delete) {
 
 task incrementalPublish {
     def libProps = project.ext.libProps
-    def artifactExists = { String name, String version ->
+    def artifactExists = { String mavenRepo, String name, String version, boolean addAuth ->
         def group = libProps['groupId'].replace(".", "/")
-        def url = "${project.ext.publishUrl}/${group}/${name}/${version}/${name}-${version}.aar"
+        def url = "${mavenRepo}/${group}/${name}/${version}/${name}-${version}.aar"
 
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection()
-            String encoded = Base64.getEncoder().encodeToString(("${project.ext.publishUserName}:${project.ext.publishPassword}").getBytes("UTF-8"))
-            connection.setRequestProperty("Authorization", "Basic " + encoded)
+            if (addAuth) {
+                String encoded = Base64.getEncoder().encodeToString(("${project.ext.publishUserName}:${project.ext.publishPassword}").getBytes("UTF-8"))
+                connection.setRequestProperty("Authorization", "Basic " + encoded)
+            }
             connection.connect()
 
             return connection.getResponseCode() == HttpURLConnection.HTTP_OK
@@ -149,12 +151,24 @@ task incrementalPublish {
                 .each { name ->
                     def moduleName = name - '_version'
                     def version = libProps[name]
-                    def exists = artifactExists(moduleName, version)
+                    def githubUrl = "${project.ext.publishUrl}"
+                    def jCenterUrl = "https://jcenter.bintray.com"
 
-                    if (!exists) {
-                        println "Adding task :${moduleName}:publishLibPublicationTo${project.ext.publishRepoName}Repository"
+                    def existsOnGitHub = artifactExists(githubUrl, moduleName, version, true)
+                    def existsOnJcenter = artifactExists(jCenterUrl, moduleName, version, false)
+
+                    if (!existsOnGitHub || !existsOnJcenter) {
                         dependsOn ":${moduleName}:assemble"
+                    }
+
+                    if (!existsOnGitHub) {
+                        println "Adding task ${moduleName} to github publish"
                         dependsOn ":${moduleName}:publishLibPublicationTo${project.ext.publishRepoName}Repository"
+                    }
+
+                    if (!existsOnJcenter) {
+                        println "Adding task ${moduleName} to bintray publish"
+                        dependsOn ":${moduleName}:bintrayUpload"
                     }
                 }
     }
