@@ -20,9 +20,9 @@ jobs:
           java-version: 1.8
       - name: Github Maven Publish
         env:
-          PUBLISH_PASSWORD: {{ secrets.GITHUB_TOKEN }}
           BINTRAY_USER: {{ secrets.bintray_user }}
           BINTRAY_API_KEY: {{ secrets.bintray_key }}
+          PUBLISH_PASSWORD: {{ secrets.GITHUB_TOKEN }}
           PUBLISH_REPO_NAME: GithubMaven
           PUBLISH_URL: https://github.com/tunjid/Android-Extensions
           PUBLISH_USER_NAME: tunjid
