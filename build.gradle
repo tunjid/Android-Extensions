@@ -65,15 +65,6 @@ buildscript {
         groupId = libProps['groupId']
         artifactoryUrl = libProps['artifactoryUrl']
 
-        bintrayUser = ''
-        bintrayApiKey = ''
-        def bintrayFile = file("bintray.properties")
-        if (bintrayFile.exists()) {
-            bintrayProps.load(new FileInputStream(bintrayFile))
-            bintrayUser = bintrayProps['user']
-            bintrayApiKey = bintrayProps['apiKey']
-        }
-
         // publish properties can be set from the command line or local.properties.
         // Multiple repository setup can only done in the local.properties file with the following
         // mapping:
@@ -95,6 +86,12 @@ buildscript {
             if (repos != null) publishRepositories = slurper.parseText(repos)
         }
 
+        def bintrayFile = file("bintray.properties")
+
+        if (bintrayFile.exists()) {
+            bintrayProps.load(new FileInputStream(bintrayFile))
+        }
+
         def pullProperty = { String name, Properties prop ->
             return project.findProperty(name) ?: prop[name] ?: ""
         }
@@ -103,6 +100,9 @@ buildscript {
         publishRepoName = pullProperty('publishRepoName', localProps)
         publishUserName = pullProperty('publishUserName', localProps)
         publishPassword = pullProperty('publishPassword', localProps)
+
+        bintrayUser = pullProperty('bintrayUser', bintrayProps)
+        bintrayApiKey = pullProperty('bintrayApiKey', bintrayProps)
     }
 }
 
