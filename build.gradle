@@ -127,7 +127,7 @@ task incrementalPublish {
     def libProps = project.ext.libProps
     def artifactExists = { String mavenRepo, String name, String version, boolean addAuth ->
         def group = libProps['groupId'].replace(".", "/")
-        def url = "${mavenRepo}/${group}/${name}/${version}/${name}-${version}.aar"
+        def url = "${mavenRepo}/${group}/${name}/${version}/${name}-${version}.pom"
 
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection()
