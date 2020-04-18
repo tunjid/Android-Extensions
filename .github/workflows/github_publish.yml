@@ -22,7 +22,7 @@ jobs:
         env:
           BINTRAY_USER: ${{ secrets.bintray_user }}
           BINTRAY_API_KEY: ${{ secrets.bintray_key }}
-          PUBLISH_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          PUBLISH_PASSWORD: ${{ secrets.publish_token }}
           PUBLISH_REPO_NAME: GithubMaven
           PUBLISH_URL: https://github.com/tunjid/Android-Extensions
           PUBLISH_USER_NAME: tunjid
