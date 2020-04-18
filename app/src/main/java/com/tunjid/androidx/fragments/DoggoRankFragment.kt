@@ -7,7 +7,6 @@ import android.util.Pair
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
@@ -23,7 +22,6 @@ import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.recyclerview.*
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
-import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.androidx.viewholders.DoggoBinder
@@ -34,8 +32,6 @@ import kotlin.math.abs
 
 class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
         Navigator.TransactionModifier {
-
-    override val insetFlags: InsetFlags = InsetFlags.ALL
 
     private val viewModel by viewModels<DoggoRankViewModel>()
 
@@ -52,15 +48,14 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
                 fabIcon = R.drawable.ic_restore_24dp,
                 fabShows = true,
                 showsBottomNav = true,
+                insetFlags = InsetFlags.ALL,
                 lightStatusBar = !requireContext().isDarkTheme,
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
-                fabClickListener = View.OnClickListener { viewModel.resetList() }
+                fabClickListener = { viewModel.resetList() }
         )
 
         recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view).apply {
-            updatePadding(bottom = InsetLifecycleCallbacks.bottomInset)
-
             layoutManager = verticalLayoutManager()
             adapter = adapterOf(
                     itemsSource = viewModel::doggos,
@@ -112,7 +107,9 @@ class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
                 ?: return
 
         val binding = holder.binding
-        transaction.addSharedElement(binding.doggoImage, binding.doggoImage.hashTransitionName(doggo))
+        transaction
+                .setReorderingAllowed(true)
+                .addSharedElement(binding.doggoImage, binding.doggoImage.hashTransitionName(doggo))
     }
 
     private fun moveDoggo(start: BindingViewHolder<*>, end: BindingViewHolder<*>) {

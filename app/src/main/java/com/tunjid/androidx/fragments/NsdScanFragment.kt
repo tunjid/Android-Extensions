@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
@@ -25,7 +24,7 @@ import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
-import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
+import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.NsdViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
@@ -47,6 +46,7 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan) {
                 toolBarMenu = R.menu.menu_nsd_scan,
                 fabShows = false,
                 showsBottomNav = true,
+                insetFlags = InsetFlags.ALL,
                 lightStatusBar = !requireContext().isDarkTheme,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )
@@ -63,7 +63,6 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan) {
             )
 
             addItemDecoration(DividerItemDecoration(requireActivity(), VERTICAL))
-            updatePadding(bottom = InsetLifecycleCallbacks.bottomInset)
 
             viewModel.scanChanges.observe(viewLifecycleOwner) {
                 placeHolder.toggle(viewModel.services.isEmpty())

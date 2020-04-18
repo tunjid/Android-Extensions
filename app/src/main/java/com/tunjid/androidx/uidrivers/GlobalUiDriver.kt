@@ -2,44 +2,50 @@ package com.tunjid.androidx.uidrivers
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
-import android.text.Spanned
-import android.text.style.ForegroundColorSpan
-import android.util.Log
+import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
+import android.view.WindowInsets
 import android.view.WindowManager
-import android.widget.TextView
+import android.widget.EditText
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
-import androidx.annotation.MenuRes
-import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.Toolbar
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.graphics.ColorUtils
-import androidx.core.view.ViewCompat
-import androidx.core.view.children
-import androidx.core.view.forEach
+import androidx.core.view.doOnLayout
+import androidx.core.view.marginBottom
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
+import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
+import androidx.dynamicanimation.animation.springAnimationOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.transition.AutoTransition
-import androidx.transition.TransitionManager
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.button.MaterialButton
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.observe
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.colorAt
-import com.tunjid.androidx.core.content.drawableAt
-import com.tunjid.androidx.core.content.themeColorAt
-import com.tunjid.androidx.core.graphics.drawable.withTint
-import com.tunjid.androidx.core.text.color
+import com.tunjid.androidx.databinding.ActivityMainBinding
+import com.tunjid.androidx.distinctUntilChanged
+import com.tunjid.androidx.map
 import com.tunjid.androidx.material.animator.FabExtensionAnimator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.view.animator.ViewHider
+import com.tunjid.androidx.view.util.innermostFocusedChild
+import com.tunjid.androidx.view.util.marginLayoutParams
+import com.tunjid.androidx.view.util.spring
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -49,41 +55,6 @@ import kotlin.reflect.KProperty
  */
 interface GlobalUiController {
     var uiState: UiState
-}
-
-/**
- * Convenience method for [FragmentActivity] delegation to a [GlobalUiDriver] when implementing
- * [GlobalUiController]
- */
-fun FragmentActivity.globalUiDriver(
-        toolbarId: Int = R.id.toolbar,
-        fabId: Int = R.id.fab,
-        bottomNavId: Int = R.id.bottom_navigation,
-        navBackgroundId: Int = R.id.nav_background,
-        coordinatorLayoutId: Int = R.id.coordinator_layout,
-        backgroundId: Int = R.id.constraint_layout,
-        navigatorSupplier: () -> Navigator
-) = object : ReadWriteProperty<FragmentActivity, UiState> {
-
-    private val driver by lazy {
-        GlobalUiDriver(
-                host = this@globalUiDriver,
-                toolbarId = toolbarId,
-                fabId = fabId,
-                bottomNavId = bottomNavId,
-                navBackgroundId = navBackgroundId,
-                backgroundId = backgroundId,
-                coordinatorLayoutId = coordinatorLayoutId,
-                navigatorSupplier = navigatorSupplier
-        )
-    }
-
-    override operator fun getValue(thisRef: FragmentActivity, property: KProperty<*>): UiState =
-            driver.uiState
-
-    override fun setValue(thisRef: FragmentActivity, property: KProperty<*>, value: UiState) {
-        driver.uiState = value
-    }
 }
 
 /**
@@ -111,90 +82,152 @@ fun Fragment.activityGlobalUiController() = object : ReadWriteProperty<Fragment,
  */
 class GlobalUiDriver(
         private val host: FragmentActivity,
-        toolbarId: Int,
-        fabId: Int,
-        bottomNavId: Int,
-        navBackgroundId: Int,
-        backgroundId: Int,
-        coordinatorLayoutId: Int,
-        private val navigatorSupplier: () -> Navigator
+        private val binding: ActivityMainBinding,
+        private val navigator: Navigator
 ) : GlobalUiController {
 
-    init {
-        host.window.statusBarColor = host.colorAt(R.color.transparent)
-        host.window.decorView.systemUiVisibility = DEFAULT_SYSTEM_UI_FLAGS
-    }
+    private var statusBarSize: Int = 0
+    private var navBarSize: Int = 0
+    private var systemLeftInset: Int = 0
+    private var systemRightInset: Int = 0
+    private var insetsApplied: Boolean = false
+    private var lastFragmentInsets: WindowInsets? = null
 
-    private val toolbarHider: ViewHider<Toolbar> = host.findViewById<Toolbar>(toolbarId).run {
+    private val toolbarHider: ViewHider<Toolbar> = binding.toolbar.run {
         setOnMenuItemClickListener(this@GlobalUiDriver::onMenuItemClicked)
-        setNavigationOnClickListener { navigatorSupplier().pop() }
+        setNavigationOnClickListener { navigator.pop() }
         ViewHider.of(this).setDirection(ViewHider.TOP).build()
     }
 
-    private val fabHider: ViewHider<MaterialButton> = host.findViewById<MaterialButton>(fabId).run {
-        ViewHider.of(this).setDirection(ViewHider.BOTTOM).build()
-    }
-
-    private val bottomNavHider: ViewHider<*> = host.findViewById<BottomNavigationView>(bottomNavId).run {
-        ViewHider.of(this).setDirection(ViewHider.BOTTOM).build()
-    }
-
     private val fabExtensionAnimator: FabExtensionAnimator =
-            FabExtensionAnimator(fabHider.view).apply { isExtended = true }
+            FabExtensionAnimator(binding.fab).apply { isExtended = true }
 
-    private val navBackgroundView: View =
-            host.findViewById<View>(navBackgroundId)
+    private val bottomNavSpring = binding.bottomNavigation.run {
+        doOnLayout { lastFragmentInsets?.let(::onFragmentInsetsReceived) }
+        springAnimationOf(View::getTranslationY) { translationY = it.toFloat() }
+    }
 
-    private val coordinatorLayout: CoordinatorLayout =
-            host.findViewById(coordinatorLayoutId)
+    private val topContentSpring =
+            binding.contentContainer.springAnimationOf(View::getPaddingTop) { updatePadding(top = it) }
 
-    private val backgroundView: View =
-            host.findViewById(backgroundId)
+    private val bottomContentSpring =
+            binding.contentContainer.springAnimationOf(View::getPaddingBottom) { updatePadding(bottom = it) }
+                    // Scroll to text that has focus
+                    .apply { addEndListener { _, _, _, _ -> (binding.contentContainer.innermostFocusedChild as? EditText)?.let { it.text = it.text } } }
 
-    private var state: UiState = UiState.freshState()
+    private val fabSpring =
+            binding.fab.springAnimationOf(View::marginBottom) { updateLayoutParams<ViewGroup.MarginLayoutParams> { bottomMargin = it } }
 
-    override var uiState: UiState
-        get() = state
-        set(value) {
-            val previous = state.copy()
-            state = value.copy(toolbarInvalidated = false, snackbarText = "") // Reset after firing once
-            previous.diff(
-                    newState = value,
-                    showsBottomNavConsumer = bottomNavHider::set,
-                    showsFabConsumer = fabHider::set,
-                    showsToolbarConsumer = toolbarHider::set,
-                    navBarColorConsumer = this::setNavBarColor,
-                    lightStatusBarConsumer = this::setLightStatusBar,
-                    fabStateConsumer = this::setFabIcon,
-                    fabExtendedConsumer = fabExtensionAnimator::isExtended::set,
-                    backgroundColorConsumer = backgroundView::animateBackground,
-                    snackbarTextConsumer = this::showSnackBar,
-                    toolbarStateConsumer = this::updateMainToolBar,
-                    fabClickListenerConsumer = this::setFabClickListener,
-                    fabTransitionOptionConsumer = this::setFabTransitionOptions
-            )
-
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
-
-            uiFlagTweak {
-                if (value.navBarColor.isBrightColor) it or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-                else it and View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR.inv()
-            }
-
-            host.window.navigationBarColor = value.navBarColor
+    private val shortestAvailableLifecycle
+        get() = when (val current = navigator.current) {
+            null -> host.lifecycle
+            else -> if (current.view == null) current.lifecycle else current.viewLifecycleOwner.lifecycle
         }
 
+    private val liveUiState = MutableLiveData(UiState.freshState())
+
+    override var uiState: UiState
+        get() = liveUiState.value!!
+        set(value) {
+            val updated = value.copy(
+                    fabClickListener = value.fabClickListener?.lifecycleAware(),
+                    fabTransitionOptions = value.fabTransitionOptions?.lifecycleAware()
+            )
+            liveUiState.value = updated
+            liveUiState.value = updated.copy(toolbarInvalidated = false) // Reset after firing once
+        }
+
+    init {
+        host.window.decorView.systemUiVisibility = DEFAULT_SYSTEM_UI_FLAGS
+        host.window.navigationBarColor = host.colorAt(R.color.transparent)
+        host.window.statusBarColor = host.colorAt(R.color.transparent)
+        host.supportFragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
+            override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
+                if (f != navigator.current) return
+
+                lastFragmentInsets?.let(::onFragmentInsetsReceived)
+                v.setOnApplyWindowInsetsListener { _, insets -> onFragmentInsetsReceived(insets) }
+            }
+        }, true)
+
+        binding.root.setOnApplyWindowInsetsListener { _, insets -> onSystemInsetsReceived(insets) }
+
+        liveUiState.map(UiState::toolbarShows).distinctUntilChanged().observe(host, toolbarHider::set)
+        liveUiState.map(UiState::fabExtended).distinctUntilChanged().observe(host, fabExtensionAnimator::isExtended::set)
+        liveUiState.map(UiState::backgroundColor).distinctUntilChanged().observe(host, binding.contentRoot::animateBackground)
+
+        liveUiState.map(UiState::fabState).distinctUntilChanged().observe(host, this::setFabIcon)
+        liveUiState.map(UiState::snackbarText).distinctUntilChanged().observe(host, this::showSnackBar)
+        liveUiState.map(UiState::navBarColor).distinctUntilChanged().observe(host, this::setNavBarColor)
+        liveUiState.map(UiState::toolbarState).distinctUntilChanged().observe(host, this::updateMainToolBar)
+        liveUiState.map(UiState::lightStatusBar).distinctUntilChanged().observe(host, this::setLightStatusBar)
+        liveUiState.map(UiState::fabClickListener).distinctUntilChanged().observe(host, this::setFabClickListener)
+        liveUiState.map(UiState::fabTransitionOptions).distinctUntilChanged().observe(host, this::setFabTransitionOptions)
+        liveUiState.map(UiState::positionState).distinctUntilChanged().observe(host) { lastFragmentInsets?.let(::onFragmentInsetsReceived) }
+    }
+
+    private fun onSystemInsetsReceived(insets: WindowInsets): WindowInsets = insets.apply {
+        if (insetsApplied) return insets
+
+        statusBarSize = insets.systemWindowInsetTop
+        systemLeftInset = insets.systemWindowInsetLeft
+        systemRightInset = insets.systemWindowInsetRight
+        navBarSize = insets.systemWindowInsetBottom
+
+        toolbarHider.view.marginLayoutParams.topMargin = statusBarSize
+        lastFragmentInsets?.let(::onFragmentInsetsReceived)
+
+        insetsApplied = true
+    }
+
+    private fun onFragmentInsetsReceived(insets: WindowInsets): WindowInsets = insets.apply {
+        lastFragmentInsets = this
+
+        bottomNavSpring.animateToFinalPosition(bottomNavPosition())
+        topContentSpring.animateToFinalPosition((statusBarSize given uiState.insetFlags.hasTopInset).toFloat())
+        bottomContentSpring.animateToFinalPosition(contentPosition(systemWindowInsetBottom))
+        fabSpring.animateToFinalPosition(fabPosition(systemWindowInsetBottom))
+    }
+
+    private fun bottomNavPosition() = when {
+        uiState.showsBottomNav -> -(navBarSize.given(uiState.insetFlags.hasBottomInset))
+        else -> binding.bottomNavigation.height
+    }.toFloat()
+
+    private fun contentPosition(systemBottomInset: Int): Float = when (systemBottomInset > navBarSize + binding.bottomNavigation.height.given(uiState.showsBottomNav)) {
+        true -> systemBottomInset
+        else -> (binding.bottomNavigation.height given uiState.showsBottomNav) + (navBarSize given uiState.insetFlags.hasBottomInset)
+    }.toFloat()
+
+    private fun fabPosition(systemBottomInset: Int): Float {
+        val styleMargin = host.resources.getDimensionPixelSize(R.dimen.single_margin)
+        val snackbarClearance = host.resources.getDimensionPixelSize(
+                if (uiState.showsBottomNav) R.dimen.triple_margin
+                else R.dimen.double_and_half_margin
+        )
+        if (!uiState.fabShows) return -binding.fab.height.toFloat()
+        return when {
+            systemBottomInset > navBarSize -> systemBottomInset + styleMargin
+            else -> navBarSize + styleMargin + (binding.bottomNavigation.height given uiState.showsBottomNav)
+        }.toFloat() + (snackbarClearance given uiState.snackbarText.isNotBlank())
+    }
+
     private fun onMenuItemClicked(item: MenuItem): Boolean {
-        val fragment = navigatorSupplier().current
+        val fragment = navigator.current
         val selected = fragment != null && fragment.onOptionsItemSelected(item)
 
         return selected || host.onOptionsItemSelected(item)
     }
 
     private fun setNavBarColor(color: Int) {
-        navBackgroundView.background = GradientDrawable(
+        binding.navBackground.background = GradientDrawable(
                 GradientDrawable.Orientation.BOTTOM_TOP,
                 intArrayOf(color, Color.TRANSPARENT))
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) uiFlagTweak {
+            if (color.isBrightColor) it or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+            else it and View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR.inv()
+        }
     }
 
     private fun setLightStatusBar(lightStatusBar: Boolean) = when {
@@ -209,85 +242,73 @@ class GlobalUiDriver(
         systemUiVisibility = tweaker(systemUiVisibility)
     }
 
-    private fun updateMainToolBar(menu: Int, invalidatedAlone: Boolean, title: CharSequence) = toolbarHider.view.run {
-        update(menu, invalidatedAlone, title)
-        navigatorSupplier().current?.onPrepareOptionsMenu(this.menu)
+    private fun updateMainToolBar(toolbarState: ToolbarState) = toolbarHider.view.run {
+        update(toolbarState)
+        navigator.current?.onPrepareOptionsMenu(this.menu)
         Unit
     }
 
-    private fun setFabIcon(@DrawableRes icon: Int, title: CharSequence) = host.runOnUiThread {
+    private fun setFabIcon(fabState: FabState) = host.runOnUiThread {
+        val (@DrawableRes icon: Int, title: CharSequence) = fabState
         if (icon != 0 && title.isNotBlank()) fabExtensionAnimator.updateGlyphs(title, icon)
     }
 
-    private fun setFabClickListener(onClickListener: View.OnClickListener?) =
-            fabHider.view.setOnClickListener(onClickListener)
+    private fun setFabClickListener(onClickListener: ((View) -> Unit)?) =
+            binding.fab.setOnClickListener(onClickListener)
 
     private fun setFabTransitionOptions(options: (SpringAnimation.() -> Unit)?) {
-        if (options != null) fabExtensionAnimator.configureSpring(options)
+        options?.let(fabExtensionAnimator::configureSpring)
     }
 
-    private fun showSnackBar(message: CharSequence) = Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_SHORT).run {
+    private fun showSnackBar(message: CharSequence) = if (message.isNotBlank()) Snackbar.make(binding.contentRoot, message, Snackbar.LENGTH_SHORT).run {
         // Necessary to remove snackbar padding for keyboard on older versions of Android
-        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets -> insets }
-        show()
-    }
+        view.setOnApplyWindowInsetsListener { _, insets -> insets }
+        addCallback(object : Snackbar.Callback(), LifecycleOwner {
+            private val lifecycle = LifecycleRegistry(this)
 
-    private fun Toolbar.update(@MenuRes menu: Int, invalidatedAlone: Boolean, title: CharSequence) {
-        if (invalidatedAlone) return refreshMenu()
+            override fun getLifecycle(): Lifecycle = lifecycle
 
-        val currentTitle = this.title?.toString() ?: ""
-        if (currentTitle.isNotBlank()) TransitionManager.beginDelayedTransition(this, AutoTransition().apply {
-            // We only want to animate the title, but it's lazy initialized.
-            // If it's there, use it, else fuzzy match to it's initialization
-            val titleTextView = children.filterIsInstance<TextView>()
-                    .filter { it.text?.toString() == currentTitle }
-                    .firstOrNull()
-            if (titleTextView != null) addTarget(titleTextView) else addTarget(TextView::class.java)
+            override fun onShown(sb: Snackbar?) {
+                lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
+                liveUiState.map(UiState::showsBottomNav).distinctUntilChanged().observe(this, ::onBottomNavChanged)
+            }
+
+            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+                when (event) {
+                    BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_SWIPE,
+                    BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_ACTION,
+                    BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_TIMEOUT,
+                    BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_MANUAL -> ::uiState.update { copy(snackbarText = "") }
+                    BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_CONSECUTIVE -> Unit
+                }
+            }
+
+            private fun onBottomNavChanged(it: Boolean) = view.spring(DynamicAnimation.TRANSLATION_Y)
+                    .soften()
+                    .animateToFinalPosition(
+                            if (it) -binding.bottomNavigation.height.toFloat() - host.resources.getDimensionPixelSize(R.dimen.half_margin)
+                            else 0f
+                    )
         })
-
-        this.title = if (title.isEmpty()) " " else title
-        refreshMenu(menu)
-        updateIcons()
-    }
-
-    private fun Toolbar.refreshMenu(menu: Int? = null) {
-        if (menu != null) {
-            this.menu.clear()
-            if (menu != 0) inflateMenu(menu)
-        }
-        navigatorSupplier().current?.onPrepareOptionsMenu(this.menu)
-    }
-
-    private fun Toolbar.updateIcons() {
-        TransitionManager.beginDelayedTransition(this, AutoTransition().setDuration(100).addTarget(ActionMenuView::class.java))
-        val tint = titleTint
-
-        menu.forEach {
-            it.icon = it.icon?.withTint(tint)
-            it.title = it.title.color(tint)
-            it.actionView?.backgroundTintList = ColorStateList.valueOf(tint)
-        }
-
-        overflowIcon = overflowIcon?.withTint(tint)
-        navigationIcon =
-                if (navigatorSupplier().previous == null) null
-                else context.drawableAt(R.drawable.ic_arrow_back_24dp)?.withTint(tint)
-    }
-
-    private val Toolbar.titleTint: Int
-        get() = (title as? Spanned)?.run {
-            getSpans(0, title.length, ForegroundColorSpan::class.java)
-                    .firstOrNull()
-                    ?.foregroundColor
-        } ?: context.themeColorAt(R.attr.prominent_text_color)
+        show()
+    } else Unit
 
     companion object {
+        const val ANIMATION_DURATION = 300
         private const val DEFAULT_SYSTEM_UI_FLAGS =
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                         View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
                         View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                         WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
     }
+
+    /**
+     * Wraps an action with the shortest available lifecycle to make sure nothing leaks.
+     * If [this] is already a [LifeCycleAwareCallback], it was previously wrapped and will NO-OP.
+     */
+    private fun <T> ((T) -> Unit).lifecycleAware(): (T) -> Unit =
+            if (this is LifeCycleAwareCallback) this else LifeCycleAwareCallback(shortestAvailableLifecycle, this)
 }
 
 private fun View.animateBackground(@ColorInt to: Int) {
@@ -304,8 +325,34 @@ private fun View.animateBackground(@ColorInt to: Int) {
     animator.start()
 }
 
+private fun View.springAnimationOf(getter: (View) -> Number, setter: View.(Int) -> Unit) =
+        springAnimationOf(
+                getter = { getter(this).toFloat() },
+                setter = { setter(it.toInt()) },
+                finalPosition = 0f
+        ).soften()
+
+private fun SpringAnimation.soften() = apply {
+    spring.stiffness = SpringForce.STIFFNESS_LOW
+    spring.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+}
+
+private infix fun Int.given(flag: Boolean) = if (flag) this else 0
+
 private val Int.isBrightColor get() = ColorUtils.calculateLuminance(this) > 0.5
 
 private fun ViewHider<*>.set(show: Boolean) =
         if (show) show()
         else hide()
+
+private class LifeCycleAwareCallback<T>(lifecycle: Lifecycle, implementation: (T) -> Unit) : (T) -> Unit {
+    private var callback: (T) -> Unit = implementation
+
+    init {
+        lifecycle.addObserver(LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_DESTROY) callback = {}
+        })
+    }
+
+    override fun invoke(type: T) = callback.invoke(type)
+}

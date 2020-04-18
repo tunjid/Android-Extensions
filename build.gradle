@@ -10,7 +10,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.1'
+        classpath 'com.android.tools.build:gradle:3.6.2'
         classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.2'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -37,10 +37,10 @@ buildscript {
         lifecycleViewModel = 'androidx.lifecycle:lifecycle-viewmodel:2.2.0'
         lifeCycleReactiveStreams = 'androidx.lifecycle:lifecycle-reactivestreams:2.2.0'
 
-        fragment = 'androidx.fragment:fragment:1.2.0'
-        fragmentKtx = 'androidx.fragment:fragment-ktx:1.2.0'
+        fragment = 'androidx.fragment:fragment:1.2.4'
+        fragmentKtx = 'androidx.fragment:fragment-ktx:1.2.4'
 
-        dynamicAnimations = 'androidx.dynamicanimation:dynamicanimation:1.1.0-alpha02'
+        dynamicAnimations = 'androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03'
         dynamicAnimationsKtx = 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha02'
 
         testCore = 'androidx.test:core:1.2.0'
@@ -65,15 +65,6 @@ buildscript {
         groupId = libProps['groupId']
         artifactoryUrl = libProps['artifactoryUrl']
 
-        bintrayUser = ''
-        bintrayApiKey = ''
-        def bintrayFile = file("bintray.properties")
-        if (bintrayFile.exists()) {
-            bintrayProps.load(new FileInputStream(bintrayFile))
-            bintrayUser = bintrayProps['user']
-            bintrayApiKey = bintrayProps['apiKey']
-        }
-
         // publish properties can be set from the command line or local.properties.
         // Multiple repository setup can only done in the local.properties file with the following
         // mapping:
@@ -86,13 +77,19 @@ buildscript {
 
         publishRepositories = []
         def localPropsFile = file("local.properties")
-        
+
         if (localPropsFile.exists()) {
             localProps.load(new FileInputStream(localPropsFile))
 
             def slurper = new JsonSlurper()
             def repos = localProps['repositories']
             if (repos != null) publishRepositories = slurper.parseText(repos)
+        }
+
+        def bintrayFile = file("bintray.properties")
+
+        if (bintrayFile.exists()) {
+            bintrayProps.load(new FileInputStream(bintrayFile))
         }
 
         def pullProperty = { String name, Properties prop ->
@@ -103,6 +100,9 @@ buildscript {
         publishRepoName = pullProperty('publishRepoName', localProps)
         publishUserName = pullProperty('publishUserName', localProps)
         publishPassword = pullProperty('publishPassword', localProps)
+
+        bintrayUser = pullProperty('bintrayUser', bintrayProps)
+        bintrayApiKey = pullProperty('bintrayApiKey', bintrayProps)
     }
 }
 
@@ -120,4 +120,56 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+
+task incrementalPublish {
+    def libProps = project.ext.libProps
+    def artifactExists = { String mavenRepo, String name, String version, boolean addAuth ->
+        def group = libProps['groupId'].replace(".", "/")
+        def url = "${mavenRepo}/${group}/${name}/${version}/${name}-${version}.pom"
+
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection()
+            if (addAuth) {
+                String encoded = Base64.getEncoder().encodeToString(("${project.ext.publishUserName}:${project.ext.publishPassword}").getBytes("UTF-8"))
+                connection.setRequestProperty("Authorization", "Basic " + encoded)
+            }
+            connection.connect()
+
+            return connection.getResponseCode() == HttpURLConnection.HTTP_OK
+        }
+        catch (ignored) {
+            println "Unable to configure incremental publish, check your internet connection"
+            return true
+        }
+    }
+
+    project.afterEvaluate {
+        libProps.stringPropertyNames()
+                .findAll { name -> name.contains('version') }
+                .each { name ->
+                    def moduleName = name - '_version'
+                    def version = libProps[name]
+                    def githubUrl = "${project.ext.publishUrl}"
+                    def jCenterUrl = "https://jcenter.bintray.com"
+
+                    def existsOnGitHub = artifactExists(githubUrl, moduleName, version, true)
+                    def existsOnJcenter = artifactExists(jCenterUrl, moduleName, version, false)
+
+                    if (!existsOnGitHub || !existsOnJcenter) {
+                        dependsOn ":${moduleName}:assemble"
+                    }
+
+                    if (!existsOnGitHub) {
+                        println "Adding task ${moduleName} to github publish"
+                        dependsOn ":${moduleName}:publishLibPublicationTo${project.ext.publishRepoName}Repository"
+                    }
+
+                    if (!existsOnJcenter) {
+                        println "Adding task ${moduleName} to bintray publish"
+                        dependsOn ":${moduleName}:bintrayUpload"
+                    }
+                }
+    }
 }

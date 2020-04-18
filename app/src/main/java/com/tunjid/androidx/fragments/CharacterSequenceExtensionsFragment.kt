@@ -16,6 +16,7 @@ import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.text.*
 import com.tunjid.androidx.isDarkTheme
+import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.routeName
 
 /**
@@ -35,6 +36,7 @@ class CharacterSequenceExtensionsFragment : AppBaseFragment(R.layout.fragment_sp
                 toolBarMenu = 0,
                 fabShows = false,
                 showsBottomNav = true,
+                insetFlags = InsetFlags.ALL,
                 lightStatusBar = !requireContext().isDarkTheme,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )

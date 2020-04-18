@@ -47,8 +47,6 @@ import com.tunjid.androidx.viewmodels.routeName
 
 class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack) {
 
-    override val insetFlags: InsetFlags = InsetFlags.NO_TOP
-
     private var transitionOption: Int = R.id.slide
 
     internal val innerNavigator: MultiStackNavigator by childMultiStackNavigationController(
@@ -100,13 +98,14 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
                 fabText = getString(R.string.go_deeper),
                 fabIcon = R.drawable.ic_bullseye_24dp,
                 fabShows = true,
-                fabClickListener = View.OnClickListener {
+                insetFlags = InsetFlags.NO_TOP,
+                fabClickListener = {
                     val current = innerNavigator.current as? MultipleStackChildFragment
                     if (current != null) innerNavigator.push(MultipleStackChildFragment.newInstance(current.name, current.depth + 1))
                 },
                 showsBottomNav = true,
                 lightStatusBar = false,
-                navBarColor = requireContext().colorAt(R.color.transparent)
+                navBarColor = requireContext().colorAt(R.color.colorSurface)
         )
     }
 

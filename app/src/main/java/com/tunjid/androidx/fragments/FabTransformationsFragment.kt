@@ -17,6 +17,7 @@ import com.tunjid.androidx.core.text.color
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.material.animator.FabExtensionAnimator
 import com.tunjid.androidx.uidrivers.SpeedDialClickListener
+import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.withOneShotEndListener
 import com.tunjid.androidx.viewmodels.routeName
 
@@ -45,6 +46,7 @@ class FabTransformationsFragment : AppBaseFragment(R.layout.fragment_fab_transfo
                 fabText = getString(R.string.speed_dial),
                 fabIcon = R.drawable.ic_unfold_more_24dp,
                 showsBottomNav = false,
+                insetFlags = InsetFlags.ALL,
                 lightStatusBar = !context.isDarkTheme,
                 navBarColor = context.themeColorAt(R.attr.nav_bar_color),
                 fabClickListener = SpeedDialClickListener(
@@ -99,7 +101,7 @@ class FabTransformationsFragment : AppBaseFragment(R.layout.fragment_fab_transfo
 
     private fun SpringAnimation.speedDialRecall(view: View) = withOneShotEndListener {
         if (uiState.fabExtended) return@withOneShotEndListener
-        uiState.fabClickListener?.onClick(view)
+        uiState.fabClickListener?.invoke(view)
         uiState = uiState.copy(fabTransitionOptions = null)
     }
 

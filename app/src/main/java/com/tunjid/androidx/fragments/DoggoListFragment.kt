@@ -12,7 +12,6 @@ import android.widget.TextView
 import androidx.core.app.SharedElementCallback
 import androidx.core.content.ContextCompat.getDrawable
 import androidx.core.view.doOnLayout
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
@@ -33,7 +32,7 @@ import com.tunjid.androidx.recyclerview.gridLayoutManager
 import com.tunjid.androidx.recyclerview.viewHolderForItemId
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
-import com.tunjid.androidx.uidrivers.InsetLifecycleCallbacks
+import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.androidx.viewholders.DoggoBinder
@@ -44,8 +43,6 @@ import kotlin.math.abs
 
 class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
         Navigator.TransactionModifier {
-
-    override val insetFlags: InsetFlags = InsetFlags.ALL
 
     private var recyclerView: RecyclerView? = null
 
@@ -69,10 +66,11 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
                 fabText = getString(R.string.collapse_prompt),
                 fabShows = true,
                 showsBottomNav = true,
+                insetFlags = InsetFlags.ALL,
                 lightStatusBar = !requireContext().isDarkTheme,
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
-                fabClickListener = View.OnClickListener { uiState = uiState.copy(fabExtended = !uiState.fabExtended) }
+                fabClickListener = { ::uiState.update { copy(fabExtended = !uiState.fabExtended) } }
         )
 
         FragmentDoggoListBinding.bind(view).recyclerView.apply {
@@ -98,7 +96,6 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
             addScrollListener { _, dy -> if (abs(dy) > 4) uiState = uiState.copy(fabExtended = dy < 0) }
             addItemDecoration(getDivider(DividerItemDecoration.HORIZONTAL))
             addItemDecoration(getDivider(DividerItemDecoration.VERTICAL))
-            updatePadding(bottom = InsetLifecycleCallbacks.bottomInset)
         }
 
         postponeEnterTransition()

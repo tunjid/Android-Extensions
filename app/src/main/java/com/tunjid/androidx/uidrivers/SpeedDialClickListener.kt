@@ -27,9 +27,9 @@ class SpeedDialClickListener(
         private val items: List<Pair<CharSequence?, Drawable>>,
         private val runGuard: (View) -> Boolean,
         private val dismissListener: (Int?) -> Unit
-) : View.OnClickListener {
+) : (View) -> Unit {
 
-    override fun onClick(button: View?) {
+    override fun invoke(button: View) {
         if (button !is MaterialButton || !runGuard(button)) return
 
         val rotationSpring = button.spring(DynamicAnimation.ROTATION)

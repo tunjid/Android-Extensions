@@ -1,0 +1,29 @@
+name: Github Packages Publish
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+
+    runs-on: macos-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Github Maven Publish
+        env:
+          PUBLISH_REPO_NAME: GithubMaven
+          PUBLISH_URL: https://github.com/tunjid/Android-Extensions
+          PUBLISH_USER_NAME: tunjid
+          PUBLISH_PASSWORD: {{secrets.GITHUB_TOKEN}}
+          BINTRAY_USER: {{secrets.bintray_user}}
+          BINTRAY_API_KEY: {{secrets.bintray_key}}
+        run: bash ./gradlew incrementalPublish -PpublishRepoName="$PUBLISH_REPO_NAME" -PpublishUrl="$PUBLISH_URL" -PpublishUserName="$PUBLISH_USER_NAME" -PpublishPassword="$PUBLISH_PASSWORD" -PbintrayUser="BINTRAY_USER"-PbintrayApiKey="BINTRAY_API_KEY"--stacktrace

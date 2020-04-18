@@ -43,7 +43,23 @@ publishing {
     }
     repositories {
         maven {
-            url parent.ext.artifactoryUrl
+            name = parent.ext.publishRepoName
+            url = parent.ext.publishUrl
+            credentials {
+                username = parent.ext.publishUserName
+                password = parent.ext.publishPassword
+            }
+        }
+        parent.ext.publishRepositories.each { repo ->
+            def props = (repo as ConfigObject).toProperties()
+            maven {
+                name = props['name']
+                url = props['url']
+                credentials {
+                    username = props['credentials.username']
+                    password = props['credentials.password']
+                }
+            }
         }
     }
 }

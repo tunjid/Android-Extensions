@@ -1,5 +1,4 @@
 package com.tunjid.androidx.uidrivers
-
 import android.graphics.Color
 import android.os.Parcel
 import android.os.Parcelable
@@ -9,6 +8,18 @@ import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
 import androidx.dynamicanimation.animation.SpringAnimation
+import com.tunjid.androidx.view.util.InsetFlags
+import kotlin.reflect.KMutableProperty0
+
+fun KMutableProperty0<UiState>.update(updater: UiState.() -> UiState) = set(updater.invoke(get()))
+
+typealias PositionalState = List<Any>
+typealias ToolbarState = Triple<Int, Boolean, CharSequence>
+typealias FabState = Pair<Int, CharSequence>
+
+val UiState.positionState: PositionalState get() = listOf(insetFlags, showsBottomNav, fabShows, snackbarText)
+val UiState.toolbarState get() = ToolbarState(toolBarMenu, toolbarInvalidated, toolbarTitle)
+val UiState.fabState get() = FabState(fabIcon, fabText)
 
 data class UiState(
         @MenuRes
@@ -28,48 +39,10 @@ data class UiState(
         val navBarColor: Int,
         val lightStatusBar: Boolean,
         val showsBottomNav: Boolean,
-        val fabClickListener: View.OnClickListener?,
+        val insetFlags: InsetFlags,
+        val fabClickListener: ((View) -> Unit)?,
         val fabTransitionOptions: (SpringAnimation.() -> Unit)?
 ) : Parcelable {
-
-    fun diff(newState: UiState,
-             showsBottomNavConsumer: (Boolean) -> Unit,
-             showsFabConsumer: (Boolean) -> Unit,
-             showsToolbarConsumer: (Boolean) -> Unit,
-             navBarColorConsumer: (Int) -> Unit,
-             lightStatusBarConsumer: (Boolean) -> Unit,
-             fabStateConsumer: (Int, CharSequence) -> Unit,
-             fabExtendedConsumer: (Boolean) -> Unit,
-             backgroundColorConsumer: (Int) -> Unit,
-             snackbarTextConsumer: (CharSequence) -> Unit,
-             toolbarStateConsumer: (Int, Boolean, CharSequence) -> Unit,
-             fabClickListenerConsumer: (View.OnClickListener?) -> Unit,
-             fabTransitionOptionConsumer: ((SpringAnimation.() -> Unit)?) -> Unit
-    ): UiState {
-
-        fabClickListenerConsumer.invoke(newState.fabClickListener)
-        fabTransitionOptionConsumer.invoke(newState.fabTransitionOptions)
-
-        onChanged(newState, UiState::toolBarMenu, UiState::toolbarInvalidated, UiState::toolbarTitle) {
-            toolbarStateConsumer(toolBarMenu, toolbarInvalidated, toolbarTitle)
-        }
-
-        onChanged(newState, UiState::fabIcon, UiState::fabText) { fabStateConsumer(fabIcon, fabText) }
-        onChanged(newState, UiState::showsBottomNav) { showsBottomNavConsumer(showsBottomNav) }
-        onChanged(newState, UiState::fabShows) { showsFabConsumer(fabShows) }
-        onChanged(newState, UiState::fabExtended) { fabExtendedConsumer(fabExtended) }
-        onChanged(newState, UiState::backgroundColor) { backgroundColorConsumer(backgroundColor) }
-        onChanged(newState, UiState::snackbarText) { snackbarTextConsumer(snackbarText) }
-        onChanged(newState, UiState::toolbarShows) { showsToolbarConsumer(toolbarShows) }
-        onChanged(newState, UiState::navBarColor) { navBarColorConsumer(navBarColor) }
-        onChanged(newState, UiState::lightStatusBar) { lightStatusBarConsumer(lightStatusBar) }
-
-        return newState
-    }
-
-    private inline fun onChanged(that: UiState, vararg selectors: (UiState) -> Any?, invocation: UiState.() -> Unit) {
-        if (selectors.any { it(this) != it(that) }) invocation.invoke(that)
-    }
 
     private constructor(`in`: Parcel) : this(
             toolBarMenu = `in`.readInt(),
@@ -85,6 +58,12 @@ data class UiState(
             navBarColor = `in`.readInt(),
             lightStatusBar = `in`.readByte().toInt() != 0x00,
             showsBottomNav = `in`.readByte().toInt() != 0x00,
+            insetFlags = InsetFlags(
+                    hasLeftInset = `in`.readByte().toInt() != 0x00,
+                    hasTopInset = `in`.readByte().toInt() != 0x00,
+                    hasRightInset = `in`.readByte().toInt() != 0x00,
+                    hasBottomInset = `in`.readByte().toInt() != 0x00
+            ),
             fabClickListener = null,
             fabTransitionOptions = null
     )
@@ -104,6 +83,10 @@ data class UiState(
         TextUtils.writeToParcel(snackbarText, dest, 0)
         dest.writeInt(navBarColor)
         dest.writeByte((if (showsBottomNav) 0x01 else 0x00).toByte())
+        dest.writeByte((if (insetFlags.hasLeftInset) 0x01 else 0x00).toByte())
+        dest.writeByte((if (insetFlags.hasTopInset) 0x01 else 0x00).toByte())
+        dest.writeByte((if (insetFlags.hasRightInset) 0x01 else 0x00).toByte())
+        dest.writeByte((if (insetFlags.hasBottomInset) 0x01 else 0x00).toByte())
     }
 
     companion object {
@@ -123,7 +106,8 @@ data class UiState(
                 toolbarInvalidated = false,
                 toolbarTitle = "",
                 fabClickListener = null,
-                fabTransitionOptions = null
+                fabTransitionOptions = null,
+                insetFlags = InsetFlags.ALL
         )
 
         @JvmField
