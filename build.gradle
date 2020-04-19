@@ -93,7 +93,6 @@ buildscript {
         }
 
         def pullProperty = { String name, Properties prop ->
-            println "name: ${name}; project value: ${project.findProperty(name)}; property value: ${prop[name]}"
             return project.findProperty(name) ?: prop[name] ?: ""
         }
 
