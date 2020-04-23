@@ -152,18 +152,19 @@ class GlobalUiDriver(
 
         binding.root.setOnApplyWindowInsetsListener { _, insets -> onSystemInsetsReceived(insets) }
 
-        liveUiState.map(UiState::toolbarShows).distinctUntilChanged().observe(host, toolbarHider::set)
-        liveUiState.map(UiState::fabExtended).distinctUntilChanged().observe(host, fabExtensionAnimator::isExtended::set)
-        liveUiState.map(UiState::backgroundColor).distinctUntilChanged().observe(host, binding.contentRoot::animateBackground)
+        UiState::toolbarShows onChanged toolbarHider::set
+        UiState::toolbarState onChanged this::updateMainToolBar
 
-        liveUiState.map(UiState::fabState).distinctUntilChanged().observe(host, this::setFabIcon)
-        liveUiState.map(UiState::snackbarText).distinctUntilChanged().observe(host, this::showSnackBar)
-        liveUiState.map(UiState::navBarColor).distinctUntilChanged().observe(host, this::setNavBarColor)
-        liveUiState.map(UiState::toolbarState).distinctUntilChanged().observe(host, this::updateMainToolBar)
-        liveUiState.map(UiState::lightStatusBar).distinctUntilChanged().observe(host, this::setLightStatusBar)
-        liveUiState.map(UiState::fabClickListener).distinctUntilChanged().observe(host, this::setFabClickListener)
-        liveUiState.map(UiState::fabTransitionOptions).distinctUntilChanged().observe(host, this::setFabTransitionOptions)
-        liveUiState.map(UiState::positionState).distinctUntilChanged().observe(host) { lastFragmentInsets?.let(::onFragmentInsetsReceived) }
+        UiState::fabState onChanged this::setFabIcon
+        UiState::fabClickListener onChanged this::setFabClickListener
+        UiState::fabExtended onChanged fabExtensionAnimator::isExtended::set
+        UiState::fabTransitionOptions onChanged this::setFabTransitionOptions
+
+        UiState::snackbarText onChanged this::showSnackBar
+        UiState::navBarColor onChanged this::setNavBarColor
+        UiState::lightStatusBar onChanged this::setLightStatusBar
+        UiState::backgroundColor onChanged binding.contentRoot::animateBackground
+        UiState::positionState onChanged { lastFragmentInsets?.let(::onFragmentInsetsReceived) }
     }
 
     private fun onSystemInsetsReceived(insets: WindowInsets): WindowInsets = insets.apply {
@@ -301,6 +302,13 @@ class GlobalUiDriver(
                         View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
                         View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                         WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+    }
+
+    /**
+     * Maps slices of the ui state to the function that should be invoked when it changes
+     */
+    private infix fun <T : Any?> ((UiState) -> T).onChanged(consumer: (T) -> Unit) {
+        liveUiState.map(this).distinctUntilChanged().observe(host, consumer)
     }
 
     /**
