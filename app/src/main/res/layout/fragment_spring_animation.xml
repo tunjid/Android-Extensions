@@ -26,64 +26,69 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_bullseye_24dp"
             android:text="@string/reset"
-            android:tint="@color/colorPrimary"
+            app:backgroundTint="@color/colorPrimary"
             app:fabSize="mini"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/colorSurface" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/left_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_arrow_left_black_24dp"
-            android:tint="@color/colorPrimary"
+            app:backgroundTint="@color/colorPrimary"
             app:fabSize="mini"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias=".2"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/reset"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/colorSurface" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/right_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_arrow_right_black_24dp"
-            android:tint="@color/colorPrimary"
+            app:backgroundTint="@color/colorPrimary"
             app:fabSize="mini"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias=".8"
             app:layout_constraintLeft_toRightOf="@+id/reset"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/colorSurface" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/top_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_arrow_up_black_24dp"
-            android:tint="@color/colorPrimary"
+            app:backgroundTint="@color/colorPrimary"
             app:fabSize="mini"
             app:layout_constraintBottom_toTopOf="@+id/reset"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias=".2" />
+            app:layout_constraintVertical_bias=".2"
+            app:tint="@color/colorSurface" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/bottom_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_arrow_down_black_24dp"
-            android:tint="@color/colorPrimary"
+            app:backgroundTint="@color/colorPrimary"
             app:fabSize="mini"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/reset"
-            app:layout_constraintVertical_bias=".8" />
+            app:layout_constraintVertical_bias=".8"
+            app:tint="@color/colorSurface" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <CheckBox
