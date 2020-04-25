@@ -8,6 +8,7 @@ import android.view.WindowManager
 import androidx.annotation.IntDef
 import androidx.core.view.doOnPreDraw
 import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
 import com.tunjid.androidx.view.util.spring
 import com.tunjid.androidx.view.util.withOneShotEndListener
 
@@ -64,7 +65,7 @@ class ViewHider<T : View> private constructor(
 
     fun hide() = toggle(false)
 
-    fun configure(options:  SpringAnimation.() -> Unit) = options.invoke(spring)
+    fun configure(options:  SpringForce.() -> Unit) = options.invoke(spring.spring)
 
     private fun toggle(visible: Boolean) {
         if (this.isVisible == visible) return

@@ -3,6 +3,7 @@ import android.graphics.Color
 import android.os.Parcel
 import android.os.Parcelable
 import android.text.TextUtils
+import android.view.MenuItem
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
@@ -41,7 +42,8 @@ data class UiState(
         val showsBottomNav: Boolean,
         val insetFlags: InsetFlags,
         val fabClickListener: ((View) -> Unit)?,
-        val fabTransitionOptions: (SpringAnimation.() -> Unit)?
+        val fabTransitionOptions: (SpringAnimation.() -> Unit)?,
+        val toolbarMenuClickListener: ((MenuItem) -> Unit)?
 ) : Parcelable {
 
     private constructor(`in`: Parcel) : this(
@@ -65,7 +67,8 @@ data class UiState(
                     hasBottomInset = `in`.readByte().toInt() != 0x00
             ),
             fabClickListener = null,
-            fabTransitionOptions = null
+            fabTransitionOptions = null,
+            toolbarMenuClickListener = null
     )
 
     override fun describeContents(): Int = 0
@@ -107,6 +110,7 @@ data class UiState(
                 toolbarTitle = "",
                 fabClickListener = null,
                 fabTransitionOptions = null,
+                toolbarMenuClickListener = null,
                 insetFlags = InsetFlags.ALL
         )
 

@@ -33,7 +33,7 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
                     RouteItem.Spacer
             ),
             listOf(
-                    RouteItem.Destination(HidingViewsFragment::class.java.routeName, formatRoute(R.string.route_hiding_view)),
+                    RouteItem.Destination(SpringAnimationFragment::class.java.routeName, formatRoute(R.string.route_spring_animation)),
                     RouteItem.Destination(FabTransformationsFragment::class.java.routeName, formatRoute(R.string.route_fab_transformations)),
                     RouteItem.Destination(CharacterSequenceExtensionsFragment::class.java.routeName, formatRoute(R.string.route_span_builder)),
                     RouteItem.Destination(HardServiceConnectionFragment::class.java.routeName, formatRoute(R.string.route_hard_service_connection)),

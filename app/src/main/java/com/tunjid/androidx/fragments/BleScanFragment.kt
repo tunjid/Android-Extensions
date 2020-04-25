@@ -46,6 +46,7 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan) {
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
+                toolbarMenuClickListener = ::onMenuItemSelected,
                 toolBarMenu = R.menu.menu_ble_scan,
                 toolbarShows = true,
                 fabShows = false,
@@ -102,13 +103,6 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan) {
         if (currentlyScanning) refresh?.setLoading(requireContext().themeColorAt(R.attr.prominent_text_color))
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.menu_scan -> scanDevices(true).let { true }
-        R.id.menu_stop -> scanDevices(false).let { true }
-        else -> super.onOptionsItemSelected(item)
-    }
-
-
     override fun onPause() {
         super.onPause()
         viewModel.stopScanning()
@@ -153,6 +147,12 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan) {
     override fun onDestroyView() {
         super.onDestroyView()
         recyclerView = null
+    }
+
+    private fun onMenuItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.menu_scan -> scanDevices(true)
+        R.id.menu_stop -> scanDevices(false)
+        else -> super.onOptionsItemSelected(item).let {  }
     }
 
     private fun onBluetoothDeviceClicked(bluetoothDevice: BluetoothDevice) {

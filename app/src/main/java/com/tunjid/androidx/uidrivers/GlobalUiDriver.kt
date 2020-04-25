@@ -92,7 +92,6 @@ class GlobalUiDriver(
     private var lastFragmentInsets: WindowInsets? = null
 
     private val toolbarHider: ViewHider<Toolbar> = binding.toolbar.run {
-        setOnMenuItemClickListener(this@GlobalUiDriver::onMenuItemClicked)
         setNavigationOnClickListener { navigator.pop() }
         ViewHider.of(this).setDirection(ViewHider.TOP).build()
     }
@@ -113,7 +112,8 @@ class GlobalUiDriver(
         set(value) {
             val updated = value.copy(
                     fabClickListener = value.fabClickListener?.lifecycleAware(),
-                    fabTransitionOptions = value.fabTransitionOptions?.lifecycleAware()
+                    fabTransitionOptions = value.fabTransitionOptions?.lifecycleAware(),
+                    toolbarMenuClickListener = value.toolbarMenuClickListener?.lifecycleAware()
             )
             liveUiState.value = updated
             liveUiState.value = updated.copy(toolbarInvalidated = false) // Reset after firing once
@@ -142,6 +142,7 @@ class GlobalUiDriver(
 
         UiState::toolbarShows onChanged toolbarHider::set
         UiState::toolbarState onChanged this::updateMainToolBar
+        UiState::toolbarMenuClickListener onChanged this::setMenuItemClickListener
 
         UiState::fabState onChanged this::setFabIcon
         UiState::fabClickListener onChanged this::setFabClickListener
@@ -201,12 +202,10 @@ class GlobalUiDriver(
         }.toFloat() + (snackbarClearance given uiState.snackbarText.isNotBlank())
     }
 
-    private fun onMenuItemClicked(item: MenuItem): Boolean {
-        val fragment = navigator.current
-        val selected = fragment != null && fragment.onOptionsItemSelected(item)
-
-        return selected || host.onOptionsItemSelected(item)
-    }
+    private fun setMenuItemClickListener(item: ((MenuItem) -> Unit)?) =
+            binding.toolbar.setOnMenuItemClickListener {
+                item?.invoke(it)?.let { true } ?: host.onOptionsItemSelected(it)
+            }
 
     private fun setNavBarColor(color: Int) {
         binding.navBackground.background = GradientDrawable(
