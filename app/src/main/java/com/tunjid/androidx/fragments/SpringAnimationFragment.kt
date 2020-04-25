@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.CheckBox
 import androidx.core.view.children
+import androidx.core.view.postDelayed
 import androidx.dynamicanimation.animation.FloatPropertyCompat
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.fragment.app.Fragment
@@ -64,13 +65,14 @@ class SpringAnimationFragment : AppBaseFragment(R.layout.fragment_spring_animati
     }
 
     private fun List<ViewHider<FloatingActionButton>>.springOptions() =
-            dialogOf(getString(R.string.stiffness), stiffnessNames) { index ->
-                forEach { it.configure { stiffness = stiffnessValues[index] } }
-            }.setOnDismissListener {
-                        dialogOf(getString(R.string.bounciness), dampingNames) { index ->
-                            forEach { it.configure { dampingRatio = dampingValues[index] } }
-                        }
+            dialogOf(getString(R.string.stiffness), stiffnessNames) { stiffnessIndex ->
+                forEach { it.configure { stiffness = stiffnessValues[stiffnessIndex] } }
+                view?.postDelayed(160){
+                    dialogOf(getString(R.string.bounciness), dampingNames) { dampingIndex ->
+                        forEach { it.configure { dampingRatio = dampingValues[dampingIndex] } }
                     }
+                }
+            }
 
     private fun dialogOf(title: String, names: Array<String>, onSelected: (Int) -> Unit) =
             MaterialAlertDialogBuilder(requireContext())
