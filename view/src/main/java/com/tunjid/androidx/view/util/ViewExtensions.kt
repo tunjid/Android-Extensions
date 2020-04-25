@@ -2,7 +2,6 @@ package com.tunjid.androidx.view.util
 
 import android.graphics.Color
 import android.graphics.Point
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -34,8 +33,8 @@ import com.tunjid.androidx.view.R
  */
 fun View.spring(
         property: FloatPropertyCompat<View>,
-        stiffness: Float = SpringForce.STIFFNESS_MEDIUM,
-        damping: Float = SpringForce.DAMPING_RATIO_NO_BOUNCY,
+        stiffness: Float? = null,
+        damping: Float? = null,
         startVelocity: Float? = null
 ): SpringAnimation {
     @Suppress("UNCHECKED_CAST") val propertyMap =
@@ -43,11 +42,17 @@ fun View.spring(
                     ?: mutableMapOf<String, SpringAnimation>().also { setTag(R.id.spring_animation_property_map, it) }
 
     val springAnim = propertyMap[property.name]
-            ?: SpringAnimation(this, property).also { propertyMap[property.name] = it; Log.i("TEST","CREATING A ${property.name} SPRING") }
+            ?: SpringAnimation(this, property).also {
+                propertyMap[property.name] = it
+                it.spring = SpringForce().apply {
+                    this.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+                    this.stiffness = SpringForce.STIFFNESS_MEDIUM
+                }
+            }
 
-    springAnim.spring = (springAnim.spring ?: SpringForce()).apply {
-        this.dampingRatio = damping
-        this.stiffness = stiffness
+    springAnim.spring.let {
+        if (damping != null) it.dampingRatio = damping
+        if (stiffness != null) it.stiffness = stiffness
     }
 
     startVelocity?.let { springAnim.setStartVelocity(it) }
