@@ -109,4 +109,8 @@
     <string name="low">Low</string>
     <string name="medium">Medium</string>
     <string name="high">High</string>
+
+    <!-- Hiding Views -->
+    <string name="shrink_margins">Shrink margins</string>
+    <string name="shrink_padding">Shrink padding</string>
 </resources>

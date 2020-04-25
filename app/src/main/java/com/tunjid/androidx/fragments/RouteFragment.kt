@@ -1,6 +1,7 @@
 package com.tunjid.androidx.fragments
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.MenuItem
@@ -57,6 +58,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
                 fabClickListener = { goSomewhereRandom() },
                 insetFlags = InsetFlags.ALL,
                 showsBottomNav = true,
+                backgroundColor = Color.TRANSPARENT,
                 lightStatusBar = !requireContext().isDarkTheme,
                 navBarColor = requireContext().colorAt(R.color.colorSurface)
         )
