@@ -29,6 +29,11 @@ class ViewHider<T : View> private constructor(
     private val startAction: () -> Unit = { if (isVisible) view.visibility = View.VISIBLE }
     private val endAction: () -> Unit = { if (!isVisible) view.visibility = View.GONE }
 
+    private val spring: SpringAnimation get() = view.spring(
+            if (direction == LEFT || direction == RIGHT) SpringAnimation.TRANSLATION_X
+            else SpringAnimation.TRANSLATION_Y
+    )
+
     // These calculations don't take the status bar into account, unlikely to matter however
     private val displacement: Float
         get() {
@@ -59,6 +64,8 @@ class ViewHider<T : View> private constructor(
 
     fun hide() = toggle(false)
 
+    fun configure(options:  SpringAnimation.() -> Unit) = options.invoke(spring)
+
     private fun toggle(visible: Boolean) {
         if (this.isVisible == visible) return
 
@@ -67,10 +74,7 @@ class ViewHider<T : View> private constructor(
 
         this.isVisible = visible
 
-        view.spring(
-                if (direction == LEFT || direction == RIGHT) SpringAnimation.TRANSLATION_X
-                else SpringAnimation.TRANSLATION_Y
-        )
+        spring
                 .apply {
                     options.invoke(this)
                     for (runnable in listener.startActions) runnable.invoke()

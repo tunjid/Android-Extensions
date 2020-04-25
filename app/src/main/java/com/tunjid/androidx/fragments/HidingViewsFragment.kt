@@ -32,7 +32,7 @@ class HidingViewsFragment : AppBaseFragment(R.layout.fragment_hiding_view) {
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
                 toolbarShows = true,
-                toolBarMenu = 0,
+                toolBarMenu = R.menu.menu_options,
                 fabShows = false,
                 showsBottomNav = false,
                 insetFlags = InsetFlags.ALL,
