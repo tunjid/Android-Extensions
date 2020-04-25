@@ -1,0 +1,8 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:icon="@drawable/ic_unfold_more_24dp"
+        android:id="@+id/menu_reset"
+        android:title="@string/menu_options"
+        app:showAsAction="ifRoom" />
+</menu>

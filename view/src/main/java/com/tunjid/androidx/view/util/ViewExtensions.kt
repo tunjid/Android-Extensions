@@ -10,13 +10,14 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.FrameLayout
 import android.widget.PopupWindow
 import androidx.annotation.ColorInt
-import androidx.annotation.IdRes
 import androidx.core.graphics.component1
 import androidx.core.graphics.component2
 import androidx.core.view.doOnLayout
 import androidx.dynamicanimation.animation.DynamicAnimation
+import androidx.dynamicanimation.animation.FloatPropertyCompat
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
+import androidx.dynamicanimation.animation.name
 import com.tunjid.androidx.view.R
 
 
@@ -31,46 +32,32 @@ import com.tunjid.androidx.view.R
  * [Medium](https://medium.com/androiddevelopers/motional-intelligence-build-smarter-animations-821af4d5f8c0)
  */
 fun View.spring(
-        property: DynamicAnimation.ViewProperty,
-        stiffness: Float = SpringForce.STIFFNESS_MEDIUM,
-        damping: Float = SpringForce.DAMPING_RATIO_NO_BOUNCY,
+        property: FloatPropertyCompat<View>,
+        stiffness: Float? = null,
+        damping: Float? = null,
         startVelocity: Float? = null
 ): SpringAnimation {
-    val key = getKey(property)
+    @Suppress("UNCHECKED_CAST") val propertyMap =
+            getTag(R.id.spring_animation_property_map) as? MutableMap<String, SpringAnimation>
+                    ?: mutableMapOf<String, SpringAnimation>().also { setTag(R.id.spring_animation_property_map, it) }
 
-    val springAnim = getTag(key) as? SpringAnimation
-            ?: SpringAnimation(this, property).apply { setTag(key, this) }
+    val springAnim = propertyMap[property.name]
+            ?: SpringAnimation(this, property).also {
+                propertyMap[property.name] = it
+                it.spring = SpringForce().apply {
+                    this.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+                    this.stiffness = SpringForce.STIFFNESS_MEDIUM
+                }
+            }
 
-    springAnim.spring = (springAnim.spring ?: SpringForce()).apply {
-        this.dampingRatio = damping
-        this.stiffness = stiffness
+    springAnim.spring.let {
+        if (damping != null) it.dampingRatio = damping
+        if (stiffness != null) it.stiffness = stiffness
     }
 
     startVelocity?.let { springAnim.setStartVelocity(it) }
 
     return springAnim
-}
-
-/**
- * Map from a [DynamicAnimation.ViewProperty] to an `id` suitable to use as a [View] tag.
- */
-@IdRes
-private fun getKey(property: DynamicAnimation.ViewProperty): Int = when (property) {
-    SpringAnimation.TRANSLATION_X -> R.id.translation_x
-    SpringAnimation.TRANSLATION_Y -> R.id.translation_y
-    SpringAnimation.TRANSLATION_Z -> R.id.translation_z
-    SpringAnimation.SCALE_X -> R.id.scale_x
-    SpringAnimation.SCALE_Y -> R.id.scale_y
-    SpringAnimation.ROTATION -> R.id.rotation
-    SpringAnimation.ROTATION_X -> R.id.rotation_x
-    SpringAnimation.ROTATION_Y -> R.id.rotation_y
-    SpringAnimation.X -> R.id.x
-    SpringAnimation.Y -> R.id.y
-    SpringAnimation.Z -> R.id.z
-    SpringAnimation.ALPHA -> R.id.alpha
-    SpringAnimation.SCROLL_X -> R.id.scroll_x
-    SpringAnimation.SCROLL_Y -> R.id.scroll_y
-    else -> throw IllegalAccessException("Unknown ViewProperty: $property")
 }
 
 /**
