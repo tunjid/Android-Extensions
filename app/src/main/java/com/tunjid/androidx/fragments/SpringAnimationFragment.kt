@@ -31,6 +31,10 @@ import com.tunjid.androidx.viewmodels.routeName
  * Created by tj.dahunsi on 5/6/17.
  */
 
+private typealias SpringModifier = SpringForce.() -> Unit
+
+private typealias SpringModifierConsumer = (SpringForce.() -> Unit) -> Unit
+
 class SpringAnimationFragment : AppBaseFragment(R.layout.fragment_spring_animation) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -38,6 +42,11 @@ class SpringAnimationFragment : AppBaseFragment(R.layout.fragment_spring_animati
 
         val binding = FragmentSpringAnimationBinding.bind(view)
         val viewHiders = binding.viewHiders
+        @Suppress("MoveSuspiciousCallableReferenceIntoParentheses")
+        val springModifiers: List<SpringModifierConsumer> =
+                viewHiders.map { it::configure }
+                        .plus(marginProperties.toModifiers(view))
+                        .plus(paddingProperties.toModifiers(binding.cage))
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
@@ -47,7 +56,7 @@ class SpringAnimationFragment : AppBaseFragment(R.layout.fragment_spring_animati
                 toolbarOverlaps = false,
                 toolbarShows = true,
                 fabText = getString(R.string.spring_options),
-                fabClickListener = { viewHiders.springOptions() },
+                fabClickListener = { springModifiers.springOptions() },
                 showsBottomNav = false,
                 insetFlags = InsetFlags.ALL,
                 lightStatusBar = !requireContext().isDarkTheme,
@@ -67,12 +76,12 @@ class SpringAnimationFragment : AppBaseFragment(R.layout.fragment_spring_animati
         binding.cage.children.forEach { it.setOnClickListener(viewHiders::onButtonClicked) }
     }
 
-    private fun List<ViewHider<FloatingActionButton>>.springOptions() =
+    private fun List<SpringModifierConsumer>.springOptions() =
             dialogOf(getString(R.string.stiffness), stiffnessNames) { stiffnessIndex ->
-                forEach { it.configure { stiffness = stiffnessValues[stiffnessIndex] } }
+                forEach { it.invoke { stiffness = stiffnessValues[stiffnessIndex] } }
                 view?.postDelayed(160) {
                     dialogOf(getString(R.string.bounciness), dampingNames) { dampingIndex ->
-                        forEach { it.configure { dampingRatio = dampingValues[dampingIndex] } }
+                        forEach { it.invoke { dampingRatio = dampingValues[dampingIndex] } }
                     }
                 }
             }
@@ -104,6 +113,10 @@ private fun List<ViewHider<FloatingActionButton>>.onButtonClicked(view: View) = 
     R.id.reset -> forEach(ViewHider<FloatingActionButton>::show)
     else -> Unit
 }
+
+private fun List<FloatPropertyCompat<View>>.toModifiers(view: View) =
+        map { view.spring(it).spring }
+                .map { { modifier: SpringModifier -> modifier.invoke(it) } }
 
 private fun CheckBox.toggleProperty(properties: List<FloatPropertyCompat<View>>, cage: View) {
     val squeeze = context.resources.getDimensionPixelSize(R.dimen.double_margin).toFloat()
