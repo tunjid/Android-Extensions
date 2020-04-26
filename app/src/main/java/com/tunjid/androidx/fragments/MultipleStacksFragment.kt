@@ -95,6 +95,7 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
                 toolbarTitle = this::class.java.routeName.color(Color.WHITE),
                 toolBarMenu = R.menu.menu_default,
                 toolbarShows = true,
+                toolbarOverlaps = false,
                 fabText = getString(R.string.go_deeper),
                 fabIcon = R.drawable.ic_bullseye_24dp,
                 fabShows = true,

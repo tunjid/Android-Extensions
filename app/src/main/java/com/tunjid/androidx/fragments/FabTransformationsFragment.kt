@@ -39,6 +39,7 @@ class FabTransformationsFragment : AppBaseFragment(R.layout.fragment_fab_transfo
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
+                toolbarOverlaps = false,
                 toolbarShows = true,
                 toolBarMenu = 0,
                 fabShows = true,

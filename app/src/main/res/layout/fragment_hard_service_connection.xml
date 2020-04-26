@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginLeft="@dimen/single_margin"
-    android:layout_marginTop="@dimen/actionbar_height"
     android:layout_marginRight="@dimen/single_margin"
     android:layout_marginBottom="@dimen/half_margin">
 

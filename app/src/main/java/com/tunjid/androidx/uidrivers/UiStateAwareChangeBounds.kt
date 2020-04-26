@@ -5,14 +5,13 @@ import android.transition.ChangeBounds
 import android.transition.TransitionValues
 import com.tunjid.androidx.R
 
-class InsetAwareChangeBounds(
+class UiStateAwareChangeBounds(
         before: UiState?,
         after: UiState?
 ) : ChangeBounds() {
 
-    private val insetsChanged = before != null
-            && after != null
-            && before.showsBottomNav != after.showsBottomNav
+    private val statusBarChanged = changed(before, after) { it.insetFlags.hasTopInset }
+    private val toolbarChanged = changed(before, after, UiState::toolbarOverlaps)
 
     override fun captureEndValues(transitionValues: TransitionValues?) {
         super.captureEndValues(transitionValues)
@@ -20,14 +19,24 @@ class InsetAwareChangeBounds(
         val context = transitionValues.view.context
 
         val rect = transitionValues.values[BOUNDS_PROPERTY] as? Rect ?: return
+
+        val statusBar = if (statusBarChanged) GlobalUiDriver.statusBarSize else 0
+        val toolbar = if (toolbarChanged) context.resources.getDimensionPixelSize(R.dimen.triple_and_half_margin) else 0
+
         val altered = Rect(
                 rect.left,
-                if (insetsChanged) rect.top + context.resources.getDimensionPixelSize(R.dimen.triple_and_half_margin) else rect.top,
+                rect.top + toolbar + statusBar,
                 rect.right,
-                if (insetsChanged) rect.bottom + context.resources.getDimensionPixelSize(R.dimen.triple_and_half_margin) else rect.bottom
+                rect.bottom + toolbar + statusBar
         )
         transitionValues.values[BOUNDS_PROPERTY] = altered
     }
 }
 
 private const val BOUNDS_PROPERTY = "android:changeBounds:bounds"
+
+private fun <T> changed(before: UiState?,
+                        after: UiState?, property: (UiState) -> T) =
+        before != null
+                && after != null
+                && property(before) != property(after)

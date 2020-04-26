@@ -84,10 +84,6 @@ class GlobalUiDriver(
         private val navigator: Navigator
 ) : GlobalUiController {
 
-    private var statusBarSize: Int = 0
-    private var navBarSize: Int = 0
-    private var systemLeftInset: Int = 0
-    private var systemRightInset: Int = 0
     private var insetsApplied: Boolean = false
     private var lastFragmentInsets: WindowInsets? = null
 
@@ -133,6 +129,7 @@ class GlobalUiDriver(
         }, true)
 
         binding.root.setOnApplyWindowInsetsListener { _, insets -> onSystemInsetsReceived(insets) }
+        binding.toolbar.doOnLayout { lastFragmentInsets?.let(::onFragmentInsetsReceived) }
         binding.bottomNavigation.doOnLayout { lastFragmentInsets?.let(::onFragmentInsetsReceived) }
 
         binding.contentContainer.spring(PaddingProperty.BOTTOM).apply {
@@ -173,18 +170,18 @@ class GlobalUiDriver(
     private fun onFragmentInsetsReceived(insets: WindowInsets): WindowInsets = insets.apply {
         lastFragmentInsets = this
 
+        binding.contentContainer.softSpring(PaddingProperty.TOP).animateToFinalPosition(contentTopPosition())
+        binding.contentContainer.softSpring(PaddingProperty.BOTTOM).animateToFinalPosition(contentBottomPosition(systemWindowInsetBottom))
         binding.bottomNavigation.softSpring(SpringAnimation.TRANSLATION_Y).animateToFinalPosition(bottomNavPosition())
-        binding.contentContainer.softSpring(PaddingProperty.TOP).animateToFinalPosition((statusBarSize given uiState.insetFlags.hasTopInset).toFloat())
-        binding.contentContainer.softSpring(PaddingProperty.BOTTOM).animateToFinalPosition(contentPosition(systemWindowInsetBottom))
         binding.fab.softSpring(MarginProperty.BOTTOM).animateToFinalPosition(fabPosition(systemWindowInsetBottom))
     }
 
-    private fun bottomNavPosition() = when {
-        uiState.showsBottomNav -> -(navBarSize.given(uiState.insetFlags.hasBottomInset))
-        else -> binding.bottomNavigation.height
-    }.toFloat()
+    private fun contentTopPosition(): Float = (
+            statusBarSize.given(uiState.insetFlags.hasTopInset)
+                    + binding.toolbar.height.given(!uiState.toolbarOverlaps)
+            ).toFloat()
 
-    private fun contentPosition(systemBottomInset: Int): Float = when (systemBottomInset > navBarSize + binding.bottomNavigation.height.given(uiState.showsBottomNav)) {
+    private fun contentBottomPosition(systemBottomInset: Int): Float = when (systemBottomInset > navBarSize + binding.bottomNavigation.height.given(uiState.showsBottomNav)) {
         true -> systemBottomInset
         else -> (binding.bottomNavigation.height given uiState.showsBottomNav) + (navBarSize given uiState.insetFlags.hasBottomInset)
     }.toFloat()
@@ -201,6 +198,11 @@ class GlobalUiDriver(
             else -> navBarSize + styleMargin + (binding.bottomNavigation.height given uiState.showsBottomNav)
         }.toFloat() + (snackbarClearance given uiState.snackbarText.isNotBlank())
     }
+
+    private fun bottomNavPosition() = when {
+        uiState.showsBottomNav -> -(navBarSize.given(uiState.insetFlags.hasBottomInset))
+        else -> binding.bottomNavigation.height
+    }.toFloat()
 
     private fun setMenuItemClickListener(item: ((MenuItem) -> Unit)?) =
             binding.toolbar.setOnMenuItemClickListener {
@@ -288,6 +290,15 @@ class GlobalUiDriver(
                         View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
                         View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                         WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+
+        var statusBarSize: Int = 0
+            private set
+        var navBarSize: Int = 0
+            private set
+        var systemLeftInset: Int = 0
+            private set
+        var systemRightInset: Int = 0
+            private set
     }
 
     /**

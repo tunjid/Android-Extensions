@@ -32,6 +32,7 @@ class CharacterSequenceExtensionsFragment : AppBaseFragment(R.layout.fragment_sp
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
+                toolbarOverlaps = false,
                 toolbarShows = true,
                 toolBarMenu = 0,
                 fabShows = false,
