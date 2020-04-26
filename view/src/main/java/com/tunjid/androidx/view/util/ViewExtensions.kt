@@ -37,7 +37,8 @@ fun View.spring(
         damping: Float? = null,
         startVelocity: Float? = null
 ): SpringAnimation {
-    @Suppress("UNCHECKED_CAST") val propertyMap =
+    @Suppress("UNCHECKED_CAST")
+    val propertyMap =
             getTag(R.id.spring_animation_property_map) as? MutableMap<String, SpringAnimation>
                     ?: mutableMapOf<String, SpringAnimation>().also { setTag(R.id.spring_animation_property_map, it) }
 
@@ -55,7 +56,7 @@ fun View.spring(
         if (stiffness != null) it.stiffness = stiffness
     }
 
-    startVelocity?.let { springAnim.setStartVelocity(it) }
+    startVelocity?.let(springAnim::setStartVelocity)
 
     return springAnim
 }

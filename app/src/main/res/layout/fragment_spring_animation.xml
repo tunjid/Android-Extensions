@@ -98,8 +98,8 @@
         android:layout_marginLeft="@dimen/single_margin"
         android:layout_marginRight="@dimen/single_margin"
         android:text="@string/shrink_margins"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <CheckBox
         android:id="@+id/shrink_padding"
@@ -108,6 +108,6 @@
         android:layout_marginLeft="@dimen/single_margin"
         android:layout_marginRight="@dimen/single_margin"
         android:text="@string/shrink_padding"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

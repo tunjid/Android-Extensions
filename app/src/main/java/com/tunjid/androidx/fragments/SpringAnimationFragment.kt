@@ -41,11 +41,13 @@ class SpringAnimationFragment : AppBaseFragment(R.layout.fragment_spring_animati
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
-                toolBarMenu = R.menu.menu_options,
+                toolBarMenu = 0,
+                fabShows = true,
+                fabIcon = R.drawable.ic_expand_24dp,
                 toolbarOverlaps = false,
                 toolbarShows = true,
-                toolbarMenuClickListener = { viewHiders.springOptions() },
-                fabShows = false,
+                fabText = getString(R.string.spring_options),
+                fabClickListener = { viewHiders.springOptions() },
                 showsBottomNav = false,
                 insetFlags = InsetFlags.ALL,
                 lightStatusBar = !requireContext().isDarkTheme,
@@ -68,7 +70,7 @@ class SpringAnimationFragment : AppBaseFragment(R.layout.fragment_spring_animati
     private fun List<ViewHider<FloatingActionButton>>.springOptions() =
             dialogOf(getString(R.string.stiffness), stiffnessNames) { stiffnessIndex ->
                 forEach { it.configure { stiffness = stiffnessValues[stiffnessIndex] } }
-                view?.postDelayed(160){
+                view?.postDelayed(160) {
                     dialogOf(getString(R.string.bounciness), dampingNames) { dampingIndex ->
                         forEach { it.configure { dampingRatio = dampingValues[dampingIndex] } }
                     }

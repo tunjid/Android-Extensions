@@ -32,7 +32,6 @@
     <string name="menu_scan">Scan</string>
     <string name="menu_stop">Stop</string>
     <string name="menu_refresh">Refresh</string>
-    <string name="menu_options">Options</string>
 
     <!-- Doggo -->
     <string name="collapse_prompt">Tap to collapse</string>
@@ -112,6 +111,7 @@
     <string name="high">High</string>
 
     <!-- Hiding Views -->
+    <string name="spring_options">Spring options</string>
     <string name="shrink_margins">Shrink margins</string>
     <string name="shrink_padding">Shrink padding</string>
 </resources>
