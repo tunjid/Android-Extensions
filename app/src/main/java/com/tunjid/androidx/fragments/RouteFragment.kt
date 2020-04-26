@@ -51,6 +51,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
         uiState = uiState.copy(
                 toolbarTitle = getString(R.string.app_name),
                 toolBarMenu = R.menu.menu_route,
+                toolbarOverlaps = false,
                 toolbarShows = true,
                 fabShows = true,
                 fabIcon = R.drawable.ic_dice_24dp,

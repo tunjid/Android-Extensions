@@ -41,8 +41,9 @@ class SpringAnimationFragment : AppBaseFragment(R.layout.fragment_spring_animati
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
-                toolbarShows = true,
                 toolBarMenu = R.menu.menu_options,
+                toolbarOverlaps = false,
+                toolbarShows = true,
                 toolbarMenuClickListener = { viewHiders.springOptions() },
                 fabShows = false,
                 showsBottomNav = false,

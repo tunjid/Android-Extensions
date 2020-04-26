@@ -5,5 +5,4 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginLeft="@dimen/quarter_margin"
-    android:layout_marginTop="@dimen/actionbar_height"
     tools:ignore="RtlHardcoded" />

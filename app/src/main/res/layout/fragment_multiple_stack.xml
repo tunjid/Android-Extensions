@@ -18,7 +18,7 @@
         android:id="@+id/tabs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/quintuple_margin"
+        android:layout_marginTop="@dimen/single_margin"
         app:checkedButton="@+id/first"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -32,9 +32,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
+            android:text="@string/first"
             android:textAllCaps="false"
             android:textSize="@dimen/regular_text"
-            android:text="@string/first"
             app:strokeColor="@color/white_75" />
 
         <com.google.android.material.button.MaterialButton
@@ -42,9 +42,9 @@
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@string/second"
             android:textAllCaps="false"
             android:textSize="@dimen/regular_text"
-            android:text="@string/second"
             app:strokeColor="@color/white_75" />
 
         <com.google.android.material.button.MaterialButton
@@ -52,9 +52,9 @@
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@string/third"
             android:textAllCaps="false"
             android:textSize="@dimen/regular_text"
-            android:text="@string/third"
             app:strokeColor="@color/white_75" />
 
     </com.google.android.material.button.MaterialButtonToggleGroup>

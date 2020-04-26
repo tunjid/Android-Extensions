@@ -8,7 +8,6 @@
         android:id="@+id/stiffness_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/triple_and_half_margin"
         android:padding="@dimen/single_margin"
         android:text="@string/stiffness"
         android:textSize="@dimen/regular_text"
