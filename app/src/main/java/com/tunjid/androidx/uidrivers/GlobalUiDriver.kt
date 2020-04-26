@@ -84,10 +84,6 @@ class GlobalUiDriver(
         private val navigator: Navigator
 ) : GlobalUiController {
 
-    private var statusBarSize: Int = 0
-    private var navBarSize: Int = 0
-    private var systemLeftInset: Int = 0
-    private var systemRightInset: Int = 0
     private var insetsApplied: Boolean = false
     private var lastFragmentInsets: WindowInsets? = null
 
@@ -294,6 +290,15 @@ class GlobalUiDriver(
                         View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
                         View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                         WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+
+        var statusBarSize: Int = 0
+            private set
+        var navBarSize: Int = 0
+            private set
+        var systemLeftInset: Int = 0
+            private set
+        var systemRightInset: Int = 0
+            private set
     }
 
     /**
