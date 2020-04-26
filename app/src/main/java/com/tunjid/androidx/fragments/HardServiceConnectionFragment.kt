@@ -49,10 +49,8 @@ class HardServiceConnectionFragment : AppBaseFragment(R.layout.fragment_hard_ser
         updateText(getString(R.string.service_disconnected))
     }
 
-    private fun toggleService() = when {
-        connection.boundService == null -> {
-            connection.bind().let { Unit }
-        }
+    private fun toggleService() = when (connection.boundService) {
+        null -> connection.bind().let { Unit }
         else -> {
             connection.unbindService()
             updateText(getString(R.string.service_disconnected))

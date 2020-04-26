@@ -133,6 +133,7 @@ class GlobalUiDriver(
         }, true)
 
         binding.root.setOnApplyWindowInsetsListener { _, insets -> onSystemInsetsReceived(insets) }
+        binding.toolbar.doOnLayout { lastFragmentInsets?.let(::onFragmentInsetsReceived) }
         binding.bottomNavigation.doOnLayout { lastFragmentInsets?.let(::onFragmentInsetsReceived) }
 
         binding.contentContainer.spring(PaddingProperty.BOTTOM).apply {
