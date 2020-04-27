@@ -10,6 +10,7 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.FrameLayout
 import android.widget.PopupWindow
 import androidx.annotation.ColorInt
+import androidx.annotation.IdRes
 import androidx.core.graphics.component1
 import androidx.core.graphics.component2
 import androidx.core.view.doOnLayout
@@ -37,19 +38,15 @@ fun View.spring(
         damping: Float? = null,
         startVelocity: Float? = null
 ): SpringAnimation {
-    @Suppress("UNCHECKED_CAST")
-    val propertyMap =
-            getTag(R.id.spring_animation_property_map) as? MutableMap<String, SpringAnimation>
-                    ?: mutableMapOf<String, SpringAnimation>().also { setTag(R.id.spring_animation_property_map, it) }
-
-    val springAnim = propertyMap[property.name]
-            ?: SpringAnimation(this, property).also {
-                propertyMap[property.name] = it
-                it.spring = SpringForce().apply {
-                    this.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
-                    this.stiffness = SpringForce.STIFFNESS_MEDIUM
-                }
+    val propertyMap = getOrPutTag<MutableMap<String, SpringAnimation>>(R.id.spring_animation_property_map, ::mutableMapOf)
+    val springAnim = propertyMap.getOrPut(property.name) {
+        SpringAnimation(this, property).apply {
+            spring = SpringForce().apply {
+                this.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+                this.stiffness = SpringForce.STIFFNESS_MEDIUM
             }
+        }
+    }
 
     springAnim.spring.let {
         if (damping != null) it.dampingRatio = damping
@@ -60,6 +57,9 @@ fun View.spring(
 
     return springAnim
 }
+
+inline fun <reified T> View.getOrPutTag(@IdRes id: Int, initializer: () -> T) =
+    getTag(id) as? T ?: initializer().also { setTag(id, it) }
 
 /**
  * An end listener that removes itself when the animation ends
