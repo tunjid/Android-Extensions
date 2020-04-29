@@ -163,7 +163,7 @@ task incrementalPublish {
                     def existsOnJcenter = artifactExists(jCenterUrl, moduleName, version, false)
 
                     def publishGithub = existsOnGitHub != null && !existsOnGitHub
-                    def publishJcenter = existsOnJcenter != null && !existsOnJcenter
+                    def publishJcenter = existsOnJcenter != null && !existsOnJcenter && project.ext.bintrayUser && !project.ext.bintrayUser.empty && project.ext.bintrayApiKey && !project.ext.bintrayApiKey.empty
 
                     if (publishJcenter || publishJcenter) {
                         dependsOn ":${moduleName}:assemble"
