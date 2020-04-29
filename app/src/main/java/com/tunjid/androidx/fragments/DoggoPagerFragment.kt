@@ -55,6 +55,7 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
         super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
+                toolbarOverlaps = true,
                 toolbarShows = false,
                 toolBarMenu = 0,
                 fabIcon = R.drawable.ic_hug_24dp,

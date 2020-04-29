@@ -25,26 +25,25 @@ fun MultiStackNavigator.materialFadeThroughTransition(): FragmentTransaction.(In
 
     rootFragmentManager.findFragmentByTag(activeIndex.toString())?.apply {
         enterTransition = null
-        if (exitTransition !is MaterialFadeThrough) exitTransition = MaterialFadeThrough.create(requireContext()).setDuration(300)
+        if (exitTransition !is MaterialFadeThrough) exitTransition = MaterialFadeThrough.create().setDuration(300)
     }
     rootFragmentManager.findFragmentByTag(index.toString())?.apply {
         exitTransition = null
-        if (enterTransition !is MaterialFadeThrough) enterTransition = MaterialFadeThrough.create(requireContext()).setDuration(300)
+        if (enterTransition !is MaterialFadeThrough) enterTransition = MaterialFadeThrough.create().setDuration(300)
     }
 }
 
 fun MultiStackNavigator.materialDepthAxisTransition(): FragmentTransaction.(Fragment) -> Unit = modifier@{ incomingFragment ->
     val current = current ?: return@modifier
-    val context = current.requireContext()
     if (current is Navigator.TransactionModifier) current.augmentTransaction(this, incomingFragment)
     else {
         current.apply {
-            enterTransition = MaterialSharedAxis.create(context, MaterialSharedAxis.Z, false)
-            exitTransition = MaterialSharedAxis.create(context, MaterialSharedAxis.Z, true)
+            enterTransition = MaterialSharedAxis.create(MaterialSharedAxis.Z, false)
+            exitTransition = MaterialSharedAxis.create(MaterialSharedAxis.Z, true)
         }
         incomingFragment.apply {
-            enterTransition = MaterialSharedAxis.create(context, MaterialSharedAxis.Z, true)
-            exitTransition = MaterialSharedAxis.create(context, MaterialSharedAxis.Z, false)
+            enterTransition = MaterialSharedAxis.create(MaterialSharedAxis.Z, true)
+            exitTransition = MaterialSharedAxis.create(MaterialSharedAxis.Z, false)
         }
     }
 }
@@ -56,5 +55,5 @@ fun baseSharedTransition(
         .setOrdering(TransitionSet.ORDERING_TOGETHER)
         .addTransition(ChangeImageTransform())
         .addTransition(ChangeTransform())
-        .addTransition(InsetAwareChangeBounds(before, after))
+        .addTransition(UiStateAwareChangeBounds(before, after))
         .setDuration(GlobalUiDriver.ANIMATION_DURATION.toLong())

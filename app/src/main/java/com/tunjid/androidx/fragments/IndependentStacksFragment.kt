@@ -65,6 +65,7 @@ class IndependentStacksFragment : AppBaseFragment(R.layout.fragment_independent_
                 toolbarTitle = this::class.java.routeName.color(Color.WHITE),
                 toolBarMenu = 0,
                 toolbarShows = true,
+                toolbarOverlaps = false,
                 fabShows = false,
                 showsBottomNav = true,
                 lightStatusBar = false,

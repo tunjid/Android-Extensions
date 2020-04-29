@@ -32,8 +32,9 @@ class HardServiceConnectionFragment : AppBaseFragment(R.layout.fragment_hard_ser
         super.onViewCreated(view, savedInstanceState)
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
-                toolBarMenu = 0,
+                toolbarOverlaps = false,
                 toolbarShows = true,
+                toolBarMenu = 0,
                 fabShows = true,
                 fabIcon = R.drawable.ic_connect_24dp,
                 fabText = getText(R.string.bind_service),
@@ -48,10 +49,8 @@ class HardServiceConnectionFragment : AppBaseFragment(R.layout.fragment_hard_ser
         updateText(getString(R.string.service_disconnected))
     }
 
-    private fun toggleService() = when {
-        connection.boundService == null -> {
-            connection.bind().let { Unit }
-        }
+    private fun toggleService() = when (connection.boundService) {
+        null -> connection.bind().let { Unit }
         else -> {
             connection.unbindService()
             updateText(getString(R.string.service_disconnected))

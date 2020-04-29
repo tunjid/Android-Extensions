@@ -21,7 +21,7 @@
     <string name="route_spreadsheet">A spreadsheet type view demonstrating the RecyclerViewMultiScroller</string>
     <string name="route_ble_scan">A fragment demonstrating the use of the BLEScanner from the Communications module.</string>
     <string name="route_nsd_scan">A fragment demonstrating the use of the NsdHelper from the Communications module.</string>
-    <string name="route_hiding_view">A fragment demonstrating the ViewHider, useful for implementing the "quick return" pattern</string>
+    <string name="route_spring_animation">A fragment demonstrating spring animations, and how to use them for the "quick return" pattern</string>
     <string name="route_span_builder">A fragment demonstrating the charSequence extensions for building spans</string>
     <string name="route_fab_transformations">A fragment showing material transformations on a FloatingActionButton</string>
     <string name="route_hard_service_connection">A fragment demonstrating the HardServiceConnection</string>
@@ -109,4 +109,9 @@
     <string name="low">Low</string>
     <string name="medium">Medium</string>
     <string name="high">High</string>
+
+    <!-- Hiding Views -->
+    <string name="spring_options">Spring options</string>
+    <string name="shrink_margins">Shrink margins</string>
+    <string name="shrink_padding">Shrink padding</string>
 </resources>

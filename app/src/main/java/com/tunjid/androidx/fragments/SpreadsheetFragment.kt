@@ -66,7 +66,7 @@ class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        ::uiState.update { copy(insetFlags = InsetFlags.ALL) }
+        ::uiState.update { copy(insetFlags = InsetFlags.ALL, toolbarOverlaps = false) }
 
         val viewPager = view.findViewById<ViewPager2>(R.id.view_pager)
         val pagerAdapter = object : FragmentStateAdapter(this.childFragmentManager, viewLifecycleOwner.lifecycle) {

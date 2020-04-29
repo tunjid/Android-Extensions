@@ -8,7 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.widget.EditText
@@ -17,13 +16,10 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.widget.Toolbar
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.doOnLayout
-import androidx.core.view.marginBottom
-import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
 import androidx.dynamicanimation.animation.DynamicAnimation
+import androidx.dynamicanimation.animation.FloatPropertyCompat
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
-import androidx.dynamicanimation.animation.springAnimationOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
@@ -43,6 +39,8 @@ import com.tunjid.androidx.map
 import com.tunjid.androidx.material.animator.FabExtensionAnimator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.view.animator.ViewHider
+import com.tunjid.androidx.view.util.MarginProperty
+import com.tunjid.androidx.view.util.PaddingProperty
 import com.tunjid.androidx.view.util.innermostFocusedChild
 import com.tunjid.androidx.view.util.marginLayoutParams
 import com.tunjid.androidx.view.util.spring
@@ -86,37 +84,16 @@ class GlobalUiDriver(
         private val navigator: Navigator
 ) : GlobalUiController {
 
-    private var statusBarSize: Int = 0
-    private var navBarSize: Int = 0
-    private var systemLeftInset: Int = 0
-    private var systemRightInset: Int = 0
     private var insetsApplied: Boolean = false
     private var lastFragmentInsets: WindowInsets? = null
 
     private val toolbarHider: ViewHider<Toolbar> = binding.toolbar.run {
-        setOnMenuItemClickListener(this@GlobalUiDriver::onMenuItemClicked)
         setNavigationOnClickListener { navigator.pop() }
         ViewHider.of(this).setDirection(ViewHider.TOP).build()
     }
 
     private val fabExtensionAnimator: FabExtensionAnimator =
             FabExtensionAnimator(binding.fab).apply { isExtended = true }
-
-    private val bottomNavSpring = binding.bottomNavigation.run {
-        doOnLayout { lastFragmentInsets?.let(::onFragmentInsetsReceived) }
-        springAnimationOf(View::getTranslationY) { translationY = it.toFloat() }
-    }
-
-    private val topContentSpring =
-            binding.contentContainer.springAnimationOf(View::getPaddingTop) { updatePadding(top = it) }
-
-    private val bottomContentSpring =
-            binding.contentContainer.springAnimationOf(View::getPaddingBottom) { updatePadding(bottom = it) }
-                    // Scroll to text that has focus
-                    .apply { addEndListener { _, _, _, _ -> (binding.contentContainer.innermostFocusedChild as? EditText)?.let { it.text = it.text } } }
-
-    private val fabSpring =
-            binding.fab.springAnimationOf(View::marginBottom) { updateLayoutParams<ViewGroup.MarginLayoutParams> { bottomMargin = it } }
 
     private val shortestAvailableLifecycle
         get() = when (val current = navigator.current) {
@@ -131,7 +108,8 @@ class GlobalUiDriver(
         set(value) {
             val updated = value.copy(
                     fabClickListener = value.fabClickListener?.lifecycleAware(),
-                    fabTransitionOptions = value.fabTransitionOptions?.lifecycleAware()
+                    fabTransitionOptions = value.fabTransitionOptions?.lifecycleAware(),
+                    toolbarMenuClickListener = value.toolbarMenuClickListener?.lifecycleAware()
             )
             liveUiState.value = updated
             liveUiState.value = updated.copy(toolbarInvalidated = false) // Reset after firing once
@@ -151,19 +129,28 @@ class GlobalUiDriver(
         }, true)
 
         binding.root.setOnApplyWindowInsetsListener { _, insets -> onSystemInsetsReceived(insets) }
+        binding.toolbar.doOnLayout { lastFragmentInsets?.let(::onFragmentInsetsReceived) }
+        binding.bottomNavigation.doOnLayout { lastFragmentInsets?.let(::onFragmentInsetsReceived) }
 
-        liveUiState.map(UiState::toolbarShows).distinctUntilChanged().observe(host, toolbarHider::set)
-        liveUiState.map(UiState::fabExtended).distinctUntilChanged().observe(host, fabExtensionAnimator::isExtended::set)
-        liveUiState.map(UiState::backgroundColor).distinctUntilChanged().observe(host, binding.contentRoot::animateBackground)
+        binding.contentContainer.spring(PaddingProperty.BOTTOM).apply {
+            // Scroll to text that has focus
+            addEndListener { _, _, _, _ -> (binding.contentContainer.innermostFocusedChild as? EditText)?.let { it.text = it.text } }
+        }
 
-        liveUiState.map(UiState::fabState).distinctUntilChanged().observe(host, this::setFabIcon)
-        liveUiState.map(UiState::snackbarText).distinctUntilChanged().observe(host, this::showSnackBar)
-        liveUiState.map(UiState::navBarColor).distinctUntilChanged().observe(host, this::setNavBarColor)
-        liveUiState.map(UiState::toolbarState).distinctUntilChanged().observe(host, this::updateMainToolBar)
-        liveUiState.map(UiState::lightStatusBar).distinctUntilChanged().observe(host, this::setLightStatusBar)
-        liveUiState.map(UiState::fabClickListener).distinctUntilChanged().observe(host, this::setFabClickListener)
-        liveUiState.map(UiState::fabTransitionOptions).distinctUntilChanged().observe(host, this::setFabTransitionOptions)
-        liveUiState.map(UiState::positionState).distinctUntilChanged().observe(host) { lastFragmentInsets?.let(::onFragmentInsetsReceived) }
+        UiState::toolbarShows onChanged toolbarHider::set
+        UiState::toolbarState onChanged this::updateMainToolBar
+        UiState::toolbarMenuClickListener onChanged this::setMenuItemClickListener
+
+        UiState::fabState onChanged this::setFabIcon
+        UiState::fabClickListener onChanged this::setFabClickListener
+        UiState::fabExtended onChanged fabExtensionAnimator::isExtended::set
+        UiState::fabTransitionOptions onChanged this::setFabTransitionOptions
+
+        UiState::snackbarText onChanged this::showSnackBar
+        UiState::navBarColor onChanged this::setNavBarColor
+        UiState::lightStatusBar onChanged this::setLightStatusBar
+        UiState::backgroundColor onChanged binding.contentRoot::animateBackground
+        UiState::positionState onChanged { lastFragmentInsets?.let(::onFragmentInsetsReceived) }
     }
 
     private fun onSystemInsetsReceived(insets: WindowInsets): WindowInsets = insets.apply {
@@ -183,18 +170,18 @@ class GlobalUiDriver(
     private fun onFragmentInsetsReceived(insets: WindowInsets): WindowInsets = insets.apply {
         lastFragmentInsets = this
 
-        bottomNavSpring.animateToFinalPosition(bottomNavPosition())
-        topContentSpring.animateToFinalPosition((statusBarSize given uiState.insetFlags.hasTopInset).toFloat())
-        bottomContentSpring.animateToFinalPosition(contentPosition(systemWindowInsetBottom))
-        fabSpring.animateToFinalPosition(fabPosition(systemWindowInsetBottom))
+        binding.contentContainer.softSpring(PaddingProperty.TOP).animateToFinalPosition(contentTopPosition())
+        binding.contentContainer.softSpring(PaddingProperty.BOTTOM).animateToFinalPosition(contentBottomPosition(systemWindowInsetBottom))
+        binding.bottomNavigation.softSpring(SpringAnimation.TRANSLATION_Y).animateToFinalPosition(bottomNavPosition())
+        binding.fab.softSpring(MarginProperty.BOTTOM).animateToFinalPosition(fabPosition(systemWindowInsetBottom))
     }
 
-    private fun bottomNavPosition() = when {
-        uiState.showsBottomNav -> -(navBarSize.given(uiState.insetFlags.hasBottomInset))
-        else -> binding.bottomNavigation.height
-    }.toFloat()
+    private fun contentTopPosition(): Float = (
+            statusBarSize.given(uiState.insetFlags.hasTopInset)
+                    + binding.toolbar.height.given(!uiState.toolbarOverlaps)
+            ).toFloat()
 
-    private fun contentPosition(systemBottomInset: Int): Float = when (systemBottomInset > navBarSize + binding.bottomNavigation.height.given(uiState.showsBottomNav)) {
+    private fun contentBottomPosition(systemBottomInset: Int): Float = when (systemBottomInset > navBarSize + binding.bottomNavigation.height.given(uiState.showsBottomNav)) {
         true -> systemBottomInset
         else -> (binding.bottomNavigation.height given uiState.showsBottomNav) + (navBarSize given uiState.insetFlags.hasBottomInset)
     }.toFloat()
@@ -212,12 +199,15 @@ class GlobalUiDriver(
         }.toFloat() + (snackbarClearance given uiState.snackbarText.isNotBlank())
     }
 
-    private fun onMenuItemClicked(item: MenuItem): Boolean {
-        val fragment = navigator.current
-        val selected = fragment != null && fragment.onOptionsItemSelected(item)
+    private fun bottomNavPosition() = when {
+        uiState.showsBottomNav -> -(navBarSize.given(uiState.insetFlags.hasBottomInset))
+        else -> binding.bottomNavigation.height
+    }.toFloat()
 
-        return selected || host.onOptionsItemSelected(item)
-    }
+    private fun setMenuItemClickListener(item: ((MenuItem) -> Unit)?) =
+            binding.toolbar.setOnMenuItemClickListener {
+                item?.invoke(it)?.let { true } ?: host.onOptionsItemSelected(it)
+            }
 
     private fun setNavBarColor(color: Int) {
         binding.navBackground.background = GradientDrawable(
@@ -284,8 +274,7 @@ class GlobalUiDriver(
                 }
             }
 
-            private fun onBottomNavChanged(it: Boolean) = view.spring(DynamicAnimation.TRANSLATION_Y)
-                    .soften()
+            private fun onBottomNavChanged(it: Boolean) = view.softSpring(DynamicAnimation.TRANSLATION_Y)
                     .animateToFinalPosition(
                             if (it) -binding.bottomNavigation.height.toFloat() - host.resources.getDimensionPixelSize(R.dimen.half_margin)
                             else 0f
@@ -301,6 +290,22 @@ class GlobalUiDriver(
                         View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
                         View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                         WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+
+        var statusBarSize: Int = 0
+            private set
+        var navBarSize: Int = 0
+            private set
+        var systemLeftInset: Int = 0
+            private set
+        var systemRightInset: Int = 0
+            private set
+    }
+
+    /**
+     * Maps slices of the ui state to the function that should be invoked when it changes
+     */
+    private infix fun <T : Any?> ((UiState) -> T).onChanged(consumer: (T) -> Unit) {
+        liveUiState.map(this).distinctUntilChanged().observe(host, consumer)
     }
 
     /**
@@ -325,17 +330,8 @@ private fun View.animateBackground(@ColorInt to: Int) {
     animator.start()
 }
 
-private fun View.springAnimationOf(getter: (View) -> Number, setter: View.(Int) -> Unit) =
-        springAnimationOf(
-                getter = { getter(this).toFloat() },
-                setter = { setter(it.toInt()) },
-                finalPosition = 0f
-        ).soften()
-
-private fun SpringAnimation.soften() = apply {
-    spring.stiffness = SpringForce.STIFFNESS_LOW
-    spring.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
-}
+fun View.softSpring(property: FloatPropertyCompat<View>) =
+        spring(property, SpringForce.STIFFNESS_LOW)
 
 private infix fun Int.given(flag: Boolean) = if (flag) this else 0
 

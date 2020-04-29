@@ -3,6 +3,7 @@ import android.graphics.Color
 import android.os.Parcel
 import android.os.Parcelable
 import android.text.TextUtils
+import android.view.MenuItem
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
@@ -17,7 +18,7 @@ typealias PositionalState = List<Any>
 typealias ToolbarState = Triple<Int, Boolean, CharSequence>
 typealias FabState = Pair<Int, CharSequence>
 
-val UiState.positionState: PositionalState get() = listOf(insetFlags, showsBottomNav, fabShows, snackbarText)
+val UiState.positionState: PositionalState get() = listOf(insetFlags, showsBottomNav, fabShows, snackbarText, toolbarOverlaps)
 val UiState.toolbarState get() = ToolbarState(toolBarMenu, toolbarInvalidated, toolbarTitle)
 val UiState.fabState get() = FabState(fabIcon, fabText)
 
@@ -25,6 +26,7 @@ data class UiState(
         @MenuRes
         val toolBarMenu: Int,
         val toolbarShows: Boolean,
+        val toolbarOverlaps: Boolean,
         val toolbarInvalidated: Boolean,
         val toolbarTitle: CharSequence,
         @DrawableRes
@@ -41,12 +43,14 @@ data class UiState(
         val showsBottomNav: Boolean,
         val insetFlags: InsetFlags,
         val fabClickListener: ((View) -> Unit)?,
-        val fabTransitionOptions: (SpringAnimation.() -> Unit)?
+        val fabTransitionOptions: (SpringAnimation.() -> Unit)?,
+        val toolbarMenuClickListener: ((MenuItem) -> Unit)?
 ) : Parcelable {
 
     private constructor(`in`: Parcel) : this(
             toolBarMenu = `in`.readInt(),
             toolbarShows = `in`.readByte().toInt() != 0x00,
+            toolbarOverlaps = `in`.readByte().toInt() != 0x00,
             toolbarInvalidated = `in`.readByte().toInt() != 0x00,
             toolbarTitle = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(`in`),
             fabIcon = `in`.readInt(),
@@ -65,7 +69,8 @@ data class UiState(
                     hasBottomInset = `in`.readByte().toInt() != 0x00
             ),
             fabClickListener = null,
-            fabTransitionOptions = null
+            fabTransitionOptions = null,
+            toolbarMenuClickListener = null
     )
 
     override fun describeContents(): Int = 0
@@ -73,6 +78,7 @@ data class UiState(
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeInt(toolBarMenu)
         dest.writeByte((if (toolbarShows) 0x01 else 0x00).toByte())
+        dest.writeByte((if (toolbarOverlaps) 0x01 else 0x00).toByte())
         dest.writeByte((if (toolbarInvalidated) 0x01 else 0x00).toByte())
         TextUtils.writeToParcel(toolbarTitle, dest, 0)
         dest.writeInt(fabIcon)
@@ -95,6 +101,7 @@ data class UiState(
                 fabIcon = 0,
                 fabText = "",
                 toolBarMenu = 0,
+                toolbarOverlaps = false,
                 navBarColor = Color.BLACK,
                 lightStatusBar = false,
                 showsBottomNav = true,
@@ -107,6 +114,7 @@ data class UiState(
                 toolbarTitle = "",
                 fabClickListener = null,
                 fabTransitionOptions = null,
+                toolbarMenuClickListener = null,
                 insetFlags = InsetFlags.ALL
         )
 

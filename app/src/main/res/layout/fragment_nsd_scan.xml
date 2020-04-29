@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="@dimen/actionbar_height"
     tools:clientNsdService="com.tunjid.rcswitchcontrol.fragments.NsdScanFragment">
 
     <androidx.recyclerview.widget.RecyclerView

@@ -95,6 +95,7 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
                 toolbarTitle = this::class.java.routeName.color(Color.WHITE),
                 toolBarMenu = R.menu.menu_default,
                 toolbarShows = true,
+                toolbarOverlaps = false,
                 fabText = getString(R.string.go_deeper),
                 fabIcon = R.drawable.ic_bullseye_24dp,
                 fabShows = true,
@@ -123,7 +124,6 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
 
     @Suppress("USELESS_CAST")
     private fun stackTransactionAnimator(): FragmentTransaction.(Int) -> Unit = transition@{ toIndex ->
-        val context = requireContext()
         val fromIndex = innerNavigator.activeIndex
         val isForward = toIndex > fromIndex
         val isSliding = transitionOption == R.id.slide
@@ -133,10 +133,10 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
 
         // Casting is necessary for over enthusiastic Kotlin compiler CHECKCAST generation
         val (enterFrom, exitFrom, enterTo, exitTo) = arrayOf(
-                if (isSliding) MaterialSharedAxis.create(context, X, !isForward) else null,
-                if (isSliding) MaterialSharedAxis.create(context, X, isForward) else MaterialFadeThrough.create(context) as Transition,
-                if (isSliding) MaterialSharedAxis.create(context, X, isForward) else MaterialFadeThrough.create(context) as Transition,
-                if (isSliding) MaterialSharedAxis.create(context, X, !isForward) else null
+                if (isSliding) MaterialSharedAxis.create(X, !isForward) else null,
+                if (isSliding) MaterialSharedAxis.create(X, isForward) else MaterialFadeThrough.create() as Transition,
+                if (isSliding) MaterialSharedAxis.create(X, isForward) else MaterialFadeThrough.create() as Transition,
+                if (isSliding) MaterialSharedAxis.create(X, !isForward) else null
         )
 
         from.apply { enterTransition = enterFrom; exitTransition = exitFrom }

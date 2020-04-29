@@ -42,8 +42,9 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan) {
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
-                toolbarShows = true,
+                toolbarMenuClickListener = ::onMenuItemSelected,
                 toolBarMenu = R.menu.menu_nsd_scan,
+                toolbarShows = true,
                 fabShows = false,
                 showsBottomNav = true,
                 insetFlags = InsetFlags.ALL,
@@ -96,10 +97,10 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan) {
         if (currentlyScanning) refresh?.setLoading(requireContext().themeColorAt(R.attr.prominent_text_color))
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.menu_scan -> scanDevices(true).let { true }
-        R.id.menu_stop -> scanDevices(false).let { true }
-        else -> super.onOptionsItemSelected(item)
+    private fun onMenuItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.menu_scan -> scanDevices(true)
+        R.id.menu_stop -> scanDevices(false)
+        else -> super.onOptionsItemSelected(item).let {  }
     }
 
     private fun scanDevices(enable: Boolean) =

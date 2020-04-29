@@ -1,6 +1,7 @@
 package com.tunjid.androidx.fragments
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.MenuItem
@@ -50,6 +51,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
         uiState = uiState.copy(
                 toolbarTitle = getString(R.string.app_name),
                 toolBarMenu = R.menu.menu_route,
+                toolbarOverlaps = false,
                 toolbarShows = true,
                 fabShows = true,
                 fabIcon = R.drawable.ic_dice_24dp,
@@ -57,8 +59,10 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
                 fabClickListener = { goSomewhereRandom() },
                 insetFlags = InsetFlags.ALL,
                 showsBottomNav = true,
+                backgroundColor = Color.TRANSPARENT,
                 lightStatusBar = !requireContext().isDarkTheme,
-                navBarColor = requireContext().colorAt(R.color.colorSurface)
+                navBarColor = requireContext().colorAt(R.color.colorSurface),
+                toolbarMenuClickListener = ::onMenuItemSelected
         )
 
         FragmentRouteBinding.bind(view).recyclerView.apply {
@@ -79,12 +83,12 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+    private fun onMenuItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.menu_theme -> AppCompatDelegate.setDefaultNightMode(
                 if (requireContext().isDarkTheme) MODE_NIGHT_NO
                 else MODE_NIGHT_YES
-        ).let { true }
-        else -> super.onOptionsItemSelected(item)
+        )
+        else -> requireActivity().onOptionsItemSelected(item).let {  }
     }
 
     private fun onRouteClicked(destination: RouteItem.Destination) {
@@ -102,7 +106,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
             DoggoListFragment::class.java.routeName -> DoggoListFragment.newInstance()
             BleScanFragment::class.java.routeName -> BleScanFragment.newInstance()
             NsdScanFragment::class.java.routeName -> NsdScanFragment.newInstance()
-            HidingViewsFragment::class.java.routeName -> HidingViewsFragment.newInstance()
+            SpringAnimationFragment::class.java.routeName -> SpringAnimationFragment.newInstance()
             CharacterSequenceExtensionsFragment::class.java.routeName -> CharacterSequenceExtensionsFragment.newInstance()
             ShiftingTilesFragment::class.java.routeName -> ShiftingTilesFragment.newInstance()
             EndlessTilesFragment::class.java.routeName -> EndlessTilesFragment.newInstance()

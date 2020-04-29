@@ -14,7 +14,7 @@ internal val Bundle?.hashString: String
     else keySet().joinToString(separator = "-", transform = { get(it)?.toString() ?: it })
 
 internal val Fragment.bundleTag: String
-    get() = "${javaClass.simpleName}-${arguments.hashString}"
+    get() = "${javaClass.name}-${arguments.hashString}"
 
 internal val Fragment.navigatorTag
     get() = if (this is Navigator.TagProvider) stableTag else bundleTag
