@@ -27,4 +27,4 @@ jobs:
           PUBLISH_VERSION_SUFFIX: ${{ secrets.PUBLISH_VERSION_SUFFIX }}
           PUBLISH_REPO_NAME: GithubMaven
           PUBLISH_URL: https://maven.pkg.github.com/tunjid/Android-Extensions
-        run: bash ./gradlew incrementalPublish -PversionSuffix="PUBLISH_VERSION_SUFFIX" -PpublishRepoName="$PUBLISH_REPO_NAME" -PpublishUrl="$PUBLISH_URL" -PpublishUserName="$PUBLISH_USER_NAME" -PpublishPassword="$PUBLISH_PASSWORD" -PbintrayUser="$BINTRAY_USER" -PbintrayApiKey="$BINTRAY_API_KEY" --stacktrace
+        run: bash ./gradlew incrementalPublish -PversionSuffix="$PUBLISH_VERSION_SUFFIX" -PpublishRepoName="$PUBLISH_REPO_NAME" -PpublishUrl="$PUBLISH_URL" -PpublishUserName="$PUBLISH_USER_NAME" -PpublishPassword="$PUBLISH_PASSWORD" -PbintrayUser="$BINTRAY_USER" -PbintrayApiKey="$BINTRAY_API_KEY" --stacktrace
