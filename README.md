@@ -72,11 +72,24 @@ App icon made by [Freepik](https://www.freepik.com/?__hstc=57440181.7a5d7d3cc018
 
 ## Publishing
 
-Publishing is done with the `maven-publish` plugin. To publish a specific version of a module, run:
+Publishing is done with the `maven-publish` plugin.
 
-`./gradlew moduleName:assembleRelease`
-`./gradlew moduleName:publishLibPublicationTo*publishRepoName*Repository`
+To publish, run:
 
-By default, the `publishRepoName`, `publishUrl`, `publishUserName` and `publishPassword` are read from the `local.properties` file.
-They can however be overriden by passing gardle properties via the `-P` flag for each property you wish to override.
-Multi repository setup can only be done with the `local.properties file`.
+`./gradlew incrementalPublish`
+
+This will publish the latest version of every module, and will not override existing versions.
+The version of the module is determined by the version.properties file. To bump a module version, bump it in version.properties.
+
+By default, the `version_suffix`, `publishRepoName`, `publishUrl`, `publishUserName` and `publishPassword` are read from the `local.properties` file.
+They can however be overriden by passing gradle properties via the `-P` flag for each property you wish to override.
+
+A sample local.properties looks like:
+
+```
+version_suffix=mysuffix
+publishRepoName=MyMaven
+publishUrl=https://maven.pkg.github.com/myOrg/Android-Extensions
+publishUserName=mygithubusername
+publishPassword=mygithubtoken
+```

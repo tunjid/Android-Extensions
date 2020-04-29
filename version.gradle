@@ -1,7 +1,8 @@
 allprojects {
     def versionKey = project.name + "_version"
+    def versionSuffix = project.hasProperty('version_suffix') ? "-$version_suffix" : ""
     group = parent.ext.libProps['groupId']
-    version = parent.ext.libProps[versionKey]
+    version = parent.ext.libProps[versionKey] + versionSuffix
 
     task printProjectVersion {
         doLast {
