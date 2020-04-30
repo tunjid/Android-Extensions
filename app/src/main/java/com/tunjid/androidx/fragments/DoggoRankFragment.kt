@@ -13,15 +13,17 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.ViewholderDoggoRankBinding
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.model.Doggo
+import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
+import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.recyclerview.*
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
+import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.androidx.viewholders.DoggoBinder
@@ -30,10 +32,12 @@ import com.tunjid.androidx.viewmodels.DoggoRankViewModel
 import com.tunjid.androidx.viewmodels.routeName
 import kotlin.math.abs
 
-class DoggoRankFragment : AppBaseFragment(R.layout.fragment_simple_list),
+class DoggoRankFragment : Fragment(R.layout.fragment_simple_list),
         Navigator.TransactionModifier {
 
+    private var uiState by activityGlobalUiController()
     private val viewModel by viewModels<DoggoRankViewModel>()
+    private val navigator by activityNavigatorController<MultiStackNavigator>()
 
     private var recyclerView: RecyclerView? = null
 

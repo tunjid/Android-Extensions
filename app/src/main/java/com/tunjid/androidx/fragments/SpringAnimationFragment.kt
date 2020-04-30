@@ -13,10 +13,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.FragmentSpringAnimationBinding
 import com.tunjid.androidx.isDarkTheme
+import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.view.animator.ViewHider
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.MarginProperty
@@ -35,7 +35,9 @@ private typealias SpringModifier = SpringForce.() -> Unit
 
 private typealias SpringModifierConsumer = (SpringForce.() -> Unit) -> Unit
 
-class SpringAnimationFragment : AppBaseFragment(R.layout.fragment_spring_animation) {
+class SpringAnimationFragment : Fragment(R.layout.fragment_spring_animation) {
+
+    private var uiState by activityGlobalUiController()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

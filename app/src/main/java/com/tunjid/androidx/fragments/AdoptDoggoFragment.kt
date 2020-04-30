@@ -9,8 +9,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.FragmentAdoptDoggoBinding
@@ -19,6 +19,7 @@ import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.uidrivers.BACKGROUND_TINT_DURATION
 import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags
@@ -27,12 +28,11 @@ import com.tunjid.androidx.viewholders.DoggoBinder
 import com.tunjid.androidx.viewholders.InputViewHolder
 import com.tunjid.androidx.viewholders.bind
 
-class AdoptDoggoFragment : AppBaseFragment(R.layout.fragment_adopt_doggo) {
-
-    override val stableTag: String
-        get() = "${super.stableTag}-${doggo.hashCode()}"
+class AdoptDoggoFragment : Fragment(R.layout.fragment_adopt_doggo) {
 
     var doggo: Doggo by args()
+
+    private var uiState by activityGlobalUiController()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

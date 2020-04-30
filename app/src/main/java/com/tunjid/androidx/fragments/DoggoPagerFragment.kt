@@ -21,16 +21,18 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.model.Doggo
+import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
+import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.recyclerview.indicators.PageIndicator
 import com.tunjid.androidx.recyclerview.indicators.Params
 import com.tunjid.androidx.recyclerview.indicators.indicatorDecoration
 import com.tunjid.androidx.recyclerview.indicators.start
 import com.tunjid.androidx.recyclerview.indicators.width
 import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
@@ -41,10 +43,12 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
+class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
         Navigator.TransactionModifier {
 
+    private var uiState by activityGlobalUiController()
     private val viewModel by viewModels<DoggoViewModel>()
+    private val navigator by activityNavigatorController<MultiStackNavigator>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

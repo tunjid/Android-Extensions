@@ -11,13 +11,13 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.content.themeColorAt
@@ -27,23 +27,25 @@ import com.tunjid.androidx.databinding.FragmentRouteBinding
 import com.tunjid.androidx.databinding.ViewholderRouteBinding
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.model.RouteItem
+import com.tunjid.androidx.navigation.MultiStackNavigator
+import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
+import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.RouteViewModel
 import com.tunjid.androidx.viewmodels.routeName
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 
-class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
+class RouteFragment : Fragment(R.layout.fragment_route) {
 
-    private val viewModel: RouteViewModel by viewModels()
+    private var uiState by activityGlobalUiController()
+    private val viewModel  by viewModels<RouteViewModel>()
+    private val navigator by activityNavigatorController<MultiStackNavigator>()
 
     private var tabIndex: Int by args()
-
-    override val stableTag: String
-        get() = "${super.stableTag}-$tabIndex"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -101,7 +103,7 @@ class RouteFragment : AppBaseFragment(R.layout.fragment_route) {
         push(route.fragment)
     }
 
-    private val RouteItem.Destination.fragment: AppBaseFragment
+    private val RouteItem.Destination.fragment: Fragment
         get() = when (destination) {
             DoggoListFragment::class.java.routeName -> DoggoListFragment.newInstance()
             BleScanFragment::class.java.routeName -> BleScanFragment.newInstance()

@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.ViewholderNsdListBinding
 import com.tunjid.androidx.isDarkTheme
@@ -24,6 +23,7 @@ import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
+import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.NsdViewModel
 import com.tunjid.androidx.viewmodels.routeName
@@ -31,8 +31,9 @@ import com.tunjid.androidx.viewmodels.routeName
 /**
  * A [Fragment] listing supported NSD servers
  */
-class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan) {
+class NsdScanFragment : Fragment(R.layout.fragment_nsd_scan) {
 
+    private var uiState by activityGlobalUiController()
     private val viewModel by viewModels<NsdViewModel>()
 
     private var recyclerView: RecyclerView? = null

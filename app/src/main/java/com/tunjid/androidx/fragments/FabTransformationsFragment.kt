@@ -6,10 +6,10 @@ import android.view.View
 import androidx.core.view.postDelayed
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
+import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.graphics.drawable.withTint
@@ -17,14 +17,17 @@ import com.tunjid.androidx.core.text.color
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.material.animator.FabExtensionAnimator
 import com.tunjid.androidx.uidrivers.SpeedDialClickListener
+import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.withOneShotEndListener
 import com.tunjid.androidx.viewmodels.routeName
 
-class FabTransformationsFragment : AppBaseFragment(R.layout.fragment_fab_transformations) {
+class FabTransformationsFragment : Fragment(R.layout.fragment_fab_transformations) {
 
     private val color
         get() = if (requireContext().isDarkTheme) Color.BLACK else Color.WHITE
+
+    private var uiState by activityGlobalUiController()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

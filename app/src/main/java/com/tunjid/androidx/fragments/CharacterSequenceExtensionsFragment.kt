@@ -11,11 +11,12 @@ import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
 import android.view.View
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.text.*
 import com.tunjid.androidx.isDarkTheme
+import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.routeName
 
@@ -25,7 +26,9 @@ import com.tunjid.androidx.viewmodels.routeName
  * Created by tj.dahunsi on 5/6/17.
  */
 
-class CharacterSequenceExtensionsFragment : AppBaseFragment(R.layout.fragment_spanbuilder) {
+class CharacterSequenceExtensionsFragment : Fragment(R.layout.fragment_spanbuilder) {
+
+    private var uiState by activityGlobalUiController()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

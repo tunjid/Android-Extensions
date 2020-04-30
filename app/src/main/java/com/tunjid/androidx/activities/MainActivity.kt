@@ -1,6 +1,7 @@
 package com.tunjid.androidx.activities
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.view.WindowInsets
 import androidx.activity.addCallback
@@ -57,5 +58,10 @@ class MainActivity : AppCompatActivity(), GlobalUiController, Navigator.Controll
             setOnNavigationItemSelectedListener { navigator.show(tabs.indexOf(it.itemId)).let { true } }
             setOnNavigationItemReselectedListener { navigator.activeNavigator.clear() }
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.menu_reset -> navigator.clearAll().let { true }
+        else -> super.onOptionsItemSelected(item)
     }
 }

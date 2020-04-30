@@ -194,7 +194,10 @@ class MultiStackNavigator(
     }
 
     private fun FragmentTransaction.addStackFragments() {
-        indices.forEach { index -> add(containerId, StackFragment.newInstance(index), index.toString()) }
+        indices.forEach { index ->
+            stackTransactionModifier?.invoke(this, index)
+            add(containerId, StackFragment.newInstance(index), index.toString())
+        }
     }
 
     private fun StackFragment.showRoot() = rootFunction(index).let(navigator::push)

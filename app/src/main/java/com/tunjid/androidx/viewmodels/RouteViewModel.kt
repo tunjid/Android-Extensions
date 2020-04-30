@@ -3,9 +3,9 @@ package com.tunjid.androidx.viewmodels
 import android.app.Application
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.AndroidViewModel
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.text.italic
 import com.tunjid.androidx.fragments.*
 import com.tunjid.androidx.model.RouteItem
@@ -56,7 +56,7 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
 }
 
 
-val <T : AppBaseFragment> Class<T>.routeName
+val <T : Fragment> Class<T>.routeName
     get() = simpleName
             .replace("Fragment", "")
             .replace(
