@@ -73,8 +73,7 @@ afterEvaluate {
             lib(MavenPublication) {
                 from components.release
 
-                // Default to command line arg before reading from from version.gradle
-                version = project.hasProperty('publish_version') ? "$publish_version" : project.version
+                version = project.version
                 groupId parent.ext.groupId // from parent root.gradle ext
                 artifactId project.getName()
 

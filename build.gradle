@@ -100,6 +100,7 @@ buildscript {
         publishRepoName = pullProperty('publishRepoName', localProps)
         publishUserName = pullProperty('publishUserName', localProps)
         publishPassword = pullProperty('publishPassword', localProps)
+        versionSuffix = pullProperty('versionSuffix', localProps)
 
         bintrayUser = pullProperty('bintrayUser', bintrayProps)
         bintrayApiKey = pullProperty('bintrayApiKey', bintrayProps)
@@ -154,15 +155,16 @@ task incrementalPublish {
                 .findAll { name -> name.contains('version') }
                 .each { name ->
                     def moduleName = name - '_version'
-                    def version = libProps[name]
+                    def version = libProps[name] + project.ext.versionSuffix
                     def githubUrl = "${project.ext.publishUrl}"
                     def jCenterUrl = "https://jcenter.bintray.com"
 
                     def existsOnGitHub = artifactExists(githubUrl, moduleName, version, true)
                     def existsOnJcenter = artifactExists(jCenterUrl, moduleName, version, false)
+                    def hasJcenterCreds  = project.ext.bintrayUser && !project.ext.bintrayUser.empty && project.ext.bintrayApiKey && !project.ext.bintrayApiKey.empty
 
                     def publishGithub = existsOnGitHub != null && !existsOnGitHub
-                    def publishJcenter = existsOnJcenter != null && !existsOnJcenter
+                    def publishJcenter = existsOnJcenter != null && !existsOnJcenter && hasJcenterCreds
 
                     if (publishJcenter || publishJcenter) {
                         dependsOn ":${moduleName}:assemble"
