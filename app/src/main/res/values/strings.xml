@@ -105,6 +105,7 @@
     <string name="stiffness">Stiffness</string>
     <string name="bounciness">Bounciness</string>
     <string name="none">None</string>
+    <string name="bruh">Bruh</string>
     <string name="very_low">Very Low</string>
     <string name="low">Low</string>
     <string name="medium">Medium</string>
@@ -114,4 +115,5 @@
     <string name="spring_options">Spring options</string>
     <string name="shrink_margins">Shrink margins</string>
     <string name="shrink_padding">Shrink padding</string>
+    <string name="party_hard">Party Hard</string>
 </resources>
