@@ -105,8 +105,7 @@ class FabTransformationsFragment : Fragment(R.layout.fragment_fab_transformation
 
     private fun SpringAnimation.speedDialRecall(view: View) = withOneShotEndListener {
         if (uiState.fabExtended) return@withOneShotEndListener
-        uiState.fabClickListener?.invoke(view)
-        uiState = uiState.copy(fabTransitionOptions = null)
+        uiState.fabClickListener.invoke(view)
     }
 
     private fun createSpeedDialItems() = requireActivity().run {

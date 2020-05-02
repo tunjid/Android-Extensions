@@ -43,6 +43,7 @@ class NsdScanFragment : Fragment(R.layout.fragment_nsd_scan) {
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
+                toolbarMenuRefresher = ::updateToolbarMenu,
                 toolbarMenuClickListener = ::onMenuItemSelected,
                 toolBarMenu = R.menu.menu_nsd_scan,
                 toolbarShows = true,
@@ -84,9 +85,7 @@ class NsdScanFragment : Fragment(R.layout.fragment_nsd_scan) {
         recyclerView = null
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-
+    private fun updateToolbarMenu(menu: Menu) {
         val currentlyScanning = viewModel.isScanning.value ?: false
 
         menu.findItem(R.id.menu_stop)?.isVisible = currentlyScanning
@@ -101,7 +100,7 @@ class NsdScanFragment : Fragment(R.layout.fragment_nsd_scan) {
     private fun onMenuItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.menu_scan -> scanDevices(true)
         R.id.menu_stop -> scanDevices(false)
-        else -> super.onOptionsItemSelected(item).let {  }
+        else -> super.onOptionsItemSelected(item).let { }
     }
 
     private fun scanDevices(enable: Boolean) =

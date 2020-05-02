@@ -107,9 +107,10 @@ class GlobalUiDriver(
         get() = liveUiState.value!!
         set(value) {
             val updated = value.copy(
-                    fabClickListener = value.fabClickListener?.lifecycleAware(),
-                    fabTransitionOptions = value.fabTransitionOptions?.lifecycleAware(),
-                    toolbarMenuClickListener = value.toolbarMenuClickListener?.lifecycleAware()
+                    fabClickListener = value.fabClickListener.lifecycleAware(),
+                    fabTransitionOptions = value.fabTransitionOptions.lifecycleAware(),
+                    toolbarMenuRefresher = value.toolbarMenuRefresher.lifecycleAware(),
+                    toolbarMenuClickListener = value.toolbarMenuClickListener.lifecycleAware()
             )
             liveUiState.value = updated
             liveUiState.value = updated.copy(toolbarInvalidated = false) // Reset after firing once
@@ -138,7 +139,7 @@ class GlobalUiDriver(
         }
 
         UiState::toolbarShows onChanged toolbarHider::set
-        UiState::toolbarState onChanged this::updateMainToolBar
+        UiState::toolbarState onChanged toolbarHider.view::update
         UiState::toolbarMenuClickListener onChanged this::setMenuItemClickListener
 
         UiState::fabState onChanged this::setFabIcon
@@ -230,12 +231,6 @@ class GlobalUiDriver(
 
     private fun uiFlagTweak(tweaker: (Int) -> Int) = host.window.decorView.run {
         systemUiVisibility = tweaker(systemUiVisibility)
-    }
-
-    private fun updateMainToolBar(toolbarState: ToolbarState) = toolbarHider.view.run {
-        update(toolbarState)
-        navigator.current?.onPrepareOptionsMenu(this.menu)
-        Unit
     }
 
     private fun setFabIcon(fabState: FabState) = host.runOnUiThread {

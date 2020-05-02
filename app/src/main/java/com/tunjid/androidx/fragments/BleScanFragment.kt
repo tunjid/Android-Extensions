@@ -51,6 +51,7 @@ class BleScanFragment : Fragment(R.layout.fragment_ble_scan) {
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
+                toolbarMenuRefresher = ::updateToolbarMenu,
                 toolbarMenuClickListener = ::onMenuItemSelected,
                 toolBarMenu = R.menu.menu_ble_scan,
                 toolbarShows = true,
@@ -94,9 +95,7 @@ class BleScanFragment : Fragment(R.layout.fragment_ble_scan) {
         navigator.pop()
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-
+    private fun updateToolbarMenu(menu: Menu) {
         val currentlyScanning = viewModel.isScanning.value ?: false
 
         menu.findItem(R.id.menu_stop)?.isVisible = currentlyScanning
