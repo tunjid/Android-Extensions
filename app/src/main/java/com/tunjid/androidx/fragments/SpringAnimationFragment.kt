@@ -92,6 +92,13 @@ class SpringAnimationFragment : Fragment(R.layout.fragment_spring_animation) {
         binding.shrinkMargin.toggleProperty(marginProperties, view)
         binding.shrinkPadding.toggleProperty(paddingProperties, binding.cage)
         binding.cage.children.forEach { it.setOnClickListener(viewHiders::onButtonClicked) }
+
+        binding.shrinkMargin.run {
+            view.spring(MarginProperty.LEFT).addEndListener { _, _, value, _ ->  isChecked = value != 0f}
+        }
+        binding.shrinkPadding.run {
+            binding.cage.spring(PaddingProperty.LEFT).addEndListener { _, _, value, _ ->  isChecked = value != 0f}
+        }
     }
 
     private fun List<SpringModifierConsumer>.springOptions() =
