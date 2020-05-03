@@ -101,10 +101,10 @@ class GlobalUiDriver(
             else -> if (current.view == null) current.lifecycle else current.viewLifecycleOwner.lifecycle
         }
 
-    private val liveUiState = MutableLiveData(UiState.freshState())
+    private val liveUiState = MutableLiveData<UiState>()
 
     override var uiState: UiState
-        get() = liveUiState.value!!
+        get() = liveUiState.value ?: UiState.freshState()
         set(value) {
             val updated = value.copy(
                     fabClickListener = value.fabClickListener.lifecycleAware(),
