@@ -97,16 +97,19 @@ class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
                 toolBarMenu = R.menu.menu_default,
                 toolbarShows = true,
                 toolbarOverlaps = false,
+                toolbarMenuClickListener = {
+                    requireActivity().onOptionsItemSelected(it)
+                },
                 fabText = getString(R.string.go_deeper),
                 fabIcon = R.drawable.ic_bullseye_24dp,
                 fabShows = true,
-                insetFlags = InsetFlags.NO_TOP,
                 fabClickListener = {
                     val current = innerNavigator.current as? MultipleStackChildFragment
                     if (current != null) innerNavigator.push(MultipleStackChildFragment.newInstance(current.name, current.depth + 1))
                 },
                 showsBottomNav = true,
                 lightStatusBar = false,
+                insetFlags = InsetFlags.NO_TOP,
                 navBarColor = requireContext().colorAt(R.color.colorSurface)
         )
     }
