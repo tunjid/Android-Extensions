@@ -50,11 +50,6 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
     private val viewModel by viewModels<DoggoViewModel>()
     private val navigator by activityNavigatorController<MultiStackNavigator>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.colors.observe(this) { view?.setBackgroundColor(it) }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -80,15 +75,8 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
         viewPager.adapter = DoggoPagerAdapter(viewModel.doggos, this)
         viewPager.setCurrentItem(Doggo.transitionIndex, false)
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            var current = viewPager.currentItem
-
-            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-                if (positionOffset != 0f) viewModel.onSwiped(current, positionOffset, position == current)
-            }
-
-            override fun onPageScrollStateChanged(state: Int) {
-                if (state == ViewPager2.SCROLL_STATE_IDLE) current = viewPager.currentItem
-            }
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) =
+                    viewModel.onSwiped(position, positionOffset)
 
             override fun onPageSelected(position: Int) = onDoggoSwiped(position)
         })
@@ -106,6 +94,8 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
                 ),
                 onIndicatorClicked = viewPager::setCurrentItem
         )
+
+        viewModel.colors.observe(viewLifecycleOwner, view::setBackgroundColor)
 
         onDoggoSwiped(viewPager.currentItem)
         postponeEnterTransition()
