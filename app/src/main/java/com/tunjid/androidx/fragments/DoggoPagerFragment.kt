@@ -31,7 +31,6 @@ import com.tunjid.androidx.recyclerview.indicators.Params
 import com.tunjid.androidx.recyclerview.indicators.indicatorDecoration
 import com.tunjid.androidx.recyclerview.indicators.start
 import com.tunjid.androidx.recyclerview.indicators.width
-import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.view.util.InsetFlags
@@ -53,6 +52,7 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val initialUiState = uiState
         uiState = uiState.copy(
                 toolbarOverlaps = true,
                 toolbarShows = false,
@@ -65,7 +65,11 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
                 insetFlags = InsetFlags.NONE,
                 navBarColor = Color.TRANSPARENT,
                 fabClickListener = { Doggo.transitionDoggo?.let { navigator.push(AdoptDoggoFragment.newInstance(it)) } }
-        ).also(::prepareSharedElementTransition)
+        )
+
+        sharedElementEnterTransition = baseSharedTransition(initialUiState)
+        sharedElementReturnTransition = baseSharedTransition(uiState)
+        setEnterSharedElementCallback(createSharedEnterCallback())
 
         val viewPager = view.findViewById<ViewPager2>(R.id.view_pager)
         val resources = resources
@@ -126,24 +130,19 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
                 .addSharedElement(imageView, imageView.hashTransitionName(doggo))
     }
 
-    private fun prepareSharedElementTransition(after: UiState) {
-        sharedElementEnterTransition = baseSharedTransition(uiState, after)
-        sharedElementReturnTransition = baseSharedTransition()
+    private fun createSharedEnterCallback() = object : SharedElementCallback() {
+        override fun onMapSharedElements(names: List<String>?, sharedElements: MutableMap<String, View>?) {
+            val recyclerView = view?.findViewById<ViewGroup>(R.id.view_pager)?.get(0) ?: return
+            if (names == null || sharedElements == null || recyclerView !is RecyclerView) return
 
-        setEnterSharedElementCallback(object : SharedElementCallback() {
-            override fun onMapSharedElements(names: List<String>?, sharedElements: MutableMap<String, View>?) {
-                val recyclerView = view?.findViewById<ViewGroup>(R.id.view_pager)?.get(0) ?: return
-                if (names == null || sharedElements == null || recyclerView !is RecyclerView) return
+            val viewHolder = Doggo.transitionDoggo
+                    ?.let { recyclerView.findViewHolderForItemId(it.hashCode().toLong()) }
+                    ?: return
 
-                val viewHolder = Doggo.transitionDoggo
-                        ?.let { recyclerView.findViewHolderForItemId(it.hashCode().toLong()) }
-                        ?: return
+            val view: View = viewHolder.itemView.findViewById(R.id.doggo_image) ?: return
 
-                val view: View = viewHolder.itemView.findViewById(R.id.doggo_image) ?: return
-
-                sharedElements[names[0]] = view
-            }
-        })
+            sharedElements[names[0]] = view
+        }
     }
 
     companion object {

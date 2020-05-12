@@ -59,14 +59,18 @@ interface GlobalUiController {
  * Convenience method for [Fragment] delegation to a [FragmentActivity] when implementing
  * [GlobalUiController]
  */
-fun Fragment.activityGlobalUiController() = object : ReadWriteProperty<Fragment, UiState> {
+@Suppress("unused")
+fun Fragment.activityGlobalUiController() = UiStateDelegate(Fragment::getActivity)
 
-    override operator fun getValue(thisRef: Fragment, property: KProperty<*>): UiState =
-            (activity as? GlobalUiController)?.uiState
+class UiStateDelegate<T>(
+        private val source: (T) -> Any?
+) : ReadWriteProperty<T, UiState> {
+    override operator fun getValue(thisRef: T, property: KProperty<*>): UiState =
+            (source.invoke(thisRef) as? GlobalUiController)?.uiState
                     ?: throw IllegalStateException("This fragment is not hosted by a GlobalUiController")
 
-    override fun setValue(thisRef: Fragment, property: KProperty<*>, value: UiState) {
-        val host = activity
+    override fun setValue(thisRef: T, property: KProperty<*>, value: UiState) {
+        val host = source.invoke(thisRef)
         check(host is GlobalUiController) { "This fragment is not hosted by a GlobalUiController" }
         host.uiState = value
     }

@@ -18,7 +18,6 @@ import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.uidrivers.BACKGROUND_TINT_DURATION
-import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.uidrivers.update
@@ -37,6 +36,7 @@ class AdoptDoggoFragment : Fragment(R.layout.fragment_adopt_doggo) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val initialUiState = uiState
         uiState = uiState.copy(
                 toolBarMenu = 0,
                 toolbarShows = true,
@@ -53,10 +53,12 @@ class AdoptDoggoFragment : Fragment(R.layout.fragment_adopt_doggo) {
                 fabClickListener = {
                     ::uiState.update { copy(snackbarText = getString(R.string.adopted_doggo, doggo.name)) }
                 }
-        ).also(::prepareSharedElementTransition)
+        )
+
+        sharedElementEnterTransition = baseSharedTransition(initialUiState)
+        sharedElementReturnTransition = baseSharedTransition(uiState)
 
         val items = listOf(*resources.getStringArray(R.array.adoption_items))
-
         val binding = FragmentAdoptDoggoBinding.bind(view)
 
         binding.modelList.apply {
@@ -97,11 +99,6 @@ class AdoptDoggoFragment : Fragment(R.layout.fragment_adopt_doggo) {
             (animation.animatedValue as? Int)?.let { biConsumer.invoke(it, this) }
         }
         animator.start()
-    }
-
-    private fun prepareSharedElementTransition(after: UiState) {
-        sharedElementEnterTransition = baseSharedTransition()
-        sharedElementReturnTransition = baseSharedTransition(uiState, after)
     }
 
     companion object {
