@@ -121,29 +121,33 @@ class DoggoRankFragment : Fragment(R.layout.fragment_simple_list),
         val binding = holder.binding
         transaction
                 .setReorderingAllowed(true)
-                .addSharedElement(binding.innerConstraintLayout.doggoImage, binding.innerConstraintLayout.doggoImage.hashTransitionName(doggo))
+                .addSharedElement(
+                        binding.innerConstraintLayout.doggoImage,
+                        binding.innerConstraintLayout.doggoImage.hashTransitionName(doggo)
+                )
     }
 
-    private fun rankingViewHolder(parent: ViewGroup) =
-            parent.viewHolderFrom(ViewholderDoggoRankBinding::inflate).apply {
-                doggoBinder = object : DoggoBinder {
-                    init {
-                        itemView.setOnClickListener {
-                            val doggo = doggo ?: return@setOnClickListener
-                            Doggo.transitionDoggo = doggo
-                            navigator.push(AdoptDoggoFragment.newInstance(doggo))
-                        }
-                    }
-
-                    override var doggo: Doggo? = null
-                    override val doggoName: TextView get() = binding.innerConstraintLayout.doggoName
-                    override val thumbnail: ImageView get() = binding.innerConstraintLayout.doggoImage
-                    override val fullResolution: ImageView? get() = null
-                    override fun onDoggoThumbnailLoaded(doggo: Doggo) {
-                        if (doggo == Doggo.transitionDoggo) startPostponedEnterTransition()
-                    }
+    private fun rankingViewHolder(
+            parent: ViewGroup
+    ) = parent.viewHolderFrom(ViewholderDoggoRankBinding::inflate).apply {
+        doggoBinder = object : DoggoBinder {
+            init {
+                itemView.setOnClickListener {
+                    val doggo = doggo ?: return@setOnClickListener
+                    Doggo.transitionDoggo = doggo
+                    navigator.push(AdoptDoggoFragment.newInstance(doggo))
                 }
             }
+
+            override var doggo: Doggo? = null
+            override val doggoName: TextView get() = binding.innerConstraintLayout.doggoName
+            override val thumbnail: ImageView get() = binding.innerConstraintLayout.doggoImage
+            override val fullResolution: ImageView? get() = null
+            override fun onDoggoThumbnailLoaded(doggo: Doggo) {
+                if (doggo == Doggo.transitionDoggo) startPostponedEnterTransition()
+            }
+        }
+    }
 
     private fun moveDoggo(start: BindingViewHolder<*>, end: BindingViewHolder<*>) {
         val from = start.adapterPosition
