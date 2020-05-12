@@ -55,6 +55,8 @@
 
     <!-- Doggo Rank -->
     <string name="reset_doggos">Reset Doggos</string>
+    <string name="browse_doggos">Browse Doggos</string>
+    <string name="rank_doggos">Rank Doggos</string>
     <string name="doggo_moved">%1$s is now #%2$d!</string>
     <string name="doggo_removed">%1$s has been adopted!</string>
 
