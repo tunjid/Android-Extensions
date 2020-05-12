@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import kotlinx.coroutines.CoroutineScope
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 

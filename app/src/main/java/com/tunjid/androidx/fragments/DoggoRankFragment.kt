@@ -1,18 +1,23 @@
 package com.tunjid.androidx.fragments
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.TextUtils
+import android.transition.AutoTransition
+import android.transition.TransitionManager
 import android.util.Pair
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.ViewholderDoggoRankBinding
 import com.tunjid.androidx.isDarkTheme
@@ -23,7 +28,9 @@ import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.recyclerview.*
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
+import com.tunjid.androidx.uidrivers.SlideInItemAnimator
 import com.tunjid.androidx.uidrivers.activityGlobalUiController
+import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.androidx.viewholders.DoggoBinder
@@ -35,6 +42,7 @@ import kotlin.math.abs
 class DoggoRankFragment : Fragment(R.layout.fragment_simple_list),
         Navigator.TransactionModifier {
 
+    private var isRanking by args<Boolean>()
     private var uiState by activityGlobalUiController()
     private val viewModel by viewModels<DoggoRankViewModel>()
     private val navigator by activityNavigatorController<MultiStackNavigator>()
@@ -46,9 +54,21 @@ class DoggoRankFragment : Fragment(R.layout.fragment_simple_list),
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
-                toolBarMenu = 0,
+                toolBarMenu = R.menu.menu_doggo,
                 toolbarShows = true,
                 toolbarOverlaps = false,
+                toolbarMenuRefresher = {
+                    it.findItem(R.id.menu_sort)?.isVisible = !isRanking
+                    it.findItem(R.id.menu_browse)?.isVisible = isRanking
+                },
+                toolbarMenuClickListener = {
+                    when (it.itemId) {
+                        R.id.menu_browse -> isRanking = false
+                        R.id.menu_sort -> isRanking = true
+                    }
+                    recyclerView?.notifyDataSetChanged()
+                    ::uiState.update { copy(toolbarInvalidated = true) }
+                },
                 fabText = getString(R.string.reset_doggos),
                 fabIcon = R.drawable.ic_restore_24dp,
                 fabShows = true,
@@ -61,33 +81,21 @@ class DoggoRankFragment : Fragment(R.layout.fragment_simple_list),
         )
 
         recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view).apply {
-            layoutManager = verticalLayoutManager()
+            itemAnimator = SlideInItemAnimator()
+            layoutManager = gridLayoutManager(2) { if (isRanking) 2 else 1 }
             adapter = adapterOf(
                     itemsSource = viewModel::doggos,
-                    viewHolderCreator = { parent, _ ->
-                        parent.viewHolderFrom(ViewholderDoggoRankBinding::inflate).apply {
-                            doggoBinder = createDoggoBinder(
-                                    onThumbnailLoaded = { if (it == Doggo.transitionDoggo) startPostponedEnterTransition() },
-                                    onDoggoClicked = {
-                                        Doggo.transitionDoggo = it
-                                        navigator.push(AdoptDoggoFragment.newInstance(it))
-                                    }
-                            )
-                        }
-                    },
-                    viewHolderBinder = { viewHolder, doggo, _ ->
-                        viewHolder.doggoBinder?.bind(doggo)
-                        viewHolder.binding.doggoRank.text = (viewHolder.adapterPosition + 1).toString()
-                    },
+                    viewHolderCreator = { parent, _ -> rankingViewHolder(parent) },
+                    viewHolderBinder = { viewHolder, doggo, _ -> viewHolder.bind(isRanking, doggo) },
                     itemIdFunction = { it.hashCode().toLong() }
             )
             addScrollListener { _, dy -> if (abs(dy) > 4) uiState = uiState.copy(fabExtended = dy < 0) }
             setSwipeDragOptions<BindingViewHolder<ViewholderDoggoRankBinding>>(
-                    itemViewSwipeSupplier = { true },
-                    longPressDragSupplier = { true },
+                    itemViewSwipeSupplier = { isRanking },
+                    longPressDragSupplier = { isRanking },
                     swipeConsumer = { holder, _ -> removeDoggo(holder) },
                     dragConsumer = ::moveDoggo,
-                    dragHandleFunction = { it.binding.dragHandle },
+                    dragHandleFunction = { it.binding.innerConstraintLayout.dragHandle },
                     swipeDragStartConsumer = { holder, actionState -> onSwipeOrDragStarted(holder, actionState) },
                     swipeDragEndConsumer = { viewHolder, actionState -> onSwipeOrDragEnded(viewHolder, actionState) }
             )
@@ -103,7 +111,6 @@ class DoggoRankFragment : Fragment(R.layout.fragment_simple_list),
         recyclerView = null
     }
 
-    @SuppressLint("CommitTransaction")
     override fun augmentTransaction(transaction: FragmentTransaction, incomingFragment: Fragment) {
         if (incomingFragment !is AdoptDoggoFragment) return
 
@@ -114,8 +121,29 @@ class DoggoRankFragment : Fragment(R.layout.fragment_simple_list),
         val binding = holder.binding
         transaction
                 .setReorderingAllowed(true)
-                .addSharedElement(binding.doggoImage, binding.doggoImage.hashTransitionName(doggo))
+                .addSharedElement(binding.innerConstraintLayout.doggoImage, binding.innerConstraintLayout.doggoImage.hashTransitionName(doggo))
     }
+
+    private fun rankingViewHolder(parent: ViewGroup) =
+            parent.viewHolderFrom(ViewholderDoggoRankBinding::inflate).apply {
+                doggoBinder = object : DoggoBinder {
+                    init {
+                        itemView.setOnClickListener {
+                            val doggo = doggo ?: return@setOnClickListener
+                            Doggo.transitionDoggo = doggo
+                            navigator.push(AdoptDoggoFragment.newInstance(doggo))
+                        }
+                    }
+
+                    override var doggo: Doggo? = null
+                    override val doggoName: TextView get() = binding.innerConstraintLayout.doggoName
+                    override val thumbnail: ImageView get() = binding.innerConstraintLayout.doggoImage
+                    override val fullResolution: ImageView? get() = null
+                    override fun onDoggoThumbnailLoaded(doggo: Doggo) {
+                        if (doggo == Doggo.transitionDoggo) startPostponedEnterTransition()
+                    }
+                }
+            }
 
     private fun moveDoggo(start: BindingViewHolder<*>, end: BindingViewHolder<*>) {
         val from = start.adapterPosition
@@ -146,23 +174,24 @@ class DoggoRankFragment : Fragment(R.layout.fragment_simple_list),
     }
 
     companion object {
-        fun newInstance(): DoggoRankFragment = DoggoRankFragment().apply { arguments = Bundle() }
+        fun newInstance(): DoggoRankFragment = DoggoRankFragment().apply { this.isRanking = true }
     }
 }
 
 var BindingViewHolder<ViewholderDoggoRankBinding>.doggoBinder by BindingViewHolder.Prop<DoggoBinder?>()
 
-fun BindingViewHolder<ViewholderDoggoRankBinding>.createDoggoBinder(
-        onThumbnailLoaded: (Doggo) -> Unit,
-        onDoggoClicked: (Doggo) -> Unit
-) = object : DoggoBinder {
-    init {
-        itemView.setOnClickListener { doggo?.let(onDoggoClicked) }
+private fun BindingViewHolder<ViewholderDoggoRankBinding>.bind(isRanking: Boolean, doggo: Doggo) {
+    val currentlyInRanking = (binding.innerConstraintLayout.doggoImage.layoutParams as ConstraintLayout.LayoutParams).matchConstraintPercentWidth == 0.18f
+
+    if (isRanking != currentlyInRanking) ConstraintSet().run {
+        TransitionManager.beginDelayedTransition(
+                binding.innerConstraintLayout.innerConstraintLayout,
+                AutoTransition().setDuration(200)
+        )
+        clone(binding.root.context, if (isRanking) R.layout.viewholder_doggo_rank_sort else R.layout.viewholder_doggo_rank_browse)
+        applyTo(binding.innerConstraintLayout.innerConstraintLayout)
     }
 
-    override var doggo: Doggo? = null
-    override val doggoName: TextView get() = binding.doggoName
-    override val thumbnail: ImageView get() = binding.doggoImage
-    override val fullResolution: ImageView? get() = null
-    override fun onDoggoThumbnailLoaded(doggo: Doggo) = onThumbnailLoaded(doggo)
+    doggoBinder?.bind(doggo)
+    binding.innerConstraintLayout.doggoRank.text = (adapterPosition + 1).toString()
 }

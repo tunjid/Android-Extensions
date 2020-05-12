@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/inner_constraint_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:viewBindingIgnore="true">
+
+    <ImageView
+        android:id="@+id/doggo_image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="H,1:1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/doggo_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="@dimen/half_margin"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/doggo_image"
+        tools:text="G O O D  B O Y E" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/doggo_rank"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/single_margin"
+        android:ellipsize="end"
+        android:gravity="start|bottom"
+        android:maxLines="1"
+        android:paddingLeft="@dimen/quarter_margin"
+        android:paddingRight="@dimen/quarter_margin"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintRight_toRightOf="@+id/doggo_image"
+        app:layout_constraintTop_toTopOf="@+id/doggo_image"
+        tools:text="1" />
+
+    <ImageView
+        android:id="@+id/drag_handle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/single_margin"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/doggo_image"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/doggo_image"
+        app:srcCompat="@drawable/ic_drag_handle_24dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>
