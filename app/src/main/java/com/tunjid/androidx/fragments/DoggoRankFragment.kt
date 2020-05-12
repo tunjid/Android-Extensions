@@ -11,15 +11,18 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.ViewholderDoggoRankBinding
+import com.tunjid.androidx.divider
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.navigation.MultiStackNavigator
@@ -39,7 +42,7 @@ import com.tunjid.androidx.viewmodels.DoggoRankViewModel
 import com.tunjid.androidx.viewmodels.routeName
 import kotlin.math.abs
 
-class DoggoRankFragment : Fragment(R.layout.fragment_simple_list),
+class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
         Navigator.TransactionModifier {
 
     private var isRanking by args<Boolean>()
@@ -90,6 +93,8 @@ class DoggoRankFragment : Fragment(R.layout.fragment_simple_list),
                     itemIdFunction = { it.hashCode().toLong() }
             )
             addScrollListener { _, dy -> if (abs(dy) > 4) uiState = uiState.copy(fabExtended = dy < 0) }
+            addItemDecoration(context.divider(DividerItemDecoration.HORIZONTAL))
+            addItemDecoration(context.divider(DividerItemDecoration.VERTICAL))
             setSwipeDragOptions<BindingViewHolder<ViewholderDoggoRankBinding>>(
                     itemViewSwipeSupplier = { isRanking },
                     longPressDragSupplier = { isRanking },
@@ -186,14 +191,23 @@ var BindingViewHolder<ViewholderDoggoRankBinding>.doggoBinder by BindingViewHold
 
 private fun BindingViewHolder<ViewholderDoggoRankBinding>.bind(isRanking: Boolean, doggo: Doggo) {
     val currentlyInRanking = (binding.innerConstraintLayout.doggoImage.layoutParams as ConstraintLayout.LayoutParams).matchConstraintPercentWidth == 0.18f
+    val context = binding.root.context
 
     if (isRanking != currentlyInRanking) ConstraintSet().run {
         TransitionManager.beginDelayedTransition(
                 binding.innerConstraintLayout.innerConstraintLayout,
                 AutoTransition().setDuration(200)
         )
-        clone(binding.root.context, if (isRanking) R.layout.viewholder_doggo_rank_sort else R.layout.viewholder_doggo_rank_browse)
+        clone(context, if (isRanking) R.layout.viewholder_doggo_rank_sort else R.layout.viewholder_doggo_rank_browse)
         applyTo(binding.innerConstraintLayout.innerConstraintLayout)
+    }
+
+    val third = context.resources.getDimensionPixelSize(R.dimen.third_margin)
+    val single = context.resources.getDimensionPixelSize(R.dimen.single_margin)
+
+    binding.itemContainer.apply {
+        if (isRanking) updateLayoutParams<ViewGroup.MarginLayoutParams> { leftMargin = single; topMargin = third; rightMargin = single; bottomMargin = third }
+        else updateLayoutParams<ViewGroup.MarginLayoutParams> { leftMargin = 0; topMargin = 0; rightMargin = 0; bottomMargin = 0 }
     }
 
     doggoBinder?.bind(doggo)
