@@ -33,6 +33,11 @@ open class BindingViewHolder<T : ViewBinding> private constructor(
     }
 }
 
+inline fun <reified T : ViewBinding> BindingViewHolder<*>.binding() = (binding as T)
+
+@Suppress("UNCHECKED_CAST")
+inline fun <reified T : ViewBinding> BindingViewHolder<*>.typed() = this as BindingViewHolder<T>
+
 fun <T : ViewBinding> ViewGroup.viewHolderFrom(
         creator: (inflater: LayoutInflater, root: ViewGroup, attachToRoot: Boolean) -> T
 ): BindingViewHolder<T> = BindingViewHolder(this, creator)

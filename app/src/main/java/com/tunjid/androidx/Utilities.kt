@@ -41,6 +41,6 @@ val Context.isDarkTheme
 
 fun Context.divider(orientation: Int): RecyclerView.ItemDecoration {
     val decoration = DividerItemDecoration(this, orientation)
-    decoration.setDrawable(Objects.requireNonNull<Drawable>(drawableAt(R.drawable.bg_divider)?.withTint(themeColorAt(R.attr.colorSurface))))
+    decoration.setDrawable(drawableAt(R.drawable.bg_divider)?.withTint(themeColorAt(R.attr.colorSurface))!!)
     return decoration
 }
