@@ -2,21 +2,17 @@ package com.tunjid.androidx
 
 import android.content.Context
 import android.content.res.Configuration
-import android.graphics.drawable.Drawable
 import android.view.MenuItem
 import android.widget.ProgressBar
 import androidx.annotation.ColorInt
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.Transformations
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.graphics.drawable.withTint
 import io.reactivex.Flowable
-import java.util.*
 
 fun <T> Flowable<T>.toLiveData() = LiveDataReactiveStreams.fromPublisher(this)
 
@@ -39,8 +35,6 @@ val Context.isDarkTheme
         else -> true
     }
 
-fun Context.divider(orientation: Int): RecyclerView.ItemDecoration {
-    val decoration = DividerItemDecoration(this, orientation)
-    decoration.setDrawable(drawableAt(R.drawable.bg_divider)?.withTint(themeColorAt(R.attr.colorSurface))!!)
-    return decoration
+fun Context.divider(orientation: Int)= DividerItemDecoration(this, orientation).apply {
+    setDrawable(drawableAt(R.drawable.bg_divider)?.withTint(themeColorAt(R.attr.colorSurface))!!)
 }
