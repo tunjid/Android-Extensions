@@ -14,7 +14,7 @@ import com.tunjid.androidx.recyclerview.acceptDiff
 import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.gridLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
-import com.tunjid.androidx.uidrivers.SlideInItemAnimator
+import com.tunjid.androidx.uidrivers.SpringItemAnimator
 import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
@@ -72,7 +72,7 @@ class ShiftingTilesFragment : Fragment(R.layout.fragment_route) {
         FragmentRouteBinding.bind(view).recyclerView.apply {
             adapter = tileAdapter
             layoutManager = gridLayoutManager(4)
-            itemAnimator = SlideInItemAnimator()
+            itemAnimator = SpringItemAnimator()
         }
 
         viewModel.watchTiles().observe(viewLifecycleOwner, tileAdapter::acceptDiff)

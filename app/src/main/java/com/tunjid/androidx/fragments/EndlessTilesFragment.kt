@@ -16,7 +16,7 @@ import com.tunjid.androidx.recyclerview.addScrollListener
 import com.tunjid.androidx.recyclerview.gridLayoutManager
 import com.tunjid.androidx.recyclerview.setEndlessScrollListener
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
-import com.tunjid.androidx.uidrivers.SlideInItemAnimator
+import com.tunjid.androidx.uidrivers.SpringItemAnimator
 import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags
@@ -53,7 +53,7 @@ class EndlessTilesFragment : Fragment(R.layout.fragment_route) {
         )
 
         FragmentRouteBinding.bind(view).recyclerView.apply {
-            itemAnimator = SlideInItemAnimator()
+            itemAnimator = SpringItemAnimator()
             layoutManager = gridLayoutManager(3)
             adapter = adapterOf(
                     itemsSource = viewModel::tiles,

@@ -2,8 +2,11 @@ package com.tunjid.androidx.fragments
 
 import android.os.Bundle
 import android.text.TextUtils
-import android.transition.AutoTransition
+import android.transition.ChangeBounds
+import android.transition.ChangeImageTransform
+import android.transition.ChangeTransform
 import android.transition.TransitionManager
+import android.transition.TransitionSet
 import android.util.Pair
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +15,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.updateLayoutParams
+import androidx.dynamicanimation.animation.SpringForce
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
@@ -31,7 +35,7 @@ import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.recyclerview.*
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
-import com.tunjid.androidx.uidrivers.SlideInItemAnimator
+import com.tunjid.androidx.uidrivers.SpringItemAnimator
 import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags
@@ -84,7 +88,7 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
         )
 
         recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view).apply {
-            itemAnimator = SlideInItemAnimator()
+            itemAnimator = SpringItemAnimator(stiffness = SpringForce.STIFFNESS_LOW)
             layoutManager = gridLayoutManager(2) { if (isRanking) 2 else 1 }
             adapter = adapterOf(
                     itemsSource = viewModel::doggos,
@@ -190,13 +194,28 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
 var BindingViewHolder<ViewholderDoggoRankBinding>.doggoBinder by BindingViewHolder.Prop<DoggoBinder?>()
 
 private fun BindingViewHolder<ViewholderDoggoRankBinding>.bind(isRanking: Boolean, doggo: Doggo) {
-    val currentlyInRanking = (binding.innerConstraintLayout.doggoImage.layoutParams as ConstraintLayout.LayoutParams).matchConstraintPercentWidth == 0.18f
+    val layoutParams = binding.innerConstraintLayout.doggoImage.layoutParams as? ConstraintLayout.LayoutParams ?: return
+    val currentlyInRanking = layoutParams.matchConstraintPercentWidth != 1f
     val context = binding.root.context
 
     if (isRanking != currentlyInRanking) ConstraintSet().run {
         TransitionManager.beginDelayedTransition(
-                binding.innerConstraintLayout.innerConstraintLayout,
-                AutoTransition().setDuration(200)
+                binding.itemContainer,
+                TransitionSet()
+                        .setOrdering(TransitionSet.ORDERING_TOGETHER)
+                        .addTransition(TransitionSet()
+                                .setOrdering(TransitionSet.ORDERING_TOGETHER)
+                                .addTransition(ChangeImageTransform())
+                                .addTransition(ChangeTransform())
+                                .addTransition(ChangeBounds())
+                                .addTarget(binding.innerConstraintLayout.doggoImage)
+                        )
+                        .addTransition(ChangeBounds()
+                                .addTarget(binding.innerConstraintLayout.innerConstraintLayout)
+                                .addTarget(binding.innerConstraintLayout.doggoName)
+                                .addTarget(binding.innerConstraintLayout.doggoRank)
+                        )
+                        .setDuration(250)
         )
         clone(context, if (isRanking) R.layout.viewholder_doggo_rank_sort else R.layout.viewholder_doggo_rank_browse)
         applyTo(binding.innerConstraintLayout.innerConstraintLayout)
