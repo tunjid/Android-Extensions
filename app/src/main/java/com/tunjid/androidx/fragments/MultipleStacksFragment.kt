@@ -109,7 +109,7 @@ class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
                 },
                 showsBottomNav = true,
                 lightStatusBar = false,
-                insetFlags = InsetFlags.NO_TOP,
+                insetFlags = InsetFlags.VERTICAL,
                 navBarColor = requireContext().colorAt(R.color.colorSurface)
         )
     }
