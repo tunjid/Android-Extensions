@@ -9,6 +9,8 @@
         <item name="nav_bar_color">@color/nav_bar_color</item>
         <item name="prominent_text_color">@color/prominent_text_color</item>
         <item name="android:colorBackground">@color/colorSurface</item>
+        <item name="android:statusBarColor">@color/transparent</item>
+        <item name="android:navigationBarColor">@color/transparent</item>
     </style>
 
     <style name="AppTheme.PopupOverlay" parent="Theme.MaterialComponents.DayNight.NoActionBar">
