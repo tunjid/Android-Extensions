@@ -4,6 +4,7 @@ import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.graphics.Color
 import android.os.Bundle
+import android.transition.Fade
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -63,6 +64,7 @@ class AdoptDoggoFragment : Fragment(R.layout.fragment_simple_list) {
                 }
         )
 
+        enterTransition = Fade()
         sharedElementEnterTransition = baseSharedTransition(initialUiState)
         sharedElementReturnTransition = baseSharedTransition(uiState)
 
