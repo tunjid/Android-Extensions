@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.ViewholderNsdListBinding
 import com.tunjid.androidx.isDarkTheme
@@ -24,6 +23,7 @@ import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
+import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.NsdViewModel
 import com.tunjid.androidx.viewmodels.routeName
@@ -31,8 +31,9 @@ import com.tunjid.androidx.viewmodels.routeName
 /**
  * A [Fragment] listing supported NSD servers
  */
-class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan) {
+class NsdScanFragment : Fragment(R.layout.fragment_nsd_scan) {
 
+    private var uiState by activityGlobalUiController()
     private val viewModel by viewModels<NsdViewModel>()
 
     private var recyclerView: RecyclerView? = null
@@ -42,6 +43,7 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan) {
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
+                toolbarMenuRefresher = ::updateToolbarMenu,
                 toolbarMenuClickListener = ::onMenuItemSelected,
                 toolBarMenu = R.menu.menu_nsd_scan,
                 toolbarShows = true,
@@ -83,9 +85,7 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan) {
         recyclerView = null
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-
+    private fun updateToolbarMenu(menu: Menu) {
         val currentlyScanning = viewModel.isScanning.value ?: false
 
         menu.findItem(R.id.menu_stop)?.isVisible = currentlyScanning
@@ -100,7 +100,7 @@ class NsdScanFragment : AppBaseFragment(R.layout.fragment_nsd_scan) {
     private fun onMenuItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.menu_scan -> scanDevices(true)
         R.id.menu_stop -> scanDevices(false)
-        else -> super.onOptionsItemSelected(item).let {  }
+        else -> super.onOptionsItemSelected(item).let { }
     }
 
     private fun scanDevices(enable: Boolean) =

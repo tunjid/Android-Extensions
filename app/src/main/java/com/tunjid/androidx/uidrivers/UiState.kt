@@ -3,6 +3,7 @@ import android.graphics.Color
 import android.os.Parcel
 import android.os.Parcelable
 import android.text.TextUtils
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.ColorInt
@@ -42,9 +43,10 @@ data class UiState(
         val lightStatusBar: Boolean,
         val showsBottomNav: Boolean,
         val insetFlags: InsetFlags,
-        val fabClickListener: ((View) -> Unit)?,
-        val fabTransitionOptions: (SpringAnimation.() -> Unit)?,
-        val toolbarMenuClickListener: ((MenuItem) -> Unit)?
+        val fabClickListener: (View) -> Unit,
+        val fabTransitionOptions: SpringAnimation.() -> Unit,
+        val toolbarMenuClickListener: (MenuItem) -> Unit,
+        val toolbarMenuRefresher: (Menu) -> Unit
 ) : Parcelable {
 
     private constructor(`in`: Parcel) : this(
@@ -68,9 +70,10 @@ data class UiState(
                     hasRightInset = `in`.readByte().toInt() != 0x00,
                     hasBottomInset = `in`.readByte().toInt() != 0x00
             ),
-            fabClickListener = null,
-            fabTransitionOptions = null,
-            toolbarMenuClickListener = null
+            fabClickListener = emptyCallback(),
+            fabTransitionOptions = emptyCallback(),
+            toolbarMenuRefresher = emptyCallback(),
+            toolbarMenuClickListener = emptyCallback()
     )
 
     override fun describeContents(): Int = 0
@@ -112,9 +115,10 @@ data class UiState(
                 snackbarText = "",
                 toolbarInvalidated = false,
                 toolbarTitle = "",
-                fabClickListener = null,
-                fabTransitionOptions = null,
-                toolbarMenuClickListener = null,
+                fabClickListener = emptyCallback(),
+                fabTransitionOptions = emptyCallback(),
+                toolbarMenuRefresher = emptyCallback(),
+                toolbarMenuClickListener = emptyCallback(),
                 insetFlags = InsetFlags.ALL
         )
 
@@ -127,3 +131,5 @@ data class UiState(
         }
     }
 }
+
+private fun <T> emptyCallback() : (T) -> Unit = {}

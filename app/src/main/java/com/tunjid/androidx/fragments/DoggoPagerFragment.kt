@@ -21,16 +21,17 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.model.Doggo
+import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
+import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.recyclerview.indicators.PageIndicator
 import com.tunjid.androidx.recyclerview.indicators.Params
 import com.tunjid.androidx.recyclerview.indicators.indicatorDecoration
 import com.tunjid.androidx.recyclerview.indicators.start
 import com.tunjid.androidx.recyclerview.indicators.width
-import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
@@ -41,19 +42,17 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
+class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
         Navigator.TransactionModifier {
 
+    private var uiState by activityGlobalUiController()
     private val viewModel by viewModels<DoggoViewModel>()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.colors.observe(this) { view?.setBackgroundColor(it) }
-    }
+    private val navigator by activityNavigatorController<MultiStackNavigator>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val initialUiState = uiState
         uiState = uiState.copy(
                 toolbarOverlaps = true,
                 toolbarShows = false,
@@ -66,7 +65,11 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
                 insetFlags = InsetFlags.NONE,
                 navBarColor = Color.TRANSPARENT,
                 fabClickListener = { Doggo.transitionDoggo?.let { navigator.push(AdoptDoggoFragment.newInstance(it)) } }
-        ).also(::prepareSharedElementTransition)
+        )
+
+        sharedElementEnterTransition = baseSharedTransition(initialUiState)
+        sharedElementReturnTransition = baseSharedTransition(uiState)
+        setEnterSharedElementCallback(createSharedEnterCallback())
 
         val viewPager = view.findViewById<ViewPager2>(R.id.view_pager)
         val resources = resources
@@ -76,15 +79,8 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
         viewPager.adapter = DoggoPagerAdapter(viewModel.doggos, this)
         viewPager.setCurrentItem(Doggo.transitionIndex, false)
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            var current = viewPager.currentItem
-
-            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-                if (positionOffset != 0f) viewModel.onSwiped(current, positionOffset, position == current)
-            }
-
-            override fun onPageScrollStateChanged(state: Int) {
-                if (state == ViewPager2.SCROLL_STATE_IDLE) current = viewPager.currentItem
-            }
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) =
+                    viewModel.onSwiped(position, positionOffset)
 
             override fun onPageSelected(position: Int) = onDoggoSwiped(position)
         })
@@ -102,6 +98,8 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
                 ),
                 onIndicatorClicked = viewPager::setCurrentItem
         )
+
+        viewModel.colors.observe(viewLifecycleOwner, view::setBackgroundColor)
 
         onDoggoSwiped(viewPager.currentItem)
         postponeEnterTransition()
@@ -132,24 +130,19 @@ class DoggoPagerFragment : AppBaseFragment(R.layout.fragment_doggo_pager),
                 .addSharedElement(imageView, imageView.hashTransitionName(doggo))
     }
 
-    private fun prepareSharedElementTransition(after: UiState) {
-        sharedElementEnterTransition = baseSharedTransition(uiState, after)
-        sharedElementReturnTransition = baseSharedTransition()
+    private fun createSharedEnterCallback() = object : SharedElementCallback() {
+        override fun onMapSharedElements(names: List<String>?, sharedElements: MutableMap<String, View>?) {
+            val recyclerView = view?.findViewById<ViewGroup>(R.id.view_pager)?.get(0) ?: return
+            if (names == null || sharedElements == null || recyclerView !is RecyclerView) return
 
-        setEnterSharedElementCallback(object : SharedElementCallback() {
-            override fun onMapSharedElements(names: List<String>?, sharedElements: MutableMap<String, View>?) {
-                val recyclerView = view?.findViewById<ViewGroup>(R.id.view_pager)?.get(0) ?: return
-                if (names == null || sharedElements == null || recyclerView !is RecyclerView) return
+            val viewHolder = Doggo.transitionDoggo
+                    ?.let { recyclerView.findViewHolderForItemId(it.hashCode().toLong()) }
+                    ?: return
 
-                val viewHolder = Doggo.transitionDoggo
-                        ?.let { recyclerView.findViewHolderForItemId(it.hashCode().toLong()) }
-                        ?: return
+            val view: View = viewHolder.itemView.findViewById(R.id.doggo_image) ?: return
 
-                val view: View = viewHolder.itemView.findViewById(R.id.doggo_image) ?: return
-
-                sharedElements[names[0]] = view
-            }
-        })
+            sharedElements[names[0]] = view
+        }
     }
 
     companion object {

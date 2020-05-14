@@ -59,14 +59,18 @@ interface GlobalUiController {
  * Convenience method for [Fragment] delegation to a [FragmentActivity] when implementing
  * [GlobalUiController]
  */
-fun Fragment.activityGlobalUiController() = object : ReadWriteProperty<Fragment, UiState> {
+@Suppress("unused")
+fun Fragment.activityGlobalUiController() = UiStateDelegate(Fragment::getActivity)
 
-    override operator fun getValue(thisRef: Fragment, property: KProperty<*>): UiState =
-            (activity as? GlobalUiController)?.uiState
+class UiStateDelegate<T>(
+        private val source: (T) -> Any?
+) : ReadWriteProperty<T, UiState> {
+    override operator fun getValue(thisRef: T, property: KProperty<*>): UiState =
+            (source.invoke(thisRef) as? GlobalUiController)?.uiState
                     ?: throw IllegalStateException("This fragment is not hosted by a GlobalUiController")
 
-    override fun setValue(thisRef: Fragment, property: KProperty<*>, value: UiState) {
-        val host = activity
+    override fun setValue(thisRef: T, property: KProperty<*>, value: UiState) {
+        val host = source.invoke(thisRef)
         check(host is GlobalUiController) { "This fragment is not hosted by a GlobalUiController" }
         host.uiState = value
     }
@@ -101,15 +105,16 @@ class GlobalUiDriver(
             else -> if (current.view == null) current.lifecycle else current.viewLifecycleOwner.lifecycle
         }
 
-    private val liveUiState = MutableLiveData(UiState.freshState())
+    private val liveUiState = MutableLiveData<UiState>()
 
     override var uiState: UiState
-        get() = liveUiState.value!!
+        get() = liveUiState.value ?: UiState.freshState()
         set(value) {
             val updated = value.copy(
-                    fabClickListener = value.fabClickListener?.lifecycleAware(),
-                    fabTransitionOptions = value.fabTransitionOptions?.lifecycleAware(),
-                    toolbarMenuClickListener = value.toolbarMenuClickListener?.lifecycleAware()
+                    fabClickListener = value.fabClickListener.lifecycleAware(),
+                    fabTransitionOptions = value.fabTransitionOptions.lifecycleAware(),
+                    toolbarMenuRefresher = value.toolbarMenuRefresher.lifecycleAware(),
+                    toolbarMenuClickListener = value.toolbarMenuClickListener.lifecycleAware()
             )
             liveUiState.value = updated
             liveUiState.value = updated.copy(toolbarInvalidated = false) // Reset after firing once
@@ -138,7 +143,7 @@ class GlobalUiDriver(
         }
 
         UiState::toolbarShows onChanged toolbarHider::set
-        UiState::toolbarState onChanged this::updateMainToolBar
+        UiState::toolbarState onChanged toolbarHider.view::update
         UiState::toolbarMenuClickListener onChanged this::setMenuItemClickListener
 
         UiState::fabState onChanged this::setFabIcon
@@ -230,12 +235,6 @@ class GlobalUiDriver(
 
     private fun uiFlagTweak(tweaker: (Int) -> Int) = host.window.decorView.run {
         systemUiVisibility = tweaker(systemUiVisibility)
-    }
-
-    private fun updateMainToolBar(toolbarState: ToolbarState) = toolbarHider.view.run {
-        update(toolbarState)
-        navigator.current?.onPrepareOptionsMenu(this.menu)
-        Unit
     }
 
     private fun setFabIcon(fabState: FabState) = host.runOnUiThread {

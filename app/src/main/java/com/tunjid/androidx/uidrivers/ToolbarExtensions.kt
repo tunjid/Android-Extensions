@@ -43,7 +43,7 @@ private fun Toolbar.refreshMenu(menu: Int? = null) {
         this.menu.clear()
         if (menu != 0) inflateMenu(menu)
     }
-    navigator?.current?.onPrepareOptionsMenu(this.menu)
+    uiState?.toolbarMenuRefresher?.invoke(this.menu)
 }
 
 private fun Toolbar.updateIcons() {
@@ -73,4 +73,10 @@ private val Toolbar.navigator: Navigator?
     get() {
         val controller = context.unwrapActivity as? Navigator.Controller ?: return null
         return controller.navigator
+    }
+
+private val Toolbar.uiState: UiState?
+    get() {
+        val controller = context.unwrapActivity as? GlobalUiController ?: return null
+        return controller.uiState
     }

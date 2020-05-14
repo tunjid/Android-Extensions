@@ -25,7 +25,6 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.tabs.TabLayoutMediator
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.content.drawableAt
@@ -49,6 +48,7 @@ import com.tunjid.androidx.recyclerview.multiscroll.StaticCellSizer
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
+import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.spring
@@ -61,7 +61,9 @@ import kotlin.reflect.KMutableProperty0
 private typealias Var<T> = KMutableProperty0<T>
 
 //region Parent Fragment
-class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_parent) {
+class SpreadSheetParentFragment : Fragment(R.layout.fragment_spreadsheet_parent) {
+
+    private var uiState by activityGlobalUiController()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -92,10 +94,11 @@ class SpreadSheetParentFragment : AppBaseFragment(R.layout.fragment_spreadsheet_
 //endregion
 
 //region Inner Fragment
-class SpreadsheetFragment : AppBaseFragment(R.layout.fragment_spreadsheet_child) {
+class SpreadsheetFragment : Fragment(R.layout.fragment_spreadsheet_child) {
 
     private var isDynamic by args<Boolean>()
 
+    private var uiState by activityGlobalUiController()
     private val viewModel by viewModels<SpreadsheetViewModel>()
 
     private val scroller by lazy {

@@ -4,29 +4,27 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import androidx.transition.TransitionManager
 import com.transitionseverywhere.ChangeText
 import com.transitionseverywhere.ChangeText.CHANGE_BEHAVIOR_OUT_IN
 import com.tunjid.androidx.CounterService
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.services.HardServiceConnection
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
+import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.routeName
 
 
-class HardServiceConnectionFragment : AppBaseFragment(R.layout.fragment_hard_service_connection) {
+class HardServiceConnectionFragment : Fragment(R.layout.fragment_hard_service_connection) {
 
-    private lateinit var connection: HardServiceConnection<CounterService>
+    private var uiState by activityGlobalUiController()
+    private val connection by lazy { HardServiceConnection(requireContext(), CounterService::class.java, this::onServiceBound) }
+
     private var statusText: TextView? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        connection = HardServiceConnection(requireContext(), CounterService::class.java, this::onServiceBound)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

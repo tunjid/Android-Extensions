@@ -1,7 +1,6 @@
 package com.tunjid.androidx.fragments
 
 import android.annotation.SuppressLint
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.transition.Fade
 import android.transition.TransitionSet
@@ -10,7 +9,6 @@ import android.view.View.OnLayoutChangeListener
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.app.SharedElementCallback
-import androidx.core.content.ContextCompat.getDrawable
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
@@ -18,31 +16,35 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
-import com.tunjid.androidx.core.graphics.drawable.withTint
 import com.tunjid.androidx.databinding.FragmentDoggoListBinding
 import com.tunjid.androidx.databinding.ViewholderDoggoListBinding
+import com.tunjid.androidx.divider
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.model.Doggo
+import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
+import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.addScrollListener
 import com.tunjid.androidx.recyclerview.gridLayoutManager
 import com.tunjid.androidx.recyclerview.viewHolderForItemId
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
+import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.androidx.viewholders.DoggoBinder
 import com.tunjid.androidx.viewholders.bind
 import com.tunjid.androidx.viewmodels.routeName
-import java.util.Objects.requireNonNull
 import kotlin.math.abs
 
-class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
+class DoggoListFragment : Fragment(R.layout.fragment_doggo_list),
         Navigator.TransactionModifier {
+
+    private var uiState by activityGlobalUiController()
+    private val navigator by activityNavigatorController<MultiStackNavigator>()
 
     private var recyclerView: RecyclerView? = null
 
@@ -95,8 +97,8 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
             )
 
             addScrollListener { _, dy -> if (abs(dy) > 4) uiState = uiState.copy(fabExtended = dy < 0) }
-            addItemDecoration(getDivider(DividerItemDecoration.HORIZONTAL))
-            addItemDecoration(getDivider(DividerItemDecoration.VERTICAL))
+            addItemDecoration(context.divider(DividerItemDecoration.HORIZONTAL))
+            addItemDecoration(context.divider(DividerItemDecoration.VERTICAL))
         }
 
         postponeEnterTransition()
@@ -107,12 +109,6 @@ class DoggoListFragment : AppBaseFragment(R.layout.fragment_doggo_list),
     override fun onDestroyView() {
         super.onDestroyView()
         recyclerView = null
-    }
-
-    private fun getDivider(orientation: Int): RecyclerView.ItemDecoration = requireContext().run {
-        val decoration = DividerItemDecoration(this, orientation)
-        decoration.setDrawable(requireNonNull<Drawable>(getDrawable(this, R.drawable.bg_divider)?.withTint(themeColorAt(R.attr.colorSurface))))
-        return decoration
     }
 
     private fun scrollToPosition() = recyclerView?.apply {

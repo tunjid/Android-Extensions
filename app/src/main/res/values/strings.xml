@@ -55,6 +55,8 @@
 
     <!-- Doggo Rank -->
     <string name="reset_doggos">Reset Doggos</string>
+    <string name="browse_doggos">Browse Doggos</string>
+    <string name="rank_doggos">Rank Doggos</string>
     <string name="doggo_moved">%1$s is now #%2$d!</string>
     <string name="doggo_removed">%1$s has been adopted!</string>
 
@@ -105,6 +107,7 @@
     <string name="stiffness">Stiffness</string>
     <string name="bounciness">Bounciness</string>
     <string name="none">None</string>
+    <string name="bruh">Bruh</string>
     <string name="very_low">Very Low</string>
     <string name="low">Low</string>
     <string name="medium">Medium</string>
@@ -114,4 +117,5 @@
     <string name="spring_options">Spring options</string>
     <string name="shrink_margins">Shrink margins</string>
     <string name="shrink_padding">Shrink padding</string>
+    <string name="party_hard">Party Hard</string>
 </resources>

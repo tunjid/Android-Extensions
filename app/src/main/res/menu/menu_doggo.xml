@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_browse"
+        android:icon="@drawable/ic_browse_24dp"
+        android:title="@string/browse_doggos"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_sort"
+        android:icon="@drawable/ic_sort_24dp"
+        android:title="@string/rank_doggos"
+        app:showAsAction="ifRoom" />
+</menu>

@@ -29,6 +29,7 @@ object MarginProperty {
     val BOTTOM: FloatPropertyCompat<View> = MarginSpring(Gravity.BOTTOM)
 }
 
+@SuppressLint("RtlHardcoded")
 private class PaddingSpring(private val direction: Int) : FloatPropertyCompat<View>("Padding-$direction") {
     override fun setValue(view: View, value: Float) = when (direction) {
         Gravity.LEFT -> view.updatePadding(left = value.toInt())

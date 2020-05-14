@@ -4,18 +4,15 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.databinding.FragmentImageDetailBinding
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.viewholders.DoggoBinder
 import com.tunjid.androidx.viewholders.bind
 
-class DoggoFragment : AppBaseFragment(R.layout.fragment_image_detail) {
-
-    override val stableTag: String
-        get() = super.stableTag + "-" + doggo
+class DoggoFragment : Fragment(R.layout.fragment_image_detail) {
 
     private var doggo: Doggo by args()
 

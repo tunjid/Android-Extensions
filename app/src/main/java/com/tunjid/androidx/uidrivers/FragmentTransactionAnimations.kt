@@ -49,11 +49,10 @@ fun MultiStackNavigator.materialDepthAxisTransition(): FragmentTransaction.(Frag
 }
 
 fun baseSharedTransition(
-        before: UiState? = null,
-        after: UiState? = null
+        initial: UiState? = null
 ): Transition = TransitionSet()
         .setOrdering(TransitionSet.ORDERING_TOGETHER)
         .addTransition(ChangeImageTransform())
         .addTransition(ChangeTransform())
-        .addTransition(UiStateAwareChangeBounds(before, after))
+        .addTransition(UiStateAwareChangeBounds(initial))
         .setDuration(GlobalUiDriver.ANIMATION_DURATION.toLong())

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
+import androidx.annotation.RestrictTo
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentContainerView
@@ -194,7 +195,10 @@ class MultiStackNavigator(
     }
 
     private fun FragmentTransaction.addStackFragments() {
-        indices.forEach { index -> add(containerId, StackFragment.newInstance(index), index.toString()) }
+        indices.forEach { index ->
+            stackTransactionModifier?.invoke(this, index)
+            add(containerId, StackFragment.newInstance(index), index.toString())
+        }
     }
 
     private fun StackFragment.showRoot() = rootFunction(index).let(navigator::push)
@@ -221,21 +225,14 @@ class MultiStackNavigator(
     }
 }
 
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 class StackFragment : Fragment() {
-
-    internal lateinit var navigator: StackNavigator
 
     internal var index: Int by args()
     private var containerId: Int by args()
 
     internal val hasNoRoot get() = navigator.current == null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val deferred: StackNavigator by childStackNavigationController(containerId)
-        navigator = deferred
-    }
+    internal val navigator by lazy { StackNavigator(childFragmentManager, containerId) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
             FragmentContainerView(inflater.context).apply { id = containerId }
