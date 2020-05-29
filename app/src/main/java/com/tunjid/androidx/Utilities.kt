@@ -35,6 +35,6 @@ val Context.isDarkTheme
         else -> true
     }
 
-fun Context.divider(orientation: Int)= DividerItemDecoration(this, orientation).apply {
+fun Context.divider(orientation: Int) = DividerItemDecoration(this, orientation).apply {
     setDrawable(drawableAt(R.drawable.bg_divider)?.withTint(themeColorAt(R.attr.colorSurface))!!)
 }

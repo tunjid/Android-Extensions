@@ -42,7 +42,7 @@ import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 class RouteFragment : Fragment(R.layout.fragment_route) {
 
     private var uiState by activityGlobalUiController()
-    private val viewModel  by viewModels<RouteViewModel>()
+    private val viewModel by viewModels<RouteViewModel>()
     private val navigator by activityNavigatorController<MultiStackNavigator>()
 
     private var tabIndex: Int by args()
@@ -90,7 +90,7 @@ class RouteFragment : Fragment(R.layout.fragment_route) {
                 if (requireContext().isDarkTheme) MODE_NIGHT_NO
                 else MODE_NIGHT_YES
         )
-        else -> requireActivity().onOptionsItemSelected(item).let {  }
+        else -> requireActivity().onOptionsItemSelected(item).let { }
     }
 
     private fun onRouteClicked(destination: RouteItem.Destination) {

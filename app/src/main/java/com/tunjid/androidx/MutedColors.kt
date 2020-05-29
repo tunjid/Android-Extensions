@@ -24,9 +24,9 @@ object MutedColors {
     fun random(isDark: Boolean): Int = palette(isDark).random()
 
     private fun palette(isDark: Boolean): IntArray = when (isDark) {
-            true -> darkerMutedColors
-            else -> mutedColors
-        }
+        true -> darkerMutedColors
+        else -> mutedColors
+    }
 }
 
 private fun IntArray.circular(index: Int) = this[index % size]

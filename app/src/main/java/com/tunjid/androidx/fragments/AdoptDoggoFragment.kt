@@ -4,7 +4,6 @@ import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.graphics.Color
 import android.os.Bundle
-import android.transition.Fade
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -13,6 +12,7 @@ import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.transition.Fade
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.themeColorAt

@@ -1,11 +1,11 @@
 package com.tunjid.androidx.uidrivers
 
-import android.transition.ChangeImageTransform
-import android.transition.ChangeTransform
-import android.transition.Transition
-import android.transition.TransitionSet
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.transition.ChangeImageTransform
+import androidx.transition.ChangeTransform
+import androidx.transition.Transition
+import androidx.transition.TransitionSet
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import com.tunjid.androidx.navigation.MultiStackNavigator
@@ -25,11 +25,11 @@ fun MultiStackNavigator.materialFadeThroughTransition(): FragmentTransaction.(In
 
     rootFragmentManager.findFragmentByTag(activeIndex.toString())?.apply {
         enterTransition = null
-        if (exitTransition !is MaterialFadeThrough) exitTransition = MaterialFadeThrough.create().setDuration(300)
+        if (exitTransition !is MaterialFadeThrough) exitTransition = MaterialFadeThrough().setDuration(300)
     }
     rootFragmentManager.findFragmentByTag(index.toString())?.apply {
         exitTransition = null
-        if (enterTransition !is MaterialFadeThrough) enterTransition = MaterialFadeThrough.create().setDuration(300)
+        if (enterTransition !is MaterialFadeThrough) enterTransition = MaterialFadeThrough().setDuration(300)
     }
 }
 
@@ -38,12 +38,12 @@ fun MultiStackNavigator.materialDepthAxisTransition(): FragmentTransaction.(Frag
     if (current is Navigator.TransactionModifier) current.augmentTransaction(this, incomingFragment)
     else {
         current.apply {
-            enterTransition = MaterialSharedAxis.create(MaterialSharedAxis.Z, false)
-            exitTransition = MaterialSharedAxis.create(MaterialSharedAxis.Z, true)
+            enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+            exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
         }
         incomingFragment.apply {
-            enterTransition = MaterialSharedAxis.create(MaterialSharedAxis.Z, true)
-            exitTransition = MaterialSharedAxis.create(MaterialSharedAxis.Z, false)
+            enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+            exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
         }
     }
 }

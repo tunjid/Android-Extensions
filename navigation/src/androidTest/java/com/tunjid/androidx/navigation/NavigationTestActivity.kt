@@ -41,7 +41,7 @@ class NavigationTestActivity : AppCompatActivity() {
     }
 }
 
-fun <T: Navigator> T.waitForIdleSyncAfter(action: T.() -> Unit) {
+fun <T : Navigator> T.waitForIdleSyncAfter(action: T.() -> Unit) {
     action(this)
     InstrumentationRegistry.getInstrumentation().waitForIdleSync()
 }

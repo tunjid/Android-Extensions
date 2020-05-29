@@ -3,14 +3,14 @@ import groovy.json.JsonSlurper
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.3.61'
+    ext.kotlin_version = '1.3.72'
 
     repositories {
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.2'
+        classpath 'com.android.tools.build:gradle:4.0.0'
         classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.6'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -21,31 +21,31 @@ buildscript {
         targetSdkVersion = 29
         minSdkVersion = 21
 
-        appCompat                       = 'androidx.appcompat:appcompat:1.1.0'
-        cardView                        = 'androidx.cardview:cardview:1.0.0'
-        constraintLayout                = 'androidx.constraintlayout:constraintlayout:1.1.3'
-        dynamicAnimations               = 'androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03'
-        dynamicAnimationsKtx            = 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha02'
-        espressoContrib                 = 'androidx.test.espresso:espresso-contrib:3.1.0'
-        espressoCore                    = 'androidx.test.espresso:espresso-core:3.1.0'
-        espressoIdlingResource          = 'androidx.test.espresso.idling:idling-concurrent:3.1.0'
-        fragment                        = 'androidx.fragment:fragment:1.2.4'
-        fragmentKtx                     = 'androidx.fragment:fragment-ktx:1.2.4'
-        kotlin                          = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-        ktxCore                         = 'androidx.core:core-ktx:1.3.0-rc01'
-        lifeCycleReactiveStreams        = 'androidx.lifecycle:lifecycle-reactivestreams:2.2.0'
-        lifecycleSavedState             = 'androidx.lifecycle:lifecycle-viewmodel-savedstate:1.0.0'
-        lifecycleViewModel              = 'androidx.lifecycle:lifecycle-viewmodel:2.2.0'
-        material                        = 'com.google.android.material:material:1.2.0-alpha06'
-        mockitoAndroid                  = 'org.mockito:mockito-android:2.23.0'
-        mockitoCore                     = 'org.mockito:mockito-core:2.23.0'
-        palette                         = 'androidx.palette:palette:1.0.0'
-        recyclerView                    = 'androidx.recyclerview:recyclerview:1.1.0'
-        savedState                      = 'androidx.savedstate:savedstate:1.0.0'
-        supportAnnotations              = 'androidx.annotation:annotation:1.1.0'
-        swipeRefreshLayout              = 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
-        testCore                        = 'androidx.test:core:1.2.0'
-        viewpager2                      = 'androidx.viewpager2:viewpager2:1.0.0'
+        appCompat = 'androidx.appcompat:appcompat:1.1.0'
+        cardView = 'androidx.cardview:cardview:1.0.0'
+        constraintLayout = 'androidx.constraintlayout:constraintlayout:1.1.3'
+        dynamicAnimations = 'androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03'
+        dynamicAnimationsKtx = 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha02'
+        espressoContrib = 'androidx.test.espresso:espresso-contrib:3.1.0'
+        espressoCore = 'androidx.test.espresso:espresso-core:3.1.0'
+        espressoIdlingResource = 'androidx.test.espresso.idling:idling-concurrent:3.1.0'
+        fragment = 'androidx.fragment:fragment:1.2.4'
+        fragmentKtx = 'androidx.fragment:fragment-ktx:1.2.4'
+        kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+        ktxCore = 'androidx.core:core-ktx:1.3.0'
+        lifeCycleReactiveStreams = 'androidx.lifecycle:lifecycle-reactivestreams:2.2.0'
+        lifecycleSavedState = 'androidx.lifecycle:lifecycle-viewmodel-savedstate:1.0.0'
+        lifecycleViewModel = 'androidx.lifecycle:lifecycle-viewmodel:2.2.0'
+        material = 'com.google.android.material:material:1.2.0-beta01'
+        mockitoAndroid = 'org.mockito:mockito-android:2.23.0'
+        mockitoCore = 'org.mockito:mockito-core:2.23.0'
+        palette = 'androidx.palette:palette:1.0.0'
+        recyclerView = 'androidx.recyclerview:recyclerview:1.1.0'
+        savedState = 'androidx.savedstate:savedstate:1.0.0'
+        supportAnnotations = 'androidx.annotation:annotation:1.1.0'
+        swipeRefreshLayout = 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+        testCore = 'androidx.test:core:1.2.0'
+        viewpager2 = 'androidx.viewpager2:viewpager2:1.0.0'
 
         // Artifactory publishing params
         libProps = new Properties()
@@ -130,7 +130,7 @@ task incrementalPublish {
             }
             connection.connect()
 
-            def exists  = connection.getResponseCode() == HttpURLConnection.HTTP_OK
+            def exists = connection.getResponseCode() == HttpURLConnection.HTTP_OK
             println "pom for ${name} exists on ${url}: ${exists}"
 
             return exists
@@ -153,7 +153,7 @@ task incrementalPublish {
 
                     def existsOnGitHub = artifactExists(githubUrl, moduleName, version, true)
                     def existsOnJcenter = artifactExists(jCenterUrl, moduleName, version, false)
-                    def hasJcenterCreds  = project.ext.bintrayUser && !project.ext.bintrayUser.empty && project.ext.bintrayApiKey && !project.ext.bintrayApiKey.empty
+                    def hasJcenterCreds = project.ext.bintrayUser && !project.ext.bintrayUser.empty && project.ext.bintrayApiKey && !project.ext.bintrayApiKey.empty
 
                     def publishGithub = existsOnGitHub != null && !existsOnGitHub
                     def publishJcenter = existsOnJcenter != null && !existsOnJcenter && hasJcenterCreds

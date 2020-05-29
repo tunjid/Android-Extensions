@@ -45,6 +45,7 @@ class SpringAnimationFragment : Fragment(R.layout.fragment_spring_animation) {
 
         val binding = FragmentSpringAnimationBinding.bind(view)
         val viewHiders = binding.viewHiders
+
         @Suppress("MoveSuspiciousCallableReferenceIntoParentheses")
         val springModifiers: List<SpringModifierConsumer> =
                 viewHiders.map { it::configure }
@@ -94,10 +95,10 @@ class SpringAnimationFragment : Fragment(R.layout.fragment_spring_animation) {
         binding.cage.children.forEach { it.setOnClickListener(viewHiders::onButtonClicked) }
 
         binding.shrinkMargin.run {
-            view.spring(MarginProperty.LEFT).addEndListener { _, _, value, _ ->  isChecked = value != 0f}
+            view.spring(MarginProperty.LEFT).addEndListener { _, _, value, _ -> isChecked = value != 0f }
         }
         binding.shrinkPadding.run {
-            binding.cage.spring(PaddingProperty.LEFT).addEndListener { _, _, value, _ ->  isChecked = value != 0f}
+            binding.cage.spring(PaddingProperty.LEFT).addEndListener { _, _, value, _ -> isChecked = value != 0f }
         }
     }
 

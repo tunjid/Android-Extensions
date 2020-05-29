@@ -10,8 +10,8 @@
         android:layout_height="match_parent" />
 
     <include
+        layout="@layout/viewholder_placeholder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        layout="@layout/viewholder_placeholder"
         android:layout_gravity="center" />
 </FrameLayout>
