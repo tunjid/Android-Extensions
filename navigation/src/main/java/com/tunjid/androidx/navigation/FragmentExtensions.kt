@@ -28,9 +28,11 @@ internal val Fragment.navigatorTag
 fun Fragment.doOnLifecycleEvent(
         targetEvent: Lifecycle.Event,
         action: () -> Unit
-) = when {
-    lifecycle.currentState.isAtLeast(targetEvent.toState) -> action()
-    else -> lifecycle.addObserver { observer, _, event ->
+) {
+    val lastReceivedEvent = lifecycle.currentState.lastReceivedEvent
+    if (lastReceivedEvent != null && lastReceivedEvent >= targetEvent) return action()
+
+    lifecycle.addObserver { observer, _, event ->
         when (event) {
             targetEvent -> {
                 action()
@@ -75,15 +77,13 @@ fun Fragment.addOnBackPressedCallback(action: OnBackPressedCallback.() -> Unit):
     return callback
 }
 
-private val Lifecycle.Event.toState
+private val Lifecycle.State.lastReceivedEvent
     get() = when (this) {
-        Lifecycle.Event.ON_CREATE -> Lifecycle.State.CREATED
-        Lifecycle.Event.ON_START -> Lifecycle.State.STARTED
-        Lifecycle.Event.ON_RESUME -> Lifecycle.State.RESUMED
-        Lifecycle.Event.ON_PAUSE -> Lifecycle.State.DESTROYED
-        Lifecycle.Event.ON_STOP -> Lifecycle.State.DESTROYED
-        Lifecycle.Event.ON_DESTROY -> Lifecycle.State.DESTROYED
-        Lifecycle.Event.ON_ANY -> Lifecycle.State.DESTROYED
+        Lifecycle.State.DESTROYED -> Lifecycle.Event.ON_DESTROY
+        Lifecycle.State.INITIALIZED -> null
+        Lifecycle.State.CREATED -> Lifecycle.Event.ON_CREATE
+        Lifecycle.State.STARTED -> Lifecycle.Event.ON_START
+        Lifecycle.State.RESUMED -> Lifecycle.Event.ON_RESUME
     }
 
 // TODO: Create a lifecycle module and make this public there
