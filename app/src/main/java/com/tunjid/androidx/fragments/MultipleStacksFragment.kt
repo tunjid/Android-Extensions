@@ -4,7 +4,6 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
-import android.transition.Transition
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +14,7 @@ import androidx.core.view.children
 import androidx.core.view.doOnDetach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.transition.Transition
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.transition.MaterialFadeThrough
@@ -22,7 +22,6 @@ import com.google.android.material.transition.MaterialSharedAxis
 import com.google.android.material.transition.MaterialSharedAxis.X
 import com.tunjid.androidx.MutedColors
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.text.bold
@@ -36,6 +35,7 @@ import com.tunjid.androidx.databinding.FragmentMultipleStackBinding
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
+import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.navigation.addOnBackPressedCallback
 import com.tunjid.androidx.navigation.childMultiStackNavigationController
 import com.tunjid.androidx.uidrivers.GlobalUiController
@@ -45,10 +45,11 @@ import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.routeName
 
 
-class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack) {
+class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
 
     private var transitionOption: Int = R.id.slide
-
+    private var uiState by activityGlobalUiController()
+    private val navigator by activityNavigatorController<MultiStackNavigator>()
     internal val innerNavigator: MultiStackNavigator by childMultiStackNavigationController(
             DESTINATIONS.size,
             R.id.inner_container
@@ -86,7 +87,7 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
                     intArrayOf(Color.LTGRAY, Color.WHITE)
             ))
         }
-        binding.tabs.doOnDetach {  innerNavigator.stackSelectedListener = null }
+        binding.tabs.doOnDetach { innerNavigator.stackSelectedListener = null }
         binding.options.setOnCheckedChangeListener { _, checkedId ->
             transitionOption = checkedId
         }
@@ -96,16 +97,19 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
                 toolBarMenu = R.menu.menu_default,
                 toolbarShows = true,
                 toolbarOverlaps = false,
+                toolbarMenuClickListener = {
+                    requireActivity().onOptionsItemSelected(it)
+                },
                 fabText = getString(R.string.go_deeper),
                 fabIcon = R.drawable.ic_bullseye_24dp,
                 fabShows = true,
-                insetFlags = InsetFlags.NO_TOP,
                 fabClickListener = {
                     val current = innerNavigator.current as? MultipleStackChildFragment
                     if (current != null) innerNavigator.push(MultipleStackChildFragment.newInstance(current.name, current.depth + 1))
                 },
                 showsBottomNav = true,
                 lightStatusBar = false,
+                insetFlags = InsetFlags.VERTICAL,
                 navBarColor = requireContext().colorAt(R.color.colorSurface)
         )
     }
@@ -133,10 +137,10 @@ class MultipleStacksFragment : AppBaseFragment(R.layout.fragment_multiple_stack)
 
         // Casting is necessary for over enthusiastic Kotlin compiler CHECKCAST generation
         val (enterFrom, exitFrom, enterTo, exitTo) = arrayOf(
-                if (isSliding) MaterialSharedAxis.create(X, !isForward) else null,
-                if (isSliding) MaterialSharedAxis.create(X, isForward) else MaterialFadeThrough.create() as Transition,
-                if (isSliding) MaterialSharedAxis.create(X, isForward) else MaterialFadeThrough.create() as Transition,
-                if (isSliding) MaterialSharedAxis.create(X, !isForward) else null
+                if (isSliding) MaterialSharedAxis(X, !isForward) else null,
+                if (isSliding) MaterialSharedAxis(X, isForward) else MaterialFadeThrough() as Transition,
+                if (isSliding) MaterialSharedAxis(X, isForward) else MaterialFadeThrough() as Transition,
+                if (isSliding) MaterialSharedAxis(X, !isForward) else null
         )
 
         from.apply { enterTransition = enterFrom; exitTransition = exitFrom }

@@ -9,8 +9,7 @@
     android:layout_marginBottom="@dimen/half_margin"
     app:cardElevation="1dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/single_margin">

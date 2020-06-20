@@ -2,10 +2,10 @@ package com.tunjid.androidx.fragments
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.FragmentRouteBinding
 import com.tunjid.androidx.databinding.ViewholderTileBinding
@@ -16,7 +16,8 @@ import com.tunjid.androidx.recyclerview.addScrollListener
 import com.tunjid.androidx.recyclerview.gridLayoutManager
 import com.tunjid.androidx.recyclerview.setEndlessScrollListener
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
-import com.tunjid.androidx.uidrivers.SlideInItemAnimator
+import com.tunjid.androidx.uidrivers.SpringItemAnimator
+import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewholders.bind
@@ -29,8 +30,9 @@ import com.tunjid.androidx.viewmodels.routeName
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import kotlin.math.abs
 
-class EndlessTilesFragment : AppBaseFragment(R.layout.fragment_route) {
+class EndlessTilesFragment : Fragment(R.layout.fragment_route) {
 
+    private var uiState by activityGlobalUiController()
     private val viewModel by viewModels<EndlessTileViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -51,7 +53,7 @@ class EndlessTilesFragment : AppBaseFragment(R.layout.fragment_route) {
         )
 
         FragmentRouteBinding.bind(view).recyclerView.apply {
-            itemAnimator = SlideInItemAnimator()
+            itemAnimator = SpringItemAnimator()
             layoutManager = gridLayoutManager(3)
             adapter = adapterOf(
                     itemsSource = viewModel::tiles,

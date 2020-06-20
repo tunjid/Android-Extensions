@@ -1,100 +1,74 @@
 package com.tunjid.androidx.viewholders
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
-import android.text.Editable
 import android.text.TextUtils.isEmpty
-import android.text.TextWatcher
-import android.view.View
-import android.widget.EditText
-import android.widget.TextView
-import androidx.core.content.ContextCompat
+import android.view.ViewGroup
+import androidx.core.animation.doOnEnd
 import androidx.core.view.doOnNextLayout
-import androidx.recyclerview.widget.RecyclerView
+import androidx.core.widget.doAfterTextChanged
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.content.colorAt
+import com.tunjid.androidx.databinding.ViewholderSimpleInputBinding
+import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
+import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 
-class InputViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), TextWatcher {
+fun ViewGroup.inputViewHolder() = viewHolderFrom(ViewholderSimpleInputBinding::inflate).apply {
+    lastLineCount = 1
 
-    private var lastLineCount = 1
-
-    private val hint: TextView = itemView.findViewById(R.id.hint)
-    val text: EditText = itemView.findViewById(R.id.input)
-
-    init {
-        text.setOnFocusChangeListener { _, hasFocus ->
-            tintHint(hasFocus)
-            scaleHint(!hasFocus && isEmpty(text.text))
-        }
+    binding.input.setOnFocusChangeListener { _, hasFocus ->
+        binding.tintHint(hasFocus)
+        binding.scaleHint(!hasFocus && isEmpty(binding.input.text))
     }
 
-    fun bind(hintValue: String) {
-        hint.text = hintValue
-        text.addTextChangedListener(this)
-        setTintAlpha(text.hasFocus())
-        hint.doOnNextLayout { scaleHint(isEmpty(text.text)) }
-    }
-
-    fun unbind() = text.removeTextChangedListener(this)
-
-    override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) = Unit
-
-    override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) = Unit
-
-    override fun afterTextChanged(editable: Editable) {
-        val currentLineCount = text.lineCount
-        if (lastLineCount != currentLineCount) hint.doOnNextLayout { scaleHint(false) }
+    binding.input.doAfterTextChanged {
+        val currentLineCount = binding.input.lineCount
+        if (lastLineCount != currentLineCount) binding.hint.doOnNextLayout { binding.scaleHint(false) }
         lastLineCount = currentLineCount
     }
+}
 
-    private fun scaleHint(grow: Boolean) {
-        val scale = if (grow) 1f else HINT_SHRINK_SCALE
-        val translationX = if (grow) 0F else getHintLateralTranslation()
-        val translationY = if (grow) 0F else getHintLongitudinalTranslation()
+private var BindingViewHolder<ViewholderSimpleInputBinding>.lastLineCount by BindingViewHolder.Prop<Int>()
 
-        hint.animate()
-                .scaleX(scale)
-                .scaleY(scale)
-                .translationX(translationX)
-                .translationY(translationY)
-                .setDuration(HINT_ANIMATION_DURATION.toLong())
-                .start()
-    }
+private val ViewholderSimpleInputBinding.hintLateralTranslation: Float
+    get() = hint.width.let { -((it - HINT_SHRINK_SCALE * it) * HALF) }
 
-    private fun tintHint(hasFocus: Boolean) {
-        val start = hint.currentTextColor
-        val end = ContextCompat.getColor(hint.context,
-                if (hasFocus) R.color.colorAccent
-                else R.color.dark_grey)
+private val ViewholderSimpleInputBinding.hintLongitudinalTranslation: Float
+    get() = -((root.height - hint.height) * HALF)
 
-        val animator = ValueAnimator.ofObject(ArgbEvaluator(), start, end)
-        animator.duration = HINT_ANIMATION_DURATION.toLong()
-        animator.addUpdateListener { animation -> hint.setTextColor(animation.animatedValue as Int) }
-        animator.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator) = setTintAlpha(hasFocus)
-        })
+private fun ViewholderSimpleInputBinding.scaleHint(grow: Boolean) {
+    val scale = if (grow) 1f else HINT_SHRINK_SCALE
+    hint.animate()
+            .scaleX(scale)
+            .scaleY(scale)
+            .translationX(if (grow) 0F else hintLateralTranslation)
+            .translationY(if (grow) 0F else hintLongitudinalTranslation)
+            .setDuration(HINT_ANIMATION_DURATION.toLong())
+            .start()
+}
 
-        animator.start()
-    }
+private fun ViewholderSimpleInputBinding.tintHint(hasFocus: Boolean) {
+    val start = hint.currentTextColor
+    val end = hint.context.colorAt(if (hasFocus) R.color.colorAccent else R.color.dark_grey)
 
-    private fun getHintLateralTranslation(): Float {
-        val width = hint.width
-        return -((width - HINT_SHRINK_SCALE * width) * HALF)
-    }
-
-    private fun getHintLongitudinalTranslation(): Float {
-        return -((itemView.height - hint.height) * HALF)
-    }
-
-    private fun setTintAlpha(hasFocus: Boolean) {
-        hint.alpha = if (!hasFocus) 0.38f else 1f
-    }
-
-    companion object {
-
-        private const val HINT_ANIMATION_DURATION = 200
-        private const val HINT_SHRINK_SCALE = 0.8f
-        private const val HALF = 0.5f
+    ValueAnimator.ofObject(ArgbEvaluator(), start, end).run {
+        duration = HINT_ANIMATION_DURATION.toLong()
+        doOnEnd { setTintAlpha(hasFocus) }
+        addUpdateListener { animation -> hint.setTextColor(animation.animatedValue as Int) }
+        start()
     }
 }
+
+private fun ViewholderSimpleInputBinding.setTintAlpha(hasFocus: Boolean) {
+    hint.alpha = if (!hasFocus) 0.38f else 1f
+}
+
+fun BindingViewHolder<ViewholderSimpleInputBinding>.bind(hintValue: CharSequence) = binding.apply {
+    hint.text = hintValue
+    setTintAlpha(input.hasFocus())
+    hint.doOnNextLayout { scaleHint(isEmpty(input.text)) }
+}
+
+private const val HINT_ANIMATION_DURATION = 200
+private const val HINT_SHRINK_SCALE = 0.8f
+private const val HALF = 0.5f

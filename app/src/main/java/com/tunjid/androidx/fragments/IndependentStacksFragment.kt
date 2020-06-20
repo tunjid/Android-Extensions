@@ -16,25 +16,29 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
 import com.tunjid.androidx.MutedColors
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.text.color
 import com.tunjid.androidx.core.text.formatSpanned
 import com.tunjid.androidx.core.text.scale
 import com.tunjid.androidx.isDarkTheme
+import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.StackNavigator
+import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.navigation.addOnBackPressedCallback
 import com.tunjid.androidx.navigation.childStackNavigationController
+import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.uidrivers.crossFade
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.routeName
 import java.util.*
 
 
-class IndependentStacksFragment : AppBaseFragment(R.layout.fragment_independent_stack) {
+class IndependentStacksFragment : Fragment(R.layout.fragment_independent_stack) {
 
+    private var uiState by activityGlobalUiController()
+    private val navigator by activityNavigatorController<MultiStackNavigator>()
     private val navigators = mutableMapOf<Int, StackNavigator>()
     private val visitOrder = ArrayDeque<Int>()
 

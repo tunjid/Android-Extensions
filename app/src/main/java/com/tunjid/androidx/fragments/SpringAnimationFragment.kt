@@ -6,6 +6,7 @@ import android.widget.CheckBox
 import androidx.core.view.children
 import androidx.core.view.postDelayed
 import androidx.dynamicanimation.animation.FloatPropertyCompat
+import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -13,10 +14,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.FragmentSpringAnimationBinding
 import com.tunjid.androidx.isDarkTheme
+import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.view.animator.ViewHider
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.MarginProperty
@@ -35,28 +36,46 @@ private typealias SpringModifier = SpringForce.() -> Unit
 
 private typealias SpringModifierConsumer = (SpringForce.() -> Unit) -> Unit
 
-class SpringAnimationFragment : AppBaseFragment(R.layout.fragment_spring_animation) {
+class SpringAnimationFragment : Fragment(R.layout.fragment_spring_animation) {
+
+    private var uiState by activityGlobalUiController()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentSpringAnimationBinding.bind(view)
         val viewHiders = binding.viewHiders
+
         @Suppress("MoveSuspiciousCallableReferenceIntoParentheses")
         val springModifiers: List<SpringModifierConsumer> =
                 viewHiders.map { it::configure }
                         .plus(marginProperties.toModifiers(view))
                         .plus(paddingProperties.toModifiers(binding.cage))
+                        .plus(viewHiders.map(ViewHider<FloatingActionButton>::view).map(scaleProperties::toModifiers).flatten())
+
+        springModifiers.forEach {
+            it.invoke {
+                stiffness = stiffnessValues.first()
+                dampingRatio = dampingValues.last()
+            }
+        }
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
-                toolBarMenu = 0,
+                toolBarMenu = R.menu.menu_spring_animations,
                 fabShows = true,
-                fabIcon = R.drawable.ic_expand_24dp,
                 toolbarOverlaps = false,
                 toolbarShows = true,
-                fabText = getString(R.string.spring_options),
-                fabClickListener = { springModifiers.springOptions() },
+                toolbarMenuClickListener = {
+                    springModifiers.springOptions()
+                },
+                fabIcon = R.drawable.ic_dance_24dp,
+                fabText = getString(R.string.party_hard),
+                fabClickListener = {
+                    marginProperties.partyHard(view)
+                    paddingProperties.partyHard(binding.cage)
+                    viewHiders.map(ViewHider<FloatingActionButton>::view).forEach(scaleProperties::partyHard)
+                },
                 showsBottomNav = false,
                 insetFlags = InsetFlags.ALL,
                 lightStatusBar = !requireContext().isDarkTheme,
@@ -74,6 +93,13 @@ class SpringAnimationFragment : AppBaseFragment(R.layout.fragment_spring_animati
         binding.shrinkMargin.toggleProperty(marginProperties, view)
         binding.shrinkPadding.toggleProperty(paddingProperties, binding.cage)
         binding.cage.children.forEach { it.setOnClickListener(viewHiders::onButtonClicked) }
+
+        binding.shrinkMargin.run {
+            view.spring(MarginProperty.LEFT).addEndListener { _, _, value, _ -> isChecked = value != 0f }
+        }
+        binding.shrinkPadding.run {
+            binding.cage.spring(PaddingProperty.LEFT).addEndListener { _, _, value, _ -> isChecked = value != 0f }
+        }
     }
 
     private fun List<SpringModifierConsumer>.springOptions() =
@@ -118,6 +144,18 @@ private fun List<FloatPropertyCompat<View>>.toModifiers(view: View) =
         map { view.spring(it).spring }
                 .map { { modifier: SpringModifier -> modifier.invoke(it) } }
 
+private fun List<FloatPropertyCompat<View>>.partyHard(view: View) = forEach {
+    val resources = view.context.resources
+    val current = it.getValue(view)
+    val squeeze = resources.getDimensionPixelSize(R.dimen.double_margin).toFloat()
+
+    view.spring(it).animateToFinalPosition(when (it) {
+        SpringAnimation.SCALE_X -> if (current == 1f) 0.8f else 1f
+        SpringAnimation.SCALE_Y -> if (current == 1f) 0.8f else 1f
+        else -> if (current == 0f) squeeze else 0f
+    })
+}
+
 private fun CheckBox.toggleProperty(properties: List<FloatPropertyCompat<View>>, cage: View) {
     val squeeze = context.resources.getDimensionPixelSize(R.dimen.double_margin).toFloat()
     setOnCheckedChangeListener { _, isChecked ->
@@ -143,8 +181,15 @@ private val marginProperties
             MarginProperty.BOTTOM
     )
 
+private val scaleProperties
+    get() = listOf(
+            SpringAnimation.SCALE_X,
+            SpringAnimation.SCALE_Y
+    )
+
 private val Fragment.stiffnessNames
     get() = arrayOf(
+            getString(R.string.bruh),
             getString(R.string.very_low),
             getString(R.string.low),
             getString(R.string.medium),
@@ -156,10 +201,12 @@ private val Fragment.dampingNames
             getString(R.string.none),
             getString(R.string.low),
             getString(R.string.medium),
-            getString(R.string.high)
+            getString(R.string.high),
+            getString(R.string.bruh)
     )
 
 private val stiffnessValues = listOf(
+        10f,
         SpringForce.STIFFNESS_VERY_LOW,
         SpringForce.STIFFNESS_LOW,
         SpringForce.STIFFNESS_MEDIUM,
@@ -170,5 +217,6 @@ private val dampingValues = listOf(
         SpringForce.DAMPING_RATIO_NO_BOUNCY,
         SpringForce.DAMPING_RATIO_LOW_BOUNCY,
         SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY,
-        SpringForce.DAMPING_RATIO_HIGH_BOUNCY
+        SpringForce.DAMPING_RATIO_HIGH_BOUNCY,
+        0.08f
 )

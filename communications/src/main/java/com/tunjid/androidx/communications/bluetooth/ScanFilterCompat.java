@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice;
 import android.os.Parcel;
 import android.os.ParcelUuid;
 import android.os.Parcelable;
+
 import androidx.annotation.Nullable;
 
 import java.util.Arrays;
@@ -28,24 +29,87 @@ import java.util.UUID;
 @SuppressWarnings("WeakerAccess")
 public final class ScanFilterCompat implements Parcelable {
 
+    /**
+     * A {@link android.os.Parcelable.Creator} to create {@link ScanFilterCompat} from parcel.
+     */
+    public static final Creator<ScanFilterCompat>
+            CREATOR = new Creator<ScanFilterCompat>() {
+
+        @Override
+        public ScanFilterCompat[] newArray(int size) {
+            return new ScanFilterCompat[size];
+        }
+
+        @Override
+        public ScanFilterCompat createFromParcel(Parcel in) {
+            Builder builder = new Builder();
+            if (in.readInt() == 1) {
+                builder.setDeviceName(in.readString());
+            }
+            if (in.readInt() == 1) {
+                builder.setDeviceAddress(in.readString());
+            }
+            if (in.readInt() == 1) {
+                ParcelUuid uuid = in.readParcelable(ParcelUuid.class.getClassLoader());
+                builder.setServiceUuid(uuid);
+                if (in.readInt() == 1) {
+                    ParcelUuid uuidMask = in.readParcelable(
+                            ParcelUuid.class.getClassLoader());
+                    builder.setServiceUuid(uuid, uuidMask);
+                }
+            }
+            if (in.readInt() == 1) {
+                ParcelUuid servcieDataUuid =
+                        in.readParcelable(ParcelUuid.class.getClassLoader());
+                if (in.readInt() == 1) {
+                    int serviceDataLength = in.readInt();
+                    byte[] serviceData = new byte[serviceDataLength];
+                    in.readByteArray(serviceData);
+                    if (in.readInt() == 0) {
+                        builder.setServiceData(servcieDataUuid, serviceData);
+                    } else {
+                        int serviceDataMaskLength = in.readInt();
+                        byte[] serviceDataMask = new byte[serviceDataMaskLength];
+                        in.readByteArray(serviceDataMask);
+                        builder.setServiceData(
+                                servcieDataUuid, serviceData, serviceDataMask);
+                    }
+                }
+            }
+
+            int manufacturerId = in.readInt();
+            if (in.readInt() == 1) {
+                int manufacturerDataLength = in.readInt();
+                byte[] manufacturerData = new byte[manufacturerDataLength];
+                in.readByteArray(manufacturerData);
+                if (in.readInt() == 0) {
+                    builder.setManufacturerData(manufacturerId, manufacturerData);
+                } else {
+                    int manufacturerDataMaskLength = in.readInt();
+                    byte[] manufacturerDataMask = new byte[manufacturerDataMaskLength];
+                    in.readByteArray(manufacturerDataMask);
+                    builder.setManufacturerData(manufacturerId, manufacturerData,
+                            manufacturerDataMask);
+                }
+            }
+
+            return builder.build();
+        }
+    };
     @Nullable
     private final String mDeviceName;
-
     @Nullable
     private final String mDeviceAddress;
-
     @Nullable
     private final ParcelUuid mServiceUuid;
     @Nullable
     private final ParcelUuid mServiceUuidMask;
-
     @Nullable
     private final ParcelUuid mServiceDataUuid;
     @Nullable
     private final byte[] mServiceData;
     @Nullable
     private final byte[] mServiceDataMask;
-
     private final int mManufacturerId;
     @Nullable
     private final byte[] mManufacturerData;
@@ -72,6 +136,43 @@ public final class ScanFilterCompat implements Parcelable {
 
     public static Builder getBuilder() {
         return new Builder();
+    }
+
+    private static boolean equals(Object a, Object b) {
+        return (a == b) || (a != null && a.equals(b));
+    }
+
+    private static boolean deepEquals(Object a, Object b) {
+        return a == b || !(a == null || b == null) && deepEquals0(a, b);
+    }
+
+    private static boolean deepEquals0(Object e1, Object e2) {
+        Class<?> cl1 = e1.getClass().getComponentType();
+        Class<?> cl2 = e2.getClass().getComponentType();
+
+        if (cl1 != cl2) {
+            return false;
+        }
+        if (e1 instanceof Object[])
+            return Arrays.deepEquals((Object[]) e1, (Object[]) e2);
+        else if (cl1 == byte.class)
+            return Arrays.equals((byte[]) e1, (byte[]) e2);
+        else if (cl1 == short.class)
+            return Arrays.equals((short[]) e1, (short[]) e2);
+        else if (cl1 == int.class)
+            return Arrays.equals((int[]) e1, (int[]) e2);
+        else if (cl1 == long.class)
+            return Arrays.equals((long[]) e1, (long[]) e2);
+        else if (cl1 == char.class)
+            return Arrays.equals((char[]) e1, (char[]) e2);
+        else if (cl1 == float.class)
+            return Arrays.equals((float[]) e1, (float[]) e2);
+        else if (cl1 == double.class)
+            return Arrays.equals((double[]) e1, (double[]) e2);
+        else if (cl1 == boolean.class)
+            return Arrays.equals((boolean[]) e1, (boolean[]) e2);
+        else
+            return e1.equals(e2);
     }
 
     @Override
@@ -125,76 +226,6 @@ public final class ScanFilterCompat implements Parcelable {
             }
         }
     }
-
-    /**
-     * A {@link android.os.Parcelable.Creator} to create {@link ScanFilterCompat} from parcel.
-     */
-    public static final Creator<ScanFilterCompat>
-            CREATOR = new Creator<ScanFilterCompat>() {
-
-        @Override
-        public ScanFilterCompat[] newArray(int size) {
-            return new ScanFilterCompat[size];
-        }
-
-        @Override
-        public ScanFilterCompat createFromParcel(Parcel in) {
-            Builder builder = new Builder();
-            if (in.readInt() == 1) {
-                builder.setDeviceName(in.readString());
-            }
-            if (in.readInt() == 1) {
-                builder.setDeviceAddress(in.readString());
-            }
-            if (in.readInt() == 1) {
-                ParcelUuid uuid = in.readParcelable(ParcelUuid.class.getClassLoader());
-                builder.setServiceUuid(uuid);
-                if (in.readInt() == 1) {
-                    ParcelUuid uuidMask = in.readParcelable(
-                            ParcelUuid.class.getClassLoader());
-                    builder.setServiceUuid(uuid, uuidMask);
-                }
-            }
-            if (in.readInt() == 1) {
-                ParcelUuid servcieDataUuid =
-                        in.readParcelable(ParcelUuid.class.getClassLoader());
-                if (in.readInt() == 1) {
-                    int serviceDataLength = in.readInt();
-                    byte[] serviceData = new byte[serviceDataLength];
-                    in.readByteArray(serviceData);
-                    if (in.readInt() == 0) {
-                        builder.setServiceData(servcieDataUuid, serviceData);
-                    }
-                    else {
-                        int serviceDataMaskLength = in.readInt();
-                        byte[] serviceDataMask = new byte[serviceDataMaskLength];
-                        in.readByteArray(serviceDataMask);
-                        builder.setServiceData(
-                                servcieDataUuid, serviceData, serviceDataMask);
-                    }
-                }
-            }
-
-            int manufacturerId = in.readInt();
-            if (in.readInt() == 1) {
-                int manufacturerDataLength = in.readInt();
-                byte[] manufacturerData = new byte[manufacturerDataLength];
-                in.readByteArray(manufacturerData);
-                if (in.readInt() == 0) {
-                    builder.setManufacturerData(manufacturerId, manufacturerData);
-                }
-                else {
-                    int manufacturerDataMaskLength = in.readInt();
-                    byte[] manufacturerDataMask = new byte[manufacturerDataMaskLength];
-                    in.readByteArray(manufacturerDataMask);
-                    builder.setManufacturerData(manufacturerId, manufacturerData,
-                            manufacturerDataMask);
-                }
-            }
-
-            return builder.build();
-        }
-    };
 
     /**
      * Returns the filter set the device name field of Bluetooth advertisement data.
@@ -589,42 +620,5 @@ public final class ScanFilterCompat implements Parcelable {
                     mServiceDataUuid, mServiceData, mServiceDataMask,
                     mManufacturerId, mManufacturerData, mManufacturerDataMask);
         }
-    }
-
-    private static boolean equals(Object a, Object b) {
-        return (a == b) || (a != null && a.equals(b));
-    }
-
-    private static boolean deepEquals(Object a, Object b) {
-        return a == b || !(a == null || b == null) && deepEquals0(a, b);
-    }
-
-    private static boolean deepEquals0(Object e1, Object e2) {
-        Class<?> cl1 = e1.getClass().getComponentType();
-        Class<?> cl2 = e2.getClass().getComponentType();
-
-        if (cl1 != cl2) {
-            return false;
-        }
-        if (e1 instanceof Object[])
-            return Arrays.deepEquals((Object[]) e1, (Object[]) e2);
-        else if (cl1 == byte.class)
-            return Arrays.equals((byte[]) e1, (byte[]) e2);
-        else if (cl1 == short.class)
-            return Arrays.equals((short[]) e1, (short[]) e2);
-        else if (cl1 == int.class)
-            return Arrays.equals((int[]) e1, (int[]) e2);
-        else if (cl1 == long.class)
-            return Arrays.equals((long[]) e1, (long[]) e2);
-        else if (cl1 == char.class)
-            return Arrays.equals((char[]) e1, (char[]) e2);
-        else if (cl1 == float.class)
-            return Arrays.equals((float[]) e1, (float[]) e2);
-        else if (cl1 == double.class)
-            return Arrays.equals((double[]) e1, (double[]) e2);
-        else if (cl1 == boolean.class)
-            return Arrays.equals((boolean[]) e1, (boolean[]) e2);
-        else
-            return e1.equals(e2);
     }
 }

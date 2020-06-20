@@ -1,42 +1,47 @@
 package com.tunjid.androidx.uidrivers
 
 import android.graphics.Rect
-import android.transition.ChangeBounds
-import android.transition.TransitionValues
-import com.tunjid.androidx.R
+import androidx.transition.ChangeBounds
+import androidx.transition.TransitionValues
+import com.tunjid.androidx.core.content.unwrapActivity
+import com.tunjid.androidx.view.util.InsetFlags
 
 class UiStateAwareChangeBounds(
-        before: UiState?,
-        after: UiState?
+        private val initial: UiState?
 ) : ChangeBounds() {
 
-    private val statusBarChanged = changed(before, after) { it.insetFlags.hasTopInset }
-    private val toolbarChanged = changed(before, after, UiState::toolbarOverlaps)
-
-    override fun captureEndValues(transitionValues: TransitionValues?) {
+    override fun captureEndValues(transitionValues: TransitionValues) {
         super.captureEndValues(transitionValues)
-        transitionValues ?: return
-        val context = transitionValues.view.context
 
         val rect = transitionValues.values[BOUNDS_PROPERTY] as? Rect ?: return
 
-        val statusBar = if (statusBarChanged) GlobalUiDriver.statusBarSize else 0
-        val toolbar = if (toolbarChanged) context.resources.getDimensionPixelSize(R.dimen.triple_and_half_margin) else 0
+        val current = transitionValues.uiState
+        val noInsets = current.insetFlags == InsetFlags.NONE
+        val statusBarChanged = changed(initial, current, InsetFlags::hasTopInset)
+        val navBarChanged = changed(initial, current, InsetFlags::hasBottomInset)
+
+        // Shared element transitions only seem to break when the content is truly full screen
+        val statusBar = if (noInsets && statusBarChanged) GlobalUiDriver.statusBarSize else 0
+        val navBar = if (noInsets && navBarChanged) GlobalUiDriver.navBarSize else 0
 
         val altered = Rect(
                 rect.left,
-                rect.top + toolbar + statusBar,
+                rect.top + navBar + statusBar,
                 rect.right,
-                rect.bottom + toolbar + statusBar
+                rect.bottom + navBar + statusBar
         )
         transitionValues.values[BOUNDS_PROPERTY] = altered
     }
 }
 
+private var TransitionValues.uiState by UiStateDelegate { it.view.context.unwrapActivity }
+
 private const val BOUNDS_PROPERTY = "android:changeBounds:bounds"
 
-private fun <T> changed(before: UiState?,
-                        after: UiState?, property: (UiState) -> T) =
-        before != null
-                && after != null
-                && property(before) != property(after)
+private fun <T> changed(
+        before: UiState?,
+        after: UiState?,
+        property: (InsetFlags) -> T
+) = before != null
+        && after != null
+        && property(before.insetFlags) != property(after.insetFlags)

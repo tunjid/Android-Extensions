@@ -4,8 +4,12 @@ import android.annotation.SuppressLint
 import android.view.Gravity
 import android.view.View
 import androidx.dynamicanimation.animation.DynamicAnimation
+import androidx.dynamicanimation.animation.FloatPropertyCompat
 import androidx.dynamicanimation.animation.SpringAnimation
-import androidx.dynamicanimation.animation.SpringAnimation.*
+import androidx.dynamicanimation.animation.SpringAnimation.ALPHA
+import androidx.dynamicanimation.animation.SpringAnimation.TRANSLATION_X
+import androidx.dynamicanimation.animation.SpringAnimation.TRANSLATION_Y
+import androidx.dynamicanimation.animation.SpringForce
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.modifiableForEach
@@ -15,9 +19,10 @@ import com.tunjid.androidx.view.util.spring
  * A [RecyclerView.ItemAnimator] that fades & slides newly added items in from a given
  * direction.
  */
-open class SlideInItemAnimator @JvmOverloads constructor(
+open class SpringItemAnimator @JvmOverloads constructor(
         slideFromEdge: Int = Gravity.BOTTOM, // Default to sliding in upward
-        layoutDirection: Int = -1
+        layoutDirection: Int = -1,
+        private val stiffness: Float = SpringForce.STIFFNESS_MEDIUM
 ) : DefaultItemAnimator() {
 
     private val slideFromEdge: Int = Gravity.getAbsoluteGravity(slideFromEdge, layoutDirection)
@@ -107,9 +112,9 @@ open class SlideInItemAnimator @JvmOverloads constructor(
                     super.isRunning()
 
     private fun addItem(holder: RecyclerView.ViewHolder) {
-        val springAlpha = holder.itemView.spring(ALPHA)
-        val springTranslationX = holder.itemView.spring(TRANSLATION_X)
-        val springTranslationY = holder.itemView.spring(TRANSLATION_Y)
+        val springAlpha = holder.itemView.customSpring(ALPHA)
+        val springTranslationX = holder.itemView.customSpring(TRANSLATION_X)
+        val springTranslationY = holder.itemView.customSpring(TRANSLATION_Y)
         listenForAllSpringsEnd({ cancelled ->
             if (cancelled) {
                 clearAnimatedValues(holder.itemView)
@@ -126,8 +131,8 @@ open class SlideInItemAnimator @JvmOverloads constructor(
     }
 
     private fun moveItem(holder: RecyclerView.ViewHolder) {
-        val springX = holder.itemView.spring(TRANSLATION_X)
-        val springY = holder.itemView.spring(TRANSLATION_Y)
+        val springX = holder.itemView.customSpring(TRANSLATION_X)
+        val springY = holder.itemView.customSpring(TRANSLATION_Y)
         listenForAllSpringsEnd({ cancelled ->
             if (cancelled) {
                 clearAnimatedValues(holder.itemView)
@@ -149,9 +154,9 @@ open class SlideInItemAnimator @JvmOverloads constructor(
     }
 
     private fun endRunningAdd(holder: RecyclerView.ViewHolder) {
-        holder.itemView.spring(ALPHA).cancel()
-        holder.itemView.spring(TRANSLATION_X).cancel()
-        holder.itemView.spring(TRANSLATION_Y).cancel()
+        holder.itemView.customSpring(ALPHA).cancel()
+        holder.itemView.customSpring(TRANSLATION_X).cancel()
+        holder.itemView.customSpring(TRANSLATION_Y).cancel()
         runningAdds -= holder
     }
 
@@ -162,8 +167,8 @@ open class SlideInItemAnimator @JvmOverloads constructor(
     }
 
     private fun endRunningMove(holder: RecyclerView.ViewHolder) {
-        holder.itemView.spring(TRANSLATION_X).cancel()
-        holder.itemView.spring(TRANSLATION_Y).cancel()
+        holder.itemView.customSpring(TRANSLATION_X).cancel()
+        holder.itemView.customSpring(TRANSLATION_Y).cancel()
         runningMoves -= holder
     }
 
@@ -178,6 +183,11 @@ open class SlideInItemAnimator @JvmOverloads constructor(
         view.translationX = 0f
         view.translationY = 0f
     }
+
+    private fun View.customSpring(property: FloatPropertyCompat<View>) = spring(
+            property = property,
+            stiffness = stiffness
+    )
 }
 
 /**

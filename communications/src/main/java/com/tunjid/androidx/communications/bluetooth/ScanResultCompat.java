@@ -4,6 +4,7 @@ package com.tunjid.androidx.communications.bluetooth;
 import android.bluetooth.BluetoothDevice;
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.Nullable;
 
 import java.util.Arrays;
@@ -15,16 +16,24 @@ import java.util.Arrays;
  */
 
 public final class ScanResultCompat implements Parcelable {
+    public static final Parcelable.Creator<ScanResultCompat> CREATOR = new Creator<ScanResultCompat>() {
+        @Override
+        public ScanResultCompat createFromParcel(Parcel source) {
+            return new ScanResultCompat(source);
+        }
+
+        @Override
+        public ScanResultCompat[] newArray(int size) {
+            return new ScanResultCompat[size];
+        }
+    };
     // Remote bluetooth device.
     private BluetoothDevice mDevice;
-
     // Scan record, including advertising data and scan response data.
     @Nullable
     private ScanRecordCompat mScanRecordCompat;
-
     // Received signal strength.
     private int mRssi;
-
     // Device timestamp when the result was last seen.
     private long mTimestampNanos;
 
@@ -48,20 +57,22 @@ public final class ScanResultCompat implements Parcelable {
         readFromParcel(in);
     }
 
+    private static boolean equals(Object a, Object b) {
+        return (a == b) || (a != null && a.equals(b));
+    }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         if (mDevice != null) {
             dest.writeInt(1);
             mDevice.writeToParcel(dest, flags);
-        }
-        else {
+        } else {
             dest.writeInt(0);
         }
         if (mScanRecordCompat != null) {
             dest.writeInt(1);
             dest.writeByteArray(mScanRecordCompat.getBytes());
-        }
-        else {
+        } else {
             dest.writeInt(0);
         }
         dest.writeInt(mRssi);
@@ -139,22 +150,6 @@ public final class ScanResultCompat implements Parcelable {
                 + mScanRecordCompat + ", mRssi=" + mRssi + ", mTimestampNanos="
                 + mTimestampNanos + '}';
     }
-
-    private static boolean equals(Object a, Object b) {
-        return (a == b) || (a != null && a.equals(b));
-    }
-
-    public static final Parcelable.Creator<ScanResultCompat> CREATOR = new Creator<ScanResultCompat>() {
-        @Override
-        public ScanResultCompat createFromParcel(Parcel source) {
-            return new ScanResultCompat(source);
-        }
-
-        @Override
-        public ScanResultCompat[] newArray(int size) {
-            return new ScanResultCompat[size];
-        }
-    };
 
 }
 

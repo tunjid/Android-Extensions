@@ -13,31 +13,36 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
-import com.tunjid.androidx.baseclasses.AppBaseFragment
 import com.tunjid.androidx.communications.bluetooth.ScanResultCompat
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.FragmentBleScanBinding
 import com.tunjid.androidx.databinding.ViewholderScanBinding
 import com.tunjid.androidx.isDarkTheme
+import com.tunjid.androidx.navigation.MultiStackNavigator
+import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.recyclerview.acceptDiff
 import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
+import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.BleViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
-class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan) {
+class BleScanFragment : Fragment(R.layout.fragment_ble_scan) {
 
+    private var uiState by activityGlobalUiController()
     private val viewModel by viewModels<BleViewModel>()
+    private val navigator by activityNavigatorController<MultiStackNavigator>()
 
     private var recyclerView: RecyclerView? = null
 
@@ -46,6 +51,7 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan) {
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
+                toolbarMenuRefresher = ::updateToolbarMenu,
                 toolbarMenuClickListener = ::onMenuItemSelected,
                 toolBarMenu = R.menu.menu_ble_scan,
                 toolbarShows = true,
@@ -89,9 +95,7 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan) {
         navigator.pop()
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-
+    private fun updateToolbarMenu(menu: Menu) {
         val currentlyScanning = viewModel.isScanning.value ?: false
 
         menu.findItem(R.id.menu_stop)?.isVisible = currentlyScanning
@@ -152,7 +156,7 @@ class BleScanFragment : AppBaseFragment(R.layout.fragment_ble_scan) {
     private fun onMenuItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.menu_scan -> scanDevices(true)
         R.id.menu_stop -> scanDevices(false)
-        else -> super.onOptionsItemSelected(item).let {  }
+        else -> super.onOptionsItemSelected(item).let { }
     }
 
     private fun onBluetoothDeviceClicked(bluetoothDevice: BluetoothDevice) {

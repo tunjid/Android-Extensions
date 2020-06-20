@@ -18,7 +18,7 @@ import com.tunjid.androidx.view.util.hashTransitionName
  */
 interface DoggoBinder {
     var doggo: Doggo?
-    val doggoName: TextView
+    val doggoName: TextView?
     val thumbnail: ImageView
     val fullResolution: ImageView?
     fun onDoggoThumbnailLoaded(doggo: Doggo)
@@ -40,7 +40,7 @@ fun DoggoBinder.bind(doggo: Doggo) {
                 }
             }
 
-    doggoName.text = doggo.name
+    doggoName?.text = doggo.name
 }
 
 private fun Doggo.imageCreator(): RequestCreator = Picasso.get().load(imageRes).centerCrop()

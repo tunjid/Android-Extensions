@@ -8,6 +8,9 @@ import androidx.annotation.ColorInt
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.Transformations
+import androidx.recyclerview.widget.DividerItemDecoration
+import com.tunjid.androidx.core.content.drawableAt
+import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.graphics.drawable.withTint
 import io.reactivex.Flowable
 
@@ -31,3 +34,7 @@ val Context.isDarkTheme
         Configuration.UI_MODE_NIGHT_UNDEFINED -> false
         else -> true
     }
+
+fun Context.divider(orientation: Int) = DividerItemDecoration(this, orientation).apply {
+    setDrawable(drawableAt(R.drawable.bg_divider)?.withTint(themeColorAt(R.attr.colorSurface))!!)
+}

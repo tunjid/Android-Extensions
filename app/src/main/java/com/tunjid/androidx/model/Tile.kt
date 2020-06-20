@@ -1,9 +1,8 @@
 package com.tunjid.androidx.model
 
-import com.tunjid.androidx.recyclerview.diff.Differentiable
-
 import androidx.annotation.ColorInt
 import com.tunjid.androidx.MutedColors
+import com.tunjid.androidx.recyclerview.diff.Differentiable
 
 class Tile private constructor(
         val number: Int,

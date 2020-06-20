@@ -4,9 +4,9 @@
     android:id="@+id/cell"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:drawablePadding="@dimen/single_margin"
     android:ellipsize="end"
     android:minHeight="@dimen/triple_margin"
-    android:drawablePadding="@dimen/single_margin"
     android:padding="@dimen/single_margin"
     android:singleLine="true"
     tools:text="hello" />

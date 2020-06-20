@@ -22,7 +22,7 @@ internal class ComposedEndlessScroller(
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
 
-        val change = if(orientation == RecyclerView.HORIZONTAL) dx else dy
+        val change = if (orientation == RecyclerView.HORIZONTAL) dx else dy
         val layoutManager = recyclerView.layoutManager ?: return
         if (abs(change) < 3) return
 

@@ -52,7 +52,7 @@ class Doggo : Parcelable {
 
     companion object {
 
-         var transitionDoggo: Doggo? = null
+        var transitionDoggo: Doggo? = null
 
         private val DOGGO_NOUNS = listOf(
                 "F R E N",

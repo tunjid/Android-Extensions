@@ -1,12 +1,11 @@
-
-
 package com.tunjid.androidx.communications.bluetooth;
 
 import android.os.ParcelUuid;
-import androidx.annotation.Nullable;
-import androidx.collection.ArrayMap;
 import android.util.Log;
 import android.util.SparseArray;
+
+import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,84 +58,6 @@ public final class ScanRecordCompat {
 
     // Raw bytes of scan record.
     private final byte[] mBytes;
-
-    /**
-     * Returns the advertising flags indicating the discoverable mode and capability of the device.
-     * Returns -1 if the flag field is not set.
-     */
-    public int getAdvertiseFlags() {
-        return mAdvertiseFlags;
-    }
-
-    /**
-     * Returns a list of service UUIDs within the advertisement that are used to identify the
-     * bluetooth GATT services.
-     */
-    public List<ParcelUuid> getServiceUuids() {
-        return mServiceUuids;
-    }
-
-    /**
-     * Returns a sparse array of manufacturer identifier and its corresponding manufacturer specific
-     * data.
-     */
-    public SparseArray<byte[]> getManufacturerSpecificData() {
-        return mManufacturerSpecificData;
-    }
-
-    /**
-     * Returns the manufacturer specific data associated with the manufacturer id. Returns
-     * {@code null} if the {@code manufacturerId} is not found.
-     */
-    @Nullable
-    public byte[] getManufacturerSpecificData(int manufacturerId) {
-        return mManufacturerSpecificData.get(manufacturerId);
-    }
-
-    /**
-     * Returns a map of service UUID and its corresponding service data.
-     */
-    public Map<ParcelUuid, byte[]> getServiceData() {
-        return mServiceData;
-    }
-
-    /**
-     * Returns the service data byte array associated with the {@code serviceUuid}. Returns
-     * {@code null} if the {@code serviceDataUuid} is not found.
-     */
-    @Nullable
-    public byte[] getServiceData(ParcelUuid serviceDataUuid) {
-        if (serviceDataUuid == null) {
-            return null;
-        }
-        return mServiceData.get(serviceDataUuid);
-    }
-
-    /**
-     * Returns the transmission power level of the packet in dBm. Returns {@link Integer#MIN_VALUE}
-     * if the field is not set. This value can be used to calculate the path loss of a received
-     * packet using the following equation:
-     * <p>
-     * <code>pathloss = txPowerLevel - rssi</code>
-     */
-    public int getTxPowerLevel() {
-        return mTxPowerLevel;
-    }
-
-    /**
-     * Returns the local name of the BLE device. The is a UTF-8 encoded string.
-     */
-    @Nullable
-    public String getDeviceName() {
-        return mDeviceName;
-    }
-
-    /**
-     * Returns raw bytes of scan record.
-     */
-    public byte[] getBytes() {
-        return mBytes;
-    }
 
     private ScanRecordCompat(@Nullable List<ParcelUuid> serviceUuids,
                              SparseArray<byte[]> manufacturerData,
@@ -247,21 +168,12 @@ public final class ScanRecordCompat {
             }
             return new ScanRecordCompat(serviceUuids, manufacturerData, serviceData,
                     advertiseFlag, txPowerLevel, localName, scanRecord);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "unable to parse scan record: " + Arrays.toString(scanRecord));
             // As the record is invalid, ignore all the parsed results for this packet
             // and return an empty record with raw scanRecord bytes in results
             return new ScanRecordCompat(null, null, null, -1, Integer.MIN_VALUE, null, scanRecord);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "ScanRecord [mAdvertiseFlags=" + mAdvertiseFlags + ", mServiceUuids=" + mServiceUuids
-                + ", mManufacturerSpecificData=" + toString(mManufacturerSpecificData)
-                + ", mServiceData=" + toString(mServiceData)
-                + ", mTxPowerLevel=" + mTxPowerLevel + ", mDeviceName=" + mDeviceName + "]";
     }
 
     // Parse service UUIDs.
@@ -327,5 +239,91 @@ public final class ScanRecordCompat {
         }
         buffer.append('}');
         return buffer.toString();
+    }
+
+    /**
+     * Returns the advertising flags indicating the discoverable mode and capability of the device.
+     * Returns -1 if the flag field is not set.
+     */
+    public int getAdvertiseFlags() {
+        return mAdvertiseFlags;
+    }
+
+    /**
+     * Returns a list of service UUIDs within the advertisement that are used to identify the
+     * bluetooth GATT services.
+     */
+    public List<ParcelUuid> getServiceUuids() {
+        return mServiceUuids;
+    }
+
+    /**
+     * Returns a sparse array of manufacturer identifier and its corresponding manufacturer specific
+     * data.
+     */
+    public SparseArray<byte[]> getManufacturerSpecificData() {
+        return mManufacturerSpecificData;
+    }
+
+    /**
+     * Returns the manufacturer specific data associated with the manufacturer id. Returns
+     * {@code null} if the {@code manufacturerId} is not found.
+     */
+    @Nullable
+    public byte[] getManufacturerSpecificData(int manufacturerId) {
+        return mManufacturerSpecificData.get(manufacturerId);
+    }
+
+    /**
+     * Returns a map of service UUID and its corresponding service data.
+     */
+    public Map<ParcelUuid, byte[]> getServiceData() {
+        return mServiceData;
+    }
+
+    /**
+     * Returns the service data byte array associated with the {@code serviceUuid}. Returns
+     * {@code null} if the {@code serviceDataUuid} is not found.
+     */
+    @Nullable
+    public byte[] getServiceData(ParcelUuid serviceDataUuid) {
+        if (serviceDataUuid == null) {
+            return null;
+        }
+        return mServiceData.get(serviceDataUuid);
+    }
+
+    /**
+     * Returns the transmission power level of the packet in dBm. Returns {@link Integer#MIN_VALUE}
+     * if the field is not set. This value can be used to calculate the path loss of a received
+     * packet using the following equation:
+     * <p>
+     * <code>pathloss = txPowerLevel - rssi</code>
+     */
+    public int getTxPowerLevel() {
+        return mTxPowerLevel;
+    }
+
+    /**
+     * Returns the local name of the BLE device. The is a UTF-8 encoded string.
+     */
+    @Nullable
+    public String getDeviceName() {
+        return mDeviceName;
+    }
+
+    /**
+     * Returns raw bytes of scan record.
+     */
+    public byte[] getBytes() {
+        return mBytes;
+    }
+
+    @Override
+    public String toString() {
+        return "ScanRecord [mAdvertiseFlags=" + mAdvertiseFlags + ", mServiceUuids=" + mServiceUuids
+                + ", mManufacturerSpecificData=" + toString(mManufacturerSpecificData)
+                + ", mServiceData=" + toString(mServiceData)
+                + ", mTxPowerLevel=" + mTxPowerLevel + ", mDeviceName=" + mDeviceName + "]";
     }
 }
