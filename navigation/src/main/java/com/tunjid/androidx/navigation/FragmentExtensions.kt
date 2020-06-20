@@ -33,12 +33,9 @@ fun Fragment.doOnLifecycleEvent(
     if (lastReceivedEvent != null && lastReceivedEvent >= targetEvent) return action()
 
     lifecycle.addObserver { observer, _, event ->
-        when (event) {
-            targetEvent -> {
-                action()
-                lifecycle.removeObserver(observer)
-            }
-            else -> Unit
+        if (event == targetEvent) {
+            action()
+            lifecycle.removeObserver(observer)
         }
     }
 }
