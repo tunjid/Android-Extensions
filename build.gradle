@@ -43,7 +43,7 @@ buildscript {
         recyclerView = 'androidx.recyclerview:recyclerview:1.1.0'
         savedState = 'androidx.savedstate:savedstate:1.0.0'
         supportAnnotations = 'androidx.annotation:annotation:1.1.0'
-        swipeRefreshLayout = 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+        swipeRefreshLayout = 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
         testCore = 'androidx.test:core:1.2.0'
         viewpager2 = 'androidx.viewpager2:viewpager2:1.0.0'
 
