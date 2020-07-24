@@ -32,7 +32,7 @@ buildscript {
         fragment = 'androidx.fragment:fragment:1.2.5'
         fragmentKtx = 'androidx.fragment:fragment-ktx:1.2.5'
         kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-        ktxCore = 'androidx.core:core-ktx:1.3.0'
+        ktxCore = 'androidx.core:core-ktx:1.3.1'
         lifeCycleReactiveStreams = 'androidx.lifecycle:lifecycle-reactivestreams:2.2.0'
         lifecycleSavedState = 'androidx.lifecycle:lifecycle-viewmodel-savedstate:1.0.0'
         lifecycleViewModel = 'androidx.lifecycle:lifecycle-viewmodel:2.2.0'
