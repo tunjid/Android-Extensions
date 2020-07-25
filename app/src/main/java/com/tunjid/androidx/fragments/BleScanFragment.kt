@@ -156,7 +156,7 @@ class BleScanFragment : Fragment(R.layout.fragment_ble_scan) {
     private fun onMenuItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.menu_scan -> scanDevices(true)
         R.id.menu_stop -> scanDevices(false)
-        else -> super.onOptionsItemSelected(item).let {  }
+        else -> super.onOptionsItemSelected(item).let { }
     }
 
     private fun onBluetoothDeviceClicked(bluetoothDevice: BluetoothDevice) {

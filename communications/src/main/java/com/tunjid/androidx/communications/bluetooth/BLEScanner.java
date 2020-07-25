@@ -7,6 +7,7 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanSettings;
 import android.os.Build;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
@@ -53,14 +54,14 @@ public class BLEScanner {
         }
     };
 
-    public static Builder getBuilder(BluetoothAdapter adapter) {
-        return new Builder(adapter);
-    }
-
     private BLEScanner(@NonNull BluetoothAdapter bluetoothAdapter) {
         hasLollipop = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
         this.bluetoothAdapter = bluetoothAdapter;
         compatFilters = new ArrayList<>();
+    }
+
+    public static Builder getBuilder(BluetoothAdapter adapter) {
+        return new Builder(adapter);
     }
 
     public boolean isEnabled() {

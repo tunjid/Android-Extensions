@@ -11,7 +11,7 @@ import androidx.fragment.app.FragmentManager
  */
 class FragmentVisibleIdlingResource(
         fragmentManager: FragmentManager,
-       private val fragmentTag: String
+        private val fragmentTag: String
 ) : BaseFragmentIdlingResource(fragmentManager, fragmentTag) {
 
     override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {

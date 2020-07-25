@@ -4,7 +4,6 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
-import android.transition.Transition
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +14,7 @@ import androidx.core.view.children
 import androidx.core.view.doOnDetach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.transition.Transition
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.transition.MaterialFadeThrough
@@ -87,7 +87,7 @@ class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
                     intArrayOf(Color.LTGRAY, Color.WHITE)
             ))
         }
-        binding.tabs.doOnDetach {  innerNavigator.stackSelectedListener = null }
+        binding.tabs.doOnDetach { innerNavigator.stackSelectedListener = null }
         binding.options.setOnCheckedChangeListener { _, checkedId ->
             transitionOption = checkedId
         }
@@ -137,10 +137,10 @@ class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
 
         // Casting is necessary for over enthusiastic Kotlin compiler CHECKCAST generation
         val (enterFrom, exitFrom, enterTo, exitTo) = arrayOf(
-                if (isSliding) MaterialSharedAxis.create(X, !isForward) else null,
-                if (isSliding) MaterialSharedAxis.create(X, isForward) else MaterialFadeThrough.create() as Transition,
-                if (isSliding) MaterialSharedAxis.create(X, isForward) else MaterialFadeThrough.create() as Transition,
-                if (isSliding) MaterialSharedAxis.create(X, !isForward) else null
+                if (isSliding) MaterialSharedAxis(X, !isForward) else null,
+                if (isSliding) MaterialSharedAxis(X, isForward) else MaterialFadeThrough() as Transition,
+                if (isSliding) MaterialSharedAxis(X, isForward) else MaterialFadeThrough() as Transition,
+                if (isSliding) MaterialSharedAxis(X, !isForward) else null
         )
 
         from.apply { enterTransition = enterFrom; exitTransition = exitFrom }

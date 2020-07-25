@@ -2,8 +2,6 @@ package com.tunjid.androidx.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.transition.Fade
-import android.transition.TransitionSet
 import android.view.View
 import android.view.View.OnLayoutChangeListener
 import android.widget.ImageView
@@ -15,6 +13,8 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.Fade
+import androidx.transition.TransitionSet
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.FragmentDoggoListBinding

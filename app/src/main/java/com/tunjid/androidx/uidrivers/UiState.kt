@@ -1,4 +1,5 @@
 package com.tunjid.androidx.uidrivers
+
 import android.graphics.Color
 import android.os.Parcel
 import android.os.Parcelable
@@ -132,4 +133,4 @@ data class UiState(
     }
 }
 
-private fun <T> emptyCallback() : (T) -> Unit = {}
+private fun <T> emptyCallback(): (T) -> Unit = {}

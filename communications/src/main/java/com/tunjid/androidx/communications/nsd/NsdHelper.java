@@ -19,9 +19,10 @@ package com.tunjid.androidx.communications.nsd;
 import android.content.Context;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -96,6 +97,16 @@ public class NsdHelper {
         return new Builder(context);
     }
 
+    public static PrintWriter createPrintWriter(Socket socket) throws IOException {
+        return new PrintWriter(
+                new BufferedWriter(
+                        new OutputStreamWriter(socket.getOutputStream())), true);
+    }
+
+    public static BufferedReader createBufferedReader(Socket socket) throws IOException {
+        return new BufferedReader(new InputStreamReader(socket.getInputStream()));
+    }
+
     public NsdManager getNsdManager() {
         return nsdManager;
     }
@@ -120,16 +131,22 @@ public class NsdHelper {
 
     public void stopServiceDiscovery() {
         for (NsdManager.DiscoveryListener listener : discoveryListeners) {
-            try { nsdManager.stopServiceDiscovery(listener); }
-            catch (IllegalArgumentException e) { Log.w(TAG, "Discovery listener not added"); }
+            try {
+                nsdManager.stopServiceDiscovery(listener);
+            } catch (IllegalArgumentException e) {
+                Log.w(TAG, "Discovery listener not added");
+            }
         }
         discoveryListeners.clear();
     }
 
     private void unregisterService() {
         for (NsdManager.RegistrationListener listener : registrationListeners) {
-            try { nsdManager.unregisterService(listener); }
-            catch (IllegalArgumentException e) { Log.w(TAG, "Registration listener not added"); }
+            try {
+                nsdManager.unregisterService(listener);
+            } catch (IllegalArgumentException e) {
+                Log.w(TAG, "Registration listener not added");
+            }
         }
         registrationListeners.clear();
     }
@@ -140,11 +157,13 @@ public class NsdHelper {
     }
 
     private <T> Consumer<T> orNull(@Nullable Consumer<T> source) {
-        return source == null ? ignored -> {} : source;
+        return source == null ? ignored -> {
+        } : source;
     }
 
     private <T, R> BiConsumer<T, R> orNull(@Nullable BiConsumer<T, R> source) {
-        return source == null ? (ignoredA, ignoredB) -> {} : source;
+        return source == null ? (ignoredA, ignoredB) -> {
+        } : source;
     }
 
     @NonNull
@@ -224,14 +243,14 @@ public class NsdHelper {
         return listener;
     }
 
-    public static PrintWriter createPrintWriter(Socket socket) throws IOException {
-        return new PrintWriter(
-                new BufferedWriter(
-                        new OutputStreamWriter(socket.getOutputStream())), true);
+    @FunctionalInterface
+    public interface Consumer<T> {
+        void accept(T t);
     }
 
-    public static BufferedReader createBufferedReader(Socket socket) throws IOException {
-        return new BufferedReader(new InputStreamReader(socket.getInputStream()));
+    @FunctionalInterface
+    public interface BiConsumer<T, U> {
+        void accept(T t, U u);
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -335,15 +354,5 @@ public class NsdHelper {
                     registerErrorConsumer,
                     unregisterErrorConsumer);
         }
-    }
-
-    @FunctionalInterface
-    public interface Consumer<T> {
-        void accept(T t);
-    }
-
-    @FunctionalInterface
-    public interface BiConsumer<T, U> {
-        void accept(T t, U u);
     }
 }

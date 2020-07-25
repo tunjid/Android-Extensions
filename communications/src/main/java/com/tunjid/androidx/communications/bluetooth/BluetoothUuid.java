@@ -61,8 +61,7 @@ final class BluetoothUuid {
         if (length == UUID_BYTES_16_BIT) {
             shortUuid = uuidBytes[0] & 0xFF;
             shortUuid += (uuidBytes[1] & 0xFF) << 8;
-        }
-        else {
+        } else {
             shortUuid = uuidBytes[0] & 0xFF;
             shortUuid += (uuidBytes[1] & 0xFF) << 8;
             shortUuid += (uuidBytes[2] & 0xFF) << 16;

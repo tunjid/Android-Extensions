@@ -59,7 +59,7 @@ fun View.spring(
 }
 
 inline fun <reified T> View.getOrPutTag(@IdRes id: Int, initializer: () -> T) =
-    getTag(id) as? T ?: initializer().also { setTag(id, it) }
+        getTag(id) as? T ?: initializer().also { setTag(id, it) }
 
 /**
  * An end listener that removes itself when the animation ends

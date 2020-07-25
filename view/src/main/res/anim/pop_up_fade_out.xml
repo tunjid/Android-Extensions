@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <set xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shareInterpolator="false" >
-    <alpha android:fromAlpha="1.0" android:toAlpha="0.0"
+    android:shareInterpolator="false">
+    <alpha
+        android:duration="150"
+        android:fromAlpha="1.0"
         android:interpolator="@android:interpolator/decelerate_cubic"
-        android:duration="150" />
+        android:toAlpha="0.0" />
 </set>

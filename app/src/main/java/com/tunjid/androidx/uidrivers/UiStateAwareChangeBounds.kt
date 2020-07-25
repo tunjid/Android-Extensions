@@ -1,8 +1,8 @@
 package com.tunjid.androidx.uidrivers
 
 import android.graphics.Rect
-import android.transition.ChangeBounds
-import android.transition.TransitionValues
+import androidx.transition.ChangeBounds
+import androidx.transition.TransitionValues
 import com.tunjid.androidx.core.content.unwrapActivity
 import com.tunjid.androidx.view.util.InsetFlags
 
@@ -10,10 +10,9 @@ class UiStateAwareChangeBounds(
         private val initial: UiState?
 ) : ChangeBounds() {
 
-    override fun captureEndValues(transitionValues: TransitionValues?) {
+    override fun captureEndValues(transitionValues: TransitionValues) {
         super.captureEndValues(transitionValues)
 
-        transitionValues ?: return
         val rect = transitionValues.values[BOUNDS_PROPERTY] as? Rect ?: return
 
         val current = transitionValues.uiState

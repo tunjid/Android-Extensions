@@ -2,11 +2,6 @@ package com.tunjid.androidx.fragments
 
 import android.os.Bundle
 import android.text.TextUtils
-import android.transition.ChangeBounds
-import android.transition.ChangeImageTransform
-import android.transition.ChangeTransform
-import android.transition.TransitionManager
-import android.transition.TransitionSet
 import android.util.Pair
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +17,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.ChangeBounds
+import androidx.transition.ChangeImageTransform
+import androidx.transition.ChangeTransform
+import androidx.transition.TransitionManager
+import androidx.transition.TransitionSet
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.components.args
 import com.tunjid.androidx.core.content.themeColorAt
@@ -194,7 +194,8 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
 var BindingViewHolder<ViewholderDoggoRankBinding>.doggoBinder by BindingViewHolder.Prop<DoggoBinder?>()
 
 private fun BindingViewHolder<ViewholderDoggoRankBinding>.bind(isRanking: Boolean, doggo: Doggo) {
-    val layoutParams = binding.innerConstraintLayout.doggoImage.layoutParams as? ConstraintLayout.LayoutParams ?: return
+    val layoutParams = binding.innerConstraintLayout.doggoImage.layoutParams as? ConstraintLayout.LayoutParams
+            ?: return
     val currentlyInRanking = layoutParams.matchConstraintPercentWidth != 1f
     val context = binding.root.context
 
