@@ -12,7 +12,7 @@ There are 10 modules:
 | 3  | [Navigation (1.1.1)](https://github.com/tunjid/Android-Extensions/blob/develop/navigation/README.md)  | Interfaces and implementations of Fragment based Navigators, including single and multiple stacks. The APIs allow for hooking into the raw `FragmentTransactions` that run allow you to customize it to your heart's content. Suspending APIs are also available to preform navigation actions sequentially without having to deal with the asynchrosity of the `FragmentManager`.| ![](https://i.imgur.com/2Ai74xI.png)  | ![](https://cdn-images-1.medium.com/max/1600/1*q1WqvY91CWlmAjdEiwbA_g.gif)  |
 | 4  | [View (1.1.0)](https://github.com/tunjid/Android-Extensions/blob/develop/view/README.md)  | A module containing UI building blocks, like animators and helper methods for views.  Built mostly around the `SpringAnimation` from the Jetpack `DynamicAnimation` library. In the example to the right, it is responsible for animating the margin, and padding of the container views, and the hiding and showing of bouncing FABs.| ![](https://i.imgur.com/K3qGDKb.gif)  |   |
 | 5  | [RecyclerView (1.1.0)](https://github.com/tunjid/Android-Extensions/blob/develop/recyclerview/README.md)  | Utility classes for the ```RecyclerView``` ```ViewGroup``` like drag and drop, swipe gestures, endless scrolling, a composable adapter, diffing, tables and much more.  | ![](https://miro.medium.com/max/580/1*SjjLx1ghigvJP7kax-K6gA.gif)  | ![](https://i.imgur.com/hpb3YFu.gif)  |
-| 6  | [Material (1.0.0-rc06)](https://github.com/tunjid/Android-Extensions/blob/develop/material/README.md)  | Utility classes around Google's Material Design components including an expandable floating action button.  | ![](https://miro.medium.com/max/648/1*NHgDmR6QVqQwj7VJToQE5w.gif)  |   |
+| 6  | [Material (1.0.0)](https://github.com/tunjid/Android-Extensions/blob/develop/material/README.md)  | Utility classes around Google's Material Design components including an expandable floating action button.  | ![](https://miro.medium.com/max/648/1*NHgDmR6QVqQwj7VJToQE5w.gif)  |   |
 | 7  | [Communications (1.0.0)](https://github.com/tunjid/Android-Extensions/blob/develop/communications/README.md)  | Utility classes for Near Service Discovery (NSD) and Bluetooth Low Energy (BLE) communication.  |   |   |
 | 8  | [Saved State (1.0.0)](https://github.com/tunjid/Android-Extensions/blob/develop/savedstate/README.md)  | Delegated implementation of Android Jetpack's Saved State Registry for Components that also have a lifecycle.  |   |   |
 | 9  | [ConstraintLayout (Unmaintained, MotionLayout is here)](https://github.com/tunjid/Android-Extensions/blob/develop/constraintlayout/README.md)  | Utility classes for the ```ConstraintLayout``` ```ViewGroup```.  |   |   |
@@ -22,13 +22,13 @@ build.gradle lines
 
     implementation 'com.tunjid.androidx:constraintlayout:1.0.0-rc01'
     implementation 'com.tunjid.androidx:communications:1.0.0'
-    implementation 'com.tunjid.androidx:recyclerview:1.1.0-alpha01'
+    implementation 'com.tunjid.androidx:recyclerview:1.1.0'
     implementation 'com.tunjid.androidx:navigation:1.1.1'
     implementation 'com.tunjid.androidx:savedstate:1.0.0'
     implementation 'com.tunjid.androidx:functions:1.0.0'
-    implementation 'com.tunjid.androidx:material:1.0.0-rc06'
-    implementation 'com.tunjid.androidx:core:1.2.0-alpha01'
-    implementation 'com.tunjid.androidx:view:1.1.0-alpha01'
+    implementation 'com.tunjid.androidx:material:1.0.0'
+    implementation 'com.tunjid.androidx:core:1.2.0'
+    implementation 'com.tunjid.androidx:view:1.1.0'
     implementation 'com.tunjid.androidx:test:1.0.0-rc02'
 
 Projects that use This library include:
