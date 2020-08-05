@@ -39,5 +39,5 @@ dependencies {
     androidTestExclusions('androidx.test:rules:1.2.0', exclusions)
     androidTestExclusions('androidx.test.espresso:espresso-core:3.1.0-beta02', exclusions)
     androidTestExclusions('androidx.test.espresso:espresso-contrib:3.1.0-beta02', exclusions)
-    androidTestExclusions('androidx.test.espresso:espresso-intents:3.1.0-beta02', exclusions)
+    androidTestExclusions('androidx.test.espresso:espresso-intents:3.3.0-rc03', exclusions)
 }
