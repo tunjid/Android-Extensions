@@ -79,7 +79,7 @@ class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
         innerNavigator.stackTransactionModifier = stackTransactionAnimator()
 
         binding.tabs.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (isChecked && checkedId != View.NO_ID && !childFragmentManager.isStateSaved) innerNavigator.show(DESTINATIONS.indexOf(checkedId))
+            if (isChecked && checkedId != View.NO_ID && host != null && !childFragmentManager.isStateSaved) innerNavigator.show(DESTINATIONS.indexOf(checkedId))
         }
         binding.tabs.children.filterIsInstance<MaterialButton>().forEach {
             it.setTextColor(ColorStateList(
