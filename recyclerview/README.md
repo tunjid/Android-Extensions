@@ -14,14 +14,13 @@ are the ```DiffUtil.DiffResult```, and a ```List``` containing the items of the 
 bi function applied to the ```Lists``` to diff.
 
 
-## ComposedAdapter
+## ComposedAdapter / ComposedListAdapter
 
-A ```RecyclerViewAdapter``` built with the adapterOf function that delegates all callbacks to individually composed functions.
+```RecyclerView.Adapter``` that can be built with the `adapterOf` or `listAdapterOf` function that delegates all callbacks to individually composed functions.
 
-## ListManager
+## BindingViewHolder
 
-A class that integrates very common behaviors for a RecyclerView into a highly functional and fluent API.
-Convenience methods for dispatching updates to the RecyclerView are also exposed.
+Create ```RecyclerView.ViewHolder``` instances directly from ```ViewBinding``` generated classes with a simple ```viewGroup.viewHolderFrom``` extension method.
 
 ## EndlessScroller
 
