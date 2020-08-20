@@ -101,7 +101,7 @@ class DoggoListFragment : Fragment(R.layout.fragment_doggo_list),
             addItemDecoration(context.divider(DividerItemDecoration.VERTICAL))
         }
 
-        postponeEnterTransition()
+        if (Doggo.transitionDoggo != null) postponeEnterTransition()
 
         scrollToPosition()
     }

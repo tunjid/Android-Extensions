@@ -112,7 +112,7 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
             viewModel.watchDoggos().observe(viewLifecycleOwner, this::acceptDiff)
         }
 
-        postponeEnterTransition()
+        if (Doggo.transitionDoggo != null) postponeEnterTransition()
     }
 
     override fun onDestroyView() {
