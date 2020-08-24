@@ -28,7 +28,7 @@ buildscript {
         dynamicAnimationsKtx = 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha03'
         espressoContrib = 'androidx.test.espresso:espresso-contrib:3.1.0'
         espressoCore = 'androidx.test.espresso:espresso-core:3.1.0'
-        espressoIdlingResource = 'androidx.test.espresso.idling:idling-concurrent:3.1.0'
+        espressoIdlingResource = 'androidx.test.espresso.idling:idling-concurrent:3.2.0'
         fragment = 'androidx.fragment:fragment:1.2.5'
         fragmentKtx = 'androidx.fragment:fragment-ktx:1.2.5'
         kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
