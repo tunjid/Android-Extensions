@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.observe
 import androidx.transition.TransitionManager
 import com.transitionseverywhere.ChangeText
 import com.transitionseverywhere.ChangeText.CHANGE_BEHAVIOR_OUT_IN
