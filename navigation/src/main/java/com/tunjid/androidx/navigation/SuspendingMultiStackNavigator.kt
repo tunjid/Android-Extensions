@@ -12,7 +12,7 @@ class SuspendingMultiStackNavigator(
         private val navigator: MultiStackNavigator
 ) : SuspendingNavigator by CommonSuspendingNavigator(navigator) {
 
-    suspend fun show(index: Int) = suspendCancellableCoroutine<Fragment?> { continuation ->
+    suspend fun show(index: Int) = mainThreadSuspendCancellableCoroutine<Fragment?> { continuation ->
         navigator.stackFragments[navigator.activeIndex].doOnLifecycleEvent(Lifecycle.Event.ON_RESUME) {
             when (val upcomingStack = navigator.stackFragments.getOrNull(index)) {
                 null -> continuation.resumeIfActive(null)  // out of index. Throw an exception maybe?
@@ -32,7 +32,7 @@ class SuspendingMultiStackNavigator(
         internalClearAll()
     }
 
-    private suspend fun internalClearAll(): Fragment? = suspendCancellableCoroutine { continuation ->
+    private suspend fun internalClearAll(): Fragment? = mainThreadSuspendCancellableCoroutine { continuation ->
         // Clear all uses FragmentTransaction.commitNow, make sure calls start on the UI thread
         Handler(Looper.getMainLooper()).post {
             navigator.clearAll()
