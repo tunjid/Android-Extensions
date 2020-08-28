@@ -96,7 +96,9 @@ class AdoptDoggoFragment : Fragment(R.layout.fragment_simple_list) {
 
     private fun ViewGroup.headerHolder() = viewHolderFrom(ViewholderDoggoAdoptBinding::inflate).apply {
         doggoBinder = object : DoggoBinder {
-            override var doggo: Doggo? = null
+            override var doggo: Doggo?
+                get() = this@AdoptDoggoFragment.doggo
+                set(_) = Unit
             override val doggoName: TextView? get() = null
             override val thumbnail: ImageView get() = binding.doggoImage
             override val fullResolution: ImageView? get() = binding.fullSize
