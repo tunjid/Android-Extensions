@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -14,6 +15,7 @@ import androidx.core.graphics.scale
 import androidx.core.view.doOnLayout
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
@@ -48,8 +50,33 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
     private val viewModel by viewModels<DoggoViewModel>()
     private val navigator by activityNavigatorController<MultiStackNavigator>()
 
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        parentFragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
+            override fun onFragmentStarted(fm: FragmentManager, f: Fragment) {
+                if (f == this@DoggoPagerFragment) Log.i("TEST", "Started")
+            }
+
+            override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
+                if (f == this@DoggoPagerFragment) Log.i("TEST", "callback View created. View identity hash: ${System.identityHashCode(view)}")
+            }
+
+            override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
+                if (f == this@DoggoPagerFragment) Log.i("TEST", "Resumed")
+            }
+
+            override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) {
+                if (f == this@DoggoPagerFragment) fm.unregisterFragmentLifecycleCallbacks(this)
+            }
+        }, false)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        Log.i("TEST", "override onViewCreated. View identity hash: ${System.identityHashCode(view)}")
 
         val initialUiState = uiState
         uiState = uiState.copy(
@@ -94,9 +121,10 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
                 indicator = DrawablePageIndicator(
                         activeDrawable = context.drawableAt(R.drawable.ic_doggo_24dp)!!,
                         inActiveDrawable = context.drawableAt(R.drawable.ic_circle_24dp)!!
-                ),
-                onIndicatorClicked = viewPager::setCurrentItem
-        )
+                )
+        ) {
+            viewPager.setCurrentItem(it); Log.i("TEST", "view instance: ${System.identityHashCode(view)}")
+        }
 
         viewModel.colors.observe(viewLifecycleOwner, view::setBackgroundColor)
 
@@ -111,7 +139,15 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
         }
     }
 
+    override fun onDestroyView() {
+        Log.i("TEST", "Destroyed view of identity hash: ${System.identityHashCode(view)}")
+        super.onDestroyView()
+    }
+
+
     override fun startPostponedEnterTransition() {
+        Log.i("TEST", "Starting postponed")
+
         // ViewPager2 likes to take it's time
         view?.doOnLayout { super.startPostponedEnterTransition() }
     }
