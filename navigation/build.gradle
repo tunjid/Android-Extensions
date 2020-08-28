@@ -46,7 +46,7 @@ dependencies {
             new Tuple2('com.google.android.material', 'material')
     ]
 
-    androidTestExclusions('androidx.test.ext:junit:1.1.1', exclusions)
+    androidTestExclusions('androidx.test.ext:junit:1.1.2', exclusions)
     androidTestExclusions('androidx.test:runner:1.3.0', exclusions)
     androidTestExclusions('androidx.test:rules:1.3.0', exclusions)
     androidTestExclusions('androidx.test:runner:1.3.0', exclusions)
