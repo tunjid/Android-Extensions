@@ -10,7 +10,7 @@ dependencies {
     implementation project(':core')
     implementation project(':savedstate')
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
 
     androidTestImplementation project(':test')
     androidTestImplementation parent.ext.appCompat
