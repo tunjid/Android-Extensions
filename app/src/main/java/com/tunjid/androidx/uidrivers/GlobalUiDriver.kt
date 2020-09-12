@@ -107,7 +107,7 @@ class GlobalUiDriver(
     private val liveUiState = MutableLiveData<UiState>()
 
     override var uiState: UiState
-        get() = liveUiState.value ?: UiState.freshState()
+        get() = liveUiState.value ?: UiState()
         set(value) {
             val updated = value.copy(
                     fabClickListener = value.fabClickListener.lifecycleAware(),
