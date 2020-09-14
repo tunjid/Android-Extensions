@@ -22,7 +22,8 @@ import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
+import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.NsdViewModel
 import com.tunjid.androidx.viewmodels.routeName
@@ -32,7 +33,6 @@ import com.tunjid.androidx.viewmodels.routeName
  */
 class NsdScanFragment : Fragment(R.layout.fragment_nsd_scan) {
 
-    private var uiState by activityGlobalUiController()
     private val viewModel by viewModels<NsdViewModel>()
 
     private var recyclerView: RecyclerView? = null
@@ -40,7 +40,7 @@ class NsdScanFragment : Fragment(R.layout.fragment_nsd_scan) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = uiState.copy(
+        uiState = UiState(
                 toolbarTitle = this::class.java.routeName,
                 toolbarMenuRefresher = ::updateToolbarMenu,
                 toolbarMenuClickListener = ::onMenuItemSelected,

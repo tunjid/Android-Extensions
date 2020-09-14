@@ -32,14 +32,13 @@ import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
+import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.BleViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
 class BleScanFragment : Fragment(R.layout.fragment_ble_scan) {
 
-    private var uiState by activityGlobalUiController()
     private val viewModel by viewModels<BleViewModel>()
     private val navigator by activityNavigatorController<MultiStackNavigator>()
 

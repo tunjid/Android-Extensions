@@ -27,8 +27,8 @@ import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.typed
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.BACKGROUND_TINT_DURATION
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
 import com.tunjid.androidx.uidrivers.baseSharedTransition
+import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewholders.DoggoBinder
@@ -38,8 +38,6 @@ import com.tunjid.androidx.viewholders.inputViewHolder
 class AdoptDoggoFragment : Fragment(R.layout.fragment_simple_list) {
 
     var doggo: Doggo by args()
-
-    private var uiState by activityGlobalUiController()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

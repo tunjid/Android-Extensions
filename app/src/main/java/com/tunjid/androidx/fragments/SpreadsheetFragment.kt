@@ -47,7 +47,7 @@ import com.tunjid.androidx.recyclerview.multiscroll.StaticCellSizer
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
+import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.spring
@@ -62,7 +62,6 @@ private typealias Var<T> = KMutableProperty0<T>
 //region Parent Fragment
 class SpreadSheetParentFragment : Fragment(R.layout.fragment_spreadsheet_parent) {
 
-    private var uiState by activityGlobalUiController()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -97,7 +96,7 @@ class SpreadsheetFragment : Fragment(R.layout.fragment_spreadsheet_child) {
 
     private var isDynamic by args<Boolean>()
 
-    private var uiState by activityGlobalUiController()
+
     private val viewModel by viewModels<SpreadsheetViewModel>()
 
     private val scroller by lazy {

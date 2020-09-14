@@ -3,7 +3,6 @@ package com.tunjid.androidx.uidrivers
 import android.graphics.Rect
 import androidx.transition.ChangeBounds
 import androidx.transition.TransitionValues
-import com.tunjid.androidx.core.content.unwrapActivity
 import com.tunjid.androidx.view.util.InsetFlags
 
 class UiStateAwareChangeBounds(
@@ -33,8 +32,6 @@ class UiStateAwareChangeBounds(
         transitionValues.values[BOUNDS_PROPERTY] = altered
     }
 }
-
-private var TransitionValues.uiState by UiStateDelegate { it.view.context.unwrapActivity }
 
 private const val BOUNDS_PROPERTY = "android:changeBounds:bounds"
 

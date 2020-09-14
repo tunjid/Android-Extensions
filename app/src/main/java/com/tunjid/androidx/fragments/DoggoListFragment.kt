@@ -31,7 +31,8 @@ import com.tunjid.androidx.recyclerview.gridLayoutManager
 import com.tunjid.androidx.recyclerview.viewHolderForItemId
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
+import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
@@ -43,7 +44,7 @@ import kotlin.math.abs
 class DoggoListFragment : Fragment(R.layout.fragment_doggo_list),
         Navigator.TransactionModifier {
 
-    private var uiState by activityGlobalUiController()
+
     private val navigator by activityNavigatorController<MultiStackNavigator>()
 
     private var recyclerView: RecyclerView? = null
@@ -60,7 +61,7 @@ class DoggoListFragment : Fragment(R.layout.fragment_doggo_list),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = uiState.copy(
+        uiState = UiState(
                 toolbarTitle = this::class.java.routeName,
                 toolBarMenu = 0,
                 toolbarShows = true,

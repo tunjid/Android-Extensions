@@ -27,6 +27,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
@@ -43,36 +44,19 @@ import com.tunjid.androidx.view.util.PaddingProperty
 import com.tunjid.androidx.view.util.innermostFocusedChild
 import com.tunjid.androidx.view.util.marginLayoutParams
 import com.tunjid.androidx.view.util.spring
-import kotlin.properties.ReadWriteProperty
-import kotlin.reflect.KProperty
 
 /**
  * An interface for classes that host a [UiState], usually a [FragmentActivity].
  * Implementations should delegate to an instance of [GlobalUiDriver]
  */
-interface GlobalUiController {
-    var uiState: UiState
+
+interface GlobalUiHost {
+    val globalUiController: GlobalUiController
 }
 
-/**
- * Convenience method for [Fragment] delegation to a [FragmentActivity] when implementing
- * [GlobalUiController]
- */
-@Suppress("unused")
-fun Fragment.activityGlobalUiController() = UiStateDelegate(Fragment::getActivity)
-
-class UiStateDelegate<T>(
-        private val source: (T) -> Any?
-) : ReadWriteProperty<T, UiState> {
-    override operator fun getValue(thisRef: T, property: KProperty<*>): UiState =
-            (source.invoke(thisRef) as? GlobalUiController)?.uiState
-                    ?: throw IllegalStateException("This fragment is not hosted by a GlobalUiController")
-
-    override fun setValue(thisRef: T, property: KProperty<*>, value: UiState) {
-        val host = source.invoke(thisRef)
-        check(host is GlobalUiController) { "This fragment is not hosted by a GlobalUiController" }
-        host.uiState = value
-    }
+interface GlobalUiController {
+    var uiState: UiState
+    val liveUiState: LiveData<UiState>
 }
 
 /**
@@ -104,7 +88,7 @@ class GlobalUiDriver(
             else -> if (current.view == null) current.lifecycle else current.viewLifecycleOwner.lifecycle
         }
 
-    private val liveUiState = MutableLiveData<UiState>()
+    override val liveUiState = MutableLiveData<UiState>()
 
     override var uiState: UiState
         get() = liveUiState.value ?: UiState()

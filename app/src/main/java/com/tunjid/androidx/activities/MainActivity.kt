@@ -12,31 +12,25 @@ import com.tunjid.androidx.fragments.RouteFragment
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.multiStackNavigationController
-import com.tunjid.androidx.uidrivers.GlobalUiController
 import com.tunjid.androidx.uidrivers.GlobalUiDriver
-import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.GlobalUiHost
 import com.tunjid.androidx.uidrivers.materialDepthAxisTransition
 import com.tunjid.androidx.uidrivers.materialFadeThroughTransition
 import leakcanary.AppWatcher
 import java.util.concurrent.TimeUnit
 
-class MainActivity : AppCompatActivity(), GlobalUiController, Navigator.Controller {
+class MainActivity : AppCompatActivity(), GlobalUiHost, Navigator.Controller {
 
     private val tabs = intArrayOf(R.id.menu_navigation, R.id.menu_recyclerview, R.id.menu_communications, R.id.menu_misc)
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
-    private val globalUiDriver by lazy { GlobalUiDriver(this, binding, navigator) }
+
+    override val globalUiController by lazy { GlobalUiDriver(this, binding, navigator) }
 
     override val navigator: MultiStackNavigator by multiStackNavigationController(
             tabs.size,
             R.id.content_container,
             RouteFragment.Companion::newInstance
     )
-
-    override var uiState: UiState
-        get() = globalUiDriver.uiState
-        set(value) {
-            globalUiDriver.uiState = value
-        }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         AppWatcher.config = AppWatcher.config.copy(watchDurationMillis = TimeUnit.SECONDS.toMillis(8))

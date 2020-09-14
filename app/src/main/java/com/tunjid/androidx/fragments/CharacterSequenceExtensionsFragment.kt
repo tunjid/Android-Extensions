@@ -16,7 +16,7 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.text.*
 import com.tunjid.androidx.isDarkTheme
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
+import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.routeName
 
@@ -27,8 +27,6 @@ import com.tunjid.androidx.viewmodels.routeName
  */
 
 class CharacterSequenceExtensionsFragment : Fragment(R.layout.fragment_spanbuilder) {
-
-    private var uiState by activityGlobalUiController()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -35,7 +35,7 @@ import com.tunjid.androidx.recyclerview.*
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.SpringItemAnimator
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
+import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
@@ -49,7 +49,6 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
         Navigator.TransactionModifier {
 
     private var isRanking by args<Boolean>()
-    private var uiState by activityGlobalUiController()
     private val viewModel by viewModels<DoggoRankViewModel>()
     private val navigator by activityNavigatorController<MultiStackNavigator>()
 

@@ -17,7 +17,8 @@ import com.tunjid.androidx.core.text.color
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.material.animator.FabExtensionAnimator
 import com.tunjid.androidx.uidrivers.SpeedDialClickListener
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
+import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.view.util.withOneShotEndListener
 import com.tunjid.androidx.viewmodels.routeName
@@ -27,7 +28,6 @@ class FabTransformationsFragment : Fragment(R.layout.fragment_fab_transformation
     private val color
         get() = if (requireContext().isDarkTheme) Color.BLACK else Color.WHITE
 
-    private var uiState by activityGlobalUiController()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -40,7 +40,7 @@ class FabTransformationsFragment : Fragment(R.layout.fragment_fab_transformation
             speedDialItems[1].run { updateGlyphs(first, second) }
         }
 
-        uiState = uiState.copy(
+        uiState = UiState(
                 toolbarTitle = this::class.java.routeName,
                 toolbarOverlaps = false,
                 toolbarShows = true,

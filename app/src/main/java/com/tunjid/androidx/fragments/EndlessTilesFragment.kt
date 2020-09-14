@@ -16,7 +16,8 @@ import com.tunjid.androidx.recyclerview.gridLayoutManager
 import com.tunjid.androidx.recyclerview.setEndlessScrollListener
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.uidrivers.SpringItemAnimator
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
+import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.update
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewholders.bind
@@ -31,13 +32,13 @@ import kotlin.math.abs
 
 class EndlessTilesFragment : Fragment(R.layout.fragment_route) {
 
-    private var uiState by activityGlobalUiController()
+
     private val viewModel by viewModels<EndlessTileViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = uiState.copy(
+        uiState = UiState(
                 toolbarTitle = this::class.java.routeName,
                 toolbarShows = true,
                 toolBarMenu = 0,

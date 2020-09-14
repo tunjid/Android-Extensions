@@ -33,7 +33,8 @@ import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
+import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.view.util.InsetFlags
 import com.tunjid.androidx.viewmodels.RouteViewModel
 import com.tunjid.androidx.viewmodels.routeName
@@ -41,7 +42,6 @@ import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 
 class RouteFragment : Fragment(R.layout.fragment_route) {
 
-    private var uiState by activityGlobalUiController()
     private val viewModel by viewModels<RouteViewModel>()
     private val navigator by activityNavigatorController<MultiStackNavigator>()
 
@@ -50,7 +50,7 @@ class RouteFragment : Fragment(R.layout.fragment_route) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = uiState.copy(
+        uiState = UiState(
                 toolbarTitle = getString(R.string.app_name),
                 toolBarMenu = R.menu.menu_route,
                 toolbarOverlaps = false,
