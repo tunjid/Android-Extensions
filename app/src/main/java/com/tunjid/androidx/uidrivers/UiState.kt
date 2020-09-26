@@ -60,7 +60,6 @@ internal data class SnackbarPositionalState(
 internal data class FabPositionalState(
         val fabVisible: Boolean,
         val bottomNavVisible: Boolean,
-        val hasSnackbar: Boolean,
         val snackbarHeight: Int,
         override val bottomInset: Int,
         override val navBarSize: Int,
@@ -94,7 +93,6 @@ internal val UiState.fabState
                 fabVisible = fabShows,
                 snackbarHeight = systemUI.dynamic.snackbarHeight,
                 bottomNavVisible = showsBottomNav == true,
-                hasSnackbar = snackbarText.isNotBlank() && snackbarText.isNotEmpty(),
                 bottomInset = systemUI.dynamic.bottomInset,
                 navBarSize = systemUI.static.navBarSize,
                 insetDescriptor = insetFlags

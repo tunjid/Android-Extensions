@@ -5,6 +5,7 @@ import android.animation.ValueAnimator
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -89,7 +90,9 @@ class GlobalUiDriver(
                     BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_SWIPE,
                     BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_ACTION,
                     BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_TIMEOUT,
-                    BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_MANUAL -> ::uiState.updatePartial { copy(snackbarText = "") }
+                    BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_MANUAL -> ::uiState.updatePartial {
+                        copy(snackbarText = "", systemUI = systemUI.updateSnackbarHeight(0))
+                    }
                     BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_CONSECUTIVE -> Unit
                 }
             }
@@ -162,6 +165,7 @@ class GlobalUiDriver(
 
         UiState::bottomNavPositionalState.distinct onChanged this::updateBottomNav
         UiState::snackbarPositionalState.distinct onChanged this::updateSnackbar
+        { uiState: UiState -> uiState.systemUI.dynamic.snackbarHeight }.distinct onChanged { Log.i("TEST", "Snackbar height: $it")}
     }
 
     private fun updateFabState(state: FabPositionalState) {
@@ -169,8 +173,8 @@ class GlobalUiDriver(
         val fabTranslation = when {
             state.fabVisible -> {
                 val navBarHeight = state.navBarSize
+                val snackbarHeight = state.snackbarHeight
                 val bottomNavHeight = uiSizes.bottomNavSize countIf state.bottomNavVisible
-                val snackbarHeight = snackbar.view.height countIf state.hasSnackbar
                 val insetClearance = max(bottomNavHeight, state.keyboardSize)
                 val totalBottomClearance = navBarHeight + insetClearance + snackbarHeight
 
