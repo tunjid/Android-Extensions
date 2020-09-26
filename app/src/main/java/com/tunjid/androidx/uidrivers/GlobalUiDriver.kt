@@ -5,7 +5,6 @@ import android.animation.ValueAnimator
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -165,7 +164,6 @@ class GlobalUiDriver(
 
         UiState::bottomNavPositionalState.distinct onChanged this::updateBottomNav
         UiState::snackbarPositionalState.distinct onChanged this::updateSnackbar
-        { uiState: UiState -> uiState.systemUI.dynamic.snackbarHeight }.distinct onChanged { Log.i("TEST", "Snackbar height: $it")}
     }
 
     private fun updateFabState(state: FabPositionalState) {
