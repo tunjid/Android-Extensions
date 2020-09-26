@@ -118,6 +118,7 @@ class RouteFragment : Fragment(R.layout.fragment_route) {
             HardServiceConnectionFragment::class.java.routeName -> HardServiceConnectionFragment.newInstance()
             FabTransformationsFragment::class.java.routeName -> FabTransformationsFragment.newInstance()
             SpreadSheetParentFragment::class.java.routeName -> SpreadSheetParentFragment.newInstance()
+            UiStatePlaygroundFragment::class.java.routeName -> UiStatePlaygroundFragment.newInstance()
             else -> newInstance(tabIndex) // No-op, all RouteFragment instances have the same tag
         }
 

@@ -14,6 +14,7 @@
     <string name="route_feeling_lucky">I\'m feeling lucky</string>
     <string name="route_doggo_list">A list of hints demonstrating delegation of shared element transitions to the calling fragment.</string>
     <string name="route_doggo_rank">A list of good boyes showing drag and drop functionality.</string>
+    <string name="route_ui_state">A demo of global ui state manager for persistent ui.</string>
     <string name="route_independent_stack">A demo of the StackNavigator using independent stacks* within the same FragmentManager.</string>
     <string name="route_multiple_inner_stack">A demo of the MultiStackNavigator, while being a child of a MultiStackNavigator; Stack-ception.</string>
     <string name="route_shifting_tile">A grid of shifting colorful tiles demonstrating the Diffable interface.</string>
@@ -118,4 +119,16 @@
     <string name="shrink_margins">Shrink margins</string>
     <string name="shrink_padding">Shrink padding</string>
     <string name="party_hard">Party Hard</string>
+
+    <!-- UiState -->
+    <string name="ui_state_playground">UI State Playground</string>
+    <string name="show_keyboard">Show keyboard</string>
+    <string name="choose_an_option">Choose an Option</string>
+    <string name="hi">Hi</string>
+    <string name="hello">Hello</string>
+    <string name="how_are_you_doing">How are you doing</string>
+    <string name="reality_can_be">Reality can be whatever I want</string>
+    <string name="inevitable">I am inevitable</string>
+    <string name="survivor">I a survivor</string>
+
 </resources>
