@@ -35,7 +35,7 @@ import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.viewmodels.RouteViewModel
 import com.tunjid.androidx.viewmodels.routeName
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
@@ -52,7 +52,7 @@ class RouteFragment : Fragment(R.layout.fragment_route) {
 
         uiState = UiState(
                 toolbarTitle = getString(R.string.app_name),
-                toolBarMenu = R.menu.menu_route,
+                toolbarMenuRes = R.menu.menu_route,
                 toolbarOverlaps = false,
                 toolbarShows = true,
                 fabShows = true,

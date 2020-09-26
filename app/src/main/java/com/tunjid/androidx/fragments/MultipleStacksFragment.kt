@@ -41,7 +41,7 @@ import com.tunjid.androidx.navigation.childMultiStackNavigationController
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.materialDepthAxisTransition
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.viewmodels.routeName
 
 
@@ -94,7 +94,7 @@ class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
 
         uiState = UiState(
                 toolbarTitle = this::class.java.routeName.color(Color.WHITE),
-                toolBarMenu = R.menu.menu_default,
+                toolbarMenuRes = R.menu.menu_default,
                 toolbarShows = true,
                 toolbarOverlaps = false,
                 toolbarMenuClickListener = {

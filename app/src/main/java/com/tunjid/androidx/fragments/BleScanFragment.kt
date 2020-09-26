@@ -33,7 +33,7 @@ import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.viewmodels.BleViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
@@ -51,7 +51,7 @@ class BleScanFragment : Fragment(R.layout.fragment_ble_scan) {
                 toolbarTitle = this::class.java.routeName,
                 toolbarMenuRefresher = ::updateToolbarMenu,
                 toolbarMenuClickListener = ::onMenuItemSelected,
-                toolBarMenu = R.menu.menu_ble_scan,
+                toolbarMenuRes = R.menu.menu_ble_scan,
                 toolbarShows = true,
                 fabShows = false,
                 showsBottomNav = false,

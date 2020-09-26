@@ -19,7 +19,7 @@ import com.tunjid.androidx.material.animator.FabExtensionAnimator
 import com.tunjid.androidx.uidrivers.SpeedDialClickListener
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.view.util.withOneShotEndListener
 import com.tunjid.androidx.viewmodels.routeName
 
@@ -44,7 +44,7 @@ class FabTransformationsFragment : Fragment(R.layout.fragment_fab_transformation
                 toolbarTitle = this::class.java.routeName,
                 toolbarOverlaps = false,
                 toolbarShows = true,
-                toolBarMenu = 0,
+                toolbarMenuRes = 0,
                 fabShows = true,
                 fabExtended = true,
                 fabText = getString(R.string.speed_dial),

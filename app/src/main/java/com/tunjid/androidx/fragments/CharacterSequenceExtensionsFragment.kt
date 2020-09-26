@@ -17,7 +17,7 @@ import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.text.*
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.viewmodels.routeName
 
 /**
@@ -35,7 +35,7 @@ class CharacterSequenceExtensionsFragment : Fragment(R.layout.fragment_spanbuild
                 toolbarTitle = this::class.java.routeName,
                 toolbarOverlaps = false,
                 toolbarShows = true,
-                toolBarMenu = 0,
+                toolbarMenuRes = 0,
                 fabShows = false,
                 showsBottomNav = true,
                 insetFlags = InsetFlags.ALL,

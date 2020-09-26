@@ -24,7 +24,7 @@ import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.viewmodels.NsdViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
@@ -44,7 +44,7 @@ class NsdScanFragment : Fragment(R.layout.fragment_nsd_scan) {
                 toolbarTitle = this::class.java.routeName,
                 toolbarMenuRefresher = ::updateToolbarMenu,
                 toolbarMenuClickListener = ::onMenuItemSelected,
-                toolBarMenu = R.menu.menu_nsd_scan,
+                toolbarMenuRes = R.menu.menu_nsd_scan,
                 toolbarShows = true,
                 fabShows = false,
                 showsBottomNav = true,

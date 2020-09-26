@@ -33,7 +33,7 @@ import com.tunjid.androidx.recyclerview.indicators.width
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.androidx.viewmodels.DoggoViewModel
 import kotlin.math.abs
@@ -56,7 +56,7 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
         uiState = UiState(
                 toolbarOverlaps = true,
                 toolbarShows = false,
-                toolBarMenu = 0,
+                toolbarMenuRes = 0,
                 fabIcon = R.drawable.ic_hug_24dp,
                 fabShows = true,
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,

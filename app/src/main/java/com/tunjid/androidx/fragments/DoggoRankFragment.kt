@@ -36,8 +36,8 @@ import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.SpringItemAnimator
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.uidrivers.update
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.updatePartial
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.androidx.viewholders.DoggoBinder
 import com.tunjid.androidx.viewholders.bind
@@ -59,7 +59,7 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
-                toolBarMenu = R.menu.menu_doggo,
+                toolbarMenuRes = R.menu.menu_doggo,
                 toolbarShows = true,
                 toolbarOverlaps = false,
                 toolbarMenuRefresher = {
@@ -72,7 +72,7 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
                         R.id.menu_sort -> isRanking = true
                     }
                     recyclerView?.notifyDataSetChanged()
-                    ::uiState.update { copy(toolbarInvalidated = true) }
+                    ::uiState.updatePartial { copy(toolbarInvalidated = true) }
                 },
                 fabText = getString(R.string.reset_doggos),
                 fabIcon = R.drawable.ic_restore_24dp,

@@ -29,8 +29,8 @@ import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.BACKGROUND_TINT_DURATION
 import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.uidrivers.update
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.updatePartial
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.viewholders.DoggoBinder
 import com.tunjid.androidx.viewholders.bind
 import com.tunjid.androidx.viewholders.inputViewHolder
@@ -45,7 +45,7 @@ class AdoptDoggoFragment : Fragment(R.layout.fragment_simple_list) {
 
         val initialUiState = uiState
         uiState = uiState.copy(
-                toolBarMenu = 0,
+                toolbarMenuRes = 0,
                 toolbarShows = true,
                 toolbarOverlaps = true,
                 toolbarTitle = doggo.name,
@@ -58,7 +58,7 @@ class AdoptDoggoFragment : Fragment(R.layout.fragment_simple_list) {
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
                 fabClickListener = {
-                    ::uiState.update { copy(snackbarText = getString(R.string.adopted_doggo, doggo.name)) }
+                    ::uiState.updatePartial { copy(snackbarText = getString(R.string.adopted_doggo, doggo.name)) }
                 }
         )
 

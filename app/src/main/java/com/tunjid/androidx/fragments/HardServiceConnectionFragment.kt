@@ -15,7 +15,7 @@ import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.viewmodels.routeName
 
 
@@ -31,7 +31,7 @@ class HardServiceConnectionFragment : Fragment(R.layout.fragment_hard_service_co
                 toolbarTitle = this::class.java.routeName,
                 toolbarOverlaps = false,
                 toolbarShows = true,
-                toolBarMenu = 0,
+                toolbarMenuRes = 0,
                 fabShows = true,
                 fabIcon = R.drawable.ic_connect_24dp,
                 fabText = getText(R.string.bind_service),

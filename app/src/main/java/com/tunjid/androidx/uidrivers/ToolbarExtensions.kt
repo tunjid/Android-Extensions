@@ -19,8 +19,8 @@ import com.tunjid.androidx.core.graphics.drawable.withTint
 import com.tunjid.androidx.core.text.color
 import com.tunjid.androidx.navigation.Navigator
 
-fun Toolbar.update(toolbarState: ToolbarState) {
-    val (@MenuRes menu: Int, invalidatedAlone: Boolean, title: CharSequence) = toolbarState
+internal fun Toolbar.updatePartial(toolbarState: ToolbarState) {
+    val (@MenuRes menu: Int, title: CharSequence, invalidatedAlone: Boolean) = toolbarState
     if (invalidatedAlone) return refreshMenu()
 
     val currentTitle = this.title?.toString() ?: ""

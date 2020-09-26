@@ -33,8 +33,8 @@ import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.uidrivers.update
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.updatePartial
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.androidx.viewholders.DoggoBinder
 import com.tunjid.androidx.viewholders.bind
@@ -63,7 +63,7 @@ class DoggoListFragment : Fragment(R.layout.fragment_doggo_list),
 
         uiState = UiState(
                 toolbarTitle = this::class.java.routeName,
-                toolBarMenu = 0,
+                toolbarMenuRes = 0,
                 toolbarShows = true,
                 toolbarOverlaps = false,
                 fabIcon = R.drawable.ic_paw_24dp,
@@ -74,7 +74,7 @@ class DoggoListFragment : Fragment(R.layout.fragment_doggo_list),
                 lightStatusBar = !requireContext().isDarkTheme,
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
-                fabClickListener = { ::uiState.update { copy(fabExtended = !uiState.fabExtended) } }
+                fabClickListener = { ::uiState.updatePartial { copy(fabExtended = !uiState.fabExtended) } }
         )
 
         FragmentDoggoListBinding.bind(view).recyclerView.apply {

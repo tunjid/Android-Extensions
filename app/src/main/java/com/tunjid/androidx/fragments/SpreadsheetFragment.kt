@@ -48,8 +48,8 @@ import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.uidrivers.update
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.updatePartial
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.view.util.spring
 import com.tunjid.androidx.viewmodels.Sort
 import com.tunjid.androidx.viewmodels.SpreadsheetViewModel
@@ -66,7 +66,7 @@ class SpreadSheetParentFragment : Fragment(R.layout.fragment_spreadsheet_parent)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        ::uiState.update { copy(insetFlags = InsetFlags.ALL, toolbarOverlaps = false) }
+        ::uiState.updatePartial { copy(insetFlags = InsetFlags.ALL, toolbarOverlaps = false) }
 
         val viewPager = view.findViewById<ViewPager2>(R.id.view_pager)
         val pagerAdapter = object : FragmentStateAdapter(this.childFragmentManager, viewLifecycleOwner.lifecycle) {
@@ -112,7 +112,7 @@ class SpreadsheetFragment : Fragment(R.layout.fragment_spreadsheet_child) {
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
                 toolbarShows = true,
-                toolBarMenu = 0,
+                toolbarMenuRes = 0,
                 fabShows = false,
                 showsBottomNav = true,
                 lightStatusBar = !requireContext().isDarkTheme,

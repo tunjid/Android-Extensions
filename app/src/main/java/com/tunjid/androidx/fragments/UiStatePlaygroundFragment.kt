@@ -22,7 +22,7 @@ import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.InsetFlags
 
 class UiStatePlaygroundFragment : Fragment(R.layout.fragment_simple_list) {
 
@@ -30,7 +30,7 @@ class UiStatePlaygroundFragment : Fragment(R.layout.fragment_simple_list) {
         super.onViewCreated(view, savedInstanceState)
 
         uiState = UiState(
-                toolBarMenu = R.menu.menu_ui_state_playground,
+                toolbarMenuRes = R.menu.menu_ui_state_playground,
                 toolbarMenuClickListener = ::onMenuItemClicked,
                 toolbarTitle = getString(R.string.ui_state_playground),
                 toolbarOverlaps = false,

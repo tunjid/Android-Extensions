@@ -18,8 +18,8 @@ import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.uidrivers.SpringItemAnimator
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.uidrivers.update
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.updatePartial
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.viewholders.bind
 import com.tunjid.androidx.viewholders.tile
 import com.tunjid.androidx.viewholders.tileViewHolder
@@ -41,7 +41,7 @@ class EndlessTilesFragment : Fragment(R.layout.fragment_route) {
         uiState = UiState(
                 toolbarTitle = this::class.java.routeName,
                 toolbarShows = true,
-                toolBarMenu = 0,
+                toolbarMenuRes = 0,
                 fabShows = true,
                 fabIcon = R.drawable.ic_info_outline_24dp,
                 fabText = getString(R.string.tile_info),
@@ -49,7 +49,7 @@ class EndlessTilesFragment : Fragment(R.layout.fragment_route) {
                 insetFlags = InsetFlags.NO_BOTTOM,
                 lightStatusBar = !requireContext().isDarkTheme,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
-                fabClickListener = { ::uiState.update { copy(snackbarText = "There are ${viewModel.tiles.size} tiles") } }
+                fabClickListener = { ::uiState.updatePartial { copy(snackbarText = "There are ${viewModel.tiles.size} tiles") } }
         )
 
         FragmentRouteBinding.bind(view).recyclerView.apply {

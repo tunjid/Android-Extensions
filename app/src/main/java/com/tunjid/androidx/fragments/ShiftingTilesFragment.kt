@@ -16,8 +16,8 @@ import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.uidrivers.SpringItemAnimator
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.uidrivers.update
-import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
+import com.tunjid.androidx.uidrivers.updatePartial
+import com.tunjid.androidx.uidrivers.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidx.viewholders.bind
 import com.tunjid.androidx.viewholders.tile
 import com.tunjid.androidx.viewholders.tileViewHolder
@@ -41,7 +41,7 @@ class ShiftingTilesFragment : Fragment(R.layout.fragment_route) {
         uiState = UiState(
                 toolbarTitle = this::class.java.routeName,
                 toolbarShows = true,
-                toolBarMenu = 0,
+                toolbarMenuRes = 0,
                 fabShows = true,
                 showsBottomNav = false,
                 fabIcon = fabIconRes,
@@ -51,7 +51,7 @@ class ShiftingTilesFragment : Fragment(R.layout.fragment_route) {
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
                 fabClickListener = {
                     viewModel.toggleChanges()
-                    ::uiState.update { copy(fabIcon = fabIconRes, fabText = fabText) }
+                    ::uiState.updatePartial { copy(fabIcon = fabIconRes, fabText = fabText) }
                 }
         )
 

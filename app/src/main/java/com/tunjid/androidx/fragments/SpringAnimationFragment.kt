@@ -20,7 +20,7 @@ import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.view.animator.ViewHider
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.view.util.MarginProperty
 import com.tunjid.androidx.view.util.PaddingProperty
 import com.tunjid.androidx.view.util.spring
@@ -62,7 +62,7 @@ class SpringAnimationFragment : Fragment(R.layout.fragment_spring_animation) {
 
         uiState = UiState(
                 toolbarTitle = this::class.java.routeName,
-                toolBarMenu = R.menu.menu_spring_animations,
+                toolbarMenuRes = R.menu.menu_spring_animations,
                 fabShows = true,
                 toolbarOverlaps = false,
                 toolbarShows = true,
