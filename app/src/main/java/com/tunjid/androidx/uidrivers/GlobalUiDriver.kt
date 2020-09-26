@@ -192,11 +192,9 @@ class GlobalUiDriver(
             val navBarClearance = state.navBarSize countIf state.insetDescriptor.hasBottomInset
             var insetClearance = uiSizes.snackbarPadding
 
-            insetClearance += if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                max(bottomNavClearance, state.keyboardSize)
-            } else {
-                max(bottomNavClearance + navBarClearance, state.keyboardSize)
-            }
+            insetClearance +=
+                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) max(bottomNavClearance, state.keyboardSize)
+                    else max(bottomNavClearance + navBarClearance, state.keyboardSize)
 
             it.softSpring(SpringAnimation.TRANSLATION_Y)
                     .animateToFinalPosition(-insetClearance.toFloat())
