@@ -12,7 +12,6 @@ import android.view.WindowManager
 import android.widget.EditText
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
-import androidx.appcompat.widget.Toolbar
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
@@ -68,14 +67,6 @@ class GlobalUiDriver(
         private val navigator: Navigator
 ) : GlobalUiController {
 
-    private val toolbarHider: ViewHider<Toolbar> = binding.toolbar.run {
-        setNavigationOnClickListener { navigator.pop() }
-        ViewHider.of(this).setDirection(ViewHider.TOP).build()
-    }
-
-    private val fabExtensionAnimator: FabExtensionAnimator =
-            FabExtensionAnimator(binding.fab).apply { isExtended = true }
-
     private val snackbar = Snackbar.make(binding.contentRoot, "", Snackbar.LENGTH_SHORT).apply {
         view.setOnApplyWindowInsetsListener(noOpInsetsListener)
         view.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
@@ -105,6 +96,8 @@ class GlobalUiDriver(
         }
 
     private val uiSizes = UISizes(host)
+    private val fabExtensionAnimator = FabExtensionAnimator(binding.fab)
+    private val toolbarHider = ViewHider.of(binding.toolbar).setDirection(ViewHider.TOP).build()
     private val noOpInsetsListener = View.OnApplyWindowInsetsListener { _, insets -> insets }
     private val rootInsetsListener = View.OnApplyWindowInsetsListener { _, insets ->
         liveUiState.value = uiState.reduceSystemInsets(insets, uiSizes.navBarHeightThreshold)
@@ -128,12 +121,13 @@ class GlobalUiDriver(
         }
 
     init {
-        host.window.decorView.systemUiVisibility = DEFAULT_SYSTEM_UI_FLAGS
+        host.window.decorView.systemUiVisibility = FULL_CONTROL_SYSTEM_UI_FLAGS
         host.window.navigationBarColor = host.colorAt(R.color.transparent)
         host.window.statusBarColor = host.colorAt(R.color.transparent)
 
         binding.root.setOnApplyWindowInsetsListener(rootInsetsListener)
 
+        binding.toolbar.setNavigationOnClickListener { navigator.pop() }
         binding.toolbar.setOnApplyWindowInsetsListener(noOpInsetsListener)
 
         binding.bottomNavigation.doOnLayout { updateBottomNav(this@GlobalUiDriver.uiState.bottomNavPositionalState) }
@@ -217,13 +211,13 @@ class GlobalUiDriver(
         val toolbarHeight = uiSizes.toolbarSize countIf !state.toolbarOverlaps
         val topClearance = statusBarSize + toolbarHeight
 
-        binding.contentContainer.apply {
-            softSpring(PaddingProperty.TOP)
-                    .animateToFinalPosition(topClearance.toFloat())
+        binding.contentContainer
+                .softSpring(PaddingProperty.TOP)
+                .animateToFinalPosition(topClearance.toFloat())
 
-            softSpring(PaddingProperty.BOTTOM)
-                    .animateToFinalPosition(totalBottomClearance.toFloat())
-        }
+        binding.contentContainer
+                .softSpring(PaddingProperty.BOTTOM)
+                .animateToFinalPosition(totalBottomClearance.toFloat())
     }
 
     private fun setMenuItemClickListener(item: ((MenuItem) -> Unit)?) =
@@ -273,7 +267,7 @@ class GlobalUiDriver(
 
     companion object {
         const val ANIMATION_DURATION = 300
-        private const val DEFAULT_SYSTEM_UI_FLAGS =
+        private const val FULL_CONTROL_SYSTEM_UI_FLAGS =
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                         View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
                         View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
