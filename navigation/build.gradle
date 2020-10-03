@@ -19,7 +19,7 @@ dependencies {
     androidTestImplementation parent.ext.espressoIdlingResource
     androidTestImplementation parent.ext.mockitoCore
     androidTestImplementation parent.ext.mockitoAndroid
-    androidTestImplementation 'org.hamcrest:hamcrest-library:1.3'
+    androidTestImplementation 'org.hamcrest:hamcrest-library:2.2'
 
 
     def androidTestExclusions = { lib, pairs ->

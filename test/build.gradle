@@ -8,7 +8,7 @@ dependencies {
     implementation parent.ext.recyclerView
 
     implementation 'junit:junit:4.13'
-    implementation 'org.hamcrest:hamcrest-library:1.3'
+    implementation 'org.hamcrest:hamcrest-library:2.2'
     implementation parent.ext.mockitoAndroid
 
     def androidTestExclusions = { lib, pairs ->
