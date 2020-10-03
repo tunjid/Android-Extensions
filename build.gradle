@@ -37,7 +37,7 @@ buildscript {
         lifecycleSavedState = 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.2.0'
         lifecycleViewModel = 'androidx.lifecycle:lifecycle-viewmodel:2.2.0'
         material = 'com.google.android.material:material:1.2.1'
-        mockitoAndroid = 'org.mockito:mockito-android:2.23.0'
+        mockitoAndroid = 'org.mockito:mockito-android:3.5.13'
         mockitoCore = 'org.mockito:mockito-core:2.23.0'
         palette = 'androidx.palette:palette:1.0.0'
         recyclerView = 'androidx.recyclerview:recyclerview:1.1.0'
