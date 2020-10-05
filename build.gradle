@@ -24,7 +24,7 @@ buildscript {
         appCompat = 'androidx.appcompat:appcompat:1.2.0'
         cardView = 'androidx.cardview:cardview:1.0.0'
         constraintLayout = 'androidx.constraintlayout:constraintlayout:2.0.1'
-        dynamicAnimations = 'androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03'
+        dynamicAnimations = 'androidx.dynamicanimation:dynamicanimation:1.1.0-SNAPSHOT'
         dynamicAnimationsKtx = 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha03'
         espressoContrib = 'androidx.test.espresso:espresso-contrib:3.3.0'
         espressoCore = 'androidx.test.espresso:espresso-core:3.3.0'
