@@ -6,8 +6,8 @@ android {
                 "-Xuse-experimental=kotlin.Experimental"
         ]
     }
-    viewBinding {
-        enabled = true
+    buildFeatures {
+        viewBinding true
     }
 }
 
