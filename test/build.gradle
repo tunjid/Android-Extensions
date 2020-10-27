@@ -7,7 +7,7 @@ dependencies {
     implementation parent.ext.appCompat
     implementation parent.ext.recyclerView
 
-    implementation 'junit:junit:4.13'
+    implementation 'junit:junit:4.13.1'
     implementation 'org.hamcrest:hamcrest-library:2.2'
     implementation parent.ext.mockitoAndroid
 
