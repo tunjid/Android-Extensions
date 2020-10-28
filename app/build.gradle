@@ -103,7 +103,7 @@ dependencies {
 
     implementation 'me.everything:overscroll-decor-android:1.1.0'
     implementation 'com.andkulikov:transitionseverywhere:2.1.0'
-    implementation 'com.opencsv:opencsv:5.2'
+    implementation 'com.opencsv:opencsv:5.3'
 
     testImplementation parent.ext.material
     testImplementation parent.ext.supportAnnotations
