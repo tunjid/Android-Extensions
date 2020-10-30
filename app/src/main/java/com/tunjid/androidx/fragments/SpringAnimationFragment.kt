@@ -17,9 +17,10 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.FragmentSpringAnimationBinding
 import com.tunjid.androidx.isDarkTheme
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
+import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.view.animator.ViewHider
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.view.util.MarginProperty
 import com.tunjid.androidx.view.util.PaddingProperty
 import com.tunjid.androidx.view.util.spring
@@ -38,7 +39,6 @@ private typealias SpringModifierConsumer = (SpringForce.() -> Unit) -> Unit
 
 class SpringAnimationFragment : Fragment(R.layout.fragment_spring_animation) {
 
-    private var uiState by activityGlobalUiController()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -60,9 +60,9 @@ class SpringAnimationFragment : Fragment(R.layout.fragment_spring_animation) {
             }
         }
 
-        uiState = uiState.copy(
+        uiState = UiState(
                 toolbarTitle = this::class.java.routeName,
-                toolBarMenu = R.menu.menu_spring_animations,
+                toolbarMenuRes = R.menu.menu_spring_animations,
                 fabShows = true,
                 toolbarOverlaps = false,
                 toolbarShows = true,

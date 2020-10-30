@@ -60,17 +60,17 @@ android {
         ]
     }
 
-    viewBinding {
-        enabled = true
+    buildFeatures {
+        viewBinding true
     }
 }
 
 dependencies {
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
 
     // Android support libraries
     implementation parent.ext.kotlin
@@ -95,15 +95,15 @@ dependencies {
 
     // other dependencies
     implementation 'com.squareup.picasso:picasso:2.71828'
-    implementation 'jp.wasabeef:picasso-transformations:2.1.2'
+    implementation 'jp.wasabeef:picasso-transformations:2.4.0'
 
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.17'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.19'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.4.0'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
-    implementation 'me.everything:overscroll-decor-android:1.0.4'
+    implementation 'me.everything:overscroll-decor-android:1.1.0'
     implementation 'com.andkulikov:transitionseverywhere:2.1.0'
-    implementation 'com.opencsv:opencsv:4.0'
+    implementation 'com.opencsv:opencsv:5.2'
 
     testImplementation parent.ext.material
     testImplementation parent.ext.supportAnnotations

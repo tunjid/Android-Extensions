@@ -16,7 +16,6 @@ import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -31,9 +30,10 @@ import com.tunjid.androidx.recyclerview.indicators.Params
 import com.tunjid.androidx.recyclerview.indicators.indicatorDecoration
 import com.tunjid.androidx.recyclerview.indicators.start
 import com.tunjid.androidx.recyclerview.indicators.width
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
+import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.baseSharedTransition
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.uiState
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.androidx.viewmodels.DoggoViewModel
 import kotlin.math.abs
@@ -45,7 +45,7 @@ import kotlin.math.sin
 class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
         Navigator.TransactionModifier {
 
-    private var uiState by activityGlobalUiController()
+
     private val viewModel by viewModels<DoggoViewModel>()
     private val navigator by activityNavigatorController<MultiStackNavigator>()
 
@@ -53,10 +53,10 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
         super.onViewCreated(view, savedInstanceState)
 
         val initialUiState = uiState
-        uiState = uiState.copy(
+        uiState = UiState(
                 toolbarOverlaps = true,
                 toolbarShows = false,
-                toolBarMenu = 0,
+                toolbarMenuRes = 0,
                 fabIcon = R.drawable.ic_hug_24dp,
                 fabShows = true,
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,

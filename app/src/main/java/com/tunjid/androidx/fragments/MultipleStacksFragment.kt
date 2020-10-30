@@ -38,17 +38,17 @@ import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.navigation.addOnBackPressedCallback
 import com.tunjid.androidx.navigation.childMultiStackNavigationController
-import com.tunjid.androidx.uidrivers.GlobalUiController
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
+import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.materialDepthAxisTransition
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.uiState
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.viewmodels.routeName
 
 
 class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
 
     private var transitionOption: Int = R.id.slide
-    private var uiState by activityGlobalUiController()
+
     private val navigator by activityNavigatorController<MultiStackNavigator>()
     internal val innerNavigator: MultiStackNavigator by childMultiStackNavigationController(
             DESTINATIONS.size,
@@ -92,9 +92,9 @@ class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
             transitionOption = checkedId
         }
 
-        uiState = uiState.copy(
+        uiState = UiState(
                 toolbarTitle = this::class.java.routeName.color(Color.WHITE),
-                toolBarMenu = R.menu.menu_default,
+                toolbarMenuRes = R.menu.menu_default,
                 toolbarShows = true,
                 toolbarOverlaps = false,
                 toolbarMenuClickListener = {
@@ -156,16 +156,11 @@ class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
 
 }
 
-class MultipleStackChildFragment : Fragment(),
-        GlobalUiController,
-        Navigator.TagProvider {
+class MultipleStackChildFragment : Fragment(), Navigator.TagProvider {
 
     override val stableTag: String get() = "${javaClass.simpleName}-$name-$depth"
 
-    override var uiState by activityGlobalUiController()
-
     var name: String by args()
-
     var depth: Int by args()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = TextView(inflater.context).apply {

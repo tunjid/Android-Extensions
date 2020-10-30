@@ -1,11 +1,28 @@
-package com.tunjid.androidx.view.util
+package com.tunjid.androidx.uidrivers
+
+
+/**
+ * Describes how the app insets itself relative to system UI like the status and nav bar
+ */
+interface InsetDescriptor {
+    val hasTopInset: Boolean
+    val hasBottomInset: Boolean
+}
+
+private data class DelegateInsetDescriptor(
+        override val hasTopInset: Boolean,
+        override val hasBottomInset: Boolean,
+        val name: String
+) : InsetDescriptor {
+    override fun toString(): String = name
+}
 
 data class InsetFlags(
         val hasLeftInset: Boolean,
-        val hasTopInset: Boolean,
+        override val hasTopInset: Boolean,
         val hasRightInset: Boolean,
-        val hasBottomInset: Boolean
-) {
+        override val hasBottomInset: Boolean
+) : InsetDescriptor {
     companion object {
 
         val ALL = InsetFlags(hasLeftInset = true, hasTopInset = true, hasRightInset = true, hasBottomInset = true)

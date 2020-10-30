@@ -16,7 +16,6 @@ import androidx.dynamicanimation.animation.springAnimationOf
 import androidx.dynamicanimation.animation.withSpringForceProperties
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -48,9 +47,9 @@ import com.tunjid.androidx.recyclerview.multiscroll.StaticCellSizer
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
-import com.tunjid.androidx.uidrivers.update
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.uiState
+import com.tunjid.androidx.uidrivers.updatePartial
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.view.util.spring
 import com.tunjid.androidx.viewmodels.Sort
 import com.tunjid.androidx.viewmodels.SpreadsheetViewModel
@@ -63,12 +62,11 @@ private typealias Var<T> = KMutableProperty0<T>
 //region Parent Fragment
 class SpreadSheetParentFragment : Fragment(R.layout.fragment_spreadsheet_parent) {
 
-    private var uiState by activityGlobalUiController()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        ::uiState.update { copy(insetFlags = InsetFlags.ALL, toolbarOverlaps = false) }
+        ::uiState.updatePartial { copy(insetFlags = InsetFlags.ALL, toolbarOverlaps = false) }
 
         val viewPager = view.findViewById<ViewPager2>(R.id.view_pager)
         val pagerAdapter = object : FragmentStateAdapter(this.childFragmentManager, viewLifecycleOwner.lifecycle) {
@@ -98,7 +96,7 @@ class SpreadsheetFragment : Fragment(R.layout.fragment_spreadsheet_child) {
 
     private var isDynamic by args<Boolean>()
 
-    private var uiState by activityGlobalUiController()
+
     private val viewModel by viewModels<SpreadsheetViewModel>()
 
     private val scroller by lazy {
@@ -114,7 +112,7 @@ class SpreadsheetFragment : Fragment(R.layout.fragment_spreadsheet_child) {
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
                 toolbarShows = true,
-                toolBarMenu = 0,
+                toolbarMenuRes = 0,
                 fabShows = false,
                 showsBottomNav = true,
                 lightStatusBar = !requireContext().isDarkTheme,

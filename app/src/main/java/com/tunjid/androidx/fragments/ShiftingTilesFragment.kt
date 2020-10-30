@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.FragmentRouteBinding
@@ -15,9 +14,10 @@ import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.gridLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.uidrivers.SpringItemAnimator
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
-import com.tunjid.androidx.uidrivers.update
-import com.tunjid.androidx.view.util.InsetFlags.Companion.NO_BOTTOM
+import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.uiState
+import com.tunjid.androidx.uidrivers.updatePartial
+import com.tunjid.androidx.uidrivers.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidx.viewholders.bind
 import com.tunjid.androidx.viewholders.tile
 import com.tunjid.androidx.viewholders.tileViewHolder
@@ -27,7 +27,6 @@ import com.tunjid.androidx.viewmodels.routeName
 
 class ShiftingTilesFragment : Fragment(R.layout.fragment_route) {
 
-    private var uiState by activityGlobalUiController()
     private val viewModel by viewModels<ShiftingTileViewModel>()
 
     private val fabIconRes: Int
@@ -39,10 +38,10 @@ class ShiftingTilesFragment : Fragment(R.layout.fragment_route) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = uiState.copy(
+        uiState = UiState(
                 toolbarTitle = this::class.java.routeName,
                 toolbarShows = true,
-                toolBarMenu = 0,
+                toolbarMenuRes = 0,
                 fabShows = true,
                 showsBottomNav = false,
                 fabIcon = fabIconRes,
@@ -52,7 +51,7 @@ class ShiftingTilesFragment : Fragment(R.layout.fragment_route) {
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
                 fabClickListener = {
                     viewModel.toggleChanges()
-                    ::uiState.update { copy(fabIcon = fabIconRes, fabText = fabText) }
+                    ::uiState.updatePartial { copy(fabIcon = fabIconRes, fabText = fabText) }
                 }
         )
 

@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.observe
 import androidx.transition.TransitionManager
 import com.transitionseverywhere.ChangeText
 import com.transitionseverywhere.ChangeText.CHANGE_BEHAVIOR_OUT_IN
@@ -14,25 +13,25 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.core.components.services.HardServiceConnection
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.isDarkTheme
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.uiState
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.viewmodels.routeName
 
 
 class HardServiceConnectionFragment : Fragment(R.layout.fragment_hard_service_connection) {
 
-    private var uiState by activityGlobalUiController()
     private val connection by lazy { HardServiceConnection(requireContext(), CounterService::class.java, this::onServiceBound) }
 
     private var statusText: TextView? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        uiState = uiState.copy(
+        uiState = UiState(
                 toolbarTitle = this::class.java.routeName,
                 toolbarOverlaps = false,
                 toolbarShows = true,
-                toolBarMenu = 0,
+                toolbarMenuRes = 0,
                 fabShows = true,
                 fabIcon = R.drawable.ic_connect_24dp,
                 fabText = getText(R.string.bind_service),

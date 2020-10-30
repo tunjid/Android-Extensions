@@ -14,7 +14,6 @@ import androidx.dynamicanimation.animation.SpringForce
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.ChangeBounds
@@ -36,9 +35,9 @@ import com.tunjid.androidx.recyclerview.*
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.SpringItemAnimator
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
-import com.tunjid.androidx.uidrivers.update
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.uiState
+import com.tunjid.androidx.uidrivers.updatePartial
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.androidx.viewholders.DoggoBinder
 import com.tunjid.androidx.viewholders.bind
@@ -50,7 +49,6 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
         Navigator.TransactionModifier {
 
     private var isRanking by args<Boolean>()
-    private var uiState by activityGlobalUiController()
     private val viewModel by viewModels<DoggoRankViewModel>()
     private val navigator by activityNavigatorController<MultiStackNavigator>()
 
@@ -61,7 +59,7 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
 
         uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
-                toolBarMenu = R.menu.menu_doggo,
+                toolbarMenuRes = R.menu.menu_doggo,
                 toolbarShows = true,
                 toolbarOverlaps = false,
                 toolbarMenuRefresher = {
@@ -74,7 +72,7 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
                         R.id.menu_sort -> isRanking = true
                     }
                     recyclerView?.notifyDataSetChanged()
-                    ::uiState.update { copy(toolbarInvalidated = true) }
+                    ::uiState.updatePartial { copy(toolbarInvalidated = true) }
                 },
                 fabText = getString(R.string.reset_doggos),
                 fabIcon = R.drawable.ic_restore_24dp,
@@ -112,7 +110,7 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
             viewModel.watchDoggos().observe(viewLifecycleOwner, this::acceptDiff)
         }
 
-        postponeEnterTransition()
+        if (Doggo.transitionDoggo != null) postponeEnterTransition()
     }
 
     override fun onDestroyView() {

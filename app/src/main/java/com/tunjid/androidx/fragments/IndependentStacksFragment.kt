@@ -28,16 +28,16 @@ import com.tunjid.androidx.navigation.StackNavigator
 import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.navigation.addOnBackPressedCallback
 import com.tunjid.androidx.navigation.childStackNavigationController
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
+import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.crossFade
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.uiState
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.viewmodels.routeName
 import java.util.*
 
 
 class IndependentStacksFragment : Fragment(R.layout.fragment_independent_stack) {
 
-    private var uiState by activityGlobalUiController()
     private val navigator by activityNavigatorController<MultiStackNavigator>()
     private val navigators = mutableMapOf<Int, StackNavigator>()
     private val visitOrder = ArrayDeque<Int>()
@@ -65,9 +65,9 @@ class IndependentStacksFragment : Fragment(R.layout.fragment_independent_stack) 
             if (current == null) push(IndependentStackChildFragment.newInstance(name(containerId), 1))
         }
 
-        uiState = uiState.copy(
+        uiState = UiState(
                 toolbarTitle = this::class.java.routeName.color(Color.WHITE),
-                toolBarMenu = 0,
+                toolbarMenuRes = 0,
                 toolbarShows = true,
                 toolbarOverlaps = false,
                 fabShows = false,

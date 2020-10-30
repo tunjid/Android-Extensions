@@ -3,7 +3,9 @@ package com.tunjid.androidx.navigation
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 
 /**
@@ -18,7 +20,7 @@ internal class CommonSuspendingNavigator(private val navigator: Navigator) : Sus
 
     override suspend fun find(tag: String): Fragment? = navigator.find(tag)
 
-    override suspend fun pop() = suspendCancellableCoroutine<Fragment?> { continuation ->
+    override suspend fun pop() = mainThreadSuspendCancellableCoroutine<Fragment?> { continuation ->
         when (val previous = navigator.previous) {
             null -> continuation.resumeIfActive(null)
             else -> {
@@ -28,7 +30,7 @@ internal class CommonSuspendingNavigator(private val navigator: Navigator) : Sus
         }
     }
 
-    override suspend fun <T : Fragment> push(fragment: T, tag: String) = suspendCancellableCoroutine<T?> { continuation ->
+    override suspend fun <T : Fragment> push(fragment: T, tag: String) = mainThreadSuspendCancellableCoroutine<T?> { continuation ->
         when (navigator.current?.tag) {
             tag -> continuation.resumeIfActive(null)
             else -> {
@@ -41,6 +43,10 @@ internal class CommonSuspendingNavigator(private val navigator: Navigator) : Sus
     override suspend fun clear(upToTag: String?, includeMatch: Boolean): Fragment? =
             throw IllegalArgumentException("Override this")
 }
+
+internal suspend inline fun <T> mainThreadSuspendCancellableCoroutine(
+        crossinline block: (CancellableContinuation<T>) -> Unit
+): T = withContext(Dispatchers.Main) { suspendCancellableCoroutine(block) }
 
 internal fun <T> CancellableContinuation<T>.resumeIfActive(item: T) {
     if (isActive) resume(item)

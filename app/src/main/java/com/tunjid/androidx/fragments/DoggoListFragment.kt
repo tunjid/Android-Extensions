@@ -31,9 +31,10 @@ import com.tunjid.androidx.recyclerview.gridLayoutManager
 import com.tunjid.androidx.recyclerview.viewHolderForItemId
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
-import com.tunjid.androidx.uidrivers.activityGlobalUiController
-import com.tunjid.androidx.uidrivers.update
-import com.tunjid.androidx.view.util.InsetFlags
+import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.uiState
+import com.tunjid.androidx.uidrivers.updatePartial
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.androidx.viewholders.DoggoBinder
 import com.tunjid.androidx.viewholders.bind
@@ -43,7 +44,7 @@ import kotlin.math.abs
 class DoggoListFragment : Fragment(R.layout.fragment_doggo_list),
         Navigator.TransactionModifier {
 
-    private var uiState by activityGlobalUiController()
+
     private val navigator by activityNavigatorController<MultiStackNavigator>()
 
     private var recyclerView: RecyclerView? = null
@@ -60,9 +61,9 @@ class DoggoListFragment : Fragment(R.layout.fragment_doggo_list),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = uiState.copy(
+        uiState = UiState(
                 toolbarTitle = this::class.java.routeName,
-                toolBarMenu = 0,
+                toolbarMenuRes = 0,
                 toolbarShows = true,
                 toolbarOverlaps = false,
                 fabIcon = R.drawable.ic_paw_24dp,
@@ -73,7 +74,7 @@ class DoggoListFragment : Fragment(R.layout.fragment_doggo_list),
                 lightStatusBar = !requireContext().isDarkTheme,
                 fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
                 navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
-                fabClickListener = { ::uiState.update { copy(fabExtended = !uiState.fabExtended) } }
+                fabClickListener = { ::uiState.updatePartial { copy(fabExtended = !uiState.fabExtended) } }
         )
 
         FragmentDoggoListBinding.bind(view).recyclerView.apply {
@@ -101,7 +102,7 @@ class DoggoListFragment : Fragment(R.layout.fragment_doggo_list),
             addItemDecoration(context.divider(DividerItemDecoration.VERTICAL))
         }
 
-        postponeEnterTransition()
+        if (Doggo.transitionDoggo != null) postponeEnterTransition()
 
         scrollToPosition()
     }
