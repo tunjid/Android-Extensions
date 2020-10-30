@@ -11,7 +11,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.0'
-        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:1.0.3'
+        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:2.0.0'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
@@ -23,7 +23,7 @@ buildscript {
 
         appCompat = 'androidx.appcompat:appcompat:1.2.0'
         cardView = 'androidx.cardview:cardview:1.0.0'
-        constraintLayout = 'androidx.constraintlayout:constraintlayout:2.0.1'
+        constraintLayout = 'androidx.constraintlayout:constraintlayout:2.0.3'
         dynamicAnimations = 'androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03'
         dynamicAnimationsKtx = 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha03'
         espressoContrib = 'androidx.test.espresso:espresso-contrib:3.3.0'
