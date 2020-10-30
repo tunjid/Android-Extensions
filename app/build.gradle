@@ -67,10 +67,10 @@ android {
 
 dependencies {
 
-    testImplementation 'junit:junit:4.13'
+    testImplementation 'junit:junit:4.13.1'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
 
     // Android support libraries
     implementation parent.ext.kotlin
@@ -97,13 +97,13 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'jp.wasabeef:picasso-transformations:2.4.0'
 
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.19'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.20'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.4.0'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
     implementation 'me.everything:overscroll-decor-android:1.1.0'
     implementation 'com.andkulikov:transitionseverywhere:2.1.0'
-    implementation 'com.opencsv:opencsv:5.2'
+    implementation 'com.opencsv:opencsv:5.3'
 
     testImplementation parent.ext.material
     testImplementation parent.ext.supportAnnotations
