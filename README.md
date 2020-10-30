@@ -9,7 +9,7 @@ There are 10 modules:
 | ------------| ------------ | ------------ | ------------ | ------------ |
 | 1  | App | A sample app demoing the modules in the repository.  |   |   |
 | 2  | [Core (1.2.2)](https://github.com/tunjid/Android-Extensions/blob/develop/core/README.md)  | A few added utilities to the core Android KTX libraries.  Includes extension methods on objects to side step ContextCompat, DrawableCompat, and a fluent SpannableString API | ![](https://i.imgur.com/AFZpZ1K.png)  | ![](https://miro.medium.com/max/4904/1*o4p71Uid8vzAHvHH7W_LjQ.png)  |
-| 3  | [Navigation (1.1.2)](https://github.com/tunjid/Android-Extensions/blob/develop/navigation/README.md)  | Interfaces and implementations of Fragment based Navigators, including single and multiple stacks. The APIs allow for hooking into the raw `FragmentTransactions` that run allow you to customize it to your heart's content. Suspending APIs are also available to preform navigation actions sequentially without having to deal with the asynchrosity of the `FragmentManager`.| ![](https://i.imgur.com/2Ai74xI.png)  | ![](https://cdn-images-1.medium.com/max/1600/1*q1WqvY91CWlmAjdEiwbA_g.gif)  |
+| 3  | [Navigation (1.2.0-beta01)](https://github.com/tunjid/Android-Extensions/blob/develop/navigation/README.md)  | Interfaces and implementations of Fragment based Navigators, including single and multiple stacks. The APIs allow for hooking into the raw `FragmentTransactions` that run allow you to customize it to your heart's content. Suspending APIs are also available to preform navigation actions sequentially without having to deal with the asynchrosity of the `FragmentManager`.| ![](https://i.imgur.com/2Ai74xI.png)  | ![](https://cdn-images-1.medium.com/max/1600/1*q1WqvY91CWlmAjdEiwbA_g.gif)  |
 | 4  | [View (1.1.2)](https://github.com/tunjid/Android-Extensions/blob/develop/view/README.md)  | A module containing UI building blocks, like animators and helper methods for views.  Built mostly around the `SpringAnimation` from the Jetpack `DynamicAnimation` library. In the example to the right, it is responsible for animating the margin, and padding of the container views, and the hiding and showing of bouncing FABs.| ![](https://i.imgur.com/K3qGDKb.gif)  |   |
 | 5  | [RecyclerView (1.1.2)](https://github.com/tunjid/Android-Extensions/blob/develop/recyclerview/README.md)  | Utility classes for the ```RecyclerView``` ```ViewGroup``` like drag and drop, swipe gestures, endless scrolling, a composable adapter, diffing, tables and much more.  | ![](https://miro.medium.com/max/580/1*SjjLx1ghigvJP7kax-K6gA.gif)  | ![](https://i.imgur.com/hpb3YFu.gif)  |
 | 6  | [Material (1.0.2)](https://github.com/tunjid/Android-Extensions/blob/develop/material/README.md)  | Utility classes around Google's Material Design components including an expandable floating action button.  | ![](https://miro.medium.com/max/648/1*NHgDmR6QVqQwj7VJToQE5w.gif)  |   |
@@ -23,7 +23,7 @@ build.gradle lines
     implementation 'com.tunjid.androidx:constraintlayout:1.0.0-rc01'
     implementation 'com.tunjid.androidx:communications:1.0.0'
     implementation 'com.tunjid.androidx:recyclerview:1.1.2'
-    implementation 'com.tunjid.androidx:navigation:1.1.1'
+    implementation 'com.tunjid.androidx:navigation:1.2.0-beta-01'
     implementation 'com.tunjid.androidx:savedstate:1.0.0'
     implementation 'com.tunjid.androidx:functions:1.0.0'
     implementation 'com.tunjid.androidx:material:1.0.2'
