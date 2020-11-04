@@ -6,10 +6,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import kotlinx.coroutines.CancellableContinuation
-import kotlinx.coroutines.suspendCancellableCoroutine
 
 class SuspendingMultiStackNavigator(
-        private val navigator: MultiStackNavigator
+    private val navigator: MultiStackNavigator
 ) : SuspendingNavigator by CommonSuspendingNavigator(navigator) {
 
     suspend fun show(index: Int) = mainThreadSuspendCancellableCoroutine<Fragment?> { continuation ->
@@ -23,7 +22,7 @@ class SuspendingMultiStackNavigator(
     }
 
     override suspend fun clear(upToTag: String?, includeMatch: Boolean) =
-            SuspendingStackNavigator(navigator.activeNavigator).clear(upToTag, includeMatch)
+        SuspendingStackNavigator(navigator.activeNavigator).clear(upToTag, includeMatch)
 
     /**
      * @see MultiStackNavigator.clearAll
@@ -33,13 +32,17 @@ class SuspendingMultiStackNavigator(
     }
 
     private suspend fun internalClearAll(): Fragment? = mainThreadSuspendCancellableCoroutine { continuation ->
-        // Clear all uses FragmentTransaction.commitNow, make sure calls start on the UI thread
-        Handler(Looper.getMainLooper()).post {
-            navigator.clearAll()
+        val clear = {
+            navigator.activeFragment.doOnLifecycleEvent(Lifecycle.Event.ON_RESUME) {
+                navigator.clearAll()
 
-            // Root function will be invoked for newly added StackFragment, wait on it's child
-            navigator.stackFragments[0].waitForChild(continuation)
+                // Root function will be invoked for newly added StackFragment, wait on it's child
+                navigator.stackFragments[0].waitForChild(continuation)
+            }
         }
+        // Clear all uses FragmentTransaction.commitNow, make sure calls start on the UI thread
+        if (Looper.myLooper() == Looper.getMainLooper()) clear()
+        else Handler(Looper.getMainLooper()).post { clear() }
     }
 }
 
