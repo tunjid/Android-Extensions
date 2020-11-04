@@ -94,7 +94,7 @@ class MultiStackNavigator(
      */
     internal var stackFragments: List<StackFragment>
 
-    private val activeFragment: StackFragment
+    internal val activeFragment: StackFragment
         get() = stackFragments.run { firstOrNull(Fragment::isAttached) ?: first() }
 
     val activeIndex
