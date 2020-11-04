@@ -23,29 +23,29 @@ import kotlinx.coroutines.launch
 const val MULTI_STACK_NAVIGATOR = "com.tunjid.androidx.navigation.MultiStackNavigator"
 
 fun Fragment.childMultiStackNavigationController(
-        stackCount: Int,
-        @IdRes containerId: Int,
-        rootFunction: (Int) -> Fragment
+    stackCount: Int,
+    @IdRes containerId: Int,
+    rootFunction: (Int) -> Fragment
 ): Lazy<MultiStackNavigator> = lazy {
     MultiStackNavigator(
-            stackCount,
-            savedStateFor(this@childMultiStackNavigationController, "$MULTI_STACK_NAVIGATOR-$containerId"),
-            childFragmentManager,
-            containerId, rootFunction
+        stackCount,
+        savedStateFor(this@childMultiStackNavigationController, "$MULTI_STACK_NAVIGATOR-$containerId"),
+        childFragmentManager,
+        containerId, rootFunction
     )
 }
 
 fun FragmentActivity.multiStackNavigationController(
-        stackCount: Int,
-        @IdRes containerId: Int,
-        rootFunction: (Int) -> Fragment
+    stackCount: Int,
+    @IdRes containerId: Int,
+    rootFunction: (Int) -> Fragment
 ): Lazy<MultiStackNavigator> = lazy {
     MultiStackNavigator(
-            stackCount,
-            savedStateFor(this@multiStackNavigationController, "$MULTI_STACK_NAVIGATOR-$containerId"),
-            supportFragmentManager,
-            containerId,
-            rootFunction
+        stackCount,
+        savedStateFor(this@multiStackNavigationController, "$MULTI_STACK_NAVIGATOR-$containerId"),
+        supportFragmentManager,
+        containerId,
+        rootFunction
     )
 }
 
@@ -54,11 +54,11 @@ fun FragmentActivity.multiStackNavigationController(
  * [StackNavigator].
  */
 class MultiStackNavigator(
-        stackCount: Int,
-        stateContainer: LifecycleSavedStateContainer,
-        private val fragmentManager: FragmentManager,
-        @IdRes override val containerId: Int,
-        private val rootFunction: (Int) -> Fragment) : Navigator {
+    stackCount: Int,
+    stateContainer: LifecycleSavedStateContainer,
+    private val fragmentManager: FragmentManager,
+    @IdRes override val containerId: Int,
+    private val rootFunction: (Int) -> Fragment) : Navigator {
 
     /**
      * A callback that will be invoked when a stack is selected, either by the user selecting it,
@@ -80,8 +80,8 @@ class MultiStackNavigator(
         set(value) {
             field = value
             stackFragments
-                    .filter { it.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) }
-                    .forEach { it.navigator.transactionModifier = value }
+                .filter { it.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) }
+                .forEach { it.navigator.transactionModifier = value }
         }
 
     private val indices = 0 until stackCount
@@ -132,7 +132,13 @@ class MultiStackNavigator(
      * After this call the [rootFunction] will be re-invoked for the first stack, allowing for the
      * replacement for the first [Fragment] shown; this is very useful for auth and de-auth flows.
      */
-    fun clearAll() = fragmentManager.commitNow {
+    fun clearAll() = reset(commitNow = true)
+
+    internal fun reset(commitNow: Boolean) =
+        if (commitNow) fragmentManager.commitNow { reset() }
+        else fragmentManager.commit { reset() }
+
+    private fun FragmentTransaction.reset() {
         stackVisitor.leaveAll()
         stackFragments.forEach { remove(it) }
         addStackFragments()
@@ -168,12 +174,12 @@ class MultiStackNavigator(
     override fun push(fragment: Fragment, tag: String): Boolean = activeNavigator.push(fragment, tag)
 
     override fun find(tag: String): Fragment? = activeNavigator.find(tag)
-            ?: stackFragments
-                    .asSequence()
-                    .map(StackFragment::navigator)
-                    .filter { it != activeNavigator }
-                    .map { it.find(tag) }
-                    .firstOrNull()
+        ?: stackFragments
+            .asSequence()
+            .map(StackFragment::navigator)
+            .filter { it != activeNavigator }
+            .map { it.find(tag) }
+            .firstOrNull()
 
     fun performConsecutively(scope: CoroutineScope, block: suspend SuspendingMultiStackNavigator.() -> Unit) {
         scope.launch {
@@ -235,7 +241,7 @@ class StackFragment : Fragment() {
     internal val navigator by lazy { StackNavigator(childFragmentManager, containerId) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-            FragmentContainerView(inflater.context).apply { id = containerId }
+        FragmentContainerView(inflater.context).apply { id = containerId }
 
     companion object {
         internal fun newInstance(index: Int) = StackFragment().apply { this.index = index; containerId = View.generateViewId() }
@@ -245,7 +251,7 @@ class StackFragment : Fragment() {
 internal class MultiStackVisitor(private val container: LifecycleSavedStateContainer) {
 
     private val delegate = (container.savedState.getIntArray(NAV_STACK_ORDER)
-            ?: intArrayOf(0)).toMutableList()
+        ?: intArrayOf(0)).toMutableList()
 
     fun visit(value: Int) = delegate.run {
         remove(value) // No duplicates
@@ -282,6 +288,6 @@ const val NAV_STACK_ORDER = "navState"
 private val Fragment.isAttached get() = !isDetached
 
 private fun FragmentManager.addedStackFragments(indices: IntRange) = indices
-        .map(Int::toString)
-        .map(::findFragmentByTag)
-        .filterIsInstance(StackFragment::class.java)
+    .map(Int::toString)
+    .map(::findFragmentByTag)
+    .filterIsInstance(StackFragment::class.java)
