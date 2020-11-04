@@ -1,7 +1,5 @@
 package com.tunjid.androidx.navigation
 
-import android.os.Handler
-import android.os.Looper
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
@@ -32,10 +30,8 @@ class SuspendingMultiStackNavigator(
     }
 
     private suspend fun internalClearAll(): Fragment? = mainThreadSuspendCancellableCoroutine { continuation ->
-        Handler(Looper.getMainLooper()).post {
-            navigator.activeFragment.doOnLifecycleEvent(Lifecycle.Event.ON_RESUME) {
-                navigator.reset(commitNow = false)
-                // Root function will be invoked for newly added StackFragment, wait on it's child
+        navigator.activeFragment.doOnLifecycleEvent(Lifecycle.Event.ON_RESUME) {
+            navigator.reset(commitNow = false) {
                 navigator.stackFragments[0].waitForChild(continuation)
             }
         }

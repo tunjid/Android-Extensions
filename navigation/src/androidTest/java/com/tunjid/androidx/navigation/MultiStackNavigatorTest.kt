@@ -42,10 +42,10 @@ class MultiStackNavigatorTest {
         activity = activityRule.activity as NavigationTestActivity
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
             multiStackNavigator = MultiStackNavigator(
-                    3,
-                    savedStateFor(activity, "test"),
-                    activity.supportFragmentManager,
-                    activity.containerId
+                3,
+                savedStateFor(activity, "test"),
+                activity.supportFragmentManager,
+                activity.containerId
             ) { NavigationTestFragment.newInstance(TAGS[it]) }
         }
 
@@ -193,7 +193,6 @@ class MultiStackNavigatorTest {
         assertTrue(multiStackNavigator.stackFragments[2].isDetached)
 
         assertEquals(listOf(0), multiStackNavigator.stackVisitor.hosts().toList())
-
     }
 
     @Test
@@ -242,6 +241,24 @@ class MultiStackNavigatorTest {
             assertSame(root0, root0Again)
             assertNotSame(root0, newRoot0)
             assertNotSame(root0Again, newRoot0)
+        }
+    }
+
+    @Test
+    fun testSequentialAggressiveClearAll() = runBlocking {
+        multiStackNavigator.performConsecutively(this) {
+            push(NavigationTestFragment.newInstance(TAG_A))
+            clearAll()
+
+            push(NavigationTestFragment.newInstance(TAG_B))
+            clearAll()
+
+            push(NavigationTestFragment.newInstance(TAG_C))
+            clearAll()
+
+            push(NavigationTestFragment.newInstance(TAG_D))
+
+            assertSame(TAG_D, current?.tag)
         }
     }
 
