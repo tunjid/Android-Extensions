@@ -134,15 +134,15 @@ class MultiStackNavigator(
      */
     fun clearAll() = reset(commitNow = true)
 
-    internal fun reset(commitNow: Boolean) =
-        if (commitNow) fragmentManager.commitNow { reset() }
-        else fragmentManager.commit { reset() }
+    internal fun reset(commitNow: Boolean, onCommit: () -> Unit =  {}) =
+        if (commitNow) fragmentManager.commitNow { reset(onCommit) }
+        else fragmentManager.commit { reset(onCommit) }
 
-    private fun FragmentTransaction.reset() {
+    private fun FragmentTransaction.reset(onCommit: () -> Unit) {
         stackVisitor.leaveAll()
         stackFragments.forEach { remove(it) }
         addStackFragments()
-        runOnCommit { stackFragments = fragmentManager.addedStackFragments(indices) }
+        runOnCommit { stackFragments = fragmentManager.addedStackFragments(indices); onCommit() }
     }
 
     override val previous: Fragment?
