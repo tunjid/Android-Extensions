@@ -32,17 +32,14 @@ class SuspendingMultiStackNavigator(
     }
 
     private suspend fun internalClearAll(): Fragment? = mainThreadSuspendCancellableCoroutine { continuation ->
-        val clear = {
+        // Clear all uses FragmentTransaction.commitNow, make sure calls start on the UI thread
+        Handler(Looper.getMainLooper()).post {
             navigator.activeFragment.doOnLifecycleEvent(Lifecycle.Event.ON_RESUME) {
                 navigator.clearAll()
-
                 // Root function will be invoked for newly added StackFragment, wait on it's child
                 navigator.stackFragments[0].waitForChild(continuation)
             }
         }
-        // Clear all uses FragmentTransaction.commitNow, make sure calls start on the UI thread
-        if (Looper.myLooper() == Looper.getMainLooper()) clear()
-        else Handler(Looper.getMainLooper()).post { clear() }
     }
 }
 
