@@ -135,9 +135,8 @@ task incrementalPublish {
 
             return exists
         }
-        catch (e) {
-            println "Unable to configure incremental publish, check your internet connection"
-            e.printStackTrace()
+        catch (ignored) {
+            println "Unable to configure incremental publish for ${name}, check your internet connection"
             return null
         }
     }
