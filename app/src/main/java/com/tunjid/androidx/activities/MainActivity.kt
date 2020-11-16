@@ -1,5 +1,6 @@
 package com.tunjid.androidx.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -16,8 +17,8 @@ import com.tunjid.androidx.uidrivers.GlobalUiDriver
 import com.tunjid.androidx.uidrivers.GlobalUiHost
 import com.tunjid.androidx.uidrivers.materialDepthAxisTransition
 import com.tunjid.androidx.uidrivers.materialFadeThroughTransition
-import leakcanary.AppWatcher
 import java.util.concurrent.TimeUnit
+import leakcanary.AppWatcher
 
 class MainActivity : AppCompatActivity(), GlobalUiHost, Navigator.Controller {
 
@@ -27,9 +28,9 @@ class MainActivity : AppCompatActivity(), GlobalUiHost, Navigator.Controller {
     override val globalUiController by lazy { GlobalUiDriver(this, binding, navigator) }
 
     override val navigator: MultiStackNavigator by multiStackNavigationController(
-            tabs.size,
-            R.id.content_container,
-            RouteFragment.Companion::newInstance
+        tabs.size,
+        R.id.content_container,
+        RouteFragment.Companion::newInstance
     )
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,5 +58,12 @@ class MainActivity : AppCompatActivity(), GlobalUiHost, Navigator.Controller {
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.menu_reset -> navigator.clearAll().let { true }
         else -> super.onOptionsItemSelected(item)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.getIntExtra("nav", -1)
+            ?.takeIf { it >= 0 }
+            ?.let(navigator::show)
     }
 }
