@@ -87,17 +87,23 @@ class MultiStackNavigator(
     private val indices = 0 until stackCount
     internal val stackVisitor = MultiStackVisitor(stateContainer)
 
-    /**
-     * Mutable only because [clearAll]  replaces [StackFragment] instances. The alternative would
-     * be a computed property delegated to [FragmentManager.addedStackFragments], which has too
-     * many iterations in it's corresponding [FragmentManager.findFragmentByTag] to be justifiable.
-     */
-    internal var stackFragments: List<StackFragment>
+    internal val stackFragments: List<StackFragment>
+        get() = indices
+            .map(Int::toString)
+            .map(fragmentManager::findFragmentByTag)
+            .filterIsInstance<StackFragment>()
+            .filterNot(StackFragment::isRemoving)
 
     internal val activeFragment: StackFragment
-        get() = stackFragments.run { firstOrNull(Fragment::isAttached) ?: first() }
+        get() = stackFragments
+            .sortedWith(compareBy(
+                stackVisitor::isAt,
+                StackFragment::isAttached,
+                StackFragment::isResumed
+            ))
+            .last() // false come before true when comparing
 
-    val activeIndex
+    val activeIndex: Int
         get() = activeFragment.index
 
     val activeNavigator
@@ -108,10 +114,7 @@ class MultiStackNavigator(
 
     init {
         fragmentManager.registerFragmentLifecycleCallbacks(StackLifecycleCallback(), false)
-
         if (stateContainer.isFreshState) fragmentManager.commitNow { addStackFragments() }
-
-        stackFragments = fragmentManager.addedStackFragments(indices)
     }
 
     /**
@@ -134,7 +137,7 @@ class MultiStackNavigator(
      */
     fun clearAll() = reset(commitNow = true)
 
-    internal fun reset(commitNow: Boolean, onCommit: () -> Unit =  {}) =
+    internal fun reset(commitNow: Boolean, onCommit: () -> Unit = {}) =
         if (commitNow) fragmentManager.commitNow { reset(onCommit) }
         else fragmentManager.commit { reset(onCommit) }
 
@@ -142,15 +145,16 @@ class MultiStackNavigator(
         stackVisitor.leaveAll()
         stackFragments.forEach { remove(it) }
         addStackFragments()
-        runOnCommit { stackFragments = fragmentManager.addedStackFragments(indices); onCommit() }
+        runOnCommit { onCommit() }
     }
 
     override val previous: Fragment?
         get() = when (val peeked = activeNavigator.previous) {
             is Fragment -> peeked
-            else -> stackVisitor.previousHost()?.let {
-                stackFragments.elementAtOrNull(it)?.navigator?.current
-            }
+            else -> stackVisitor.previousHost()
+                ?.let(stackFragments::elementAtOrNull)
+                ?.navigator
+                ?.current
         }
 
     /**
@@ -161,7 +165,7 @@ class MultiStackNavigator(
      * @see [StackNavigator.pop]
      */
     override fun pop(): Boolean = when {
-        activeFragment.navigator.pop() ->
+        activeNavigator.pop() ->
             true
         stackVisitor.leave(activeFragment.index) ->
             showInternal(stackVisitor.currentHost(), false).let { true }
@@ -287,7 +291,4 @@ const val NAV_STACK_ORDER = "navState"
 
 private val Fragment.isAttached get() = !isDetached
 
-private fun FragmentManager.addedStackFragments(indices: IntRange) = indices
-    .map(Int::toString)
-    .map(::findFragmentByTag)
-    .filterIsInstance(StackFragment::class.java)
+private fun MultiStackVisitor.isAt(fragment: StackFragment) = fragment.index == currentHost()
