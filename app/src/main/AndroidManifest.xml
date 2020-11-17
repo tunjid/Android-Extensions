@@ -15,6 +15,7 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name="com.tunjid.androidx.activities.MainActivity"
+            android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
