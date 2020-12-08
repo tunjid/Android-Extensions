@@ -18,7 +18,7 @@ import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.tunjid.androidx.R
-import com.tunjid.androidx.core.components.fragmentArgs
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.graphics.drawable.withTint

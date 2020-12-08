@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.Fragment
-import com.tunjid.androidx.core.components.fragmentArgs
+import com.tunjid.androidx.core.delegates.fragmentArgs
 
 /**
  * Test fragment

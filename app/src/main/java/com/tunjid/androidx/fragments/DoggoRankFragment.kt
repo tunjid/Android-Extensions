@@ -22,7 +22,7 @@ import androidx.transition.ChangeTransform
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
 import com.tunjid.androidx.R
-import com.tunjid.androidx.core.components.fragmentArgs
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.ViewholderDoggoRankBinding
 import com.tunjid.androidx.divider

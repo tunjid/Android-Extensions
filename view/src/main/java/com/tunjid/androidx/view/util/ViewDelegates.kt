@@ -2,7 +2,7 @@ package com.tunjid.androidx.view.util
 
 import android.view.View
 import androidx.viewbinding.ViewBinding
-import com.tunjid.androidx.core.components.map
+import com.tunjid.androidx.core.delegates.map
 import com.tunjid.androidx.view.R
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty

@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import com.tunjid.androidx.core.components.map
+import com.tunjid.androidx.core.delegates.map
 import com.tunjid.androidx.recyclerview.R
 import com.tunjid.androidx.view.util.getOrPutTag
 import com.tunjid.androidx.view.util.viewDelegate

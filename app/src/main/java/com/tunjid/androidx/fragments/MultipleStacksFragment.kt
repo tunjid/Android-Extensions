@@ -22,7 +22,7 @@ import com.google.android.material.transition.MaterialSharedAxis
 import com.google.android.material.transition.MaterialSharedAxis.X
 import com.tunjid.androidx.MutedColors
 import com.tunjid.androidx.R
-import com.tunjid.androidx.core.components.fragmentArgs
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.text.bold
 import com.tunjid.androidx.core.text.click

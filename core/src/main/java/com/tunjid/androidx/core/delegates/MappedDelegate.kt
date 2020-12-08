@@ -1,4 +1,4 @@
-package com.tunjid.androidx.core.components
+package com.tunjid.androidx.core.delegates
 
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty

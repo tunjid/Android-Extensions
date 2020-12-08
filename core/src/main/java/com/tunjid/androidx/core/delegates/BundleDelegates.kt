@@ -1,4 +1,4 @@
-package com.tunjid.androidx.core.components
+package com.tunjid.androidx.core.delegates
 
 import android.app.Activity
 import android.content.Intent
@@ -12,14 +12,14 @@ import kotlin.reflect.KProperty
  * Similar to the kotlin Standard Library by [Map], this function delegates reading and writing
  * properties to a [Bundle].
  */
-fun <T> bundleDelegate(default: T? = null): ReadWriteProperty<Bundle, T> =
+fun <T> bundle(default: T? = null): ReadWriteProperty<Bundle, T> =
     BundleDelegate(default)
 
 /**
  * Similar to the kotlin Standard Library by [Map], this function delegates reading and writing
  * properties to a [Intent] via the bundle from [Intent.getExtras].
  */
-fun <T> intentExtras(default: T? = null): ReadWriteProperty<Intent, T> = bundleDelegate(default).map(
+fun <T> intentExtras(default: T? = null): ReadWriteProperty<Intent, T> = bundle(default).map(
     postWrite = Intent::replaceExtras,
     mapper = Intent::ensureExtras
 )
@@ -37,22 +37,7 @@ fun <T> activityIntent(default: T? = null): ReadWriteProperty<Activity, T> = int
  * Similar to the kotlin Standard Library by [Map],
  * this delegates a property to the [Fragment.getArguments] Bundle
  */
-fun <T> fragmentArgs(): ReadWriteProperty<Fragment, T> = bundleDelegate<T>().map(
-    mapper = Fragment::ensureArgs
-)
-
-/**
- * Similar to the kotlin Standard Library by [Map],
- * this delegates a property to the [Fragment.getArguments] Bundle
- */
-@Deprecated(
-    message = "Use the statically defined fragmentArgs() delegate instead",
-    replaceWith = ReplaceWith(
-        expression = "fragmentArgs()",
-        imports = arrayOf("com.tunjid.androidx.core.components.fragmentArgs")
-    )
-)
-fun <T> Fragment.args(): ReadWriteProperty<Fragment, T> = bundleDelegate<T>().map(
+fun <T> fragmentArgs(): ReadWriteProperty<Fragment, T> = bundle<T>().map(
     mapper = Fragment::ensureArgs
 )
 
@@ -75,6 +60,6 @@ private class BundleDelegate<T>(
         thisRef.putAll(bundleOf(property.name to value))
 }
 
-private val Intent.ensureExtras get() = extras ?: putExtras(bundleOf()).let { extras!! }
+private val Intent.ensureExtras get() = extras ?: putExtras(Bundle()).let { extras!! }
 
-private val Fragment.ensureArgs get() = arguments ?: setArguments(Bundle()).let { requireArguments() }
+internal val Fragment.ensureArgs get() = arguments ?: Bundle().also(::setArguments)

@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.transition.Fade
 import com.tunjid.androidx.R
-import com.tunjid.androidx.core.components.fragmentArgs
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.FragmentSimpleListBinding
 import com.tunjid.androidx.databinding.ViewholderDoggoAdoptBinding

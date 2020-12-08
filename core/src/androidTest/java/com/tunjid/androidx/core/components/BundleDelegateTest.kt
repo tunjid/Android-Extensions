@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.tunjid.androidx.core.delegates.intentExtras
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
