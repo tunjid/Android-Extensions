@@ -1,5 +1,12 @@
 apply from: "${project.rootDir}/androidLib.gradle"
 
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -7,6 +14,8 @@ dependencies {
     implementation parent.ext.ktxCore
     implementation parent.ext.appCompat
     implementation parent.ext.dynamicAnimations
+
+    implementation project(':core')
 
     testImplementation 'junit:junit:4.13.1'
 }

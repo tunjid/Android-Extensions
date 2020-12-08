@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.transition.Fade
 import com.tunjid.androidx.R
-import com.tunjid.androidx.core.components.args
+import com.tunjid.androidx.core.components.fragmentArgs
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.FragmentSimpleListBinding
 import com.tunjid.androidx.databinding.ViewholderDoggoAdoptBinding
@@ -25,19 +25,20 @@ import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.typed
+import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.BACKGROUND_TINT_DURATION
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.updatePartial
-import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.viewholders.DoggoBinder
 import com.tunjid.androidx.viewholders.bind
 import com.tunjid.androidx.viewholders.inputViewHolder
 
 class AdoptDoggoFragment : Fragment(R.layout.fragment_simple_list) {
 
-    var doggo: Doggo by args()
+    var doggo: Doggo by fragmentArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -114,7 +115,7 @@ class AdoptDoggoFragment : Fragment(R.layout.fragment_simple_list) {
     }
 }
 
-var BindingViewHolder<ViewholderDoggoAdoptBinding>.doggoBinder by BindingViewHolder.Prop<DoggoBinder>()
+var BindingViewHolder<ViewholderDoggoAdoptBinding>.doggoBinder by viewHolderDelegate<DoggoBinder>()
 
 private fun <T : View> T.tint(@ColorRes colorRes: Int, biConsumer: (Int, T) -> Unit) {
     val endColor = ContextCompat.getColor(context, colorRes)
