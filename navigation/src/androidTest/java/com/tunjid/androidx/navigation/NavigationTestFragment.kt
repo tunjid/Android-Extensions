@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.Fragment
-import com.tunjid.androidx.core.components.args
+import com.tunjid.androidx.core.components.fragmentArgs
 
 /**
  * Test fragment
@@ -21,7 +21,7 @@ class NavigationTestFragment : Fragment(), Navigator.TagProvider {
 
     override val stableTag: String get() = argTag
 
-    private var argTag by args<String>()
+    private var argTag by fragmentArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

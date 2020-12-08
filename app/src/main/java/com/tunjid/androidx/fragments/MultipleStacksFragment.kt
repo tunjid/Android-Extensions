@@ -22,7 +22,7 @@ import com.google.android.material.transition.MaterialSharedAxis
 import com.google.android.material.transition.MaterialSharedAxis.X
 import com.tunjid.androidx.MutedColors
 import com.tunjid.androidx.R
-import com.tunjid.androidx.core.components.args
+import com.tunjid.androidx.core.components.fragmentArgs
 import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.text.bold
 import com.tunjid.androidx.core.text.click
@@ -160,8 +160,8 @@ class MultipleStackChildFragment : Fragment(), Navigator.TagProvider {
 
     override val stableTag: String get() = "${javaClass.simpleName}-$name-$depth"
 
-    var name: String by args()
-    var depth: Int by args()
+    var name: String by fragmentArgs()
+    var depth: Int by fragmentArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = TextView(inflater.context).apply {
         text = resources.getString(R.string.triple_line_format).formatSpanned(

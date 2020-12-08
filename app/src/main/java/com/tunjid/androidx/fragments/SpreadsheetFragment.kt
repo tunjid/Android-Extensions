@@ -25,6 +25,7 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.tabs.TabLayoutMediator
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.components.args
+import com.tunjid.androidx.core.components.fragmentArgs
 import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.core.content.themeColorAt
@@ -46,6 +47,7 @@ import com.tunjid.androidx.recyclerview.multiscroll.RecyclerViewMultiScroller
 import com.tunjid.androidx.recyclerview.multiscroll.StaticCellSizer
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
+import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.updatePartial
@@ -94,8 +96,7 @@ class SpreadSheetParentFragment : Fragment(R.layout.fragment_spreadsheet_parent)
 //region Inner Fragment
 class SpreadsheetFragment : Fragment(R.layout.fragment_spreadsheet_child) {
 
-    private var isDynamic by args<Boolean>()
-
+    private var isDynamic by fragmentArgs<Boolean>()
 
     private val viewModel by viewModels<SpreadsheetViewModel>()
 
@@ -201,10 +202,10 @@ class SpreadsheetFragment : Fragment(R.layout.fragment_spreadsheet_child) {
 //endregion
 
 //region Row properties
-private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.sort by BindingViewHolder.Prop<Var<Sort>>()
-private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.scroller by BindingViewHolder.Prop<RecyclerViewMultiScroller>()
+private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.sort by viewHolderDelegate<Var<Sort>>()
+private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.scroller by viewHolderDelegate<RecyclerViewMultiScroller>()
 private val BindingViewHolder<ViewholderSpreadsheetRowBinding>.cells get() = row.otherCells
-private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.row by BindingViewHolder.Prop<Row>()
+private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.row by viewHolderDelegate<Row>()
 
 private fun ViewGroup.rowViewHolder(
         recycledViewPool: RecyclerView.RecycledViewPool,
@@ -264,7 +265,7 @@ private fun rowAdapter(
 )
 
 
-private var BindingViewHolder<ViewholderSpreadsheetCellBinding>.cell by BindingViewHolder.Prop<Cell>()
+private var BindingViewHolder<ViewholderSpreadsheetCellBinding>.cell by viewHolderDelegate<Cell>()
 
 private fun cellViewHolder(viewGroup: ViewGroup, sort: Var<Sort>): BindingViewHolder<ViewholderSpreadsheetCellBinding> {
     val viewHolder = viewGroup.viewHolderFrom(ViewholderSpreadsheetCellBinding::inflate)

@@ -16,7 +16,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
 import com.tunjid.androidx.MutedColors
 import com.tunjid.androidx.R
-import com.tunjid.androidx.core.components.args
+import com.tunjid.androidx.core.components.fragmentArgs
 import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.text.color
 import com.tunjid.androidx.core.text.formatSpanned
@@ -118,9 +118,9 @@ class IndependentStackChildFragment : Fragment(), Navigator.TagProvider {
     override val stableTag: String
         get() = "${javaClass.simpleName}-$name-$depth"
 
-    private var name: String by args()
+    private var name: String by fragmentArgs()
 
-    var depth: Int by args()
+    var depth: Int by fragmentArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = MaterialButton(inflater.context).apply {
         val spacing = context.resources.getDimensionPixelSize(R.dimen.single_margin)

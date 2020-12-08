@@ -11,6 +11,7 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.databinding.ViewholderSimpleInputBinding
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
+import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 
 fun ViewGroup.inputViewHolder() = viewHolderFrom(ViewholderSimpleInputBinding::inflate).apply {
@@ -28,7 +29,7 @@ fun ViewGroup.inputViewHolder() = viewHolderFrom(ViewholderSimpleInputBinding::i
     }
 }
 
-private var BindingViewHolder<ViewholderSimpleInputBinding>.lastLineCount by BindingViewHolder.Prop<Int>()
+private var BindingViewHolder<ViewholderSimpleInputBinding>.lastLineCount by viewHolderDelegate<Int>()
 
 private val ViewholderSimpleInputBinding.hintLateralTranslation: Float
     get() = hint.width.let { -((it - HINT_SHRINK_SCALE * it) * HALF) }

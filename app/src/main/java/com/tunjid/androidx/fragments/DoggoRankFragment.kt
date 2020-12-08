@@ -22,7 +22,7 @@ import androidx.transition.ChangeTransform
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
 import com.tunjid.androidx.R
-import com.tunjid.androidx.core.components.args
+import com.tunjid.androidx.core.components.fragmentArgs
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.ViewholderDoggoRankBinding
 import com.tunjid.androidx.divider
@@ -33,6 +33,7 @@ import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.recyclerview.*
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
+import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.SpringItemAnimator
 import com.tunjid.androidx.uidrivers.uiState
@@ -48,7 +49,7 @@ import kotlin.math.abs
 class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
         Navigator.TransactionModifier {
 
-    private var isRanking by args<Boolean>()
+    private var isRanking by fragmentArgs<Boolean>()
     private val viewModel by viewModels<DoggoRankViewModel>()
     private val navigator by activityNavigatorController<MultiStackNavigator>()
 
@@ -189,7 +190,7 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
     }
 }
 
-var BindingViewHolder<ViewholderDoggoRankBinding>.doggoBinder by BindingViewHolder.Prop<DoggoBinder?>()
+var BindingViewHolder<ViewholderDoggoRankBinding>.doggoBinder by viewHolderDelegate<DoggoBinder?>()
 
 private fun BindingViewHolder<ViewholderDoggoRankBinding>.bind(isRanking: Boolean, doggo: Doggo) {
     val layoutParams = binding.innerConstraintLayout.doggoImage.layoutParams as? ConstraintLayout.LayoutParams
