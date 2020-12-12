@@ -27,6 +27,9 @@ fun <T> intentExtras(default: T? = null): ReadWriteProperty<Intent, T> = bundle(
 /**
  * Similar to the kotlin Standard Library by [Map], this function delegates reading and writing
  * properties to an [Activity] via its [Intent] through the bundle from [Intent.getExtras].
+ *
+ * NOTE: if you use this delegate in conjunction with [Activity.onNewIntent],
+ * remember to call [Activity.setIntent] after [Activity.onNewIntent]
  */
 fun <T> activityIntent(default: T? = null): ReadWriteProperty<Activity, T> = intentExtras(default).map(
     postWrite = Activity::setIntent,
@@ -62,4 +65,4 @@ private class BundleDelegate<T>(
 
 private val Intent.ensureExtras get() = extras ?: putExtras(Bundle()).let { extras!! }
 
-internal val Fragment.ensureArgs get() = arguments ?: Bundle().also(::setArguments)
+private val Fragment.ensureArgs get() = arguments ?: Bundle().also(::setArguments)

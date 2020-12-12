@@ -8,6 +8,7 @@ import android.view.WindowInsets
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.delegates.activityIntent
 import com.tunjid.androidx.databinding.ActivityMainBinding
 import com.tunjid.androidx.fragments.RouteFragment
 import com.tunjid.androidx.navigation.MultiStackNavigator
@@ -19,6 +20,8 @@ import com.tunjid.androidx.uidrivers.materialDepthAxisTransition
 import com.tunjid.androidx.uidrivers.materialFadeThroughTransition
 import java.util.concurrent.TimeUnit
 import leakcanary.AppWatcher
+
+private val MainActivity.deepLinkTab by activityIntent<Int?>(-1)
 
 class MainActivity : AppCompatActivity(), GlobalUiHost, Navigator.Controller {
 
@@ -62,7 +65,8 @@ class MainActivity : AppCompatActivity(), GlobalUiHost, Navigator.Controller {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        intent?.getIntExtra("nav", -1)
+        setIntent(intent)
+        deepLinkTab
             ?.takeIf { it >= 0 }
             ?.let(navigator::show)
     }
