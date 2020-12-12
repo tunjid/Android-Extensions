@@ -1,4 +1,4 @@
-name: Navigation Tests
+name: Core Tests
 
 on:
   push:
