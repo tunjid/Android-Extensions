@@ -30,6 +30,7 @@ import com.tunjid.androidx.recyclerview.acceptDiff
 import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
+import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
 import com.tunjid.androidx.uidrivers.uiState
@@ -174,7 +175,7 @@ class BleScanFragment : Fragment(R.layout.fragment_ble_scan) {
 
 }
 
-private var BindingViewHolder<ViewholderScanBinding>.result by BindingViewHolder.Prop<ScanResultCompat>()
+private var BindingViewHolder<ViewholderScanBinding>.result by viewHolderDelegate<ScanResultCompat>()
 
 fun BindingViewHolder<ViewholderScanBinding>.bind(result: ScanResultCompat) {
     this.result = result

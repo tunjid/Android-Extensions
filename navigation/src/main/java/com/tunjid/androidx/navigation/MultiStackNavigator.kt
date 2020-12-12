@@ -14,7 +14,7 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import androidx.fragment.app.commitNow
 import androidx.lifecycle.Lifecycle
-import com.tunjid.androidx.core.components.args
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.savedstate.LifecycleSavedStateContainer
 import com.tunjid.androidx.savedstate.savedStateFor
 import kotlinx.coroutines.CoroutineScope
@@ -238,8 +238,8 @@ class MultiStackNavigator(
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class StackFragment : Fragment() {
 
-    internal var index: Int by args()
-    private var containerId: Int by args()
+    internal var index: Int by fragmentArgs()
+    private var containerId: Int by fragmentArgs()
 
     internal val hasNoRoot get() = navigator.current == null
     internal val navigator by lazy { StackNavigator(childFragmentManager, containerId) }

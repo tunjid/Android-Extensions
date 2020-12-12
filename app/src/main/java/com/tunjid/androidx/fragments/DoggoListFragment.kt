@@ -30,6 +30,7 @@ import com.tunjid.androidx.recyclerview.addScrollListener
 import com.tunjid.androidx.recyclerview.gridLayoutManager
 import com.tunjid.androidx.recyclerview.viewHolderForItemId
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
+import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
@@ -164,7 +165,7 @@ class DoggoListFragment : Fragment(R.layout.fragment_doggo_list),
     }
 }
 
-var BindingViewHolder<ViewholderDoggoListBinding>.doggoBinder by BindingViewHolder.Prop<DoggoBinder?>()
+var BindingViewHolder<ViewholderDoggoListBinding>.doggoBinder by viewHolderDelegate<DoggoBinder?>()
 
 fun BindingViewHolder<ViewholderDoggoListBinding>.createDoggoBinder(
         onThumbnailLoaded: (Doggo) -> Unit,

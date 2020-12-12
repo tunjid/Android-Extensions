@@ -18,7 +18,7 @@ import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.tunjid.androidx.R
-import com.tunjid.androidx.core.components.args
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.graphics.drawable.withTint
@@ -32,6 +32,7 @@ import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
+import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
@@ -45,7 +46,7 @@ class RouteFragment : Fragment(R.layout.fragment_route) {
     private val viewModel by viewModels<RouteViewModel>()
     private val navigator by activityNavigatorController<MultiStackNavigator>()
 
-    private var tabIndex: Int by args()
+    private var tabIndex: Int by fragmentArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -127,7 +128,7 @@ class RouteFragment : Fragment(R.layout.fragment_route) {
     }
 }
 
-private var BindingViewHolder<ViewholderRouteBinding>.route by BindingViewHolder.Prop<RouteItem?>()
+private var BindingViewHolder<ViewholderRouteBinding>.route by viewHolderDelegate<RouteItem?>()
 
 fun BindingViewHolder<ViewholderRouteBinding>.bind(route: RouteItem) {
     this.route = route
