@@ -21,7 +21,7 @@ class NavigationTestFragment : Fragment(), Navigator.TagProvider {
 
     override val stableTag: String get() = argTag
 
-    private var argTag by fragmentArgs()
+    private var argTag by fragmentArgs<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
