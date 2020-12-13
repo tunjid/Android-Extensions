@@ -12,14 +12,14 @@ import kotlin.reflect.KProperty
  * Similar to the kotlin Standard Library by [Map], this function delegates reading and writing
  * properties to a [Bundle].
  */
-fun <T> bundle(default: T? = null): ReadWriteProperty<Bundle, T> =
+fun <T> bundleDelegate(default: T? = null): ReadWriteProperty<Bundle, T> =
     BundleDelegate(default)
 
 /**
  * Similar to the kotlin Standard Library by [Map], this function delegates reading and writing
  * properties to a [Intent] via the bundle from [Intent.getExtras].
  */
-fun <T> intentExtras(default: T? = null): ReadWriteProperty<Intent, T> = bundle(default).map(
+fun <T> intentExtras(default: T? = null): ReadWriteProperty<Intent, T> = bundleDelegate(default).map(
     postWrite = Intent::replaceExtras,
     mapper = Intent::ensureExtras
 )
@@ -40,8 +40,16 @@ fun <T> activityIntent(default: T? = null): ReadWriteProperty<Activity, T> = int
  * Similar to the kotlin Standard Library by [Map],
  * this delegates a property to the [Fragment.getArguments] Bundle
  */
-fun <T> fragmentArgs(): ReadWriteProperty<Fragment, T> = bundle<T>().map(
+fun <T> fragmentArgs(): ReadWriteProperty<Fragment, T> = bundleDelegate<T>().map(
     mapper = Fragment::ensureArgs
+)
+
+/**
+ * Similar to the kotlin Standard Library by [Map], this function delegates reading and writing
+ * properties to a [Bundle].
+ */
+fun <T> Bundle.asDelegate(default: T? = null): ReadWriteProperty<Any?, T> = bundleDelegate(default).map(
+    mapper = { this }
 )
 
 /**
