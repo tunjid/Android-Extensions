@@ -21,12 +21,11 @@ import com.tunjid.androidx.uidrivers.materialFadeThroughTransition
 import java.util.concurrent.TimeUnit
 import leakcanary.AppWatcher
 
-private val MainActivity.deepLinkTab by activityIntent<Int?>(-1)
-
 class MainActivity : AppCompatActivity(), GlobalUiHost, Navigator.Controller {
 
     private val tabs = intArrayOf(R.id.menu_navigation, R.id.menu_recyclerview, R.id.menu_communications, R.id.menu_misc)
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    private val deepLinkTab by activityIntent<Int?>(-1)
 
     override val globalUiController by lazy { GlobalUiDriver(this, binding, navigator) }
 
