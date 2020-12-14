@@ -6,7 +6,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.tunjid.androidx.R
-import com.tunjid.androidx.core.components.args
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentImageDetailBinding
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.viewholders.DoggoBinder
@@ -14,7 +14,7 @@ import com.tunjid.androidx.viewholders.bind
 
 class DoggoFragment : Fragment(R.layout.fragment_image_detail) {
 
-    private var doggo: Doggo by args()
+    private var doggo: Doggo by fragmentArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

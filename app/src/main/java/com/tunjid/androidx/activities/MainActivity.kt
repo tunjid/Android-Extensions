@@ -8,6 +8,7 @@ import android.view.WindowInsets
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.delegates.activityIntent
 import com.tunjid.androidx.databinding.ActivityMainBinding
 import com.tunjid.androidx.fragments.RouteFragment
 import com.tunjid.androidx.navigation.MultiStackNavigator
@@ -24,6 +25,7 @@ class MainActivity : AppCompatActivity(), GlobalUiHost, Navigator.Controller {
 
     private val tabs = intArrayOf(R.id.menu_navigation, R.id.menu_recyclerview, R.id.menu_communications, R.id.menu_misc)
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    private val deepLinkTab by activityIntent<Int?>(-1)
 
     override val globalUiController by lazy { GlobalUiDriver(this, binding, navigator) }
 
@@ -62,7 +64,8 @@ class MainActivity : AppCompatActivity(), GlobalUiHost, Navigator.Controller {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        intent?.getIntExtra("nav", -1)
+        setIntent(intent)
+        deepLinkTab
             ?.takeIf { it >= 0 }
             ?.let(navigator::show)
     }

@@ -24,7 +24,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.tabs.TabLayoutMediator
 import com.tunjid.androidx.R
-import com.tunjid.androidx.core.components.args
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.core.content.themeColorAt
@@ -46,22 +46,22 @@ import com.tunjid.androidx.recyclerview.multiscroll.RecyclerViewMultiScroller
 import com.tunjid.androidx.recyclerview.multiscroll.StaticCellSizer
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
+import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.updatePartial
-import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.view.util.spring
 import com.tunjid.androidx.viewmodels.Sort
 import com.tunjid.androidx.viewmodels.SpreadsheetViewModel
 import com.tunjid.androidx.viewmodels.routeName
-import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import kotlin.reflect.KMutableProperty0
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 
 private typealias Var<T> = KMutableProperty0<T>
 
 //region Parent Fragment
 class SpreadSheetParentFragment : Fragment(R.layout.fragment_spreadsheet_parent) {
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -73,8 +73,8 @@ class SpreadSheetParentFragment : Fragment(R.layout.fragment_spreadsheet_parent)
             override fun getItemCount(): Int = 2
 
             override fun createFragment(position: Int): Fragment =
-                    if (position == 0) SpreadsheetFragment.newInstance(true)
-                    else SpreadsheetFragment.newInstance(false)
+                if (position == 0) SpreadsheetFragment.newInstance(true)
+                else SpreadsheetFragment.newInstance(false)
         }
 
         viewPager.isUserInputEnabled = false
@@ -94,8 +94,7 @@ class SpreadSheetParentFragment : Fragment(R.layout.fragment_spreadsheet_parent)
 //region Inner Fragment
 class SpreadsheetFragment : Fragment(R.layout.fragment_spreadsheet_child) {
 
-    private var isDynamic by args<Boolean>()
-
+    private var isDynamic by fragmentArgs<Boolean>()
 
     private val viewModel by viewModels<SpreadsheetViewModel>()
 
@@ -110,13 +109,13 @@ class SpreadsheetFragment : Fragment(R.layout.fragment_spreadsheet_child) {
         super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
-                toolbarTitle = this::class.java.routeName,
-                toolbarShows = true,
-                toolbarMenuRes = 0,
-                fabShows = false,
-                showsBottomNav = true,
-                lightStatusBar = !requireContext().isDarkTheme,
-                navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
+            toolbarTitle = this::class.java.routeName,
+            toolbarShows = true,
+            toolbarMenuRes = 0,
+            fabShows = false,
+            showsBottomNav = true,
+            lightStatusBar = !requireContext().isDarkTheme,
+            navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )
 
         val binding = FragmentSpreadsheetChildBinding.bind(view)
@@ -141,24 +140,24 @@ class SpreadsheetFragment : Fragment(R.layout.fragment_spreadsheet_child) {
             visibleRows.add(this)
         }
         val stickyHeaderSpringAnimation = springAnimationOf(stickyHeaderBackground::setElevation, stickyHeaderBackground::getElevation, stickyHeaderElevation)
-                .withSpringForceProperties {
-                    stiffness = SpringForce.STIFFNESS_VERY_LOW
-                    dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
-                }
-                .addEndListener { _, _, value, _ ->
-                    if (value == 0f) stickyHeader.itemView.visibility = View.INVISIBLE
-                }
+            .withSpringForceProperties {
+                stiffness = SpringForce.STIFFNESS_VERY_LOW
+                dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+            }
+            .addEndListener { _, _, value, _ ->
+                if (value == 0f) stickyHeader.itemView.visibility = View.INVISIBLE
+            }
 
         binding.mainRows.apply {
             val verticalLayoutManager = verticalLayoutManager()
             val tableAdapter = listAdapterOf(
-                    initialItems = rowLiveData.value ?: listOf(),
-                    viewHolderCreator = { parent, _ -> parent.rowViewHolder(viewPool, scroller, viewModel::sort) },
-                    viewHolderBinder = { viewHolder, row, _ -> viewHolder.bind(row) },
-                    itemIdFunction = { it.index.toLong() },
-                    onViewHolderAttached = { visibleRows.add(it) },
-                    onViewHolderDetached = { visibleRows.remove(it) },
-                    onViewHolderRecycled = { visibleRows.remove(it) }
+                initialItems = rowLiveData.value ?: listOf(),
+                viewHolderCreator = { parent, _ -> parent.rowViewHolder(viewPool, scroller, viewModel::sort) },
+                viewHolderBinder = { viewHolder, row, _ -> viewHolder.bind(row) },
+                itemIdFunction = { it.index.toLong() },
+                onViewHolderAttached = { visibleRows.add(it) },
+                onViewHolderDetached = { visibleRows.remove(it) },
+                onViewHolderRecycled = { visibleRows.remove(it) }
             )
 
             itemAnimator = null
@@ -180,9 +179,9 @@ class SpreadsheetFragment : Fragment(R.layout.fragment_spreadsheet_child) {
     }
 
     private fun RecyclerView.tableDecoration() =
-            DividerItemDecoration(context, RecyclerView.VERTICAL).apply {
-                setDrawable(context.drawableAt(R.drawable.bg_cell_divider)!!)
-            }
+        DividerItemDecoration(context, RecyclerView.VERTICAL).apply {
+            setDrawable(context.drawableAt(R.drawable.bg_cell_divider)!!)
+        }
 
     private fun staticSizeAt(position: Int) = requireContext().resources.getDimensionPixelSize(when (position) {
         0, 1, 3 -> R.dimen.septuple_margin
@@ -201,16 +200,16 @@ class SpreadsheetFragment : Fragment(R.layout.fragment_spreadsheet_child) {
 //endregion
 
 //region Row properties
-private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.sort by BindingViewHolder.Prop<Var<Sort>>()
-private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.scroller by BindingViewHolder.Prop<RecyclerViewMultiScroller>()
+private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.sort by viewHolderDelegate<Var<Sort>>()
+private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.scroller by viewHolderDelegate<RecyclerViewMultiScroller>()
 private val BindingViewHolder<ViewholderSpreadsheetRowBinding>.cells get() = row.otherCells
-private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.row by BindingViewHolder.Prop<Row>()
+private var BindingViewHolder<ViewholderSpreadsheetRowBinding>.row by viewHolderDelegate<Row>()
 
 private fun ViewGroup.rowViewHolder(
-        recycledViewPool: RecyclerView.RecycledViewPool,
-        scroller: RecyclerViewMultiScroller,
-        sort: Var<Sort>,
-        isHeader: Boolean = false
+    recycledViewPool: RecyclerView.RecycledViewPool,
+    scroller: RecyclerViewMultiScroller,
+    sort: Var<Sort>,
+    isHeader: Boolean = false
 ) = viewHolderFrom(ViewholderSpreadsheetRowBinding::inflate).apply {
     this.scroller = scroller
     this.sort = sort
@@ -231,22 +230,22 @@ private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.bind(row: Row) {
 }
 
 private fun Context.elevationDrawable(isHeader: Boolean) = GradientDrawable(
-        GradientDrawable.Orientation.LEFT_RIGHT,
-        if (isHeader && isDarkTheme) intArrayOf(colorAt(R.color.colorSurface), colorAt(R.color.table_elevation))
-        else intArrayOf(colorAt(R.color.table_elevation), colorAt(R.color.colorSurface))
+    GradientDrawable.Orientation.LEFT_RIGHT,
+    if (isHeader && isDarkTheme) intArrayOf(colorAt(R.color.colorSurface), colorAt(R.color.table_elevation))
+    else intArrayOf(colorAt(R.color.table_elevation), colorAt(R.color.colorSurface))
 )
 
 private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.updateElevation(displacement: Int) =
-        binding.elevation.spring(DynamicAnimation.ALPHA, SpringForce.STIFFNESS_LOW)
-                .animateToFinalPosition(if (displacement > 20) 1F else 0F)
+    binding.elevation.spring(DynamicAnimation.ALPHA, SpringForce.STIFFNESS_LOW)
+        .animateToFinalPosition(if (displacement > 20) 1F else 0F)
 
 private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.refresh(): Unit = binding.recyclerView.run {
     // Lazy initialize
     @Suppress("UNCHECKED_CAST")
     val columnAdapter =
-            adapter as? ListAdapter<Cell, *>
-                    ?: rowAdapter(cells, this@refresh.sort)
-                            .also { adapter = it; scroller.add(this) }
+        adapter as? ListAdapter<Cell, *>
+            ?: rowAdapter(cells, this@refresh.sort)
+                .also { adapter = it; scroller.add(this) }
 
     columnAdapter.submitList(cells)
 }
@@ -254,17 +253,16 @@ private fun BindingViewHolder<ViewholderSpreadsheetRowBinding>.refresh(): Unit =
 
 //region Cell properties
 private fun rowAdapter(
-        cells: List<Cell>,
-        sort: Var<Sort>
+    cells: List<Cell>,
+    sort: Var<Sort>
 ) = listAdapterOf(
-        initialItems = cells,
-        itemIdFunction = { it.column.toLong() },
-        viewHolderCreator = { viewGroup, _ -> cellViewHolder(viewGroup, sort) },
-        viewHolderBinder = { holder, item, _ -> holder.bind(item, sort.get()) }
+    initialItems = cells,
+    itemIdFunction = { it.column.toLong() },
+    viewHolderCreator = { viewGroup, _ -> cellViewHolder(viewGroup, sort) },
+    viewHolderBinder = { holder, item, _ -> holder.bind(item, sort.get()) }
 )
 
-
-private var BindingViewHolder<ViewholderSpreadsheetCellBinding>.cell by BindingViewHolder.Prop<Cell>()
+private var BindingViewHolder<ViewholderSpreadsheetCellBinding>.cell by viewHolderDelegate<Cell>()
 
 private fun cellViewHolder(viewGroup: ViewGroup, sort: Var<Sort>): BindingViewHolder<ViewholderSpreadsheetCellBinding> {
     val viewHolder = viewGroup.viewHolderFrom(ViewholderSpreadsheetCellBinding::inflate)
@@ -285,12 +283,12 @@ private fun BindingViewHolder<ViewholderSpreadsheetCellBinding>.bind(cell: Cell,
 
 private fun TextView.bind(cell: Cell, sort: Sort) {
     text = resources.getString(R.string.cell_formatter).formatSpanned(
-            cell.text,
-            if (cell.isHeader)
-                (if (sort.ascending) UP else DOWN)
-                        .scaleX(1.4f)
-                        .color(context.colorAt(if (cell.column == sort.column) R.color.dark_grey else R.color.transparent))
-            else ""
+        cell.text,
+        if (cell.isHeader)
+            (if (sort.ascending) UP else DOWN)
+                .scaleX(1.4f)
+                .color(context.colorAt(if (cell.column == sort.column) R.color.dark_grey else R.color.transparent))
+        else ""
     )
 }
 //endregion
@@ -298,8 +296,8 @@ private fun TextView.bind(cell: Cell, sort: Sort) {
 private fun Var<Sort>.update(cell: Cell) {
     val currentSort = get()
     val ascending =
-            if (currentSort.column == cell.column) !currentSort.ascending
-            else currentSort.ascending
+        if (currentSort.column == cell.column) !currentSort.ascending
+        else currentSort.ascending
     set(Sort(column = cell.column, ascending = ascending))
 }
 
