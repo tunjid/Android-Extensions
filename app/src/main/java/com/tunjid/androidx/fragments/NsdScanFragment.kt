@@ -20,6 +20,7 @@ import com.tunjid.androidx.recyclerview.acceptDiff
 import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
+import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
 import com.tunjid.androidx.uidrivers.UiState
@@ -111,7 +112,7 @@ class NsdScanFragment : Fragment(R.layout.fragment_nsd_scan) {
     }
 }
 
-private var BindingViewHolder<ViewholderNsdListBinding>.serviceInfo by BindingViewHolder.Prop<NsdServiceInfo>()
+private var BindingViewHolder<ViewholderNsdListBinding>.serviceInfo by viewHolderDelegate<NsdServiceInfo>()
 
 fun BindingViewHolder<ViewholderNsdListBinding>.bind(info: NsdServiceInfo) {
     serviceInfo = info

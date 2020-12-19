@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import com.tunjid.androidx.databinding.ViewholderTileBinding
 import com.tunjid.androidx.model.Tile
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
+import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 
 fun ViewGroup.tileViewHolder() = viewHolderFrom(ViewholderTileBinding::inflate).apply {
@@ -14,9 +15,9 @@ fun ViewGroup.tileViewHolder() = viewHolderFrom(ViewholderTileBinding::inflate).
     listener = ValueAnimator.AnimatorUpdateListener { binding.tileText.setTextColor(it.animatedValue as Int) }
 }
 
-var BindingViewHolder<ViewholderTileBinding>.tile by BindingViewHolder.Prop<Tile>()
-private var BindingViewHolder<ViewholderTileBinding>.animator by BindingViewHolder.Prop<ValueAnimator>()
-private var BindingViewHolder<ViewholderTileBinding>.listener by BindingViewHolder.Prop<ValueAnimator.AnimatorUpdateListener>()
+var BindingViewHolder<ViewholderTileBinding>.tile by viewHolderDelegate<Tile>()
+private var BindingViewHolder<ViewholderTileBinding>.animator by viewHolderDelegate<ValueAnimator>()
+private var BindingViewHolder<ViewholderTileBinding>.listener by viewHolderDelegate<ValueAnimator.AnimatorUpdateListener>()
 
 fun BindingViewHolder<ViewholderTileBinding>.bind(tile: Tile) {
     this.tile = tile
