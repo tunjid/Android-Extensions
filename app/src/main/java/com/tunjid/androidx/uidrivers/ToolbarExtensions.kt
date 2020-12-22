@@ -17,6 +17,7 @@ import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.content.unwrapActivity
 import com.tunjid.androidx.core.graphics.drawable.withTint
 import com.tunjid.androidx.core.text.color
+import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
 
 internal fun Toolbar.updatePartial(toolbarState: ToolbarState) {
@@ -72,7 +73,7 @@ private val Toolbar.titleTint: Int
 private val Toolbar.navigator: Navigator?
     get() {
         val controller = context.unwrapActivity as? Navigator.Controller ?: return null
-        return controller.navigator
+        return (controller.navigator as? MultiStackNavigator)?.activeNavigator
     }
 
 private val Toolbar.uiState: UiState?
