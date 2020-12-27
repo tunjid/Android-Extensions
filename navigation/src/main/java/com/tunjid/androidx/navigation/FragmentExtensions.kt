@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import com.tunjid.androidx.core.components.doOnEvent
 
 internal val Bundle?.hashString: String
     get() = if (this == null) ""
@@ -28,17 +29,7 @@ internal val Fragment.navigatorTag
 fun Fragment.doOnLifecycleEvent(
         targetEvent: Lifecycle.Event,
         action: () -> Unit
-) {
-    val lastReceivedEvent = lifecycle.currentState.lastReceivedEvent
-    if (lastReceivedEvent != null && lastReceivedEvent >= targetEvent) return action()
-
-    lifecycle.addObserver { observer, _, event ->
-        if (event == targetEvent) {
-            action()
-            lifecycle.removeObserver(observer)
-        }
-    }
-}
+) = lifecycle.doOnEvent(targetEvent, action)
 
 /**
  * Registers an [OnBackPressedCallback] for this [Fragment].
@@ -73,15 +64,6 @@ fun Fragment.addOnBackPressedCallback(action: OnBackPressedCallback.() -> Unit):
     }
     return callback
 }
-
-private val Lifecycle.State.lastReceivedEvent
-    get() = when (this) {
-        Lifecycle.State.DESTROYED -> Lifecycle.Event.ON_DESTROY
-        Lifecycle.State.INITIALIZED -> null
-        Lifecycle.State.CREATED -> Lifecycle.Event.ON_CREATE
-        Lifecycle.State.STARTED -> Lifecycle.Event.ON_START
-        Lifecycle.State.RESUMED -> Lifecycle.Event.ON_RESUME
-    }
 
 // TODO: Create a lifecycle module and make this public there
 private fun Lifecycle.addObserver(callback: (observer: LifecycleEventObserver, source: LifecycleOwner, event: Lifecycle.Event) -> Unit) =
