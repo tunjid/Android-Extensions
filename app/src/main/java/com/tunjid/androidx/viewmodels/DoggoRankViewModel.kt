@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE
 import com.tunjid.androidx.R
 import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.recyclerview.diff.Diff
-import com.tunjid.androidx.recyclerview.diff.Differentiable
+import com.tunjid.androidx.recyclerview.diff.Diffable
 import com.tunjid.androidx.toLiveData
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
@@ -77,7 +77,7 @@ class DoggoRankViewModel(application: Application) : AndroidViewModel(applicatio
                     doggos,
                     Doggo.doggos,
                     { _, additions -> additions },
-                    { doggo -> Differentiable.fromCharSequence { doggo.hashCode().toString() } })
+                    { doggo -> Diffable.fromCharSequence { doggo.hashCode().toString() } })
         }
                 .subscribeOn(io())
                 .observeOn(mainThread())

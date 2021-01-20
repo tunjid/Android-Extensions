@@ -13,7 +13,7 @@ import com.tunjid.androidx.communications.bluetooth.ScanFilterCompat
 import com.tunjid.androidx.communications.bluetooth.ScanResultCompat
 import com.tunjid.androidx.functions.collections.replace
 import com.tunjid.androidx.recyclerview.diff.Diff
-import com.tunjid.androidx.recyclerview.diff.Differentiable
+import com.tunjid.androidx.recyclerview.diff.Diffable
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.CompositeDisposable
@@ -45,11 +45,11 @@ class BleViewModel(application: Application) : AndroidViewModel(application) {
         else null
 
         scanner = if (bluetoothManager != null) BLEScanner.getBuilder(bluetoothManager.adapter)
-                .addFilter(ScanFilterCompat.getBuilder()
-                        .setServiceUuid(ParcelUuid(UUID.fromString(CUSTOM_SERVICE_UUID)))
-                        .build())
-                .withCallBack(this::onDeviceFound)
-                .build()
+            .addFilter(ScanFilterCompat.getBuilder()
+                .setServiceUuid(ParcelUuid(UUID.fromString(CUSTOM_SERVICE_UUID)))
+                .build())
+            .withCallBack(this::onDeviceFound)
+            .build()
         else null
 
         stopScanning()
@@ -76,17 +76,17 @@ class BleViewModel(application: Application) : AndroidViewModel(application) {
         // Clear list first, then start scanning.
         disposables.add(Flowable.fromCallable {
             Diff.calculate(scanResults,
-                    emptyList(),
-                    { _, _ -> emptyList() },
-                    { result -> Differentiable.fromCharSequence { result.device.address } })
+                emptyList(),
+                { _, _ -> emptyList() },
+                { result -> Diffable.fromCharSequence { result.device.address } })
         }
-                .concatWith(processor.take(SCAN_PERIOD, TimeUnit.SECONDS, Schedulers.io()))
-                .doOnTerminate { isScanning.postValue(false) }
-                .subscribeOn(Schedulers.io())
-                .observeOn(mainThread()).subscribe { diff ->
-                    scanResults.replace(diff.items)
-                    devices.value = diff.result
-                })
+            .concatWith(processor.take(SCAN_PERIOD, TimeUnit.SECONDS, Schedulers.io()))
+            .doOnTerminate { isScanning.postValue(false) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(mainThread()).subscribe { diff ->
+                scanResults.replace(diff.items)
+                devices.value = diff.result
+            })
     }
 
     fun stopScanning() {
@@ -97,14 +97,14 @@ class BleViewModel(application: Application) : AndroidViewModel(application) {
     private fun onDeviceFound(scanResult: ScanResultCompat) {
         if (!processor.hasComplete())
             processor.onNext(Diff.calculate(
-                    scanResults,
-                    mutableListOf(scanResult),
-                    this::addServices
-            ) { result -> Differentiable.fromCharSequence { result.device.address } })
+                scanResults,
+                mutableListOf(scanResult),
+                this::addServices
+            ) { result -> Diffable.fromCharSequence { result.device.address } })
     }
 
     private fun addServices(currentServices: List<ScanResultCompat>, foundServices: List<ScanResultCompat>): List<ScanResultCompat> =
-            (foundServices + currentServices).distinctBy { scanResult -> scanResult.device.address }
+        (foundServices + currentServices).distinctBy { scanResult -> scanResult.device.address }
 
     companion object {
 
