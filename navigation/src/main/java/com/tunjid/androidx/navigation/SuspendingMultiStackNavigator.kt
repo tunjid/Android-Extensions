@@ -2,21 +2,15 @@ package com.tunjid.androidx.navigation
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.Lifecycle
-import kotlinx.coroutines.CancellableContinuation
+import androidx.lifecycle.whenResumed
 
 class SuspendingMultiStackNavigator(
     private val navigator: MultiStackNavigator
 ) : SuspendingNavigator by CommonSuspendingNavigator(navigator) {
 
-    suspend fun show(index: Int) = mainThreadSuspendCancellableCoroutine<Fragment?> { continuation ->
-        navigator.stackFragments[navigator.activeIndex].doOnLifecycleEvent(Lifecycle.Event.ON_RESUME) {
-            when (val upcomingStack = navigator.stackFragments.getOrNull(index)) {
-                null -> continuation.resumeIfActive(null)  // out of index. Throw an exception maybe?
-                else -> upcomingStack.waitForChild(continuation)
-            }
-            navigator.show(index)
-        }
+    suspend fun show(index: Int): Fragment {
+        navigator.stackFragments[navigator.activeIndex].whenResumed { navigator.show(index) }
+        return navigator.stackFragments[index].waitForChild()
     }
 
     override suspend fun clear(upToTag: String?, includeMatch: Boolean) =
@@ -26,29 +20,29 @@ class SuspendingMultiStackNavigator(
      * @see MultiStackNavigator.clearAll
      */
     suspend fun clearAll() {
-        internalClearAll()
-    }
-
-    private suspend fun internalClearAll(): Fragment? = mainThreadSuspendCancellableCoroutine { continuation ->
-        navigator.activeFragment.doOnLifecycleEvent(Lifecycle.Event.ON_RESUME) {
-            navigator.reset(commitNow = false) {
-                navigator.stackFragments[0].waitForChild(continuation)
-            }
+        navigator.activeFragment.whenResumed(doNothing)
+        mainThreadSuspendCancellableCoroutine<Unit> { continuation ->
+            navigator.reset(commitNow = false) { continuation.resumeIfActive(Unit) }
         }
+        navigator.stackFragments[0].waitForChild()
     }
-}
 
-private fun StackFragment.waitForChild(continuation: CancellableContinuation<Fragment?>) = doOnLifecycleEvent(Lifecycle.Event.ON_RESUME) {
-    when (val current = navigator.current) {
-        null -> { // Root has not been shown yet, defer until the first fragment shows
-            val fragmentManager = navigator.fragmentManager
-            fragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
+    private suspend fun StackFragment.waitForChild(): Fragment {
+        whenResumed(doNothing)
+        val current = navigator.current
+        if (current != null) return current
+
+        // Root has not been shown yet, defer until the first fragment shows
+        return mainThreadSuspendCancellableCoroutine { continuation ->
+            val fragment = navigator.current
+
+            if (fragment != null) continuation.resumeIfActive(fragment)
+            else navigator.fragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
                 override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
+                    fm.unregisterFragmentLifecycleCallbacks(this)
                     continuation.resumeIfActive(f)
-                    fragmentManager.unregisterFragmentLifecycleCallbacks(this)
                 }
             }, false)
         }
-        else -> continuation.resumeIfActive(current)
     }
 }

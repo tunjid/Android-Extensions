@@ -1,5 +1,6 @@
 package com.tunjid.androidx.uidrivers
 
+import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.transition.ChangeImageTransform
@@ -14,14 +15,14 @@ import com.tunjid.androidx.navigation.Navigator
 const val BACKGROUND_TINT_DURATION = 1200L
 
 fun FragmentTransaction.crossFade() = setCustomAnimations(
-        android.R.anim.fade_in,
-        android.R.anim.fade_out,
-        android.R.anim.fade_in,
-        android.R.anim.fade_out
+    android.R.anim.fade_in,
+    android.R.anim.fade_out,
+    android.R.anim.fade_in,
+    android.R.anim.fade_out
 )
 
 fun MultiStackNavigator.materialFadeThroughTransition(): FragmentTransaction.(Int) -> Unit = fade@{ index ->
-    val rootFragmentManager = current?.activity?.supportFragmentManager ?: return@fade
+    val rootFragmentManager = (current ?: previous)?.activity?.supportFragmentManager ?: return@fade
 
     rootFragmentManager.findFragmentByTag(activeIndex.toString())?.apply {
         enterTransition = null
@@ -49,10 +50,10 @@ fun MultiStackNavigator.materialDepthAxisTransition(): FragmentTransaction.(Frag
 }
 
 fun baseSharedTransition(
-        initial: UiState? = null
+    initial: UiState? = null
 ): Transition = TransitionSet()
-        .setOrdering(TransitionSet.ORDERING_TOGETHER)
-        .addTransition(ChangeImageTransform())
-        .addTransition(ChangeTransform())
-        .addTransition(UiStateAwareChangeBounds(initial))
-        .setDuration(GlobalUiDriver.ANIMATION_DURATION.toLong())
+    .setOrdering(TransitionSet.ORDERING_TOGETHER)
+    .addTransition(ChangeImageTransform())
+    .addTransition(ChangeTransform())
+    .addTransition(UiStateAwareChangeBounds(initial))
+    .setDuration(GlobalUiDriver.ANIMATION_DURATION.toLong())

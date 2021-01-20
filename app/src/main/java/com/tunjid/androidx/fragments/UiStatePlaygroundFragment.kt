@@ -19,6 +19,7 @@ import com.tunjid.androidx.databinding.FragmentSimpleListBinding
 import com.tunjid.androidx.databinding.ViewholderUiStateSliceBinding
 import com.tunjid.androidx.recyclerview.listAdapterOf
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
+import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
@@ -90,7 +91,7 @@ class UiStatePlaygroundFragment : Fragment(R.layout.fragment_simple_list) {
 
 private val Int.stringHex: CharSequence get() = "⦿".color(this) + "#${Integer.toHexString(this)}"
 
-private var BindingViewHolder<ViewholderUiStateSliceBinding>.slice by BindingViewHolder.Prop<Slice<*>>()
+private var BindingViewHolder<ViewholderUiStateSliceBinding>.slice by viewHolderDelegate<Slice<*>>()
 
 private val Context.slices
     get() = listOf<Slice<*>>(

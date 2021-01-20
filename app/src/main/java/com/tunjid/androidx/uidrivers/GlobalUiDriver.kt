@@ -62,9 +62,9 @@ interface GlobalUiController {
  * the same interface should delegate to.
  */
 class GlobalUiDriver(
-        private val host: FragmentActivity,
-        private val binding: ActivityMainBinding,
-        private val navigator: Navigator
+    private val host: FragmentActivity,
+    private val binding: ActivityMainBinding,
+    private val navigator: Navigator
 ) : GlobalUiController {
 
     private val snackbar = Snackbar.make(binding.contentRoot, "", Snackbar.LENGTH_SHORT).apply {
@@ -110,11 +110,11 @@ class GlobalUiDriver(
         get() = liveUiState.value ?: UiState()
         set(value) {
             val updated = value.copy(
-                    systemUI = value.systemUI.filterNoOp(uiState.systemUI),
-                    fabClickListener = value.fabClickListener.lifecycleAware(),
-                    fabTransitionOptions = value.fabTransitionOptions.lifecycleAware(),
-                    toolbarMenuRefresher = value.toolbarMenuRefresher.lifecycleAware(),
-                    toolbarMenuClickListener = value.toolbarMenuClickListener.lifecycleAware()
+                systemUI = value.systemUI.filterNoOp(uiState.systemUI),
+                fabClickListener = value.fabClickListener.lifecycleAware(),
+                fabTransitionOptions = value.fabTransitionOptions.lifecycleAware(),
+                toolbarMenuRefresher = value.toolbarMenuRefresher.lifecycleAware(),
+                toolbarMenuClickListener = value.toolbarMenuClickListener.lifecycleAware()
             )
             liveUiState.value = updated
             liveUiState.value = updated.copy(toolbarInvalidated = false) // Reset after firing once
@@ -165,7 +165,7 @@ class GlobalUiDriver(
         val fabTranslation = when {
             state.fabVisible -> {
                 val navBarHeight = state.navBarSize
-                val snackbarHeight = state.snackbarHeight
+                val snackbarHeight = if (state.snackbarHeight == 0) 0 else state.snackbarHeight + uiSizes.snackbarPadding
                 val bottomNavHeight = uiSizes.bottomNavSize countIf state.bottomNavVisible
                 val insetClearance = max(bottomNavHeight, state.keyboardSize)
                 val totalBottomClearance = navBarHeight + insetClearance + snackbarHeight
@@ -176,29 +176,27 @@ class GlobalUiDriver(
         }
 
         binding.fab.softSpring(SpringAnimation.TRANSLATION_Y)
-                .withOneShotEndListener { binding.fab.isVisible = state.fabVisible } // Make the fab gone if hidden
-                .animateToFinalPosition(fabTranslation)
+            .withOneShotEndListener { binding.fab.isVisible = state.fabVisible } // Make the fab gone if hidden
+            .animateToFinalPosition(fabTranslation)
     }
 
     private fun updateSnackbar(state: SnackbarPositionalState) {
         snackbar.view.doOnLayout {
             val bottomNavClearance = uiSizes.bottomNavSize countIf state.bottomNavVisible
             val navBarClearance = state.navBarSize countIf state.insetDescriptor.hasBottomInset
-            var insetClearance = uiSizes.snackbarPadding
-
-            insetClearance +=
-                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) max(bottomNavClearance, state.keyboardSize)
-                    else max(bottomNavClearance + navBarClearance, state.keyboardSize)
+            val insetClearance =
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) max(bottomNavClearance, state.keyboardSize)
+                else max(bottomNavClearance + navBarClearance, state.keyboardSize)
 
             it.softSpring(SpringAnimation.TRANSLATION_Y)
-                    .animateToFinalPosition(-insetClearance.toFloat())
+                .animateToFinalPosition(-insetClearance.toFloat())
         }
     }
 
     private fun updateBottomNav(state: BottomNavPositionalState) {
         val navBarClearance = state.navBarSize countIf state.insetDescriptor.hasBottomInset
         binding.bottomNavigation.softSpring(SpringAnimation.TRANSLATION_Y)
-                .animateToFinalPosition(if (state.bottomNavVisible) -navBarClearance.toFloat() else uiSizes.bottomNavSize.toFloat())
+            .animateToFinalPosition(if (state.bottomNavVisible) -navBarClearance.toFloat() else uiSizes.bottomNavSize.toFloat())
     }
 
     private fun updateFragmentContainer(state: FragmentContainerPositionalState) {
@@ -212,23 +210,23 @@ class GlobalUiDriver(
         val topClearance = statusBarSize + toolbarHeight
 
         binding.contentContainer
-                .softSpring(PaddingProperty.TOP)
-                .animateToFinalPosition(topClearance.toFloat())
+            .softSpring(PaddingProperty.TOP)
+            .animateToFinalPosition(topClearance.toFloat())
 
         binding.contentContainer
-                .softSpring(PaddingProperty.BOTTOM)
-                .animateToFinalPosition(totalBottomClearance.toFloat())
+            .softSpring(PaddingProperty.BOTTOM)
+            .animateToFinalPosition(totalBottomClearance.toFloat())
     }
 
     private fun setMenuItemClickListener(item: ((MenuItem) -> Unit)?) =
-            binding.toolbar.setOnMenuItemClickListener {
-                item?.invoke(it)?.let { true } ?: host.onOptionsItemSelected(it)
-            }
+        binding.toolbar.setOnMenuItemClickListener {
+            item?.invoke(it)?.let { true } ?: host.onOptionsItemSelected(it)
+        }
 
     private fun setNavBarColor(color: Int) {
         binding.navBackground.background = GradientDrawable(
-                GradientDrawable.Orientation.BOTTOM_TOP,
-                intArrayOf(color, Color.TRANSPARENT))
+            GradientDrawable.Orientation.BOTTOM_TOP,
+            intArrayOf(color, Color.TRANSPARENT))
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) uiFlagTweak {
             if (color.isBrightColor) it or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
@@ -254,7 +252,7 @@ class GlobalUiDriver(
     }
 
     private fun setFabClickListener(onClickListener: ((View) -> Unit)?) =
-            binding.fab.setOnClickListener(onClickListener)
+        binding.fab.setOnClickListener(onClickListener)
 
     private fun setFabTransitionOptions(options: (SpringAnimation.() -> Unit)?) {
         options?.let(fabExtensionAnimator::configureSpring)
@@ -268,10 +266,10 @@ class GlobalUiDriver(
     companion object {
         const val ANIMATION_DURATION = 300
         private const val FULL_CONTROL_SYSTEM_UI_FLAGS =
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                        WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
     }
 
     /**
@@ -288,17 +286,17 @@ class GlobalUiDriver(
      * If [this] is already a [LifeCycleAwareCallback], it was previously wrapped and will NO-OP.
      */
     private fun <T> ((T) -> Unit).lifecycleAware(): (T) -> Unit =
-            if (this is LifeCycleAwareCallback) this else LifeCycleAwareCallback(shortestAvailableLifecycle, this)
+        if (this is LifeCycleAwareCallback) this else LifeCycleAwareCallback(shortestAvailableLifecycle, this)
 }
 
 private fun View.animateBackground(@ColorInt to: Int) {
     val animator = getTag(R.id.doggo_image) as? ValueAnimator
-            ?: ValueAnimator().apply {
-                setTag(R.id.doggo_image, this)
-                setIntValues(Color.TRANSPARENT)
-                setEvaluator(ArgbEvaluator())
-                addUpdateListener { setBackgroundColor(it.animatedValue as Int) }
-            }
+        ?: ValueAnimator().apply {
+            setTag(R.id.doggo_image, this)
+            setIntValues(Color.TRANSPARENT)
+            setEvaluator(ArgbEvaluator())
+            addUpdateListener { setBackgroundColor(it.animatedValue as Int) }
+        }
 
     if (animator.isRunning) animator.cancel()
     animator.setIntValues(animator.animatedValue as Int, to)
@@ -306,13 +304,13 @@ private fun View.animateBackground(@ColorInt to: Int) {
 }
 
 fun View.softSpring(property: FloatPropertyCompat<View>) =
-        spring(property, SpringForce.STIFFNESS_LOW)
+    spring(property, SpringForce.STIFFNESS_LOW)
 
 private val Int.isBrightColor get() = ColorUtils.calculateLuminance(this) > 0.5
 
 private fun ViewHider<*>.set(show: Boolean) =
-        if (show) show()
-        else hide()
+    if (show) show()
+    else hide()
 
 private class LifeCycleAwareCallback<T>(lifecycle: Lifecycle, implementation: (T) -> Unit) : (T) -> Unit {
     private var callback: (T) -> Unit = implementation
