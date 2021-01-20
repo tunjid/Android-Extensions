@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.DiffUtil
 internal class DiffCallback<T>(
         private val stale: List<T>,
         private val updated: List<T>,
-        private val diffFunction: (T) -> Differentiable
+        private val diffFunction: (T) -> Diffable
 ) : DiffUtil.Callback() {
 
     override fun getOldListSize(): Int = stale.size
@@ -16,11 +16,11 @@ internal class DiffCallback<T>(
             using(oldItemPosition, newItemPosition) { stale, current -> stale.diffId == current.diffId }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-            using(oldItemPosition, newItemPosition, Differentiable::areContentsTheSame)
+            using(oldItemPosition, newItemPosition, Diffable::areContentsTheSame)
 
     override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? =
-            using(oldItemPosition, newItemPosition, Differentiable::getChangePayload)
+            using(oldItemPosition, newItemPosition, Diffable::getChangePayload)
 
-    private fun <S> using(oldPosition: Int, newPosition: Int, function: (Differentiable, Differentiable) -> S): S =
+    private fun <S> using(oldPosition: Int, newPosition: Int, function: (Diffable, Diffable) -> S): S =
             function(diffFunction(stale[oldPosition]), diffFunction(updated[newPosition]))
 }

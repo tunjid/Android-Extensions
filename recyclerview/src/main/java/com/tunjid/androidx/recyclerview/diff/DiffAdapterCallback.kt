@@ -15,15 +15,15 @@ import androidx.recyclerview.widget.RecyclerView
  */
 class DiffAdapterCallback<T> : DiffUtil.ItemCallback<T>() {
     override fun areItemsTheSame(oldItem: T, newItem: T): Boolean =
-            if (oldItem is Differentiable && newItem is Differentiable) oldItem.diffId == newItem.diffId
+            if (oldItem is Diffable && newItem is Diffable) oldItem.diffId == newItem.diffId
             else false
 
     @SuppressLint("DiffUtilEquals") // Fallback to Object.equals is necessary
     override fun areContentsTheSame(oldItem: T, newItem: T) =
-            if (oldItem is Differentiable && newItem is Differentiable) oldItem.areContentsTheSame(newItem)
+            if (oldItem is Diffable && newItem is Diffable) oldItem.areContentsTheSame(newItem)
             else oldItem == newItem
 
     override fun getChangePayload(oldItem: T, newItem: T): Any? =
-            if (oldItem is Differentiable && newItem is Differentiable) oldItem.getChangePayload(newItem)
+            if (oldItem is Diffable && newItem is Diffable) oldItem.getChangePayload(newItem)
             else null
 }

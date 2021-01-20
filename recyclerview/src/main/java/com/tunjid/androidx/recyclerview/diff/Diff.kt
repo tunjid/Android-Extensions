@@ -34,7 +34,7 @@ class Diff<T> private constructor(val result: DiffUtil.DiffResult, val items: Li
                 src: List<T>,
                 additions: List<T>,
                 combiner: (List<T>, List<T>) -> List<T>,
-                diffingFunction: (T) -> Differentiable): Diff<T> {
+                diffingFunction: (T) -> Diffable): Diff<T> {
 
             val updated = combiner(ArrayList(src), ArrayList(additions))
             val result = calculateDiff(DiffCallback(ArrayList(src), updated, diffingFunction))
@@ -48,7 +48,7 @@ class Diff<T> private constructor(val result: DiffUtil.DiffResult, val items: Li
          * @return A POJO containing the result of the diff, along with the output of the combiner
          * @see .calculate
         </T> */
-        fun <T : Differentiable> calculate(
+        fun <T : Diffable> calculate(
                 src: List<T>,
                 additions: List<T>,
                 combiner: (List<T>, List<T>) -> List<T>): Diff<T> {

@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.tunjid.androidx.communications.nsd.NsdHelper
 import com.tunjid.androidx.functions.collections.replace
 import com.tunjid.androidx.recyclerview.diff.Diff
-import com.tunjid.androidx.recyclerview.diff.Differentiable
+import com.tunjid.androidx.recyclerview.diff.Diffable
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.CompositeDisposable
@@ -58,7 +58,7 @@ class NsdViewModel(application: Application) : AndroidViewModel(application) {
             Diff.calculate(services,
                     emptyList(),
                     { _, _ -> emptyList() },
-                    { info -> Differentiable.fromCharSequence { info.serviceName } })
+                    { info -> Diffable.fromCharSequence { info.serviceName } })
         }
                 .concatWith(processor.take(SCAN_PERIOD, TimeUnit.SECONDS, Schedulers.io()))
                 .doOnTerminate { isScanning.postValue(false) }
@@ -90,7 +90,7 @@ class NsdViewModel(application: Application) : AndroidViewModel(application) {
                 services,
                 mutableListOf(service),
                 this::addServices
-        ) { info -> Differentiable.fromCharSequence { info.serviceName } })
+        ) { info -> Diffable.fromCharSequence { info.serviceName } })
     }
 
     private fun addServices(currentServices: List<NsdServiceInfo>, foundServices: List<NsdServiceInfo>): List<NsdServiceInfo> {
