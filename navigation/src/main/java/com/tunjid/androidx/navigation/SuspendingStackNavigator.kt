@@ -2,10 +2,9 @@ package com.tunjid.androidx.navigation
 
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import kotlinx.coroutines.suspendCancellableCoroutine
 
-class SuspendingStackNavigator(
-        private val navigator: StackNavigator
+class SuspendingStackNavigator internal constructor(
+    private val navigator: StackNavigator
 ) : SuspendingNavigator by CommonSuspendingNavigator(navigator) {
 
     override suspend fun clear(upToTag: String?, includeMatch: Boolean) = mainThreadSuspendCancellableCoroutine<Fragment?> { continuation ->
@@ -15,6 +14,6 @@ class SuspendingStackNavigator(
 
         navigator.clear(upToTag, includeMatch)
         toShow?.doOnLifecycleEvent(Lifecycle.Event.ON_RESUME) { continuation.resumeIfActive(toShow) }
-                ?: continuation.resumeIfActive(null)
+            ?: continuation.resumeIfActive(null)
     }
 }

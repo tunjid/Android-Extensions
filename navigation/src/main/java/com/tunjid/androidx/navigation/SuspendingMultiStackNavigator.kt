@@ -4,17 +4,28 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.whenResumed
 
-class SuspendingMultiStackNavigator(
-    private val navigator: MultiStackNavigator
-) : SuspendingNavigator by CommonSuspendingNavigator(navigator) {
+class SuspendingMultiStackNavigator internal constructor(
+    private val navigator: MultiStackNavigator,
+    private val common : SuspendingNavigator = CommonSuspendingNavigator(navigator)
+) : SuspendingNavigator by common {
 
     suspend fun show(index: Int): Fragment {
-        navigator.stackFragments[navigator.activeIndex].whenResumed { navigator.show(index) }
+        navigator.activeFragment.whenResumed { navigator.show(index) }
         return navigator.stackFragments[index].waitForChild()
     }
 
     override suspend fun clear(upToTag: String?, includeMatch: Boolean) =
         SuspendingStackNavigator(navigator.activeNavigator).clear(upToTag, includeMatch)
+
+    override suspend fun <T : Fragment> push(fragment: T, tag: String): T? {
+        navigator.activeFragment.whenResumed(doNothing)
+        return common.push(fragment, tag)
+    }
+
+    override suspend fun pop(): Fragment? {
+        navigator.activeFragment.whenResumed(doNothing)
+        return common.pop()
+    }
 
     /**
      * @see MultiStackNavigator.clearAll
