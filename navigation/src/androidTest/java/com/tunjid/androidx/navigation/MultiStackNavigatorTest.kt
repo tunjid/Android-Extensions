@@ -218,13 +218,13 @@ class MultiStackNavigatorTest {
             val testFragmentA = NavigationTestFragment.newInstance(TAG_A)
 
             val root0 = show(0)
-            assertEquals(ROOT_TAG_0, root0?.tag)
+            assertEquals(ROOT_TAG_0, root0.tag)
 
             val pushedA = push(testFragmentA)
             assertSame(testFragmentA, pushedA)
 
             val root1 = show(1)
-            assertEquals(ROOT_TAG_1, root1?.tag)
+            assertEquals(ROOT_TAG_1, root1.tag)
 
             val popStack1FragA = pop()
             assertSame(testFragmentA, popStack1FragA)
@@ -241,6 +241,19 @@ class MultiStackNavigatorTest {
             assertSame(root0, root0Again)
             assertNotSame(root0, newRoot0)
             assertNotSame(root0Again, newRoot0)
+
+            val pushes = listOf(TAG_B, TAG_C, TAG_D)
+                .map(NavigationTestFragment::newInstance)
+                .map { push(it) }
+
+            assertSame(current, pushes[2])
+            pop()
+            assertSame(current, pushes[1])
+            pop()
+            assertSame(current, pushes[0])
+            pop()
+            assertSame(current, newRoot0)
+            assertNull(previous)
         }
     }
 
