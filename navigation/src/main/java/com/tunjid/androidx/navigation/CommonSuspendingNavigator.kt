@@ -2,12 +2,12 @@ package com.tunjid.androidx.navigation
 
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.whenResumed
-import kotlin.coroutines.resume
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.resume
 
 /**
  * A stateless class that keeps [SuspendingStackNavigator] and [SuspendingMultiStackNavigator] DRY
@@ -44,8 +44,8 @@ internal class CommonSuspendingNavigator(private val navigator: Navigator) : Sus
 
         if (current.tag == tag) return null
 
-        current.whenResumed { navigator.push(fragment, tag) }
-        return fragment.whenResumed { fragment }
+        val pushed = current.whenResumed { navigator.push(fragment, tag) }
+        return if (pushed) fragment.whenResumed { fragment } else null
     }
 
     override suspend fun clear(upToTag: String?, includeMatch: Boolean): Fragment? =

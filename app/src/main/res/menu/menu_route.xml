@@ -6,6 +6,11 @@
         android:title="@string/menu_theme"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/menu_stress_test"
+        android:icon="@drawable/ic_baseline_fire_24"
+        android:title="@string/menu_stress_test"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/menu_reset"
         android:title="@string/menu_reset_navigation"
         app:showAsAction="never" />

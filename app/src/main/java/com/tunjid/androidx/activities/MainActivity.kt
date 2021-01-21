@@ -2,7 +2,6 @@ package com.tunjid.androidx.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.View
 import android.view.WindowInsets
 import androidx.activity.addCallback
@@ -18,8 +17,8 @@ import com.tunjid.androidx.uidrivers.GlobalUiDriver
 import com.tunjid.androidx.uidrivers.GlobalUiHost
 import com.tunjid.androidx.uidrivers.materialDepthAxisTransition
 import com.tunjid.androidx.uidrivers.materialFadeThroughTransition
-import java.util.concurrent.TimeUnit
 import leakcanary.AppWatcher
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity(), GlobalUiHost, Navigator.Controller {
 
@@ -55,11 +54,6 @@ class MainActivity : AppCompatActivity(), GlobalUiHost, Navigator.Controller {
             setOnNavigationItemSelectedListener { navigator.show(tabs.indexOf(it.itemId)).let { true } }
             setOnNavigationItemReselectedListener { navigator.activeNavigator.clear() }
         }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.menu_reset -> navigator.clearAll().let { true }
-        else -> super.onOptionsItemSelected(item)
     }
 
     override fun onNewIntent(intent: Intent?) {
