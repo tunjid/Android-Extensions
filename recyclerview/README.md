@@ -2,7 +2,7 @@
 
 Utility classes for the ```RecyclerView``` ```ViewGroup```.
 
-## Differentiable
+## Diffable
 
 An interface used to calculate a ```DiffUtil.DiffResult``` without having to implement a ```DiffUtil.Callback```.
 It exposes methods that distinguish items in a ```RecyclerView``` from each other.
@@ -13,6 +13,16 @@ A POJO hosting pure static functions for calculating the diff of two lists. the 
 are the ```DiffUtil.DiffResult```, and a ```List``` containing the items of the result of the
 bi function applied to the ```Lists``` to diff.
 
+
+## [Delegates](https://kotlinlang.org/docs/reference/delegation.html)
+
+Delegates include:
+
+1. `viewHolderDelegate`: Read/write. Similar to the standard library `by map()`, lets you read/write properties from/to a `RecyclerView.ViewHolder` instance.
+    Usage:
+        ```
+        var PuppyViewHolder.boundItem by viewDelegate<Puppy>()
+        ```
 
 ## ComposedAdapter / ComposedListAdapter
 
