@@ -54,7 +54,6 @@ private fun <T> emptyCallback(): (T) -> Unit = {}
 
 internal data class ToolbarState(
         val toolbarMenuRes: Int,
-        val toolbarTitle: CharSequence,
         val toolbarInvalidated: Boolean
 )
 
@@ -89,10 +88,9 @@ internal data class BottomNavPositionalState(
         val navBarSize: Int
 )
 
-internal val UiState.toolbarState
+internal val UiState.toolbarMenuState
     get() = ToolbarState(
             toolbarMenuRes = toolbarMenuRes,
-            toolbarTitle = toolbarTitle,
             toolbarInvalidated = toolbarInvalidated
     )
 
