@@ -24,17 +24,20 @@ import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.FragmentBleScanBinding
 import com.tunjid.androidx.databinding.ViewholderScanBinding
 import com.tunjid.androidx.isDarkTheme
+import com.tunjid.androidx.map
+import com.tunjid.androidx.mapDistinct
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.activityNavigatorController
-import com.tunjid.androidx.recyclerview.acceptDiff
-import com.tunjid.androidx.recyclerview.adapterOf
+import com.tunjid.androidx.recyclerview.listAdapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
-import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.InsetFlags
+import com.tunjid.androidx.uidrivers.uiState
+import com.tunjid.androidx.viewmodels.BleInput
+import com.tunjid.androidx.viewmodels.BleState
 import com.tunjid.androidx.viewmodels.BleViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
@@ -49,91 +52,76 @@ class BleScanFragment : Fragment(R.layout.fragment_ble_scan) {
         super.onViewCreated(view, savedInstanceState)
 
         uiState = uiState.copy(
-                toolbarTitle = this::class.java.routeName,
-                toolbarMenuRefresher = ::updateToolbarMenu,
-                toolbarMenuClickListener = ::onMenuItemSelected,
-                toolbarMenuRes = R.menu.menu_ble_scan,
-                toolbarShows = true,
-                fabShows = false,
-                showsBottomNav = false,
-                insetFlags = InsetFlags.ALL,
-                lightStatusBar = !requireContext().isDarkTheme,
-                navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
+            toolbarTitle = this::class.java.routeName,
+            toolbarMenuRefresher = ::updateToolbarMenu,
+            toolbarMenuClickListener = ::onMenuItemSelected,
+            toolbarMenuRes = R.menu.menu_ble_scan,
+            toolbarShows = true,
+            fabShows = false,
+            showsBottomNav = false,
+            insetFlags = InsetFlags.ALL,
+            lightStatusBar = !requireContext().isDarkTheme,
+            navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )
 
         val placeHolder = PlaceHolder(view.findViewById(R.id.placeholder_container))
         placeHolder.bind(PlaceHolder.State(R.string.no_ble_devices, R.drawable.ic_bluetooth_24dp))
 
         recyclerView = FragmentBleScanBinding.bind(view).list.apply {
-            layoutManager = verticalLayoutManager()
-            adapter = adapterOf(
-                    itemsSource = viewModel::scanResults,
-                    viewHolderCreator = { parent, _ ->
-                        parent.viewHolderFrom(ViewholderScanBinding::inflate).apply {
-                            itemView.setOnClickListener { onBluetoothDeviceClicked(result.device) }
-                        }
-                    },
-                    viewHolderBinder = { viewHolder, scanResult, _ -> viewHolder.bind(scanResult) }
+            val listAdapter = listAdapterOf(
+                initialItems = viewModel.state.value?.items ?: listOf(),
+                viewHolderCreator = { parent, _ ->
+                    parent.viewHolderFrom(ViewholderScanBinding::inflate).apply {
+                        itemView.setOnClickListener { onBluetoothDeviceClicked(result.device) }
+                    }
+                },
+                viewHolderBinder = { viewHolder, scanResult, _ -> viewHolder.bind(scanResult) }
             )
+
+            layoutManager = verticalLayoutManager()
+            adapter = listAdapter
 
             addItemDecoration(DividerItemDecoration(requireActivity(), DividerItemDecoration.VERTICAL))
 
-            viewModel.devices.observe(viewLifecycleOwner) {
-                placeHolder.toggle(viewModel.scanResults.isEmpty())
-                acceptDiff(it)
+            viewModel.state.apply {
+                mapDistinct(BleState::items).observe(viewLifecycleOwner, listAdapter::submitList)
+                mapDistinct(BleState::items).map(List<ScanResultCompat>::isNotEmpty).observe(viewLifecycleOwner, placeHolder::toggle)
+                mapDistinct(BleState::turnOn).observe(viewLifecycleOwner) { turnOn ->
+                    if (turnOn) startActivityForResult(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), REQUEST_ENABLE_BT)
+                }
             }
-            viewModel.isScanning.observe(viewLifecycleOwner) { uiState = uiState.copy(toolbarInvalidated = true) }
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        if (viewModel.hasBle()) return
-
-        uiState = uiState.copy(snackbarText = getString(R.string.ble_not_supported))
-        navigator.pop()
-    }
-
     private fun updateToolbarMenu(menu: Menu) {
-        val currentlyScanning = viewModel.isScanning.value ?: false
+        viewModel.state.mapDistinct(BleState::isScanning).observe(viewLifecycleOwner) { isScanning ->
+            menu.findItem(R.id.menu_stop)?.isVisible = isScanning
+            menu.findItem(R.id.menu_scan)?.isVisible = !isScanning
 
-        menu.findItem(R.id.menu_stop)?.isVisible = currentlyScanning
-        menu.findItem(R.id.menu_scan)?.isVisible = !currentlyScanning
+            val refresh = menu.findItem(R.id.menu_refresh)
 
-        val refresh = menu.findItem(R.id.menu_refresh)
-
-        refresh?.isVisible = currentlyScanning
-        if (currentlyScanning) refresh?.setLoading(requireContext().themeColorAt(R.attr.prominent_text_color))
-    }
-
-    override fun onPause() {
-        super.onPause()
-        viewModel.stopScanning()
+            refresh?.isVisible = isScanning
+            if (isScanning) refresh?.setLoading(requireContext().themeColorAt(R.attr.prominent_text_color))
+        }
     }
 
     override fun onResume() {
         super.onResume()
-
-        // Ensures BT is enabled on the device.  If BT is not currently enabled,
-        // fire an intent to display a dialog asking the user to grant permission to enable it.
-        if (!viewModel.isBleOn) {
-            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
-        }
-
         val noPermit = SDK_INT >= M && ActivityCompat.checkSelfPermission(requireActivity(),
-                ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
 
         if (noPermit) requestPermissions(arrayOf(ACCESS_COARSE_LOCATION), REQUEST_ENABLE_BT)
-        else scanDevices(true)
+        else {
+            viewModel.accept(BleInput.Permission(hasPermission = true))
+            viewModel.accept(BleInput.StartScanning)
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) = when (requestCode) {
         REQUEST_ENABLE_BT -> {
             // If request is cancelled, the result arrays are empty.
             val canScan = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
-            if (canScan) scanDevices(true)
-            Unit
+            viewModel.accept(BleInput.Permission(hasPermission = canScan))
         }
         else -> Unit
     }
@@ -153,19 +141,14 @@ class BleScanFragment : Fragment(R.layout.fragment_ble_scan) {
     }
 
     private fun onMenuItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.menu_scan -> scanDevices(true)
-        R.id.menu_stop -> scanDevices(false)
+        R.id.menu_scan -> viewModel.accept(BleInput.StartScanning)
+        R.id.menu_stop -> viewModel.accept(BleInput.StopScanning)
         else -> super.onOptionsItemSelected(item).let { }
     }
 
     private fun onBluetoothDeviceClicked(bluetoothDevice: BluetoothDevice) {
         uiState = uiState.copy(snackbarText = bluetoothDevice.address)
     }
-
-    private fun scanDevices(enable: Boolean) =
-            if (enable) viewModel.findDevices()
-            else viewModel.stopScanning()
-
 
     companion object {
         private const val REQUEST_ENABLE_BT = 1
