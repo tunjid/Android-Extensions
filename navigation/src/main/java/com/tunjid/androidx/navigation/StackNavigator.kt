@@ -124,16 +124,16 @@ class StackNavigator constructor(
         }
     }
 
-    private fun auditFragment(f: Fragment) {
-        if (f.id != containerId || f.view == null) return
+    private fun auditFragment(fragment: Fragment) {
+        if (fragment.id != containerId || fragment.view == null) return
 
-        f.tag ?: throw IllegalStateException(MSG_FRAGMENT_HAS_NO_TAG)
+        fragment.tag ?: throw IllegalStateException(MSG_FRAGMENT_HAS_NO_TAG)
 
         // Make sure every fragment created is added to the back stack
-        if (!fragmentTags.contains(f.tag)) {
+        if (!fragmentTags.contains(fragment.tag)) {
             Log.d("StackNavigator", MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK
-                + "\n Fragment Attached: " + f.toString()
-                + "\n Fragment Tag: " + f.tag
+                + "\n Fragment Attached: " + fragment.toString()
+                + "\n Fragment Tag: " + fragment.tag
                 + "\n Backstack Entry Count: " + baskStackEntries.size
                 + "\n Tracked Fragments: " + fragmentTags)
         }
