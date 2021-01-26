@@ -140,7 +140,8 @@ class GlobalUiDriver(
         }
 
         UiState::toolbarShows.distinct onChanged toolbarHider::set
-        UiState::toolbarState.distinct onChanged toolbarHider.view::updatePartial
+        UiState::toolbarTitle.distinct onChanged toolbarHider.view::updateTitle
+        UiState::toolbarMenuState.distinct onChanged toolbarHider.view::updatePartial
         UiState::toolbarMenuClickListener.distinct onChanged this::setMenuItemClickListener
         UiState::toolbarPosition.distinct onChanged { binding.toolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> { topMargin = it } }
 

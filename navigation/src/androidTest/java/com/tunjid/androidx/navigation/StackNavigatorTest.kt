@@ -58,7 +58,6 @@ class StackNavigatorTest {
     }
 
     @Test
-    @Throws(Throwable::class)
     fun testFragmentTagsAdded() {
         val testFragment = NavigationTestFragment.newInstance(TAG_A)
 
@@ -69,7 +68,6 @@ class StackNavigatorTest {
     }
 
     @Test
-    @Throws(Throwable::class)
     fun testFragmentTagsRestored() {
         val testFragment = NavigationTestFragment.newInstance(TAG_A)
 
@@ -83,21 +81,7 @@ class StackNavigatorTest {
         assertTrue(copy.fragmentTags.size == 1)
     }
 
-    @Test//(expected = IllegalStateException.class)
-    @UiThreadTest
-    fun testExceptionNotAddedToBackStack() {
-        val fragmentManager: FragmentManager = activity.supportFragmentManager
-        val testFragment = NavigationTestFragment.newInstance(TAG_A)
-
-        expectedException.expect(IllegalStateException::class.java)
-        expectedException.expectMessage(StackNavigator.MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK)
-
-        fragmentManager.beginTransaction()
-                .replace(activity.containerId, testFragment, TAG_A)
-                .commitNow()
-    }
-
-    @Test//(expected = IllegalStateException.class)
+    @Test
     fun testIndependentContainer() {
         val fragmentManager: FragmentManager = activity.supportFragmentManager
         val testFragmentA = NavigationTestFragment.newInstance(TAG_A)
@@ -105,8 +89,8 @@ class StackNavigatorTest {
 
         stackNavigator.waitForIdleSyncAfter { assertTrue(push(testFragmentA)) }
         fragmentManager.beginTransaction()
-                .replace(activity.ignoredLayoutId, testFragmentB, testFragmentB.stableTag)
-                .commit()
+            .replace(activity.ignoredLayoutId, testFragmentB, testFragmentB.stableTag)
+            .commit()
         getInstrumentation().waitForIdleSync()
 
         assertEquals(1, stackNavigator.fragmentTags.size)
@@ -114,7 +98,6 @@ class StackNavigatorTest {
     }
 
     @Test
-    @Throws(Throwable::class)
     fun testAddAndRemove() {
         val testFragmentA = NavigationTestFragment.newInstance(TAG_A)
         val testFragmentB = NavigationTestFragment.newInstance(TAG_B)
@@ -132,7 +115,6 @@ class StackNavigatorTest {
     }
 
     @Test
-    @Throws(Throwable::class)
     fun testNoDoublePushSameTag() {
         val testFragmentA = NavigationTestFragment.newInstance(TAG_A)
         val testFragmentDuplicateA = NavigationTestFragment.newInstance(TAG_A)
@@ -147,7 +129,6 @@ class StackNavigatorTest {
     }
 
     @Test
-    @Throws(Throwable::class)
     fun testClear() {
         val testFragmentA = NavigationTestFragment.newInstance(TAG_A)
         val testFragmentB = NavigationTestFragment.newInstance(TAG_B)
@@ -181,7 +162,6 @@ class StackNavigatorTest {
     }
 
     @Test
-    @Throws(Throwable::class)
     fun testSequentialOperations() = runBlocking {
         stackNavigator.performConsecutively(this) {
             val testFragmentA = NavigationTestFragment.newInstance(TAG_A)

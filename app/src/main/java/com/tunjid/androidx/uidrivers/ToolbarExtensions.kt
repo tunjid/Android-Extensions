@@ -20,21 +20,25 @@ import com.tunjid.androidx.core.text.color
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
 
-internal fun Toolbar.updatePartial(toolbarState: ToolbarState) {
-    val (@MenuRes menu: Int, title: CharSequence, invalidatedAlone: Boolean) = toolbarState
-    if (invalidatedAlone) return refreshMenu()
-
+internal fun Toolbar.updateTitle(title: CharSequence) {
     val currentTitle = this.title?.toString() ?: ""
     if (currentTitle.isNotBlank()) TransitionManager.beginDelayedTransition(this, AutoTransition().apply {
         // We only want to animate the title, but it's lazy initialized.
         // If it's there, use it, else fuzzy match to it's initialization
         val titleTextView = children.filterIsInstance<TextView>()
-                .filter { it.text?.toString() == currentTitle }
-                .firstOrNull()
+            .filter { it.text?.toString() == currentTitle }
+            .firstOrNull()
         if (titleTextView != null) addTarget(titleTextView) else addTarget(TextView::class.java)
     })
 
     this.title = if (title.isEmpty()) " " else title
+    updateIcons()
+}
+
+internal fun Toolbar.updatePartial(toolbarState: ToolbarState) {
+    val (@MenuRes menu: Int, invalidatedAlone: Boolean) = toolbarState
+    if (invalidatedAlone) return refreshMenu()
+
     refreshMenu(menu)
     updateIcons()
 }
@@ -44,7 +48,7 @@ private fun Toolbar.refreshMenu(menu: Int? = null) {
         this.menu.clear()
         if (menu != 0) inflateMenu(menu)
     }
-    uiState?.toolbarMenuRefresher?.invoke(this.menu)
+    uiState.toolbarMenuRefresher.invoke(this.menu)
 }
 
 private fun Toolbar.updateIcons() {
@@ -74,10 +78,4 @@ private val Toolbar.navigator: Navigator?
     get() {
         val controller = context.unwrapActivity as? Navigator.Controller ?: return null
         return (controller.navigator as? MultiStackNavigator)?.activeNavigator
-    }
-
-private val Toolbar.uiState: UiState?
-    get() {
-        val controller = context.unwrapActivity as? GlobalUiController ?: return null
-        return controller.uiState
     }

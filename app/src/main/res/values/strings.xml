@@ -3,6 +3,7 @@
     <string name="empty_string" />
     <string name="unknown_device">Unknown device</string>
     <string name="ble_not_supported">BLE is not supported</string>
+    <string name="ble_no_permission">No BLE Permission</string>
 
     <!-- Navigation tabs -->
     <string name="navigation">Nav</string>

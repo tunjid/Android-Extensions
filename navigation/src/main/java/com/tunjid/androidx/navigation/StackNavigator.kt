@@ -1,6 +1,6 @@
 package com.tunjid.androidx.navigation
 
-import android.os.Bundle
+import android.util.Log
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -30,8 +30,8 @@ fun FragmentActivity.stackNavigationController(@IdRes containerId: Int): Lazy<St
  */
 
 class StackNavigator constructor(
-        internal val fragmentManager: FragmentManager,
-        @param:IdRes @field:IdRes @get:IdRes override val containerId: Int
+    internal val fragmentManager: FragmentManager,
+    @param:IdRes @field:IdRes @get:IdRes override val containerId: Int
 ) : Navigator {
 
     /**
@@ -63,7 +63,7 @@ class StackNavigator constructor(
 
     init {
         fragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
-            override fun onFragmentCreated(fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?) = auditFragment(f)
+            override fun onFragmentResumed(fm: FragmentManager, f: Fragment) = auditFragment(f)
         }, false)
     }
 
@@ -88,8 +88,8 @@ class StackNavigator constructor(
         val fragmentShown = !fragmentAlreadyExists
 
         val fragmentToShow =
-                (if (fragmentAlreadyExists) fragmentManager.findFragmentByTag(tag)
-                else fragment) ?: throw NullPointerException(MSG_DODGY_FRAGMENT)
+            (if (fragmentAlreadyExists) fragmentManager.findFragmentByTag(tag)
+            else fragment) ?: throw NullPointerException(MSG_DODGY_FRAGMENT)
 
         fragmentManager.commit {
             transactionModifier?.invoke(this, fragment)
@@ -124,18 +124,18 @@ class StackNavigator constructor(
         }
     }
 
-    private fun auditFragment(f: Fragment) {
-        if (f.id != containerId) return
+    private fun auditFragment(fragment: Fragment) {
+        if (fragment.id != containerId || fragment.view == null) return
 
-        f.tag ?: throw IllegalStateException(MSG_FRAGMENT_HAS_NO_TAG)
+        fragment.tag ?: throw IllegalStateException(MSG_FRAGMENT_HAS_NO_TAG)
 
         // Make sure every fragment created is added to the back stack
-        check(fragmentTags.contains(f.tag)) {
-            (MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK
-                    + "\n Fragment Attached: " + f.toString()
-                    + "\n Fragment Tag: " + f.tag
-                    + "\n Backstack Entry Count: " + baskStackEntries.size
-                    + "\n Tracked Fragments: " + fragmentTags)
+        if (!fragmentTags.contains(fragment.tag)) {
+            Log.d("StackNavigator", MSG_FRAGMENT_NOT_ADDED_TO_BACKSTACK
+                + "\n Fragment Attached: " + fragment.toString()
+                + "\n Fragment Tag: " + fragment.tag
+                + "\n Backstack Entry Count: " + baskStackEntries.size
+                + "\n Tracked Fragments: " + fragmentTags)
         }
     }
 
