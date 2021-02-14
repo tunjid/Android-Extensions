@@ -13,8 +13,9 @@ import androidx.recyclerview.widget.RecyclerView
  * on how large a cell is in any row to keep all [RecyclerView] instances synchronized
  */
 class RecyclerViewMultiScroller(
-        @RecyclerView.Orientation private val orientation: Int = RecyclerView.HORIZONTAL,
-        private val cellSizer: CellSizer = DynamicCellSizer(orientation)
+    @RecyclerView.Orientation
+    private val orientation: Int = RecyclerView.HORIZONTAL,
+    private val cellSizer: CellSizer = DynamicCellSizer(orientation)
 ) {
     var displacement = 0
         private set
@@ -57,7 +58,10 @@ class RecyclerViewMultiScroller(
         override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
             // If the user flung the list, then touches any other synced list, stop scrolling
             if (e.actionMasked == MotionEvent.ACTION_DOWN && active != null) active?.stopScroll()
-            return false // always return false, we aren't trying to override default scrolling
+            return when(active) {
+                null -> false // return false if active is null, we aren't trying to override default scrolling
+                else -> rv != active // Ignore touches on other RVs while scrolling is occurring
+            }
         }
     }
 

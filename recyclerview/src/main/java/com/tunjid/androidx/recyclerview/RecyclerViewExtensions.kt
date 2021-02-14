@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.tunjid.androidx.view.util.viewDelegate
 
 /**
  * Returns a [LinearLayoutManager] in the [RecyclerView.VERTICAL] orientation
@@ -102,7 +103,7 @@ inline fun <reified VH : RecyclerView.ViewHolder> RecyclerView.containingViewHol
  * was fetched, or the call failed
  */
 fun RecyclerView.resetEndlessScrollListener() =
-        (getTag(R.id.recyclerview_endless_scroller) as? ComposedEndlessScroller)?.reset() ?: Unit
+        composedEndlessScroller?.reset() ?: Unit
 
 /**
  * Adds an endless scroll listener to the [RecyclerView]
@@ -115,11 +116,11 @@ fun RecyclerView.setEndlessScrollListener(
         firstVisibleItemFunction: (RecyclerView.LayoutManager) -> Int = ::firstVisiblePosition,
         loadMore: (Int) -> Unit
 ) {
-    val previous = getTag(R.id.recyclerview_endless_scroller) as? ComposedEndlessScroller
+    val previous = composedEndlessScroller
     if (previous != null) removeOnScrollListener(previous)
 
     val current = ComposedEndlessScroller(visibleThreshold, orientation, isLayoutManagerReverse, firstVisibleItemFunction, loadMore)
-    setTag(R.id.recyclerview_endless_scroller, current)
+    composedEndlessScroller = current
     addOnScrollListener(current)
 }
 
@@ -170,9 +171,9 @@ fun <VH : RecyclerView.ViewHolder> RecyclerView.setSwipeDragOptions(
         movementFlagFunction: (VH) -> Int = { _ -> SWIPE_DRAG_ALL_DIRECTIONS },
         dragHandleFunction: (VH) -> View = { viewHolder -> viewHolder.itemView }
 ) {
-    val previous = getTag(R.id.recyclerview_swipe_drag) as? SwipeDragTouchHelper<*>
+    val previous = swipeDragTouchHelper
     previous?.destroy()
-    setTag(R.id.recyclerview_swipe_drag, SwipeDragTouchHelper(this, SwipeDragOptions(
+    swipeDragTouchHelper = SwipeDragTouchHelper(this, SwipeDragOptions(
             itemViewSwipeSupplier = itemViewSwipeSupplier,
             longPressDragSupplier = longPressDragSupplier,
             dragConsumer = dragConsumer,
@@ -181,5 +182,9 @@ fun <VH : RecyclerView.ViewHolder> RecyclerView.setSwipeDragOptions(
             swipeDragEndConsumer = swipeDragEndConsumer,
             movementFlagFunction = movementFlagFunction,
             dragHandleFunction = dragHandleFunction
-    )))
+    ))
 }
+
+private var RecyclerView.swipeDragTouchHelper by viewDelegate<SwipeDragTouchHelper<*>?>()
+
+private var RecyclerView.composedEndlessScroller by viewDelegate<ComposedEndlessScroller?>()
