@@ -14,7 +14,7 @@ There are 10 modules:
 | 5  | [RecyclerView (1.2.0-rc01)](https://github.com/tunjid/Android-Extensions/blob/develop/recyclerview/README.md)  | Utility classes for the ```RecyclerView``` ```ViewGroup``` like drag and drop, swipe gestures, endless scrolling, a composable adapter, diffing, tables and much more.  | ![](https://miro.medium.com/max/580/1*SjjLx1ghigvJP7kax-K6gA.gif)  | ![](https://i.imgur.com/hpb3YFu.gif)  |
 | 6  | [Material (1.0.3)](https://github.com/tunjid/Android-Extensions/blob/develop/material/README.md)  | Utility classes around Google's Material Design components including an expandable floating action button.  | ![](https://miro.medium.com/max/648/1*NHgDmR6QVqQwj7VJToQE5w.gif)  |   |
 | 7  | [Communications (1.0.0)](https://github.com/tunjid/Android-Extensions/blob/develop/communications/README.md)  | Utility classes for Near Service Discovery (NSD) and Bluetooth Low Energy (BLE) communication.  |   |   |
-| 8  | [Saved State (1.0.0)](https://github.com/tunjid/Android-Extensions/blob/develop/savedstate/README.md)  | Delegated implementation of Android Jetpack's Saved State Registry for Components that also have a lifecycle.  |   |   |
+| 8  | [Saved State (1.0.1)](https://github.com/tunjid/Android-Extensions/blob/develop/savedstate/README.md)  | Delegated implementation of Android Jetpack's Saved State Registry for Components that also have a lifecycle.  |   |   |
 | 9  | [ConstraintLayout (Unmaintained, MotionLayout is here)](https://github.com/tunjid/Android-Extensions/blob/develop/constraintlayout/README.md)  | Utility classes for the ```ConstraintLayout``` ```ViewGroup```.  |   |   |
 | 10  | [Test (Unmaintained)](https://github.com/tunjid/Android-Extensions/blob/develop/test/README.md)  | Testing utilities built mostly around Espresso.  |   |   |
 
@@ -24,7 +24,7 @@ build.gradle lines
     implementation 'com.tunjid.androidx:communications:1.0.0'
     implementation 'com.tunjid.androidx:recyclerview:1.2.0-rc01'
     implementation 'com.tunjid.androidx:navigation:1.2.0-rc02'
-    implementation 'com.tunjid.androidx:savedstate:1.0.0'
+    implementation 'com.tunjid.androidx:savedstate:1.0.1'
     implementation 'com.tunjid.androidx:functions:1.0.0'
     implementation 'com.tunjid.androidx:material:1.0.3'
     implementation 'com.tunjid.androidx:core:1.3.0'
