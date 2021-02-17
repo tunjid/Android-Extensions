@@ -173,6 +173,7 @@ class StandingsFragment : Fragment(R.layout.fragment_standings) {
 private var BindingViewHolder<ViewholderStandingsRowBinding>.scroller by viewHolderDelegate<RecyclerViewMultiScroller>()
 private var BindingViewHolder<ViewholderStandingsRowBinding>.cellClicked by viewHolderDelegate<(Cell) -> Unit>()
 private var BindingViewHolder<ViewholderStandingsRowBinding>.row by viewHolderDelegate<Row>()
+private var BindingViewHolder<ViewholderHeaderCellBinding>.cell by viewHolderDelegate<Cell>()
 
 private fun ViewGroup.rowViewHolder(
     recycledViewPool: RecyclerView.RecycledViewPool,
@@ -233,9 +234,6 @@ private fun rowAdapter(
     },
     viewTypeFunction = { it::class.hashCode() }
 )
-
-private var BindingViewHolder<ViewholderHeaderCellBinding>.cell by viewHolderDelegate<Cell>()
-
 
 private fun headerViewHolder(
     viewGroup: ViewGroup,
