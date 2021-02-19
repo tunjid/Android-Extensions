@@ -13,7 +13,7 @@ dependencies {
     implementation parent.ext.ktxCore
     implementation parent.ext.appCompat
 
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
 
     androidTestImplementation parent.ext.appCompat
     androidTestImplementation parent.ext.testCore
