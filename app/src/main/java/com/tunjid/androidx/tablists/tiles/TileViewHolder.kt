@@ -1,11 +1,10 @@
-package com.tunjid.androidx.viewholders
+package com.tunjid.androidx.tablists.tiles
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.graphics.Color
 import android.view.ViewGroup
 import com.tunjid.androidx.databinding.ViewholderTileBinding
-import com.tunjid.androidx.tablists.tiles.Tile
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
