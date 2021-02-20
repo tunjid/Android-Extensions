@@ -1,4 +1,4 @@
-package com.tunjid.androidx.viewmodels
+package com.tunjid.androidx.tablists.doggo
 
 import android.animation.ArgbEvaluator
 import android.app.Application
@@ -8,7 +8,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.palette.graphics.Palette
 import com.tunjid.androidx.App
-import com.tunjid.androidx.model.Doggo
+import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.toLiveData
 import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
@@ -23,9 +23,7 @@ class DoggoViewModel(application: Application) : AndroidViewModel(application) {
     private val colorEvaluator = ArgbEvaluator()
     private val disposables = CompositeDisposable()
     private val processor = PublishProcessor.create<Int>()
-    private val colorList = Doggo.doggos.map(this::calculateColor).apply {
-        forEach { it.subscribe() }
-    }
+    private val colorList = Doggo.doggos.map(this::calculateColor).onEach(Maybe<Int>::subscribe)
 
     val colors = processor.toLiveData()
     val doggos = Doggo.doggos
@@ -46,7 +44,7 @@ class DoggoViewModel(application: Application) : AndroidViewModel(application) {
     private fun calculateColor(doggo: Doggo): Maybe<Int> = Maybe.fromCallable {
         val app = getApplication<App>()
         val metrics = app.resources.displayMetrics
-        val bitmap = app.getDrawable(doggo.imageRes)?.toBitmap(
+        val bitmap = app.drawableAt(doggo.imageRes)?.toBitmap(
                 width = metrics.widthPixels / 4,
                 height = metrics.heightPixels / 4,
                 config = Bitmap.Config.ARGB_8888

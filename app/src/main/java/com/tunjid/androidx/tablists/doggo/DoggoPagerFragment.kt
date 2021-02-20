@@ -1,4 +1,4 @@
-package com.tunjid.androidx.fragments
+package com.tunjid.androidx.tablists.doggo
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -21,7 +21,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.drawableAt
-import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.activityNavigatorController
@@ -35,7 +34,6 @@ import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
-import com.tunjid.androidx.viewmodels.DoggoViewModel
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.max

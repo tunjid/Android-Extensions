@@ -1,4 +1,4 @@
-package com.tunjid.androidx.fragments
+package com.tunjid.androidx.tablists.doggo
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -21,7 +21,6 @@ import com.tunjid.androidx.databinding.FragmentDoggoListBinding
 import com.tunjid.androidx.databinding.ViewholderDoggoListBinding
 import com.tunjid.androidx.divider
 import com.tunjid.androidx.isDarkTheme
-import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.activityNavigatorController
@@ -168,8 +167,8 @@ class DoggoListFragment : Fragment(R.layout.fragment_doggo_list),
 var BindingViewHolder<ViewholderDoggoListBinding>.doggoBinder by viewHolderDelegate<DoggoBinder?>()
 
 fun BindingViewHolder<ViewholderDoggoListBinding>.createDoggoBinder(
-        onThumbnailLoaded: (Doggo) -> Unit,
-        onDoggoClicked: (Doggo) -> Unit
+    onThumbnailLoaded: (Doggo) -> Unit,
+    onDoggoClicked: (Doggo) -> Unit
 ) = object : DoggoBinder {
     init {
         this@createDoggoBinder.itemView.setOnClickListener { doggo?.let(onDoggoClicked) }

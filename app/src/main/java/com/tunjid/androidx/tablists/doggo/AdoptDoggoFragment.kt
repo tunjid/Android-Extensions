@@ -1,4 +1,4 @@
-package com.tunjid.androidx.fragments
+package com.tunjid.androidx.tablists.doggo
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
@@ -20,7 +20,6 @@ import com.tunjid.androidx.databinding.FragmentSimpleListBinding
 import com.tunjid.androidx.databinding.ViewholderDoggoAdoptBinding
 import com.tunjid.androidx.databinding.ViewholderSimpleInputBinding
 import com.tunjid.androidx.divider
-import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.recyclerview.adapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder

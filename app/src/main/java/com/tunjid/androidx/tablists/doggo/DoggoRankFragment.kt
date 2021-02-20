@@ -1,4 +1,4 @@
-package com.tunjid.androidx.fragments
+package com.tunjid.androidx.tablists.doggo
 
 import android.os.Bundle
 import android.text.TextUtils
@@ -27,7 +27,6 @@ import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.databinding.ViewholderDoggoRankBinding
 import com.tunjid.androidx.divider
 import com.tunjid.androidx.isDarkTheme
-import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.activityNavigatorController
@@ -42,7 +41,6 @@ import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.androidx.viewholders.DoggoBinder
 import com.tunjid.androidx.viewholders.bind
-import com.tunjid.androidx.viewmodels.DoggoRankViewModel
 import com.tunjid.androidx.viewmodels.routeName
 import kotlin.math.abs
 

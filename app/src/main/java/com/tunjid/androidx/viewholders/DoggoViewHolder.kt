@@ -10,7 +10,7 @@ import androidx.core.view.postDelayed
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.RequestCreator
-import com.tunjid.androidx.model.Doggo
+import com.tunjid.androidx.tablists.doggo.Doggo
 import com.tunjid.androidx.view.util.hashTransitionName
 
 /**

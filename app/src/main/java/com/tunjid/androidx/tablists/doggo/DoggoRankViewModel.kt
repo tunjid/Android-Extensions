@@ -1,4 +1,4 @@
-package com.tunjid.androidx.viewmodels
+package com.tunjid.androidx.tablists.doggo
 
 import android.app.Application
 import android.util.Pair
@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_IDLE
 import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE
 import com.tunjid.androidx.R
-import com.tunjid.androidx.model.Doggo
 import com.tunjid.androidx.recyclerview.diff.Diff
 import com.tunjid.androidx.recyclerview.diff.Diffable
 import com.tunjid.androidx.toLiveData

@@ -9,6 +9,8 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.core.text.italic
 import com.tunjid.androidx.fragments.*
 import com.tunjid.androidx.model.RouteItem
+import com.tunjid.androidx.tablists.doggo.DoggoListFragment
+import com.tunjid.androidx.tablists.doggo.DoggoRankFragment
 import kotlin.random.Random
 
 class RouteViewModel(application: Application) : AndroidViewModel(application) {
