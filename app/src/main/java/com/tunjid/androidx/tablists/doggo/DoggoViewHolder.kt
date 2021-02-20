@@ -1,4 +1,4 @@
-package com.tunjid.androidx.viewholders
+package com.tunjid.androidx.tablists.doggo
 
 import android.widget.ImageView
 import android.widget.TextView
@@ -10,7 +10,6 @@ import androidx.core.view.postDelayed
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.RequestCreator
-import com.tunjid.androidx.tablists.doggo.Doggo
 import com.tunjid.androidx.view.util.hashTransitionName
 
 /**
@@ -29,16 +28,16 @@ fun DoggoBinder.bind(doggo: Doggo) {
 
     setTransitionName(thumbnail, thumbnail.hashTransitionName(doggo))
     doggo.imageCreator()
-            .resize(THUMBNAIL_SIZE, THUMBNAIL_SIZE)
-            .into(thumbnail) thumbnail@{
-                onDoggoThumbnailLoaded(doggo)
-                val full = fullResolution ?: return@thumbnail
-                full.postDelayed(FULL_SIZE_DELAY.toLong()) {
-                    doggo.imageCreator()
-                            .fit()
-                            .into(full) { full.isVisible = false }
-                }
+        .resize(THUMBNAIL_SIZE, THUMBNAIL_SIZE)
+        .into(thumbnail) thumbnail@{
+            onDoggoThumbnailLoaded(doggo)
+            val full = fullResolution ?: return@thumbnail
+            full.postDelayed(FULL_SIZE_DELAY.toLong()) {
+                doggo.imageCreator()
+                    .fit()
+                    .into(full) { full.isVisible = false }
             }
+        }
 
     doggoName?.text = doggo.name
 }
