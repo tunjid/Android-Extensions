@@ -37,6 +37,8 @@ import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.tablists.doggo.DoggoListFragment
 import com.tunjid.androidx.tablists.doggo.DoggoRankFragment
+import com.tunjid.androidx.tablists.tables.SpreadSheetParentFragment
+import com.tunjid.androidx.tablists.tables.StandingsFragment
 import com.tunjid.androidx.tablists.tiles.EndlessTilesFragment
 import com.tunjid.androidx.tablists.tiles.ShiftingTilesFragment
 import com.tunjid.androidx.uidrivers.InsetFlags

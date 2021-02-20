@@ -47,15 +47,10 @@
 
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/main_rows"
+    <include
+        android:id="@+id/table_container"
+        layout="@layout/viewgroup_table"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="56dp" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/sticky_rows"
-        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginTop="56dp" />
 </FrameLayout>

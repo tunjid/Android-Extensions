@@ -1,10 +1,8 @@
-package com.tunjid.androidx.viewmodels
+package com.tunjid.androidx.tablists.tables
 
 import android.app.Application
-import android.widget.TextView
 import androidx.lifecycle.AndroidViewModel
 import com.tunjid.androidx.R
-import com.tunjid.androidx.recyclerview.diff.Diffable
 import com.tunjid.androidx.toLiveData
 import io.reactivex.processors.PublishProcessor
 
@@ -17,7 +15,7 @@ class StandingsViewModel(application: Application) : AndroidViewModel(applicatio
         when (input) {
             is StandingInput.Filter -> standings.copy(filter = input.filter)
             is StandingInput.Sort -> standings.copy(sortHeader = standings.sortHeader.copy(
-                selectedType = input.statHeader.type,
+                selectedColumn = input.statHeader.column,
                 ascending = input.statHeader.ascending
             ))
         }
@@ -27,7 +25,7 @@ class StandingsViewModel(application: Application) : AndroidViewModel(applicatio
 }
 
 sealed class StandingInput {
-    data class Sort(val statHeader: Cell.StatHeader) : StandingInput()
+    data class Sort(val statHeader: Cell.Header) : StandingInput()
     data class Filter(val filter: GameFilter) : StandingInput()
 }
 
@@ -38,44 +36,58 @@ data class Game(val teamA: Team, val teamB: Team) {
 }
 
 data class Standings(
-    val sortHeader: Cell.StatHeader = Cell.StatHeader(type = StatType.Points, selectedType = StatType.Points, ascending = true),
+    override val sortHeader: Cell.Header = Cell.Header(
+        column = StatType.Points,
+        selectedColumn = StatType.Points,
+        ascending = true
+    ),
     val filter: GameFilter = GameFilter.All,
     private val table: Map<Team, List<Game>> = simulateTable()
-) {
+) : Table {
 
     private val comparator = compareBy<Pair<Team, List<Cell.Stat>>> { (_, cells) ->
-        val comparison = cells.first { it.type == sortHeader.type }.value
+        val comparison = cells.first { it.type == sortHeader.column }.value
         if (sortHeader.ascending) comparison else -comparison
     }
 
-    val rows: List<Row> = listOf(Row.Header(selectedType = sortHeader.selectedType, ascending = sortHeader.ascending)) + when (filter) {
-            GameFilter.All -> table.entries
-                .map { (team, games) -> team to games }
-                .map(Pair<Team, List<Game>>::row)
-            GameFilter.Home -> table.entries
-                .map { (team, games) -> team to games.filter(team::isHome) }
-                .map(Pair<Team, List<Game>>::row)
-            GameFilter.Away -> table.entries
-                .map { (team, games) -> team to games.filter(team::isAway) }
-                .map(Pair<Team, List<Game>>::row)
-        }
-            .sortedWith(comparator)
-            .mapIndexed { index, (team, stats) ->
-                Row.TeamRow(team = team, cells = listOf(
-                    Cell.Text(text = index.plus(1).toString()),
-                    Cell.Image(team.badge),
-                    Cell.Text(text = team.displayName, alignment = TextView.TEXT_ALIGNMENT_TEXT_START),
-                ) + stats)
-            }
+    override val header = Row.Header(
+        subject = sortHeader.selectedColumn,
+        ascending = sortHeader.ascending,
+        cells = standingHeader(
+            selectedType = sortHeader.selectedColumn,
+            ascending = sortHeader.ascending
+        )
+    )
 
-    val sidebar = rows.map {
+    override val rows: List<Row> = listOf(header) + when (filter) {
+        GameFilter.All -> table.entries
+            .map { (team, games) -> team to games }
+            .map(Pair<Team, List<Game>>::row)
+        GameFilter.Home -> table.entries
+            .map { (team, games) -> team to games.filter(team::isHome) }
+            .map(Pair<Team, List<Game>>::row)
+        GameFilter.Away -> table.entries
+            .map { (team, games) -> team to games.filter(team::isAway) }
+            .map(Pair<Team, List<Game>>::row)
+    }
+        .sortedWith(comparator)
+        .mapIndexed { index, (team, stats) ->
+            Row.Item(subject = team, cells = listOf(
+                Cell.Text(text = index.plus(1).toString()),
+                Cell.Image(team.badge),
+                Cell.Text(
+                    text = team.title,
+                    alignment = TextAlignment.Start
+                ),
+            ) + stats)
+        }
+
+    override val sidebar = rows.map {
         when (it) {
-            is Row.TeamRow -> it.copy(cells = it.cells.take(2))
+            is Row.Item -> it.copy(cells = it.cells.take(2))
             is Row.Header -> it.copy(cells = it.cells.take(2))
         }
     }
-
-    val header = Row.Header(selectedType = sortHeader.selectedType, ascending = sortHeader.ascending)
 }
 
 enum class GameFilter {
@@ -84,7 +96,7 @@ enum class GameFilter {
     Away
 }
 
-enum class Team(val badge: Int) {
+enum class Team(val badge: Int) : RowSubject {
     Arsenal(R.drawable.arsenal),
     AstonVilla(R.drawable.aston_villa),
     Brighton(R.drawable.brighton),
@@ -106,10 +118,11 @@ enum class Team(val badge: Int) {
     WestHam(R.drawable.west_ham),
     Wolves(R.drawable.wolves);
 
-    val displayName get() = this.name
+    override val title: CharSequence get() = name
+    override val diffId: String get() = name
 }
 
-enum class StatType(val letter: String) {
+enum class StatType(val letter: String) : RowSubject {
     Points("PTS"),
     Played("P"),
     Wins("W"),
@@ -117,63 +130,17 @@ enum class StatType(val letter: String) {
     Losses("L"),
     GoalsFor("GF"),
     GoalsAgainst("GA"),
-    GoalDifference("GD"),
+    GoalDifference("GD");
+
+    override val title: CharSequence get() = letter
+    override val diffId: String get() = name
 }
 
-sealed class Row : Diffable {
-    abstract val cells: List<Cell>
-
-    data class TeamRow(
-        val team: Team,
-        override val cells: List<Cell>
-    ) : Row()
-
-    data class Header(
-        val selectedType: StatType,
-        val ascending: Boolean,
-        override val cells: List<Cell> = listOf(
-            Cell.Text(text = "#"),
-            Cell.Text(text = ""),
-            Cell.Text(text = "Team", alignment = TextView.TEXT_ALIGNMENT_TEXT_START),
-        ) + StatType.values().map { Cell.StatHeader(type = it, selectedType = selectedType, ascending = ascending) }
-    ) : Row()
-
-    override val diffId: String
-        get() = when (this) {
-            is TeamRow -> team.name
-            is Header -> "Header"
-        }
-}
-
-sealed class Cell(val inHeader: Boolean) : Diffable {
-    data class Stat(val type: StatType, val value: Int) : Cell(inHeader = false)
-    data class Text(val text: CharSequence, val id: String = text.toString(), val alignment: Int = TextView.TEXT_ALIGNMENT_CENTER) : Cell(inHeader = false)
-    data class StatHeader(val type: StatType, val selectedType: StatType, val ascending: Boolean = true) : Cell(inHeader = true)
-    data class Image(val drawableRes: Int) : Cell(inHeader = false)
-
-    override val diffId: String
-        get() = when (this) {
-            is Stat -> type.letter
-            is Text -> id
-            is StatHeader -> type.letter
-            is Image -> drawableRes.toString()
-        }
-
-    val content
-        get() = when (this) {
-            is Stat -> value.toString()
-            is Text -> text
-            is StatHeader -> type.letter
-            is Image -> ""
-        }
-
-    val textAlignment get() = when(this){
-        is Stat -> TextView.TEXT_ALIGNMENT_CENTER
-        is Text -> alignment
-        is StatHeader -> TextView.TEXT_ALIGNMENT_CENTER
-        is Image -> TextView.TEXT_ALIGNMENT_CENTER
-    }
-}
+private fun standingHeader(selectedType: RowSubject, ascending: Boolean) = listOf(
+    Cell.Text(text = "#"),
+    Cell.Text(text = ""),
+    Cell.Text(text = "Team", alignment = TextAlignment.Start),
+) + StatType.values().map { Cell.Header(column = it, selectedColumn = selectedType, ascending = ascending) }
 
 private fun simulateTable(): Map<Team, List<Game>> =
     Team.values()
