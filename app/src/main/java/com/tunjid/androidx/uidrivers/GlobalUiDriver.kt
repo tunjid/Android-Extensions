@@ -16,6 +16,7 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.dynamicanimation.animation.FloatPropertyCompat
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
@@ -195,9 +196,9 @@ class GlobalUiDriver(
     }
 
     private fun updateBottomNav(state: BottomNavPositionalState) {
-        val navBarClearance = state.navBarSize countIf state.insetDescriptor.hasBottomInset
+        binding.bottomNavigation.updatePadding(bottom = state.navBarSize)
         binding.bottomNavigation.softSpring(SpringAnimation.TRANSLATION_Y)
-            .animateToFinalPosition(if (state.bottomNavVisible) -navBarClearance.toFloat() else uiSizes.bottomNavSize.toFloat())
+            .animateToFinalPosition(if (state.bottomNavVisible) 0F else uiSizes.bottomNavSize.plus(state.navBarSize).toFloat())
     }
 
     private fun updateFragmentContainer(state: FragmentContainerPositionalState) {
