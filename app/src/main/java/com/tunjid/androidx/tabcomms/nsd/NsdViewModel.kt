@@ -1,4 +1,4 @@
-package com.tunjid.androidx.viewmodels
+package com.tunjid.androidx.tabcomms.nsd
 
 import android.app.Application
 import android.content.Context

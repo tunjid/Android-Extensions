@@ -1,4 +1,4 @@
-package com.tunjid.androidx.fragments
+package com.tunjid.androidx.tabcomms.nsd
 
 
 import android.os.Bundle
@@ -25,10 +25,10 @@ import com.tunjid.androidx.setLoading
 import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.viewmodels.Input
-import com.tunjid.androidx.viewmodels.NSDState
-import com.tunjid.androidx.viewmodels.NsdItem
-import com.tunjid.androidx.viewmodels.NsdViewModel
+import com.tunjid.androidx.tabcomms.nsd.Input
+import com.tunjid.androidx.tabcomms.nsd.NSDState
+import com.tunjid.androidx.tabcomms.nsd.NsdItem
+import com.tunjid.androidx.tabcomms.nsd.NsdViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
 /**

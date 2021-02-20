@@ -1,4 +1,4 @@
-package com.tunjid.androidx.fragments
+package com.tunjid.androidx.tabcomms.ble
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.app.Activity
@@ -36,9 +36,9 @@ import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
 import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.viewmodels.BleInput
-import com.tunjid.androidx.viewmodels.BleState
-import com.tunjid.androidx.viewmodels.BleViewModel
+import com.tunjid.androidx.tabcomms.ble.BleInput
+import com.tunjid.androidx.tabcomms.ble.BleState
+import com.tunjid.androidx.tabcomms.ble.BleViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
 class BleScanFragment : Fragment(R.layout.fragment_ble_scan) {

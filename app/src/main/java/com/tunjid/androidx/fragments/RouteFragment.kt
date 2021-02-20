@@ -35,6 +35,8 @@ import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
+import com.tunjid.androidx.tabcomms.ble.BleScanFragment
+import com.tunjid.androidx.tabcomms.nsd.NsdScanFragment
 import com.tunjid.androidx.tablists.doggo.DoggoListFragment
 import com.tunjid.androidx.tablists.doggo.DoggoRankFragment
 import com.tunjid.androidx.tablists.tables.SpreadSheetParentFragment

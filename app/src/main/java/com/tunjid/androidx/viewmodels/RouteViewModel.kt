@@ -9,6 +9,8 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.core.text.italic
 import com.tunjid.androidx.fragments.*
 import com.tunjid.androidx.model.RouteItem
+import com.tunjid.androidx.tabcomms.ble.BleScanFragment
+import com.tunjid.androidx.tabcomms.nsd.NsdScanFragment
 import com.tunjid.androidx.tablists.doggo.DoggoListFragment
 import com.tunjid.androidx.tablists.doggo.DoggoRankFragment
 import com.tunjid.androidx.tablists.tables.SpreadSheetParentFragment
@@ -21,13 +23,13 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
 
     private val mapping = listOf(
         listOf(
-            RouteItem.Destination(DoggoListFragment::class.java.routeName, formatRoute(R.string.route_doggo_list)),
             RouteItem.Destination(UiStatePlaygroundFragment::class.java.routeName, formatRoute(R.string.route_ui_state)),
             RouteItem.Destination(IndependentStacksFragment::class.java.routeName, formatRoute(R.string.route_independent_stack)),
             RouteItem.Destination(MultipleStacksFragment::class.java.routeName, formatRoute(R.string.route_multiple_inner_stack)),
             RouteItem.Spacer
         ),
         listOf(
+            RouteItem.Destination(DoggoListFragment::class.java.routeName, formatRoute(R.string.route_doggo_list)),
             RouteItem.Destination(DoggoRankFragment::class.java.routeName, formatRoute(R.string.route_doggo_rank)),
             RouteItem.Destination(ShiftingTilesFragment::class.java.routeName, formatRoute(R.string.route_shifting_tile)),
             RouteItem.Destination(EndlessTilesFragment::class.java.routeName, formatRoute(R.string.route_endless_tile)),

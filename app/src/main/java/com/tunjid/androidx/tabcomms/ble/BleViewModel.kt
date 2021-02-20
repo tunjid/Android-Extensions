@@ -1,4 +1,4 @@
-package com.tunjid.androidx.viewmodels
+package com.tunjid.androidx.tabcomms.ble
 
 import android.app.Application
 import android.bluetooth.BluetoothManager
