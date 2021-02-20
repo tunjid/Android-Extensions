@@ -1,4 +1,4 @@
-package com.tunjid.androidx.fragments
+package com.tunjid.androidx.tablists.tiles
 
 import android.os.Bundle
 import android.view.View
@@ -22,7 +22,6 @@ import com.tunjid.androidx.viewholders.bind
 import com.tunjid.androidx.viewholders.tile
 import com.tunjid.androidx.viewholders.tileViewHolder
 import com.tunjid.androidx.viewholders.unbind
-import com.tunjid.androidx.viewmodels.ShiftingTileViewModel
 import com.tunjid.androidx.viewmodels.routeName
 
 class ShiftingTilesFragment : Fragment(R.layout.fragment_route) {

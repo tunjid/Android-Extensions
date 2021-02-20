@@ -1,4 +1,4 @@
-package com.tunjid.androidx.fragments
+package com.tunjid.androidx.tablists.tiles
 
 import android.os.Bundle
 import android.view.View
@@ -15,23 +15,21 @@ import com.tunjid.androidx.recyclerview.addScrollListener
 import com.tunjid.androidx.recyclerview.gridLayoutManager
 import com.tunjid.androidx.recyclerview.setEndlessScrollListener
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
+import com.tunjid.androidx.tablists.tiles.EndlessTileViewModel.Companion.NUM_TILES
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.SpringItemAnimator
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.updatePartial
-import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.viewholders.bind
 import com.tunjid.androidx.viewholders.tile
 import com.tunjid.androidx.viewholders.tileViewHolder
 import com.tunjid.androidx.viewholders.unbind
-import com.tunjid.androidx.viewmodels.EndlessTileViewModel
-import com.tunjid.androidx.viewmodels.EndlessTileViewModel.Companion.NUM_TILES
 import com.tunjid.androidx.viewmodels.routeName
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import kotlin.math.abs
 
 class EndlessTilesFragment : Fragment(R.layout.fragment_route) {
-
 
     private val viewModel by viewModels<EndlessTileViewModel>()
 
@@ -39,33 +37,33 @@ class EndlessTilesFragment : Fragment(R.layout.fragment_route) {
         super.onViewCreated(view, savedInstanceState)
 
         uiState = UiState(
-                toolbarTitle = this::class.java.routeName,
-                toolbarShows = true,
-                toolbarMenuRes = 0,
-                fabShows = true,
-                fabIcon = R.drawable.ic_info_outline_24dp,
-                fabText = getString(R.string.tile_info),
-                showsBottomNav = false,
-                insetFlags = InsetFlags.NO_BOTTOM,
-                lightStatusBar = !requireContext().isDarkTheme,
-                navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
-                fabClickListener = { ::uiState.updatePartial { copy(snackbarText = "There are ${viewModel.tiles.size} tiles") } }
+            toolbarTitle = this::class.java.routeName,
+            toolbarShows = true,
+            toolbarMenuRes = 0,
+            fabShows = true,
+            fabIcon = R.drawable.ic_info_outline_24dp,
+            fabText = getString(R.string.tile_info),
+            showsBottomNav = false,
+            insetFlags = InsetFlags.NO_BOTTOM,
+            lightStatusBar = !requireContext().isDarkTheme,
+            navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
+            fabClickListener = { ::uiState.updatePartial { copy(snackbarText = "There are ${viewModel.tiles.size} tiles") } }
         )
 
         FragmentRouteBinding.bind(view).recyclerView.apply {
             itemAnimator = SpringItemAnimator()
             layoutManager = gridLayoutManager(3)
             adapter = adapterOf(
-                    itemsSource = viewModel::tiles,
-                    viewHolderCreator = { parent, _ ->
-                        parent.tileViewHolder().apply {
-                            itemView.setOnClickListener { uiState = uiState.copy(snackbarText = tile.toString()) }
-                        }
-                    },
-                    viewHolderBinder = { viewHolder, tile, _ -> viewHolder.bind(tile) },
-                    itemIdFunction = { it.hashCode().toLong() },
-                    onViewHolderRecycled = BindingViewHolder<ViewholderTileBinding>::unbind,
-                    onViewHolderDetached = BindingViewHolder<ViewholderTileBinding>::unbind
+                itemsSource = viewModel::tiles,
+                viewHolderCreator = { parent, _ ->
+                    parent.tileViewHolder().apply {
+                        itemView.setOnClickListener { uiState = uiState.copy(snackbarText = tile.toString()) }
+                    }
+                },
+                viewHolderBinder = { viewHolder, tile, _ -> viewHolder.bind(tile) },
+                itemIdFunction = { it.hashCode().toLong() },
+                onViewHolderRecycled = BindingViewHolder<ViewholderTileBinding>::unbind,
+                onViewHolderDetached = BindingViewHolder<ViewholderTileBinding>::unbind
             )
 
             addScrollListener { _, dy -> if (abs(dy) > 3) uiState = uiState.copy(fabShows = dy < 0) }

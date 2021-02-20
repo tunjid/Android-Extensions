@@ -1,11 +1,10 @@
-package com.tunjid.androidx.viewmodels
+package com.tunjid.androidx.tablists.tiles
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.DiffUtil
 import com.tunjid.androidx.functions.collections.replace
-import com.tunjid.androidx.model.Tile
 import com.tunjid.androidx.recyclerview.diff.Diff
 import com.tunjid.androidx.toLiveData
 import io.reactivex.Flowable
@@ -22,7 +21,7 @@ class ShiftingTileViewModel(application: Application) : AndroidViewModel(applica
     val tiles: MutableList<Tile> = ArrayList(generateTiles(NUM_TILES))
     private var changes: Boolean = false
     private val disposables: CompositeDisposable = CompositeDisposable()
-    private val processor: PublishProcessor<DiffUtil.DiffResult> = PublishProcessor.create<DiffUtil.DiffResult>()
+    private val processor: PublishProcessor<DiffUtil.DiffResult> = PublishProcessor.create()
 
     init {
         dance()

@@ -1,11 +1,10 @@
-package com.tunjid.androidx.viewmodels
+package com.tunjid.androidx.tablists.tiles
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import com.tunjid.androidx.functions.collections.replace
-import com.tunjid.androidx.model.Tile
 import com.tunjid.androidx.recyclerview.diff.Diff
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread

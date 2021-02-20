@@ -11,6 +11,8 @@ import com.tunjid.androidx.fragments.*
 import com.tunjid.androidx.model.RouteItem
 import com.tunjid.androidx.tablists.doggo.DoggoListFragment
 import com.tunjid.androidx.tablists.doggo.DoggoRankFragment
+import com.tunjid.androidx.tablists.tiles.EndlessTilesFragment
+import com.tunjid.androidx.tablists.tiles.ShiftingTilesFragment
 import kotlin.random.Random
 
 class RouteViewModel(application: Application) : AndroidViewModel(application) {
