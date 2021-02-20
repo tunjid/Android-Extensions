@@ -36,8 +36,6 @@ import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.updatePartial
 import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
-import com.tunjid.androidx.viewholders.DoggoBinder
-import com.tunjid.androidx.viewholders.bind
 import com.tunjid.androidx.tabnav.routing.routeName
 import kotlin.math.abs
 

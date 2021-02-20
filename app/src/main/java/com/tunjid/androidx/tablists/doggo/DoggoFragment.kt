@@ -8,8 +8,6 @@ import androidx.fragment.app.Fragment
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentImageDetailBinding
-import com.tunjid.androidx.viewholders.DoggoBinder
-import com.tunjid.androidx.viewholders.bind
 
 class DoggoFragment : Fragment(R.layout.fragment_image_detail) {
 
@@ -27,7 +25,7 @@ class DoggoFragment : Fragment(R.layout.fragment_image_detail) {
                 set(_) = Unit
             override val doggoName: TextView get() = binding.doggoName
             override val thumbnail: ImageView get() = binding.doggoImage
-            override val fullResolution: ImageView? get() = binding.fullSize
+            override val fullResolution: ImageView get() = binding.fullSize
             override fun onDoggoThumbnailLoaded(doggo: Doggo) = parentFragment?.startPostponedEnterTransition()
                     ?: Unit
         }.bind(doggo)

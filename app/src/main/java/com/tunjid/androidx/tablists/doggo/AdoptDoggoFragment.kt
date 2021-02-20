@@ -31,7 +31,6 @@ import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.updatePartial
-import com.tunjid.androidx.viewholders.DoggoBinder
 import com.tunjid.androidx.viewholders.bind
 import com.tunjid.androidx.viewholders.inputViewHolder
 
@@ -99,7 +98,7 @@ class AdoptDoggoFragment : Fragment(R.layout.fragment_simple_list) {
                 set(_) = Unit
             override val doggoName: TextView? get() = null
             override val thumbnail: ImageView get() = binding.doggoImage
-            override val fullResolution: ImageView? get() = binding.fullSize
+            override val fullResolution: ImageView get() = binding.fullSize
             override fun onDoggoThumbnailLoaded(doggo: Doggo) = startPostponedEnterTransition()
         }
 
