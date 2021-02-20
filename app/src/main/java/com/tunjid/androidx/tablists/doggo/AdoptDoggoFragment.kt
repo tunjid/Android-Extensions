@@ -31,8 +31,6 @@ import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.updatePartial
-import com.tunjid.androidx.viewholders.bind
-import com.tunjid.androidx.viewholders.inputViewHolder
 
 class AdoptDoggoFragment : Fragment(R.layout.fragment_simple_list) {
 

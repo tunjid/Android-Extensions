@@ -1,4 +1,4 @@
-package com.tunjid.androidx.viewholders
+package com.tunjid.androidx.tablists.doggo
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
