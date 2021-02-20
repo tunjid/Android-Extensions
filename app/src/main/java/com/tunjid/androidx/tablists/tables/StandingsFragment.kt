@@ -11,7 +11,7 @@ import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.recyclerview.multiscroll.DynamicCellSizer
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.viewmodels.routeName
+import com.tunjid.androidx.tabnav.routing.routeName
 
 class StandingsFragment : Fragment(R.layout.fragment_standings) {
 

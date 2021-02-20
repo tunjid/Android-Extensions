@@ -1,4 +1,4 @@
-package com.tunjid.androidx.fragments
+package com.tunjid.androidx.tabmisc
 
 import android.os.Bundle
 import android.view.View
@@ -16,7 +16,7 @@ import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.InsetFlags
-import com.tunjid.androidx.viewmodels.routeName
+import com.tunjid.androidx.tabnav.routing.routeName
 
 
 class HardServiceConnectionFragment : Fragment(R.layout.fragment_hard_service_connection) {

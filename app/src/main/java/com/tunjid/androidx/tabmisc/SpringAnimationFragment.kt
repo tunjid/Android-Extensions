@@ -1,4 +1,4 @@
-package com.tunjid.androidx.fragments
+package com.tunjid.androidx.tabmisc
 
 import android.os.Bundle
 import android.view.View
@@ -24,7 +24,7 @@ import com.tunjid.androidx.view.animator.ViewHider
 import com.tunjid.androidx.view.util.MarginProperty
 import com.tunjid.androidx.view.util.PaddingProperty
 import com.tunjid.androidx.view.util.spring
-import com.tunjid.androidx.viewmodels.routeName
+import com.tunjid.androidx.tabnav.routing.routeName
 
 /**
  * Fragment demonstrating hiding views

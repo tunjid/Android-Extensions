@@ -1,4 +1,4 @@
-package com.tunjid.androidx.fragments
+package com.tunjid.androidx.tabnav.navigator
 
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -16,8 +16,8 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
 import com.tunjid.androidx.MutedColors
 import com.tunjid.androidx.R
-import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.core.content.colorAt
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.core.text.color
 import com.tunjid.androidx.core.text.formatSpanned
 import com.tunjid.androidx.core.text.scale
@@ -28,11 +28,11 @@ import com.tunjid.androidx.navigation.StackNavigator
 import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.navigation.addOnBackPressedCallback
 import com.tunjid.androidx.navigation.childStackNavigationController
+import com.tunjid.androidx.tabnav.routing.routeName
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.crossFade
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.uidrivers.InsetFlags
-import com.tunjid.androidx.viewmodels.routeName
 import java.util.*
 
 
@@ -48,11 +48,11 @@ class IndependentStacksFragment : Fragment(R.layout.fragment_independent_stack) 
 
         addOnBackPressedCallback {
             isEnabled =
-                    if (navigator.current !== this@IndependentStacksFragment) false
-                    else visitOrder.asSequence()
-                            .map(::navigatorFor)
-                            .map(StackNavigator::pop)
-                            .firstOrNull { it } ?: false
+                if (navigator.current !== this@IndependentStacksFragment) false
+                else visitOrder.asSequence()
+                    .map(::navigatorFor)
+                    .map(StackNavigator::pop)
+                    .firstOrNull { it } ?: false
 
             if (!isEnabled) activity?.onBackPressed()
         }
@@ -66,15 +66,15 @@ class IndependentStacksFragment : Fragment(R.layout.fragment_independent_stack) 
         }
 
         uiState = UiState(
-                toolbarTitle = this::class.java.routeName.color(Color.WHITE),
-                toolbarMenuRes = 0,
-                toolbarShows = true,
-                toolbarOverlaps = false,
-                fabShows = false,
-                showsBottomNav = true,
-                lightStatusBar = false,
-                insetFlags = InsetFlags.NO_TOP,
-                navBarColor = requireContext().colorAt(R.color.colorSurface)
+            toolbarTitle = this::class.java.routeName.color(Color.WHITE),
+            toolbarMenuRes = 0,
+            toolbarShows = true,
+            toolbarOverlaps = false,
+            fabShows = false,
+            showsBottomNav = true,
+            lightStatusBar = false,
+            insetFlags = InsetFlags.NO_TOP,
+            navBarColor = requireContext().colorAt(R.color.colorSurface)
         )
     }
 
@@ -105,7 +105,7 @@ class IndependentStacksFragment : Fragment(R.layout.fragment_independent_stack) 
     }
 
     private fun name(@IdRes containerId: Int) =
-            resources.getResourceEntryName(containerId).replace("_", " ")
+        resources.getResourceEntryName(containerId).replace("_", " ")
 
     companion object {
         fun newInstance(): IndependentStacksFragment = IndependentStacksFragment().apply { arguments = Bundle() }
@@ -122,7 +122,11 @@ class IndependentStackChildFragment : Fragment(), Navigator.TagProvider {
 
     var depth: Int by fragmentArgs()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = MaterialButton(inflater.context).apply {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View = MaterialButton(inflater.context).apply {
         val spacing = context.resources.getDimensionPixelSize(R.dimen.single_margin)
 
         backgroundTintList = ColorStateList.valueOf(MutedColors.colorAt(inflater.context.isDarkTheme, 1))
@@ -133,8 +137,8 @@ class IndependentStackChildFragment : Fragment(), Navigator.TagProvider {
         gravity = Gravity.CENTER
         cornerRadius = spacing
         text = getString(R.string.double_line_format).formatSpanned(
-                name,
-                resources.getQuantityString(R.plurals.stack_depth, depth, depth).scale(0.5F)
+            name,
+            resources.getQuantityString(R.plurals.stack_depth, depth, depth).scale(0.5F)
         )
         layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT).apply {
             gravity = Gravity.CENTER

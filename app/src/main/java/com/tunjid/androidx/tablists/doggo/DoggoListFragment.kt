@@ -38,7 +38,7 @@ import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.androidx.viewholders.DoggoBinder
 import com.tunjid.androidx.viewholders.bind
-import com.tunjid.androidx.viewmodels.routeName
+import com.tunjid.androidx.tabnav.routing.routeName
 import kotlin.math.abs
 
 class DoggoListFragment : Fragment(R.layout.fragment_doggo_list),

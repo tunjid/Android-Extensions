@@ -1,4 +1,4 @@
-package com.tunjid.androidx.fragments
+package com.tunjid.androidx.tabmisc
 
 import android.graphics.Color
 import android.os.Bundle
@@ -21,7 +21,7 @@ import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.view.util.withOneShotEndListener
-import com.tunjid.androidx.viewmodels.routeName
+import com.tunjid.androidx.tabnav.routing.routeName
 
 class FabTransformationsFragment : Fragment(R.layout.fragment_fab_transformations) {
 

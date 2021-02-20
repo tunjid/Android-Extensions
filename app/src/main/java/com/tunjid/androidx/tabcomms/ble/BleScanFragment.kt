@@ -39,7 +39,7 @@ import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.tabcomms.ble.BleInput
 import com.tunjid.androidx.tabcomms.ble.BleState
 import com.tunjid.androidx.tabcomms.ble.BleViewModel
-import com.tunjid.androidx.viewmodels.routeName
+import com.tunjid.androidx.tabnav.routing.routeName
 
 class BleScanFragment : Fragment(R.layout.fragment_ble_scan) {
 

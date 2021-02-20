@@ -17,7 +17,7 @@ import com.tunjid.androidx.recyclerview.multiscroll.DynamicCellSizer
 import com.tunjid.androidx.recyclerview.multiscroll.StaticCellSizer
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.viewmodels.routeName
+import com.tunjid.androidx.tabnav.routing.routeName
 
 class SpreadSheetParentFragment : Fragment(R.layout.fragment_spreadsheet_parent) {
 

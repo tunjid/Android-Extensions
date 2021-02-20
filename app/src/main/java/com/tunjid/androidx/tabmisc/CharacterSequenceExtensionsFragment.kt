@@ -1,4 +1,4 @@
-package com.tunjid.androidx.fragments
+package com.tunjid.androidx.tabmisc
 
 import android.graphics.Color
 import android.graphics.Typeface
@@ -16,9 +16,9 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.text.*
 import com.tunjid.androidx.isDarkTheme
+import com.tunjid.androidx.tabnav.routing.routeName
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.InsetFlags
-import com.tunjid.androidx.viewmodels.routeName
 
 /**
  * Fragment showing the [CharSequence] extension functions

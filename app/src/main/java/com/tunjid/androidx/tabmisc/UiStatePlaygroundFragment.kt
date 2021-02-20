@@ -1,4 +1,4 @@
-package com.tunjid.androidx.fragments
+package com.tunjid.androidx.tabmisc
 
 import android.content.Context
 import android.graphics.Color

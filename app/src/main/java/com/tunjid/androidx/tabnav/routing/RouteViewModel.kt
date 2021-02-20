@@ -1,4 +1,4 @@
-package com.tunjid.androidx.viewmodels
+package com.tunjid.androidx.tabnav.routing
 
 import android.app.Application
 import androidx.annotation.IdRes
@@ -7,8 +7,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.AndroidViewModel
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.text.italic
-import com.tunjid.androidx.fragments.*
-import com.tunjid.androidx.model.RouteItem
+import com.tunjid.androidx.tabmisc.*
+import com.tunjid.androidx.tabnav.RouteItem
 import com.tunjid.androidx.tabcomms.ble.BleScanFragment
 import com.tunjid.androidx.tabcomms.nsd.NsdScanFragment
 import com.tunjid.androidx.tablists.doggo.DoggoListFragment
@@ -17,6 +17,8 @@ import com.tunjid.androidx.tablists.tables.SpreadSheetParentFragment
 import com.tunjid.androidx.tablists.tables.StandingsFragment
 import com.tunjid.androidx.tablists.tiles.EndlessTilesFragment
 import com.tunjid.androidx.tablists.tiles.ShiftingTilesFragment
+import com.tunjid.androidx.tabnav.navigator.IndependentStacksFragment
+import com.tunjid.androidx.tabnav.navigator.MultipleStacksFragment
 import kotlin.random.Random
 
 class RouteViewModel(application: Application) : AndroidViewModel(application) {

@@ -22,7 +22,7 @@ import com.tunjid.androidx.viewholders.bind
 import com.tunjid.androidx.viewholders.tile
 import com.tunjid.androidx.viewholders.tileViewHolder
 import com.tunjid.androidx.viewholders.unbind
-import com.tunjid.androidx.viewmodels.routeName
+import com.tunjid.androidx.tabnav.routing.routeName
 
 class ShiftingTilesFragment : Fragment(R.layout.fragment_route) {
 

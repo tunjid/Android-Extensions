@@ -1,4 +1,4 @@
-package com.tunjid.androidx.activities
+package com.tunjid.androidx
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,13 +6,12 @@ import android.view.View
 import android.view.WindowInsets
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
-import com.tunjid.androidx.R
 import com.tunjid.androidx.core.delegates.activityIntent
 import com.tunjid.androidx.databinding.ActivityMainBinding
-import com.tunjid.androidx.fragments.RouteFragment
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.multiStackNavigationController
+import com.tunjid.androidx.tabnav.routing.RouteFragment
 import com.tunjid.androidx.uidrivers.GlobalUiDriver
 import com.tunjid.androidx.uidrivers.GlobalUiHost
 import com.tunjid.androidx.uidrivers.materialDepthAxisTransition

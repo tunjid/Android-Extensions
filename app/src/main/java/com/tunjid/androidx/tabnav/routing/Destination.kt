@@ -1,4 +1,4 @@
-package com.tunjid.androidx.model
+package com.tunjid.androidx.tabnav
 
 import android.os.Parcel
 import android.os.Parcelable

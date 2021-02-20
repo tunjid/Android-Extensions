@@ -1,4 +1,4 @@
-package com.tunjid.androidx.fragments
+package com.tunjid.androidx.tabnav.navigator
 
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -38,12 +38,11 @@ import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.navigation.addOnBackPressedCallback
 import com.tunjid.androidx.navigation.childMultiStackNavigationController
+import com.tunjid.androidx.tabnav.routing.routeName
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.materialDepthAxisTransition
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.InsetFlags
-import com.tunjid.androidx.viewmodels.routeName
-
 
 class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
 
@@ -163,7 +162,11 @@ class MultipleStackChildFragment : Fragment(), Navigator.TagProvider {
     var name: String by fragmentArgs()
     var depth: Int by fragmentArgs()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = TextView(inflater.context).apply {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View = TextView(inflater.context).apply {
         text = resources.getString(R.string.triple_line_format).formatSpanned(
                 name,
                 resources.getQuantityString(R.plurals.stack_depth, depth, depth).scale(0.6F),

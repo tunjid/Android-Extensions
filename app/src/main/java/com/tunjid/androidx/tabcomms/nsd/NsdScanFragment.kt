@@ -29,7 +29,7 @@ import com.tunjid.androidx.tabcomms.nsd.Input
 import com.tunjid.androidx.tabcomms.nsd.NSDState
 import com.tunjid.androidx.tabcomms.nsd.NsdItem
 import com.tunjid.androidx.tabcomms.nsd.NsdViewModel
-import com.tunjid.androidx.viewmodels.routeName
+import com.tunjid.androidx.tabnav.routing.routeName
 
 /**
  * A [Fragment] listing supported NSD servers

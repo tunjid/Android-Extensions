@@ -1,4 +1,4 @@
-package com.tunjid.androidx.fragments
+package com.tunjid.androidx.tabnav.routing
 
 import android.annotation.SuppressLint
 import android.graphics.Color
@@ -26,8 +26,12 @@ import com.tunjid.androidx.core.graphics.drawable.withTint
 import com.tunjid.androidx.core.graphics.drawable.withTintMode
 import com.tunjid.androidx.databinding.FragmentRouteBinding
 import com.tunjid.androidx.databinding.ViewholderRouteBinding
+import com.tunjid.androidx.tabmisc.CharacterSequenceExtensionsFragment
+import com.tunjid.androidx.tabmisc.FabTransformationsFragment
+import com.tunjid.androidx.tabmisc.HardServiceConnectionFragment
+import com.tunjid.androidx.tabmisc.SpringAnimationFragment
+import com.tunjid.androidx.tabmisc.UiStatePlaygroundFragment
 import com.tunjid.androidx.isDarkTheme
-import com.tunjid.androidx.model.RouteItem
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.recyclerview.adapterOf
@@ -43,11 +47,12 @@ import com.tunjid.androidx.tablists.tables.SpreadSheetParentFragment
 import com.tunjid.androidx.tablists.tables.StandingsFragment
 import com.tunjid.androidx.tablists.tiles.EndlessTilesFragment
 import com.tunjid.androidx.tablists.tiles.ShiftingTilesFragment
+import com.tunjid.androidx.tabnav.RouteItem
+import com.tunjid.androidx.tabnav.navigator.IndependentStacksFragment
+import com.tunjid.androidx.tabnav.navigator.MultipleStacksFragment
 import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.viewmodels.RouteViewModel
-import com.tunjid.androidx.viewmodels.routeName
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 
 class RouteFragment : Fragment(R.layout.fragment_route) {
