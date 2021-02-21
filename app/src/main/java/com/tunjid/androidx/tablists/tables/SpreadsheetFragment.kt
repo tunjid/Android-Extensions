@@ -15,9 +15,9 @@ import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.recyclerview.multiscroll.CellSizer
 import com.tunjid.androidx.recyclerview.multiscroll.DynamicCellSizer
 import com.tunjid.androidx.recyclerview.multiscroll.StaticCellSizer
+import com.tunjid.androidx.tabnav.routing.routeName
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.tabnav.routing.routeName
 
 class SpreadSheetParentFragment : Fragment(R.layout.fragment_spreadsheet_parent) {
 
@@ -38,15 +38,14 @@ class SpreadSheetParentFragment : Fragment(R.layout.fragment_spreadsheet_parent)
             override fun getItemCount(): Int = 2
 
             override fun createFragment(position: Int): Fragment =
-                if (position == 0) SpreadsheetFragment.newInstance(true)
-                else SpreadsheetFragment.newInstance(false)
+                SpreadsheetFragment.newInstance(isDynamic = position != 0)
         }
 
         viewPager.isUserInputEnabled = false
         viewPager.adapter = pagerAdapter
 
         TabLayoutMediator(view.findViewById(R.id.tabs), viewPager) { tab, position ->
-            tab.text = context?.getString(if (position == 0) R.string.dynamic_cells else R.string.static_cells)
+            tab.text = context?.getString(if (position != 0) R.string.dynamic_cells else R.string.static_cells)
         }.attach()
     }
 
@@ -79,7 +78,8 @@ class SpreadsheetFragment : Fragment(R.layout.fragment_spreadsheet_child) {
     }
 
     private fun staticSizeAt(position: Int) = requireContext().resources.getDimensionPixelSize(when (position) {
-        0, 1, 3 -> R.dimen.septuple_margin
+        0 -> R.dimen.triple_margin
+        in 1..3 -> R.dimen.septuple_margin
         else -> R.dimen.sexdecuple_margin
     })
 

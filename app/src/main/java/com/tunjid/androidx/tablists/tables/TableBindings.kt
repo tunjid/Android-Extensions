@@ -156,7 +156,6 @@ private fun rowAdapter(
     initialItems = row.cells,
     viewHolderCreator = { viewGroup, viewType ->
         when (viewType) {
-            Cell.Stat::class.hashCode() -> viewGroup.viewHolderFrom(ViewholderSpreadsheetCellBinding::inflate)
             Cell.Text::class.hashCode() -> viewGroup.viewHolderFrom(ViewholderSpreadsheetCellBinding::inflate)
             Cell.Header::class.hashCode() -> headerViewHolder(viewGroup, onCellClicked)
             Cell.Image::class.hashCode() -> viewGroup.viewHolderFrom(ViewholderBadgeBinding::inflate)
@@ -165,7 +164,6 @@ private fun rowAdapter(
     },
     viewHolderBinder = { holder, item, _ ->
         when (item) {
-            is Cell.Stat -> holder.typed<ViewholderSpreadsheetCellBinding>().bind(item)
             is Cell.Text -> holder.typed<ViewholderSpreadsheetCellBinding>().bind(item)
             is Cell.Header -> holder.typed<ViewholderHeaderCellBinding>().bind(item)
             is Cell.Image -> holder.typed<ViewholderBadgeBinding>().apply {
@@ -213,12 +211,12 @@ private fun headerViewHolder(
 
 private fun BindingViewHolder<ViewholderHeaderCellBinding>.bind(cell: Cell.Header) {
     this.cell = cell
-    val isSelectedHeader = when (cell.column) {
+    val isSelectedHeader = when (cell.content) {
         cell.selectedColumn -> cell.ascending
         else -> null
     }
 
-    binding.cell.text = cell.content
+    binding.cell.text = cell.text
     binding.cell.textAlignment = cell.textAlignment.textViewAlignment
     binding.up.visibility = if (isSelectedHeader == true) View.VISIBLE else View.INVISIBLE
     binding.down.visibility = if (isSelectedHeader == false) View.VISIBLE else View.INVISIBLE
@@ -229,7 +227,7 @@ private fun BindingViewHolder<ViewholderHeaderCellBinding>.bind(cell: Cell.Heade
 }
 
 private fun BindingViewHolder<ViewholderSpreadsheetCellBinding>.bind(item: Cell) {
-    binding.cell.text = item.content
+    binding.cell.text = item.text
     binding.cell.textAlignment = item.textAlignment.textViewAlignment
 }
 

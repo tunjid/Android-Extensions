@@ -24,7 +24,7 @@ class SpreadsheetViewModel(application: Application) : AndroidViewModel(applicat
         .flatMapPublisher { personnel ->
             processor.scan(personnel) { next, header ->
                 next.copy(sortHeader = next.sortHeader.copy(
-                    selectedColumn = header.column,
+                    selectedColumn = header.content,
                     ascending = header.ascending
                 ))
             }
@@ -50,8 +50,8 @@ class SpreadsheetViewModel(application: Application) : AndroidViewModel(applicat
 data class Personnel(
     private val personnel: List<Array<String>>,
     override val sortHeader: Cell.Header = Cell.Header(
-        column = PersonnelColumn(personnel.first().first()),
-        selectedColumn = PersonnelColumn(personnel.first().first()),
+        content = personnel.first().first().toTitledDiffable(),
+        selectedColumn = personnel.first().first().toTitledDiffable(),
         ascending = true
     ),
 ) : Table {
@@ -72,11 +72,11 @@ data class Personnel(
     }
 
     override val header: Row = Row.Header(
-        subject = Id(0),
+        content = Id(0),
         ascending = sortHeader.ascending,
         cells = personnel.first().map { column ->
             Cell.Header(
-                column = PersonnelColumn(column),
+                content = column.toTitledDiffable(),
                 ascending = sortHeader.ascending,
                 selectedColumn = sortHeader.selectedColumn,
                 alignment = TextAlignment.Start
@@ -88,10 +88,10 @@ data class Personnel(
         .sortedWith(comparator)
         .map { columns ->
             Row.Item(
-                subject = Id(id = columns.first().toInt()),
+                content = Id(id = columns.first().toInt()),
                 cells = columns.map { text ->
                     Cell.Text(
-                        text = text,
+                        content = text.toTitledDiffable(),
                         alignment = TextAlignment.Start
                     )
                 }
@@ -106,18 +106,7 @@ data class Personnel(
     }
 }
 
-
-private data class Id(val id: Int) : RowSubject {
+private data class Id(val id: Int) : TitledDiffable {
     override val title: CharSequence get() = id.toString()
     override val diffId: String get() = id.toString()
-}
-
-data class PersonnelColumn(
-    val columnName: String,
-) : RowSubject {
-    override val title: CharSequence
-        get() = columnName
-    override val diffId: String
-        get() = columnName
-
 }

@@ -53,7 +53,6 @@ class StandingsFragment : Fragment(R.layout.fragment_standings) {
     }
 
     private fun onCellClicked(cell: Cell) = when (cell) {
-        is Cell.Stat -> Unit
         is Cell.Text -> Unit
         is Cell.Image -> Unit
         is Cell.Header -> viewModel.accept(StandingInput.Sort(cell.copy(ascending = !cell.ascending)))

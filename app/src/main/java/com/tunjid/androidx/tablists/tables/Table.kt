@@ -8,7 +8,7 @@ enum class TextAlignment(val textViewAlignment: Int) {
     Center(TextView.TEXT_ALIGNMENT_CENTER);
 }
 
-interface RowSubject : Diffable {
+interface TitledDiffable : Diffable {
     val title: CharSequence
 }
 
@@ -23,39 +23,33 @@ sealed class Row : Diffable {
     abstract val cells: List<Cell>
 
     data class Item(
-        val subject: RowSubject,
+        val content: TitledDiffable,
         override val cells: List<Cell>
     ) : Row()
 
     data class Header(
-        val subject: RowSubject,
+        val content: TitledDiffable,
         val ascending: Boolean,
         override val cells: List<Cell>
     ) : Row()
 
     override val diffId: String
         get() = when (this) {
-            is Item -> subject.diffId
+            is Item -> content.diffId
             is Header -> "Header"
         }
 }
 
 sealed class Cell(val inHeader: Boolean) : Diffable {
 
-    data class Stat(
-        val type: StatType,
-        val value: Int
-    ) : Cell(inHeader = false)
-
     data class Text(
-        val text: CharSequence,
-        val id: String = text.toString(),
+        val content: TitledDiffable,
         val alignment: TextAlignment = TextAlignment.Center
     ) : Cell(inHeader = false)
 
     data class Header(
-        val column: RowSubject,
-        val selectedColumn: RowSubject,
+        val content: TitledDiffable,
+        val selectedColumn: TitledDiffable,
         val ascending: Boolean = true,
         val alignment: TextAlignment = TextAlignment.Center
     ) : Cell(inHeader = true)
@@ -66,25 +60,29 @@ sealed class Cell(val inHeader: Boolean) : Diffable {
 
     override val diffId: String
         get() = when (this) {
-            is Stat -> type.letter
-            is Text -> id
-            is Header -> column.diffId
+            is Text -> content.diffId
+            is Header -> content.diffId
             is Image -> drawableRes.toString()
         }
 
-    val content
+    val text
         get() = when (this) {
-            is Stat -> value.toString()
-            is Text -> text
-            is Header -> column.title
+            is Text -> content.title
+            is Header -> content.title
             is Image -> ""
         }
 
     val textAlignment
         get() = when (this) {
-            is Stat -> TextAlignment.Center
             is Text -> alignment
             is Header -> alignment
             is Image -> TextAlignment.Center
         }
+}
+
+fun String.toTitledDiffable() = object : TitledDiffable {
+    override val title: CharSequence
+        get() = this@toTitledDiffable
+    override val diffId: String
+        get() = this@toTitledDiffable
 }

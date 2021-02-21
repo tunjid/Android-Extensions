@@ -15,7 +15,7 @@ class StandingsViewModel(application: Application) : AndroidViewModel(applicatio
         when (input) {
             is StandingInput.Filter -> standings.copy(filter = input.filter)
             is StandingInput.Sort -> standings.copy(sortHeader = standings.sortHeader.copy(
-                selectedColumn = input.statHeader.column,
+                selectedColumn = input.statHeader.content,
                 ascending = input.statHeader.ascending
             ))
         }
@@ -37,7 +37,7 @@ data class Game(val teamA: Team, val teamB: Team) {
 
 data class Standings(
     override val sortHeader: Cell.Header = Cell.Header(
-        column = StatType.Points,
+        content = StatType.Points,
         selectedColumn = StatType.Points,
         ascending = true
     ),
@@ -45,13 +45,13 @@ data class Standings(
     private val table: Map<Team, List<Game>> = simulateTable()
 ) : Table {
 
-    private val comparator = compareBy<Pair<Team, List<Cell.Stat>>> { (_, cells) ->
-        val comparison = cells.first { it.type == sortHeader.column }.value
+    private val comparator = compareBy<Pair<Team, List<Stat>>> { (_, cells) ->
+        val comparison = cells.first { it.type == sortHeader.content }.value
         if (sortHeader.ascending) comparison else -comparison
     }
 
     override val header = Row.Header(
-        subject = sortHeader.selectedColumn,
+        content = sortHeader.selectedColumn,
         ascending = sortHeader.ascending,
         cells = standingHeader(
             selectedType = sortHeader.selectedColumn,
@@ -62,24 +62,22 @@ data class Standings(
     override val rows: List<Row> = listOf(header) + when (filter) {
         GameFilter.All -> table.entries
             .map { (team, games) -> team to games }
-            .map(Pair<Team, List<Game>>::row)
         GameFilter.Home -> table.entries
             .map { (team, games) -> team to games.filter(team::isHome) }
-            .map(Pair<Team, List<Game>>::row)
         GameFilter.Away -> table.entries
             .map { (team, games) -> team to games.filter(team::isAway) }
-            .map(Pair<Team, List<Game>>::row)
     }
+        .map(Pair<Team, List<Game>>::row)
         .sortedWith(comparator)
         .mapIndexed { index, (team, stats) ->
-            Row.Item(subject = team, cells = listOf(
-                Cell.Text(text = index.plus(1).toString()),
+            Row.Item(content = team, cells = listOf(
+                Cell.Text(content = index.plus(1).toString().toTitledDiffable()),
                 Cell.Image(team.badge),
                 Cell.Text(
-                    text = team.title,
+                    content = team,
                     alignment = TextAlignment.Start
                 ),
-            ) + stats)
+            ) + stats.map(Cell::Text))
         }
 
     override val sidebar = rows.map {
@@ -96,7 +94,7 @@ enum class GameFilter {
     Away
 }
 
-enum class Team(val badge: Int) : RowSubject {
+enum class Team(val badge: Int) : TitledDiffable {
     Arsenal(R.drawable.arsenal),
     AstonVilla(R.drawable.aston_villa),
     Brighton(R.drawable.brighton),
@@ -122,7 +120,7 @@ enum class Team(val badge: Int) : RowSubject {
     override val diffId: String get() = name
 }
 
-enum class StatType(val letter: String) : RowSubject {
+enum class StatType(private val letter: String) : TitledDiffable {
     Points("PTS"),
     Played("P"),
     Wins("W"),
@@ -136,11 +134,19 @@ enum class StatType(val letter: String) : RowSubject {
     override val diffId: String get() = name
 }
 
-private fun standingHeader(selectedType: RowSubject, ascending: Boolean) = listOf(
-    Cell.Text(text = "#"),
-    Cell.Text(text = ""),
-    Cell.Text(text = "Team", alignment = TextAlignment.Start),
-) + StatType.values().map { Cell.Header(column = it, selectedColumn = selectedType, ascending = ascending) }
+private data class Stat(
+    val type: StatType,
+    val value: Int
+) : TitledDiffable {
+    override val title: CharSequence get() = value.toString()
+    override val diffId: String get() = type.diffId
+}
+
+private fun standingHeader(selectedType: TitledDiffable, ascending: Boolean) = listOf(
+    Cell.Text(content = "#".toTitledDiffable()),
+    Cell.Text(content = "".toTitledDiffable()),
+    Cell.Text(content = "Team".toTitledDiffable(), alignment = TextAlignment.Start),
+) + StatType.values().map { Cell.Header(content = it, selectedColumn = selectedType, ascending = ascending) }
 
 private fun simulateTable(): Map<Team, List<Game>> =
     Team.values()
@@ -153,7 +159,7 @@ private fun simulateTable(): Map<Team, List<Game>> =
             map
         }
 
-private fun Pair<Team, List<Game>>.row(): Pair<Team, List<Cell.Stat>> {
+private fun Pair<Team, List<Game>>.row(): Pair<Team, List<Stat>> {
     val (team, games) = this
     val wins = games.count(team::isWinner)
     val draws = games.count(Game::isDraw)
@@ -161,15 +167,16 @@ private fun Pair<Team, List<Game>>.row(): Pair<Team, List<Cell.Stat>> {
     val goalsAgainst = games.map { it.scores.getValue(team.opponent(it)) }.sum()
 
     return team to listOf(
-        Cell.Stat(type = StatType.Played, value = games.size),
-        Cell.Stat(type = StatType.Wins, value = wins),
-        Cell.Stat(type = StatType.Draws, value = draws),
-        Cell.Stat(type = StatType.Losses, value = games.count(team::isLoser)),
-        Cell.Stat(type = StatType.GoalsFor, value = goalsFor),
-        Cell.Stat(type = StatType.GoalsAgainst, value = goalsAgainst),
-        Cell.Stat(type = StatType.GoalDifference, value = goalsFor - goalsAgainst),
-        Cell.Stat(type = StatType.Points, value = wins * 3 + draws * 2),
-    ).sortedBy(Cell.Stat::type)
+        Stat(type = StatType.Played, value = games.size),
+        Stat(type = StatType.Wins, value = wins),
+        Stat(type = StatType.Draws, value = draws),
+        Stat(type = StatType.Losses, value = games.count(team::isLoser)),
+        Stat(type = StatType.GoalsFor, value = goalsFor),
+        Stat(type = StatType.GoalsAgainst, value = goalsAgainst),
+        Stat(type = StatType.GoalDifference, value = goalsFor - goalsAgainst),
+        Stat(type = StatType.Points, value = wins * 3 + draws * 2),
+    )
+        .sortedBy(Stat::type)
 }
 
 private fun Game.isDraw() = homeScore == awayScore
