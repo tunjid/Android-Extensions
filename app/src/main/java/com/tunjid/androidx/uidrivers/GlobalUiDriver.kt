@@ -8,6 +8,7 @@ import android.os.Build
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.view.WindowManager
 import android.widget.EditText
 import androidx.annotation.ColorInt
@@ -122,10 +123,7 @@ class GlobalUiDriver(
         }
 
     init {
-        host.window.decorView.systemUiVisibility = FULL_CONTROL_SYSTEM_UI_FLAGS
-        host.window.navigationBarColor = host.colorAt(R.color.transparent)
-        host.window.statusBarColor = host.colorAt(R.color.transparent)
-
+        host.window.assumeControl()
         binding.root.setOnApplyWindowInsetsListener(rootInsetsListener)
 
         binding.toolbar.setNavigationOnClickListener { navigator.pop() }
@@ -157,6 +155,7 @@ class GlobalUiDriver(
         UiState::lightStatusBar.distinct onChanged this::setLightStatusBar
         UiState::fragmentContainerState.distinct onChanged this::updateFragmentContainer
         UiState::backgroundColor.distinct onChanged binding.contentRoot::animateBackground
+        UiState::isImmersive.distinct onChanged this::updateImmersivity
 
         UiState::bottomNavPositionalState.distinct onChanged this::updateBottomNav
         UiState::snackbarPositionalState.distinct onChanged this::updateSnackbar
@@ -236,6 +235,21 @@ class GlobalUiDriver(
         }
     }
 
+    private fun updateImmersivity(isImmersive: Boolean) = uiFlagTweak { systemUiFlags ->
+        when (isImmersive) {
+            true -> (systemUiFlags
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                )
+            false -> (systemUiFlags
+                and View.SYSTEM_UI_FLAG_FULLSCREEN.inv()
+                and View.SYSTEM_UI_FLAG_HIDE_NAVIGATION.inv()
+                and View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY.inv()
+                )
+        }
+    }
+
     private fun setLightStatusBar(lightStatusBar: Boolean) = when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> uiFlagTweak { flags ->
             if (lightStatusBar) flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
@@ -267,11 +281,6 @@ class GlobalUiDriver(
 
     companion object {
         const val ANIMATION_DURATION = 300
-        private const val FULL_CONTROL_SYSTEM_UI_FLAGS =
-            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
     }
 
     /**
@@ -334,3 +343,20 @@ private class UISizes(host: FragmentActivity) {
 }
 
 private infix fun Int.countIf(condition: Boolean) = if (condition) this else 0
+
+private fun Window.assumeControl() {
+    val context = decorView.context
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        val windowAttributes = attributes
+        windowAttributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+        attributes = windowAttributes
+    }
+    decorView.systemUiVisibility = FULL_CONTROL_SYSTEM_UI_FLAGS
+    navigationBarColor = context.colorAt(R.color.transparent)
+    statusBarColor = context.colorAt(R.color.transparent)
+}
+
+private const val FULL_CONTROL_SYSTEM_UI_FLAGS =
+    View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN

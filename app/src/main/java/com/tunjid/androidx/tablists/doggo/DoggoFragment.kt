@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentImageDetailBinding
+import com.tunjid.androidx.uidrivers.uiState
+import com.tunjid.androidx.uidrivers.updatePartial
 
 class DoggoFragment : Fragment(R.layout.fragment_image_detail) {
 
@@ -17,6 +19,7 @@ class DoggoFragment : Fragment(R.layout.fragment_image_detail) {
         super.onViewCreated(view, savedInstanceState)
 
         view.tag = doggo
+        view.setOnClickListener { ::uiState.updatePartial { copy(isImmersive = !isImmersive) } }
 
         val binding = FragmentImageDetailBinding.bind(view)
         object : DoggoBinder {
