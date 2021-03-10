@@ -5,7 +5,7 @@ dependencies {
     implementation parent.ext.appCompat
     implementation parent.ext.supportAnnotations
 
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
 
     androidTestImplementation project(':test')
     androidTestImplementation 'androidx.test:runner:1.3.0'

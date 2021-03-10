@@ -12,7 +12,6 @@ import androidx.dynamicanimation.animation.SpringAnimation.TRANSLATION_Y
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
-import com.tunjid.androidx.modifiableForEach
 import com.tunjid.androidx.view.util.spring
 
 /**
@@ -89,18 +88,18 @@ open class SpringItemAnimator @JvmOverloads constructor(
     }
 
     override fun endAnimation(holder: RecyclerView.ViewHolder) {
-        if (pendingAdds.contains(holder)) endPendingAdd(holder)
-        if (runningAdds.contains(holder)) endRunningAdd(holder)
-        if (pendingMoves.contains(holder)) endPendingMove(holder)
-        if (runningMoves.contains(holder)) endRunningMove(holder)
+        pendingAdds.singletonIterator(holder).dropAfter(::endPendingAdd)
+        runningAdds.singletonIterator(holder).dropAfter(::endRunningAdd)
+        pendingMoves.singletonIterator(holder).dropAfter(::endPendingMove)
+        runningMoves.singletonIterator(holder).dropAfter(::endRunningMove)
         super.endAnimation(holder)
     }
 
     override fun endAnimations() {
-        pendingAdds.modifiableForEach(::endPendingAdd)
-        runningAdds.modifiableForEach(::endRunningAdd)
-        pendingMoves.modifiableForEach(::endPendingMove)
-        runningMoves.modifiableForEach(::endRunningMove)
+        pendingAdds.iterator().dropAfter(::endPendingAdd)
+        runningAdds.iterator().dropAfter(::endRunningAdd)
+        pendingMoves.iterator().dropAfter(::endPendingMove)
+        runningMoves.iterator().dropAfter(::endRunningMove)
         super.endAnimations()
     }
 
@@ -150,26 +149,22 @@ open class SpringItemAnimator @JvmOverloads constructor(
     private fun endPendingAdd(holder: RecyclerView.ViewHolder) {
         clearAnimatedValues(holder.itemView)
         dispatchAddFinished(holder)
-        pendingAdds -= holder
     }
 
     private fun endRunningAdd(holder: RecyclerView.ViewHolder) {
         holder.itemView.customSpring(ALPHA).cancel()
         holder.itemView.customSpring(TRANSLATION_X).cancel()
         holder.itemView.customSpring(TRANSLATION_Y).cancel()
-        runningAdds -= holder
     }
 
     private fun endPendingMove(holder: RecyclerView.ViewHolder) {
         clearAnimatedValues(holder.itemView)
         dispatchMoveFinished(holder)
-        pendingMoves -= holder
     }
 
     private fun endRunningMove(holder: RecyclerView.ViewHolder) {
         holder.itemView.customSpring(TRANSLATION_X).cancel()
         holder.itemView.customSpring(TRANSLATION_Y).cancel()
-        runningMoves -= holder
     }
 
     private fun dispatchFinishedWhenDone() {
@@ -229,3 +224,20 @@ fun listenForAllSpringsEnd(
         onEnd: (Boolean) -> Unit,
         vararg springs: SpringAnimation
 ) = MultiSpringEndListener(onEnd, *springs)
+
+private fun <T> MutableIterator<T>.dropAfter(action: (T) -> Unit) {
+    val iterator = this
+    while (iterator.hasNext()) {
+        val next = iterator.next()
+        action(next)
+        iterator.remove()
+    }
+}
+
+private fun <T> MutableList<T>.singletonIterator(item: T): MutableIterator<T> {
+    val index = indexOf(item)
+    return when(index) {
+        -1 -> mutableListOf()
+        else -> subList(index, index + 1)
+    }.iterator()
+}

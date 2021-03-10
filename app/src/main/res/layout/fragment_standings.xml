@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/tabs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        app:checkedButton="@+id/first"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/all"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/all"
+            android:textAllCaps="false"
+            android:textSize="@dimen/regular_text"
+            app:strokeColor="@color/white_75" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/home"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/home"
+            android:textAllCaps="false"
+            android:textSize="@dimen/regular_text"
+            app:strokeColor="@color/white_75" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/away"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/away"
+            android:textAllCaps="false"
+            android:textSize="@dimen/regular_text"
+            app:strokeColor="@color/white_75" />
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <include
+        android:id="@+id/table_container"
+        layout="@layout/viewgroup_table"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="56dp" />
+</FrameLayout>

@@ -25,9 +25,6 @@ fun <T, R> LiveData<T>.mapDistinct(mapper: (T) -> R): LiveData<R> =
 
 fun <T> LiveData<T>.distinctUntilChanged() = Transformations.distinctUntilChanged(this)
 
-inline fun <T> Iterable<T>.modifiableForEach(action: (T) -> Unit) =
-    iterator().run { while (hasNext()) next().apply(action); }
-
 fun MenuItem.setLoading(@ColorInt tint: Int): MenuItem? = setActionView(R.layout.actionbar_indeterminate_progress).also {
     val progressBar = it?.actionView as? ProgressBar ?: return@also
     progressBar.apply { indeterminateDrawable = indeterminateDrawable.withTint(tint) }

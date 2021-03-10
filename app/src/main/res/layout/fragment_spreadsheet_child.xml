@@ -2,11 +2,11 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginTop="@dimen/actionbar_height">
+    android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/main_rows"
+    <include
+        android:id="@+id/table_container"
+        layout="@layout/viewgroup_table"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

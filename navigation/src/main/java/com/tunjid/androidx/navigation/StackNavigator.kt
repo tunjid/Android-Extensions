@@ -7,6 +7,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -113,7 +115,13 @@ class StackNavigator constructor(
     override fun clear(upToTag: String?, includeMatch: Boolean) {
         // Empty string will be treated as a no-op internally
         val tag = upToTag?.toEntry ?: baskStackEntries.firstOrNull()?.name ?: ""
-        fragmentManager.popBackStack(tag, if (includeMatch) FragmentManager.POP_BACK_STACK_INCLUSIVE else 0)
+        val flags = if (includeMatch) FragmentManager.POP_BACK_STACK_INCLUSIVE else 0
+        if (fragmentManager.isStateSaved) when(current?.lifecycle?.currentState) {
+            // Reattaching, defer call to clear
+            Lifecycle.State.CREATED -> current?.lifecycleScope?.launchWhenResumed { clear(upToTag, includeMatch) }
+            else -> Log.d("StackNavigator", "Ignoring out of scope clear call")
+        }
+        else fragmentManager.popBackStack(tag, flags)
     }
 
     override fun find(tag: String): Fragment? = fragmentManager.findFragmentByTag(tag)

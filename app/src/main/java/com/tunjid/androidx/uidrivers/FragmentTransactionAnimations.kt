@@ -25,11 +25,11 @@ fun MultiStackNavigator.materialFadeThroughTransition(): FragmentTransaction.(In
     val rootFragmentManager = (current ?: previous)?.activity?.supportFragmentManager ?: return@fade
 
     rootFragmentManager.findFragmentByTag(activeIndex.toString())?.apply {
-        enterTransition = null
+        enterTransition = MaterialFadeThrough().setDuration(300)
         if (exitTransition !is MaterialFadeThrough) exitTransition = MaterialFadeThrough().setDuration(300)
     }
     rootFragmentManager.findFragmentByTag(index.toString())?.apply {
-        exitTransition = null
+        exitTransition = MaterialFadeThrough().setDuration(300)
         if (enterTransition !is MaterialFadeThrough) enterTransition = MaterialFadeThrough().setDuration(300)
     }
 }

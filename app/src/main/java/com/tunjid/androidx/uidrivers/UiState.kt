@@ -37,6 +37,7 @@ data class UiState(
         @field:ColorInt
         @get:ColorInt
         val navBarColor: Int = Color.BLACK,
+        val isImmersive: Boolean = false,
         val lightStatusBar: Boolean = false,
         val showsBottomNav: Boolean? = null,
         val insetFlags: InsetDescriptor = InsetFlags.ALL,
