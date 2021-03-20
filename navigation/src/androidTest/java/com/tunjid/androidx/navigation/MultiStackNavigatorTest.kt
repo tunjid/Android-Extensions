@@ -31,27 +31,18 @@ val TAGS = listOf(ROOT_TAG_0, ROOT_TAG_1, ROOT_TAG_2)
 class MultiStackNavigatorTest {
 
     private lateinit var activity: NavigationTestActivity
-    private lateinit var multiStackNavigator: MultiStackNavigator
 
     @Rule
     @JvmField
     var activityRule: ActivityTestRule<*> = ActivityTestRule(NavigationTestActivity::class.java)
 
+    private val instrumentation get() = InstrumentationRegistry.getInstrumentation()
+
     @Before
     fun setUp() {
         activity = activityRule.activity as NavigationTestActivity
-        InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            multiStackNavigator = MultiStackNavigator(
-                3,
-                savedStateFor(activity, "test"),
-                activity.supportFragmentManager,
-                activity.containerId
-            ) { NavigationTestFragment.newInstance(TAGS[it]) }
-        }
 
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-
-        assertEquals(listOf(0, 1, 2).map(Int::toString), multiStackNavigator.stackFragments.map(Fragment::getTag))
+        instrumentation.waitForIdleSync()
     }
 
     @After
@@ -60,17 +51,25 @@ class MultiStackNavigatorTest {
     }
 
     @Test
+    fun testRootFragmentCreation() {
+        val multiStackNavigator = multiStackNavigator(MultiStackNavigator.BackStackType.UniqueEntries)
+        assertEquals(listOf(0, 1, 2).map(Int::toString), multiStackNavigator.stackFragments.map(Fragment::getTag))
+    }
+
+    @Test
     fun testVisitation() {
+        val multiStackNavigator = multiStackNavigator(MultiStackNavigator.BackStackType.UniqueEntries)
+
         multiStackNavigator.waitForIdleSyncAfter { show(0) }.also {
-            assertNavigatorIndices(ROOT_TAG_0, null, null)
+            multiStackNavigator.assertNavigatorIndices(ROOT_TAG_0, null, null)
         }
 
         multiStackNavigator.waitForIdleSyncAfter { show(2) }.also {
-            assertNavigatorIndices(ROOT_TAG_0, null, ROOT_TAG_2)
+            multiStackNavigator.assertNavigatorIndices(ROOT_TAG_0, null, ROOT_TAG_2)
         }
 
         multiStackNavigator.waitForIdleSyncAfter { show(1) }.also {
-            assertNavigatorIndices(ROOT_TAG_0, ROOT_TAG_1, ROOT_TAG_2)
+            multiStackNavigator.assertNavigatorIndices(ROOT_TAG_0, ROOT_TAG_1, ROOT_TAG_2)
             assertEquals(listOf(0, 2, 1), multiStackNavigator.stackVisitor.hosts().toList())
         }
 
@@ -89,48 +88,50 @@ class MultiStackNavigatorTest {
 
     @Test
     fun testIndependentStacks() {
+        val multiStackNavigator = multiStackNavigator(MultiStackNavigator.BackStackType.UniqueEntries)
+
         val testFragmentA = NavigationTestFragment.newInstance(TAG_A)
         val testFragmentB = NavigationTestFragment.newInstance(TAG_B)
         val testFragmentC = NavigationTestFragment.newInstance(TAG_C)
         val testFragmentD = NavigationTestFragment.newInstance(TAG_D)
 
         multiStackNavigator.waitForIdleSyncAfter { show(0) }.also {
-            assertNavigatorIndices(ROOT_TAG_0, null, null)
+            multiStackNavigator.assertNavigatorIndices(ROOT_TAG_0, null, null)
         }
 
         multiStackNavigator.waitForIdleSyncAfter { push(testFragmentA) }.also {
-            assertNavigatorIndices(TAG_A, null, null)
+            multiStackNavigator.assertNavigatorIndices(TAG_A, null, null)
             assertSame(testFragmentA, multiStackNavigator.find(TAG_A))
         }
 
         multiStackNavigator.waitForIdleSyncAfter { push(testFragmentB) }.also {
-            assertNavigatorIndices(TAG_B, null, null)
+            multiStackNavigator.assertNavigatorIndices(TAG_B, null, null)
             assertSame(testFragmentB, multiStackNavigator.find(TAG_B))
         }
 
         multiStackNavigator.waitForIdleSyncAfter { show(2) }.also {
-            assertNavigatorIndices(TAG_B, null, ROOT_TAG_2)
+            multiStackNavigator.assertNavigatorIndices(TAG_B, null, ROOT_TAG_2)
         }
 
         multiStackNavigator.waitForIdleSyncAfter { push(testFragmentC) }.also {
-            assertNavigatorIndices(TAG_B, null, TAG_C)
+            multiStackNavigator.assertNavigatorIndices(TAG_B, null, TAG_C)
             assertSame(testFragmentC, multiStackNavigator.find(TAG_C))
         }
 
         multiStackNavigator.waitForIdleSyncAfter { push(testFragmentD) }.also {
-            assertNavigatorIndices(TAG_B, null, TAG_D)
+            multiStackNavigator.assertNavigatorIndices(TAG_B, null, TAG_D)
             assertSame(testFragmentD, multiStackNavigator.find(TAG_D))
         }
 
         assertSame(testFragmentD, multiStackNavigator.current)
 
         multiStackNavigator.waitForIdleSyncAfter { show(0) }.also {
-            assertNavigatorIndices(TAG_B, null, TAG_D)
+            multiStackNavigator.assertNavigatorIndices(TAG_B, null, TAG_D)
             assertSame(testFragmentB, multiStackNavigator.current)
         }
 
         multiStackNavigator.waitForIdleSyncAfter { pop() }.also {
-            assertNavigatorIndices(TAG_A, null, TAG_D)
+            multiStackNavigator.assertNavigatorIndices(TAG_A, null, TAG_D)
             assertSame(testFragmentA, multiStackNavigator.current)
         }
 
@@ -139,44 +140,48 @@ class MultiStackNavigatorTest {
         }
 
         multiStackNavigator.waitForIdleSyncAfter { show(1) }.also {
-            assertNavigatorIndices(TAG_A, ROOT_TAG_1, TAG_D)
+            multiStackNavigator.assertNavigatorIndices(TAG_A, ROOT_TAG_1, TAG_D)
             assertEquals(ROOT_TAG_1, multiStackNavigator.current?.tag)
         }
     }
 
     @Test
     fun testPeekAcrossStacks() {
+        val multiStackNavigator = multiStackNavigator(MultiStackNavigator.BackStackType.UniqueEntries)
+
         val testFragmentA = NavigationTestFragment.newInstance(TAG_A)
         val testFragmentB = NavigationTestFragment.newInstance(TAG_B)
 
         multiStackNavigator.waitForIdleSyncAfter { show(0) }.also {
-            assertNavigatorIndices(ROOT_TAG_0, null, null)
+            multiStackNavigator.assertNavigatorIndices(ROOT_TAG_0, null, null)
         }
 
         multiStackNavigator.waitForIdleSyncAfter { push(testFragmentA) }.also {
-            assertNavigatorIndices(TAG_A, null, null)
+            multiStackNavigator.assertNavigatorIndices(TAG_A, null, null)
         }
 
         multiStackNavigator.waitForIdleSyncAfter { push(testFragmentB) }.also {
             assertSame(testFragmentA, multiStackNavigator.previous)
-            assertNavigatorIndices(TAG_B, null, null)
+            multiStackNavigator.assertNavigatorIndices(TAG_B, null, null)
         }
 
         multiStackNavigator.waitForIdleSyncAfter { show(1) }.also {
             assertSame(testFragmentB, multiStackNavigator.previous)
-            assertNavigatorIndices(TAG_B, ROOT_TAG_1, null)
+            multiStackNavigator.assertNavigatorIndices(TAG_B, ROOT_TAG_1, null)
         }
     }
 
     @Test
     fun testClear() {
+        val multiStackNavigator = multiStackNavigator(MultiStackNavigator.BackStackType.UniqueEntries)
+
         val initial = multiStackNavigator.current!!
         val initialTag = initial.tag
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync { multiStackNavigator.clearAll() }
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
 
-        assertNavigatorIndices(ROOT_TAG_0, null, null)
+        multiStackNavigator.assertNavigatorIndices(ROOT_TAG_0, null, null)
 
         val current = multiStackNavigator.current!!
         val currentTag = current.tag
@@ -197,14 +202,16 @@ class MultiStackNavigatorTest {
 
     @Test
     fun testClearIndex() {
+        val multiStackNavigator = multiStackNavigator(MultiStackNavigator.BackStackType.UniqueEntries)
+
         multiStackNavigator.waitForIdleSyncAfter { show(1) }.also {
-            assertNavigatorIndices(ROOT_TAG_0, ROOT_TAG_1, null)
+            multiStackNavigator.assertNavigatorIndices(ROOT_TAG_0, ROOT_TAG_1, null)
         }
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync { multiStackNavigator.clearAll() }
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
 
-        assertNavigatorIndices(ROOT_TAG_0, null, null)
+        multiStackNavigator.assertNavigatorIndices(ROOT_TAG_0, null, null)
         assertFalse(multiStackNavigator.stackFragments[0].isDetached)
         assertTrue(multiStackNavigator.stackFragments[1].isDetached)
         assertTrue(multiStackNavigator.stackFragments[2].isDetached)
@@ -213,7 +220,48 @@ class MultiStackNavigatorTest {
     }
 
     @Test
+    fun testBackStackTypeUnlimited() {
+        val multiStackNavigator = multiStackNavigator(MultiStackNavigator.BackStackType.Unlimited)
+
+        multiStackNavigator.waitForIdleSyncAfter { show(index = 1) }
+        multiStackNavigator.waitForIdleSyncAfter { show(index = 2) }
+        multiStackNavigator.waitForIdleSyncAfter { show(index = 1) }
+        multiStackNavigator.waitForIdleSyncAfter { show(index = 2) }
+
+        assertFalse(multiStackNavigator.stackFragments[2].isDetached)
+        assertEquals(listOf(0, 1, 2, 1, 2), multiStackNavigator.stackVisitor.hosts().toList())
+    }
+
+    @Test
+    fun testBackStackTypeRestricted() {
+        val multiStackNavigator = multiStackNavigator(MultiStackNavigator.BackStackType.Restricted(count = 2))
+
+        multiStackNavigator.waitForIdleSyncAfter { show(index = 1) }
+        multiStackNavigator.waitForIdleSyncAfter { show(index = 2) }
+        multiStackNavigator.waitForIdleSyncAfter { show(index = 1) }
+        multiStackNavigator.waitForIdleSyncAfter { show(index = 2) }
+
+        assertFalse(multiStackNavigator.stackFragments[2].isDetached)
+        assertEquals(listOf(1, 2), multiStackNavigator.stackVisitor.hosts().toList())
+    }
+
+    @Test
+    fun testBackStackTypeUnique() {
+        val multiStackNavigator = multiStackNavigator(MultiStackNavigator.BackStackType.UniqueEntries)
+
+        multiStackNavigator.waitForIdleSyncAfter { show(index = 1) }
+        multiStackNavigator.waitForIdleSyncAfter { show(index = 2) }
+        multiStackNavigator.waitForIdleSyncAfter { show(index = 1) }
+        multiStackNavigator.waitForIdleSyncAfter { show(index = 2) }
+
+        assertFalse(multiStackNavigator.stackFragments[2].isDetached)
+        assertEquals(listOf(0, 1, 2), multiStackNavigator.stackVisitor.hosts().toList())
+    }
+
+    @Test
     fun testSequentialOperations() = runBlocking {
+        val multiStackNavigator = multiStackNavigator(MultiStackNavigator.BackStackType.UniqueEntries)
+
         multiStackNavigator.performConsecutively(this) {
             val testFragmentA = NavigationTestFragment.newInstance(TAG_A)
 
@@ -259,6 +307,8 @@ class MultiStackNavigatorTest {
 
     @Test
     fun testSequentialAggressiveClearAll() = runBlocking {
+        val multiStackNavigator = multiStackNavigator(MultiStackNavigator.BackStackType.UniqueEntries)
+
         multiStackNavigator.performConsecutively(this) {
             push(NavigationTestFragment.newInstance(TAG_A))
             clearAll()
@@ -275,7 +325,24 @@ class MultiStackNavigatorTest {
         }
     }
 
-    private fun assertNavigatorIndices(vararg tags: String?) {
-        tags.forEachIndexed { index, tag -> assertEquals(tag, multiStackNavigator.navigatorAt(index)?.current?.tag) }
+    private fun MultiStackNavigator.assertNavigatorIndices(vararg tags: String?) {
+        tags.forEachIndexed { index, tag -> assertEquals(tag, navigatorAt(index)?.current?.tag) }
+    }
+
+    private fun multiStackNavigator(type: MultiStackNavigator.BackStackType): MultiStackNavigator {
+        var navigator: MultiStackNavigator? = null
+        instrumentation.runOnMainSync {
+            navigator = MultiStackNavigator(
+                stackCount = 3,
+                stateContainer = savedStateFor(activity, "test"),
+                fragmentManager = activity.supportFragmentManager,
+                backStackType = type,
+                containerId = activity.containerId
+            ) { NavigationTestFragment.newInstance(TAGS[it]) }
+        }
+
+        instrumentation.waitForIdleSync()
+
+        return navigator!!
     }
 }

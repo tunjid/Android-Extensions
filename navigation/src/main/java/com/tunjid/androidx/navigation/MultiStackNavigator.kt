@@ -25,27 +25,32 @@ const val MULTI_STACK_NAVIGATOR = "com.tunjid.androidx.navigation.MultiStackNavi
 fun Fragment.childMultiStackNavigationController(
     stackCount: Int,
     @IdRes containerId: Int,
+    backStackType: MultiStackNavigator.BackStackType = MultiStackNavigator.BackStackType.UniqueEntries,
     rootFunction: (Int) -> Fragment
 ): Lazy<MultiStackNavigator> = lazy {
     MultiStackNavigator(
-        stackCount,
-        savedStateFor(this@childMultiStackNavigationController, "$MULTI_STACK_NAVIGATOR-$containerId"),
-        childFragmentManager,
-        containerId, rootFunction
+        stackCount = stackCount,
+        stateContainer = savedStateFor(this@childMultiStackNavigationController, "$MULTI_STACK_NAVIGATOR-$containerId"),
+        fragmentManager = childFragmentManager,
+        containerId = containerId,
+        backStackType = backStackType,
+        rootFunction = rootFunction
     )
 }
 
 fun FragmentActivity.multiStackNavigationController(
     stackCount: Int,
     @IdRes containerId: Int,
+    backStackType: MultiStackNavigator.BackStackType = MultiStackNavigator.BackStackType.UniqueEntries,
     rootFunction: (Int) -> Fragment
 ): Lazy<MultiStackNavigator> = lazy {
     MultiStackNavigator(
-        stackCount,
-        savedStateFor(this@multiStackNavigationController, "$MULTI_STACK_NAVIGATOR-$containerId"),
-        supportFragmentManager,
-        containerId,
-        rootFunction
+        stackCount = stackCount,
+        stateContainer = savedStateFor(this@multiStackNavigationController, "$MULTI_STACK_NAVIGATOR-$containerId"),
+        fragmentManager = supportFragmentManager,
+        containerId = containerId,
+        backStackType = backStackType,
+        rootFunction = rootFunction
     )
 }
 
@@ -58,6 +63,7 @@ class MultiStackNavigator(
     stateContainer: LifecycleSavedStateContainer,
     private val fragmentManager: FragmentManager,
     @IdRes override val containerId: Int,
+    backStackType: BackStackType = BackStackType.UniqueEntries,
     private val rootFunction: (Int) -> Fragment) : Navigator {
 
     /**
@@ -85,7 +91,7 @@ class MultiStackNavigator(
         }
 
     private val indices = 0 until stackCount
-    internal val stackVisitor = MultiStackVisitor(stateContainer)
+    internal val stackVisitor = MultiStackVisitor(backStackType, stateContainer)
 
     internal val stackFragments: List<StackFragment>
         get() = indices
@@ -120,7 +126,7 @@ class MultiStackNavigator(
     /**
      * Show the stack at the specified index
      */
-    fun show(index: Int) = showInternal(index, true)
+    fun show(index: Int) = showInternal(index = index, addTap = true)
 
     /**
      * Returns the [Navigator] at the specified index.
@@ -167,7 +173,7 @@ class MultiStackNavigator(
     override fun pop(): Boolean = when {
         activeNavigator.pop() ->
             true
-        stackVisitor.leave(activeFragment.index) ->
+        stackVisitor.leave() ->
             showInternal(stackVisitor.currentHost(), false).let { true }
         else ->
             false
@@ -233,6 +239,12 @@ class MultiStackNavigator(
             }
         }
     }
+
+    sealed class BackStackType {
+        object UniqueEntries : BackStackType()
+        object Unlimited : BackStackType()
+        data class Restricted(val count: Int) : BackStackType()
+    }
 }
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -244,7 +256,7 @@ class StackFragment : Fragment() {
     internal val hasNoRoot get() = navigator.current == null
     internal val navigator by lazy { StackNavigator(childFragmentManager, containerId) }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         FragmentContainerView(inflater.context).apply { id = containerId }
 
     companion object {
@@ -252,21 +264,34 @@ class StackFragment : Fragment() {
     }
 }
 
-internal class MultiStackVisitor(private val container: LifecycleSavedStateContainer) {
+internal class MultiStackVisitor(
+    private val backStackType: MultiStackNavigator.BackStackType,
+    private val container: LifecycleSavedStateContainer
+) {
+
+    init {
+        if (backStackType is MultiStackNavigator.BackStackType.Restricted && backStackType.count < 1)
+            throw IllegalArgumentException("Restricted back stack size must be 1 or greater")
+    }
 
     private val delegate = (container.savedState.getIntArray(NAV_STACK_ORDER)
         ?: intArrayOf(0)).toMutableList()
 
     fun visit(value: Int) = delegate.run {
-        remove(value) // No duplicates
+        when (backStackType) {
+            is MultiStackNavigator.BackStackType.Restricted -> if (size + 1 > backStackType.count) removeFirst()
+            else Unit
+            MultiStackNavigator.BackStackType.UniqueEntries -> remove(value)
+            MultiStackNavigator.BackStackType.Unlimited -> Unit
+        }
         add(value)
         saveState()
     }
 
-    fun leave(value: Int): Boolean = delegate.run {
+    fun leave(): Boolean = delegate.run {
         val willLeave = size > 1
         if (willLeave) {
-            remove(value)
+            removeLast()
             saveState()
         }
         return willLeave
