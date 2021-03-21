@@ -28,9 +28,10 @@ class MainActivity : AppCompatActivity(), GlobalUiHost, Navigator.Controller {
     override val globalUiController by lazy { GlobalUiDriver(this, binding, navigator) }
 
     override val navigator: MultiStackNavigator by multiStackNavigationController(
-        tabs.size,
-        R.id.content_container,
-        RouteFragment.Companion::newInstance
+        stackCount = tabs.size,
+        containerId = R.id.content_container,
+        backStackType = MultiStackNavigator.BackStackType.Unlimited,
+        rootFunction = RouteFragment.Companion::newInstance
     )
 
     public override fun onCreate(savedInstanceState: Bundle?) {
