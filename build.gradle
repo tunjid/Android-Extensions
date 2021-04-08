@@ -40,7 +40,7 @@ buildscript {
         mockitoAndroid = 'org.mockito:mockito-android:2.23.0'
         mockitoCore = 'org.mockito:mockito-core:2.23.0'
         palette = 'androidx.palette:palette:1.0.0'
-        recyclerView = 'androidx.recyclerview:recyclerview:1.1.0'
+        recyclerView = 'androidx.recyclerview:recyclerview:1.2.0'
         savedState = 'androidx.savedstate:savedstate:1.1.0'
         supportAnnotations = 'androidx.annotation:annotation:1.2.0'
         swipeRefreshLayout = 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
