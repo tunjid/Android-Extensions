@@ -32,7 +32,9 @@ class HardServiceConnection<T> @JvmOverloads constructor(
         require(service is SelfBinder<*>) { "Bound Service is not a SelfBinder" }
 
         @Suppress("UNCHECKED_CAST")
-        boundService = ((service as SelfBinder<T>).service).apply { bindCallback?.invoke(this) }
+        val bound = (service as SelfBinder<T>).service
+        boundService = bound
+        bindCallback?.invoke(bound)
     }
 
     override fun onServiceDisconnected(name: ComponentName) {
