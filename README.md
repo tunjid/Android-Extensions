@@ -20,6 +20,18 @@ There are 10 modules:
 
 build.gradle lines
 
+The built artifacts are hosted on Jcenter (pending the looming shutdown) and with github packages:
+
+```
+    allprojects {
+        repositories {
+            // Pre jcenter shutdown
+            Jcenter()
+            // Now or post Jcenter shutdown
+            maven { url 'https://maven.pkg.github.com/tunjid/Android-Extensions' }
+        }
+    }
+
     implementation 'com.tunjid.androidx:constraintlayout:1.0.0-rc01'
     implementation 'com.tunjid.androidx:communications:1.0.0'
     implementation 'com.tunjid.androidx:recyclerview:1.2.0'
@@ -30,6 +42,7 @@ build.gradle lines
     implementation 'com.tunjid.androidx:core:1.3.0'
     implementation 'com.tunjid.androidx:view:1.2.0'
     implementation 'com.tunjid.androidx:test:1.0.0-rc02'
+```
 
 Projects that use This library include:
 
