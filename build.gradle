@@ -62,7 +62,7 @@ buildscript {
 
         publishInfo = publishInfoFile.exists()
                 ? new JsonSlurper().parse(publishInfoFile)
-                : reposProperty
+                : publishInfoProperty
                 ? new JsonSlurper().parseText(publishInfoProperty)
                 : [:]
 
