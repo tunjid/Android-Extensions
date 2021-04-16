@@ -104,7 +104,12 @@ afterEvaluate {
     }
 
     signing {
-        sign publishing.publications
+        if (parent.ext.publishInfo['signArtifacts']) {
+            def signingKey = parent.ext.publishInfo['signingKey']
+            def signingPassword = parent.ext.publishInfo['signingPassword']
+            useInMemoryPgpKeys(signingKey, signingPassword)
+            sign publishing.publications
+        }
     }
 }
 

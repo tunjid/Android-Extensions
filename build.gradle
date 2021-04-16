@@ -57,22 +57,9 @@ buildscript {
         groupId = libProps['groupId']
         artifactoryUrl = libProps['artifactoryUrl']
 
-        // publish properties can be set from the command line or local.properties.
-        // Multiple repository setup can only done in the local.properties file with the following
-        // mapping:
-
-        // repositories=[{
-        // "name": "myRepo",
-        // "url": "myUrl",
-        // "credentials": "username": "user", "password": "hi"
-        // }]
-
-        def pullProperty = { String name, Properties prop ->
-            return project.findProperty(name) ?: prop[name] ?: ""
-        }
-
         def publishInfoFile = file("publishInfo.json")
         def publishInfoProperty = project.findProperty('publishInfoJson')
+
         publishInfo = publishInfoFile.exists()
                 ? new JsonSlurper().parse(publishInfoFile)
                 : reposProperty
@@ -81,26 +68,19 @@ buildscript {
 
         versionSuffix = publishInfo['versionSuffix'] ?: ''
         publishRepositories = publishInfo['repositories'] ?: []
-
-        signingKeyId = pullProperty('signingKeyId', signingProps)
-        signingPassword = pullProperty('signingPassword', signingProps)
     }
 }
 
 // Plugin used to upload authenticated files to BinTray through Gradle
-//plugins {
-//    id 'signing'
-//}
+plugins {
+    id 'signing'
+}
 
 allprojects {
     repositories {
         google()
         jcenter()
     }
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
 }
 
 
