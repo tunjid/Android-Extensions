@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
+apply plugin: 'signing'
 apply from: "${project.rootDir}/version.gradle"
 
 android {
@@ -45,28 +45,6 @@ android {
     }
 }
 
-bintray {
-    user = parent.ext.bintrayUser
-    key = parent.ext.bintrayApiKey
-
-    // jFrog plugin must be declared for this line to work
-    configurations = ['archives']
-    publications = ['lib']
-    // Package info for BinTray
-    pkg {
-        repo = 'maven'
-        name = 'android-extensions'
-        userOrg = user
-        licenses = ['MIT']
-        vcsUrl = "${parent.ext.publishUrl}.git"
-        version {
-            name = project.version
-            desc = 'An Android library to bootstrap an Android application.'
-            vcsTag = 'vx1.0.0-alpha01'
-        }
-    }
-}
-
 afterEvaluate {
     publishing {
         publications {
@@ -83,18 +61,34 @@ afterEvaluate {
                         classifier = 'sources'
                         extension = 'jar'
                     }
+
+                    pom {
+                        name = project.getName()
+                        description = "${name} Android extensions"
+                        url = 'https://github.com/tunjid/Android-Extensions'
+                        licenses {
+                            license {
+                                name = 'MIT License'
+                                url = 'https://github.com/tunjid/tunjid/Android-Extensions/develop/license.txt'
+                            }
+                        }
+                        developers {
+                            developer {
+                                id = 'tunjid'
+                                name = 'Adetunji Dahunsi'
+                                email = 'tjdah100@gmail.com'
+                            }
+                        }
+                        scm {
+                            connection = 'scm:git:github.com/tunjid/Android-Extensions.git'
+                            developerConnection = 'scm:git:ssh://github.com/tunjid/Android-Extensions.git'
+                            url = 'https://github.com/tunjid/Android-Extensions/tree/main'
+                        }
+                    }
                 }
             }
         }
         repositories {
-            maven {
-                name = parent.ext.publishRepoName
-                url = parent.ext.publishUrl
-                credentials {
-                    username = parent.ext.publishUserName
-                    password = parent.ext.publishPassword
-                }
-            }
             parent.ext.publishRepositories.each { repo ->
                 def props = (repo as ConfigObject).toProperties()
                 maven {
@@ -107,6 +101,10 @@ afterEvaluate {
                 }
             }
         }
+    }
+
+    signing {
+        sign publishing.publications
     }
 }
 
