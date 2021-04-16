@@ -93,7 +93,7 @@ afterEvaluate {
                 def props = (repo as ConfigObject).toProperties()
                 maven {
                     name = props['name']
-                    url = props['url']
+                    url = props['publishUrl']
                     credentials {
                         username = props['credentials.username']
                         password = props['credentials.password']

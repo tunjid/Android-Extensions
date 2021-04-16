@@ -89,7 +89,7 @@ task incrementalPublish {
     def artifactExists = { params ->
         // githubUrl, moduleName, version, true
         def group = libProps['groupId'].replace(".", "/")
-        def url = "${params['url']}/${group}/${params['moduleName']}/${params['version']}/${params['moduleName']}-${params['version']}.pom"
+        def url = "${params['downloadUrl']}/${group}/${params['moduleName']}/${params['version']}/${params['moduleName']}-${params['version']}.pom"
 
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection()
@@ -121,10 +121,11 @@ task incrementalPublish {
                         def auth = "Basic ${encoded}"
 
                         def params = [
-                                url       : repo['url'],
-                                moduleName: moduleName,
-                                version   : libProps[name] + (versionSuffix.isEmpty() ? "" : "-${versionSuffix}"),
-                                auth      : auth
+                                publishUrl : repo['publishUrl'],
+                                downloadUrl: repo['downloadUrl'],
+                                moduleName : moduleName,
+                                version    : libProps[name] + (versionSuffix.isEmpty() ? "" : "-${versionSuffix}"),
+                                auth       : auth
                         ]
                         def existsOnGitHub = artifactExists(params)
                         def publishGithub = existsOnGitHub != null && !existsOnGitHub

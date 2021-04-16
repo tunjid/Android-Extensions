@@ -20,7 +20,7 @@ There are 10 modules:
 
 build.gradle lines
 
-The built artifacts are hosted on Jcenter (pending the looming shutdown) and with github packages:
+The built artifacts are hosted on Jcenter (pending the looming shutdown) and Maven Central:
 
 ```
     allprojects {
@@ -28,7 +28,7 @@ The built artifacts are hosted on Jcenter (pending the looming shutdown) and wit
             // Pre jcenter shutdown
             Jcenter()
             // Now or post Jcenter shutdown
-            maven { url 'https://maven.pkg.github.com/tunjid/Android-Extensions' }
+            mavenCentral()
         }
     }
 
@@ -94,15 +94,41 @@ To publish, run:
 This will publish the latest version of every module, and will not override existing versions.
 The version of the module is determined by the version.properties file. To bump a module version, bump it in version.properties.
 
-By default, the `version_suffix`, `publishRepoName`, `publishUrl`, `publishUserName` and `publishPassword` are read from the `local.properties` file.
-They can however be overriden by passing gradle properties via the `-P` flag for each property you wish to override.
-
-A sample local.properties looks like:
+Publishing configuration is done by using a `publishInfo.json` file in the project root directory.
+A sample `publishInfo.json` looks like:
 
 ```
-version_suffix=mysuffix
-publishRepoName=MyMaven
-publishUrl=https://maven.pkg.github.com/myOrg/Android-Extensions
-publishUserName=mygithubusername
-publishPassword=mygithubtoken
+{
+  "signArtifacts": true,
+  "signingPassword": "mySigningPassword",
+  "signingKey": "-----BEGIN PGP PRIVATE KEY BLOCK-----ADD YOUR GPG KEY HERE-----END PGP PRIVATE KEY BLOCK-----\n",
+  "versionSuffix": "myVersionSuffix",
+  "repositories": [
+    {
+      "name": "TunjiGithub",
+      "publishUrl": "https://maven.pkg.github.com/tunjid/Android-Extensions",
+      "downloadUrl": "https://maven.pkg.github.com/tunjid/Android-Extensions",
+      "credentials": {
+        "username": "tunjid",
+        "password": "githubAuthToken"
+      }
+    },
+    {
+      "name": "TunjiMavenCentral",
+      "publishUrl": "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/",
+      "downloadUrl": "https://repo1.maven.org/maven2",
+      "credentials": {
+        "username": "myMavenCentralUsername",
+        "password": "myMavenCentralPassword"
+      }
+    }
+  ]
+}
 ```
+
+`signArtifacts`, `signingPassword`, `signingKey` and `versionSuffix` properties are not necessary and may be omitted;
+in fact, I personally only need to sign my artifacts when uploading to maven central.
+
+Note that the repository name *NEEDS* to be camel cased as it's used when finding the gradle task to publish the artifact.
+
+You do however need to specify at least 1 maven repository to publish to if you intend to publish artifacts.
