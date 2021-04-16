@@ -20,5 +20,5 @@ jobs:
           java-version: 1.8
       - name: Github Maven Publish
         env:
-          PUBLISH_INFO_JSON: ${{ secrets.publish_info_json }}
+          PUBLISH_INFO_JSON: ${{ secrets.PUBLISH_INFO_JSON }}
         run: bash ./gradlew incrementalPublish -PpublishInfoJson="$PUBLISH_INFO_JSON" --stacktrace
