@@ -20,11 +20,5 @@ jobs:
           java-version: 1.8
       - name: Github Maven Publish
         env:
-          BINTRAY_USER: ${{ secrets.bintray_user }}
-          BINTRAY_API_KEY: ${{ secrets.bintray_key }}
-          PUBLISH_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-          PUBLISH_USER_NAME: ${{ secrets.GITHUB_ACTOR }}
-          PUBLISH_VERSION_SUFFIX: ${{ secrets.PUBLISH_VERSION_SUFFIX }}
-          PUBLISH_URL: ${{ secrets.PUBLISH_URL }}
-          PUBLISH_REPO_NAME: GithubMaven
-        run: bash ./gradlew incrementalPublish -PversionSuffix="$PUBLISH_VERSION_SUFFIX" -PpublishRepoName="$PUBLISH_REPO_NAME" -PpublishUrl="$PUBLISH_URL" -PpublishUserName="$PUBLISH_USER_NAME" -PpublishPassword="$PUBLISH_PASSWORD" -PbintrayUser="$BINTRAY_USER" -PbintrayApiKey="$BINTRAY_API_KEY" --stacktrace
+          PUBLISH_INFO_JSON: ${{ secrets.PUBLISH_INFO_JSON }}
+        run: bash ./gradlew incrementalPublish -PpublishInfoJson="$PUBLISH_INFO_JSON" --stacktrace

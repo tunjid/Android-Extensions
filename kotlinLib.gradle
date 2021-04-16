@@ -1,65 +1,69 @@
 apply plugin: 'kotlin'
-apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply from: "${project.rootDir}/version.gradle"
 
-bintray {
-    user = parent.ext.bintrayUser
-    key = parent.ext.bintrayApiKey
+afterEvaluate {
+    publishing {
+        publications {
+            lib(MavenPublication) {
+                version = project.version
+                groupId parent.ext.groupId
+                artifactId project.getName()
 
-    // jFrog plugin must be declared for this line to work
-    configurations = ['archives']
-    publications = ['lib']
-    // Package info for BinTray
-    pkg {
-        repo = 'maven'
-        name = 'android-extensions'
-        userOrg = user
-        licenses = ['MIT']
-        vcsUrl = 'https://github.com/tunjid/android-bootstrap.git'
-        version {
-            name = project.version
-            desc = 'An suite of libraries to bootstrap an Android application.'
-            vcsTag = 'vx1.0.0-alpha01'
-        }
-    }
-}
+                from components.java
 
-publishing {
-    publications {
-        lib(MavenPublication) {
-            version = project.version
-            groupId parent.ext.groupId
-            artifactId project.getName()
+                afterEvaluate {
+                    artifact sourcesJar
+                    artifact javadocJar
 
-            from components.java
-
-            afterEvaluate {
-                artifact sourcesJar
-                artifact javadocJar
-            }
-        }
-    }
-    repositories {
-        maven {
-            name = parent.ext.publishRepoName
-            url = parent.ext.publishUrl
-            credentials {
-                username = parent.ext.publishUserName
-                password = parent.ext.publishPassword
-            }
-        }
-        parent.ext.publishRepositories.each { repo ->
-            def props = (repo as ConfigObject).toProperties()
-            maven {
-                name = props['name']
-                url = props['url']
-                credentials {
-                    username = props['credentials.username']
-                    password = props['credentials.password']
+                    pom {
+                        name = project.getName()
+                        description = "${name} Android extensions"
+                        url = 'https://github.com/tunjid/Android-Extensions'
+                        licenses {
+                            license {
+                                name = 'MIT License'
+                                url = 'https://github.com/tunjid/tunjid/Android-Extensions/develop/license.txt'
+                            }
+                        }
+                        developers {
+                            developer {
+                                id = 'tunjid'
+                                name = 'Adetunji Dahunsi'
+                                email = 'tjdah100@gmail.com'
+                            }
+                        }
+                        scm {
+                            connection = 'scm:git:github.com/tunjid/Android-Extensions.git'
+                            developerConnection = 'scm:git:ssh://github.com/tunjid/Android-Extensions.git'
+                            url = 'https://github.com/tunjid/Android-Extensions/tree/main'
+                        }
+                    }
                 }
             }
+        }
+        repositories {
+            parent.ext.publishRepositories.each { repo ->
+                def props = (repo as ConfigObject).toProperties()
+                maven {
+                    name = props['name']
+                    url = props['url']
+                    credentials {
+                        username = props['credentials.username']
+                        password = props['credentials.password']
+                    }
+                }
+            }
+        }
+    }
+
+    signing {
+        if (parent.ext.publishInfo['signArtifacts']) {
+            def signingKey = parent.ext.publishInfo['signingKey']
+            def signingPassword = parent.ext.publishInfo['signingPassword']
+            useInMemoryPgpKeys(signingKey, signingPassword)
+            sign publishing.publications
         }
     }
 }

@@ -49,7 +49,7 @@ buildscript {
 
         // Artifactory publishing params
         libProps = new Properties()
-        bintrayProps = new Properties()
+        signingProps = new Properties()
         localProps = new Properties()
 
         libProps.load(new FileInputStream(file("libraryVersion.properties")))
@@ -57,51 +57,23 @@ buildscript {
         groupId = libProps['groupId']
         artifactoryUrl = libProps['artifactoryUrl']
 
-        // publish properties can be set from the command line or local.properties.
-        // Multiple repository setup can only done in the local.properties file with the following
-        // mapping:
+        def publishInfoFile = file("publishInfo.json")
+        def publishInfoProperty = project.findProperty('publishInfoJson')
 
-        // repositories=[{
-        // "name": "myRepo",
-        // "url": "myUrl",
-        // "credentials": "username": "user", "password": "hi"
-        // }]
+        publishInfo = publishInfoFile.exists()
+                ? new JsonSlurper().parse(publishInfoFile)
+                : reposProperty
+                ? new JsonSlurper().parseText(publishInfoProperty)
+                : [:]
 
-        publishRepositories = []
-        def localPropsFile = file("local.properties")
-
-        if (localPropsFile.exists()) {
-            localProps.load(new FileInputStream(localPropsFile))
-
-            def slurper = new JsonSlurper()
-            def repos = localProps['repositories']
-            if (repos != null) publishRepositories = slurper.parseText(repos)
-        }
-
-        def bintrayFile = file("bintray.properties")
-
-        if (bintrayFile.exists()) {
-            bintrayProps.load(new FileInputStream(bintrayFile))
-        }
-
-        def pullProperty = { String name, Properties prop ->
-            return project.findProperty(name) ?: prop[name] ?: ""
-        }
-
-        publishUrl = pullProperty('publishUrl', localProps)
-        publishRepoName = pullProperty('publishRepoName', localProps)
-        publishUserName = pullProperty('publishUserName', localProps)
-        publishPassword = pullProperty('publishPassword', localProps)
-        versionSuffix = pullProperty('versionSuffix', localProps)
-
-        bintrayUser = pullProperty('bintrayUser', bintrayProps)
-        bintrayApiKey = pullProperty('bintrayApiKey', bintrayProps)
+        versionSuffix = publishInfo['versionSuffix'] ?: ''
+        publishRepositories = publishInfo['repositories'] ?: []
     }
 }
 
 // Plugin used to upload authenticated files to BinTray through Gradle
 plugins {
-    id "com.jfrog.bintray" version "1.8.5"
+    id 'signing'
 }
 
 allprojects {
@@ -111,27 +83,21 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
-
 
 task incrementalPublish {
     def libProps = project.ext.libProps
-    def artifactExists = { String mavenRepo, String name, String version, boolean addAuth ->
+    def artifactExists = { params ->
+        // githubUrl, moduleName, version, true
         def group = libProps['groupId'].replace(".", "/")
-        def url = "${mavenRepo}/${group}/${name}/${version}/${name}-${version}.pom"
+        def url = "${params['url']}/${group}/${params['moduleName']}/${params['version']}/${params['moduleName']}-${params['version']}.pom"
 
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection()
-            if (addAuth) {
-                String encoded = Base64.getEncoder().encodeToString(("${project.ext.publishUserName}:${project.ext.publishPassword}").getBytes("UTF-8"))
-                connection.setRequestProperty("Authorization", "Basic " + encoded)
-            }
+            connection.setRequestProperty("Authorization", params['auth'])
             connection.connect()
 
             def exists = connection.getResponseCode() == HttpURLConnection.HTTP_OK
-            println "pom for ${name} exists on ${url}: ${exists}"
+            println "pom for ${params['moduleName']} exists on $url}: ${exists}"
 
             return exists
         }
@@ -145,29 +111,29 @@ task incrementalPublish {
         libProps.stringPropertyNames()
                 .findAll { name -> name.contains('version') }
                 .each { name ->
-                    def moduleName = name - '_version'
-                    def version = libProps[name] + project.ext.versionSuffix
-                    def githubUrl = "${project.ext.publishUrl}"
-                    def jCenterUrl = "https://jcenter.bintray.com"
+                    project.ext.publishRepositories.each { repo ->
+                        def moduleName = name - '_version'
+                        def versionSuffix = repo["versionSuffix"] ?: ""
 
-                    def existsOnGitHub = artifactExists(githubUrl, moduleName, version, true)
-                    def existsOnJcenter = artifactExists(jCenterUrl, moduleName, version, false)
-                    def hasJcenterCreds = project.ext.bintrayUser && !project.ext.bintrayUser.empty && project.ext.bintrayApiKey && !project.ext.bintrayApiKey.empty
+                        def username = repo['credentials']['username']
+                        def password = repo['credentials']['password']
+                        def encoded = Base64.getEncoder().encodeToString(("${username}:${password}").getBytes("UTF-8"))
+                        def auth = "Basic ${encoded}"
 
-                    def publishGithub = existsOnGitHub != null && !existsOnGitHub
-                    def publishJcenter = existsOnJcenter != null && !existsOnJcenter && hasJcenterCreds
+                        def params = [
+                                url       : repo['url'],
+                                moduleName: moduleName,
+                                version   : libProps[name] + (versionSuffix.isEmpty() ? "" : "-${versionSuffix}"),
+                                auth      : auth
+                        ]
+                        def existsOnGitHub = artifactExists(params)
+                        def publishGithub = existsOnGitHub != null && !existsOnGitHub
 
-                    if (publishJcenter || publishJcenter) {
-                        dependsOn ":${moduleName}:assemble"
-                    }
-
-                    if (publishGithub) {
-                        dependsOn ":${moduleName}:publishLibPublicationTo${project.ext.publishRepoName}Repository"
-                    }
-
-                    if (publishJcenter) {
-                        println "Adding task ${moduleName} to bintray publish"
-                        dependsOn ":${moduleName}:bintrayUpload"
+                        if (publishGithub) {
+                            println "Adding task ${moduleName} to publish on ${repo['name']}"
+                            dependsOn ":${moduleName}:assemble"
+                            dependsOn ":${moduleName}:publishLibPublicationTo${repo['name']}Repository"
+                        }
                     }
                 }
     }
