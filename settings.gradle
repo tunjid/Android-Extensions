@@ -1,1 +1,2 @@
+include ':viewpager2'
 include ':app', ':core', ':test', ':communications', ':view', ':recyclerview', ':functions', ':constraintlayout', ':material', ':navigation', ':savedstate'

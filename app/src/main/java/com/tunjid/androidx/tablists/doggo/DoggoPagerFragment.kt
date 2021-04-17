@@ -1,5 +1,6 @@
 package com.tunjid.androidx.tablists.doggo
 
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -17,7 +18,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.drawableAt
@@ -29,11 +29,13 @@ import com.tunjid.androidx.recyclerview.indicators.Params
 import com.tunjid.androidx.recyclerview.indicators.indicatorDecoration
 import com.tunjid.androidx.recyclerview.indicators.start
 import com.tunjid.androidx.recyclerview.indicators.width
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.view.util.hashTransitionName
+import com.tunjid.viewpager2.FragmentListAdapter
+import com.tunjid.viewpager2.FragmentTab
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.max
@@ -52,17 +54,17 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
 
         val initialUiState = uiState
         uiState = UiState(
-                toolbarOverlaps = true,
-                toolbarShows = false,
-                toolbarMenuRes = 0,
-                fabIcon = R.drawable.ic_hug_24dp,
-                fabShows = true,
-                fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
-                showsBottomNav = false,
-                lightStatusBar = false,
-                insetFlags = InsetFlags.NONE,
-                navBarColor = Color.TRANSPARENT,
-                fabClickListener = { Doggo.transitionDoggo?.let { navigator.push(AdoptDoggoFragment.newInstance(it)) } }
+            toolbarOverlaps = true,
+            toolbarShows = false,
+            toolbarMenuRes = 0,
+            fabIcon = R.drawable.ic_hug_24dp,
+            fabShows = true,
+            fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
+            showsBottomNav = false,
+            lightStatusBar = false,
+            insetFlags = InsetFlags.NONE,
+            navBarColor = Color.TRANSPARENT,
+            fabClickListener = { Doggo.transitionDoggo?.let { navigator.push(AdoptDoggoFragment.newInstance(it)) } }
         )
 
         sharedElementEnterTransition = baseSharedTransition(initialUiState)
@@ -74,27 +76,30 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
         val context = view.context
         val indicatorSize = resources.getDimensionPixelSize(R.dimen.single_and_half_margin)
 
-        viewPager.adapter = DoggoPagerAdapter(viewModel.doggos, this)
+        val adapter = FragmentListAdapter<DoggoTab>(this)
+        adapter.submitList(Doggo.doggos.map(::DoggoTab))
+
+        viewPager.adapter = adapter
         viewPager.setCurrentItem(Doggo.transitionIndex, false)
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) =
-                    viewModel.onSwiped(position, positionOffset)
+                viewModel.onSwiped(position, positionOffset)
 
             override fun onPageSelected(position: Int) = onDoggoSwiped(position)
         })
 
         val recyclerView = viewPager[0] as RecyclerView
         recyclerView.indicatorDecoration(
-                horizontalOffset = resources.displayMetrics.widthPixels / 2f,
-                verticalOffset = resources.getDimension(R.dimen.octuple_margin),
-                indicatorWidth = indicatorSize.toFloat(),
-                indicatorHeight = indicatorSize.toFloat(),
-                indicatorPadding = resources.getDimensionPixelSize(R.dimen.half_margin).toFloat(),
-                indicator = DrawablePageIndicator(
-                        activeDrawable = context.drawableAt(R.drawable.ic_doggo_24dp)!!,
-                        inActiveDrawable = context.drawableAt(R.drawable.ic_circle_24dp)!!
-                ),
-                onIndicatorClicked = viewPager::setCurrentItem
+            horizontalOffset = resources.displayMetrics.widthPixels / 2f,
+            verticalOffset = resources.getDimension(R.dimen.octuple_margin),
+            indicatorWidth = indicatorSize.toFloat(),
+            indicatorHeight = indicatorSize.toFloat(),
+            indicatorPadding = resources.getDimensionPixelSize(R.dimen.half_margin).toFloat(),
+            indicator = DrawablePageIndicator(
+                activeDrawable = context.drawableAt(R.drawable.ic_doggo_24dp)!!,
+                inActiveDrawable = context.drawableAt(R.drawable.ic_circle_24dp)!!
+            ),
+            onIndicatorClicked = viewPager::setCurrentItem
         )
 
         viewModel.colors.observe(viewLifecycleOwner, view::setBackgroundColor)
@@ -199,14 +204,8 @@ private class DrawablePageIndicator(
     }
 }
 
-private class DoggoPagerAdapter(private val doggos: List<Doggo>, fragment: Fragment)
-    : FragmentStateAdapter(fragment.childFragmentManager, fragment.viewLifecycleOwner.lifecycle) {
+private data class DoggoTab(val doggo: Doggo) : FragmentTab {
+    override fun title(res: Resources): CharSequence = ""
 
-    override fun getItemCount(): Int = this.doggos.size
-
-    override fun getItemId(position: Int): Long = doggos[position].hashCode().toLong()
-
-    override fun containsItem(itemId: Long): Boolean = doggos.map(Doggo::hashCode).contains(itemId.toInt())
-
-    override fun createFragment(position: Int): Fragment = DoggoFragment.newInstance(doggos[position])
+    override fun createFragment(): Fragment = DoggoFragment.newInstance(doggo)
 }

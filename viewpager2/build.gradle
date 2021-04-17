@@ -1,0 +1,11 @@
+apply from: "${project.rootDir}/androidLib.gradle"
+
+dependencies {
+    implementation parent.ext.kotlin
+    implementation parent.ext.ktxCore
+    implementation parent.ext.appCompat
+    implementation parent.ext.viewpager2
+    implementation project(':recyclerview')
+}
+
+

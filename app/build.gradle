@@ -116,6 +116,7 @@ dependencies {
     implementation project(':core')
     implementation project(':material')
     implementation project(':functions')
+    implementation project(':viewpager2')
     implementation project(':navigation')
     implementation project(':recyclerview')
     implementation project(':communications')

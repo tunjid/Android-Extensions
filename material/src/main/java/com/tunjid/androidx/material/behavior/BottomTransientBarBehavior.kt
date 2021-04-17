@@ -22,6 +22,10 @@ import kotlin.math.min
  */
 // Constructed via xml
 @Suppress("unused")
+@Deprecated("""
+    Too and inflexible limited in it's use case, use a state management system to coordinate behaviors
+    like this instead
+""")
 class BottomTransientBarBehavior(context: Context, attrs: AttributeSet) : CoordinatorLayout.Behavior<View>(context, attrs) {
 
     override fun layoutDependsOn(parent: CoordinatorLayout, child: View, dependency: View): Boolean =
