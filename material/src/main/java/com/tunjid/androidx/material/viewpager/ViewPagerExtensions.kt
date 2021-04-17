@@ -12,5 +12,6 @@ fun TabLayout.configureWith(
     smoothScroll: Boolean = true,
     tabConfigurationStrategy: (tab: TabLayout.Tab, position: Int) -> Unit) {
     val mediator = TabLayoutMediator(this, viewPager, autoRefresh, smoothScroll, tabConfigurationStrategy)
+    mediator.attach()
     viewPager.doOnAttach { it.doOnDetach { mediator.detach() } }
 }

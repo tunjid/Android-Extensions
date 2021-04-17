@@ -76,7 +76,7 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
         val context = view.context
         val indicatorSize = resources.getDimensionPixelSize(R.dimen.single_and_half_margin)
 
-        val adapter = FragmentListAdapter<DoggoTab>(this)
+        val adapter = FragmentListAdapter<DoggoTab>(fragment = this)
         adapter.submitList(Doggo.doggos.map(::DoggoTab))
 
         viewPager.adapter = adapter

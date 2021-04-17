@@ -1,23 +1,25 @@
 package com.tunjid.androidx.tablists.tables
 
+import android.content.res.Resources
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayoutMediator
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentSpreadsheetChildBinding
+import com.tunjid.androidx.databinding.FragmentSpreadsheetParentBinding
 import com.tunjid.androidx.isDarkTheme
+import com.tunjid.androidx.material.viewpager.configureWith
 import com.tunjid.androidx.recyclerview.multiscroll.CellSizer
 import com.tunjid.androidx.recyclerview.multiscroll.DynamicCellSizer
 import com.tunjid.androidx.recyclerview.multiscroll.StaticCellSizer
 import com.tunjid.androidx.tabnav.routing.routeName
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
+import com.tunjid.viewpager2.FragmentListAdapter
+import com.tunjid.viewpager2.FragmentTab
 
 class SpreadSheetParentFragment : Fragment(R.layout.fragment_spreadsheet_parent) {
 
@@ -33,25 +35,35 @@ class SpreadSheetParentFragment : Fragment(R.layout.fragment_spreadsheet_parent)
             navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )
 
-        val viewPager = view.findViewById<ViewPager2>(R.id.view_pager)
-        val pagerAdapter = object : FragmentStateAdapter(this.childFragmentManager, viewLifecycleOwner.lifecycle) {
-            override fun getItemCount(): Int = 2
+        val binding = FragmentSpreadsheetParentBinding.bind(view)
+        val viewPager = binding.viewPager
+        val pagerAdapter = FragmentListAdapter<SpreadsheetTab>(fragment = this)
 
-            override fun createFragment(position: Int): Fragment =
-                SpreadsheetFragment.newInstance(isDynamic = position != 0)
-        }
+        pagerAdapter.submitList(listOf(
+            SpreadsheetTab(isDynamic = false),
+            SpreadsheetTab(isDynamic = true),
+        ))
 
         viewPager.isUserInputEnabled = false
         viewPager.adapter = pagerAdapter
 
-        TabLayoutMediator(view.findViewById(R.id.tabs), viewPager) { tab, position ->
-            tab.text = context?.getString(if (position != 0) R.string.dynamic_cells else R.string.static_cells)
-        }.attach()
+        binding.tabs.configureWith(binding.viewPager) { tab, position ->
+            tab.text = pagerAdapter.getPageTitle(position)
+        }
     }
 
     companion object {
         fun newInstance(): SpreadSheetParentFragment = SpreadSheetParentFragment().apply { arguments = Bundle() }
     }
+}
+
+private data class SpreadsheetTab(val isDynamic: Boolean) : FragmentTab {
+    override fun title(res: Resources): CharSequence = res.getString(when {
+        isDynamic -> R.string.dynamic_cells
+        else -> R.string.static_cells
+    })
+
+    override fun createFragment(): Fragment = SpreadsheetFragment.newInstance(isDynamic)
 }
 
 class SpreadsheetFragment : Fragment(R.layout.fragment_spreadsheet_child) {
