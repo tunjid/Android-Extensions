@@ -32,17 +32,13 @@ The built artifacts are hosted on Jcenter (pending the looming shutdown) and Mav
         }
     }
 
-    implementation 'com.tunjid.androidx:constraintlayout:1.0.0-rc01'
-    implementation 'com.tunjid.androidx:communications:1.0.0'
-    implementation 'com.tunjid.androidx:recyclerview:1.2.0'
-    implementation 'com.tunjid.androidx:navigation:1.2.1'
-    implementation 'com.tunjid.androidx:savedstate:1.0.1'
-    implementation 'com.tunjid.androidx:functions:1.0.0'
-    implementation 'com.tunjid.androidx:material:1.0.4'
-    implementation 'com.tunjid.androidx:core:1.3.0'
-    implementation 'com.tunjid.androidx:view:1.2.0'
-    implementation 'com.tunjid.androidx:test:1.0.0-rc02'
+    implementation 'com.tunjid.androidx:module:x.x.x'
 ```
+
+Refer to the table above for the latest version information.
+
+If you so desire, you can fork the repo and host the artifacts your self using github packages.
+Refer to publishing information below for more details.
 
 Projects that use This library include:
 
@@ -132,3 +128,7 @@ in fact, I personally only need to sign my artifacts when uploading to maven cen
 Note that the repository name *NEEDS* to be camel cased as it's used when finding the gradle task to publish the artifact.
 
 You do however need to specify at least 1 maven repository to publish to if you intend to publish artifacts.
+
+If you intend to host your own version of the artifacts on github packages after forking the repository, you will need to add a secret to your github action pipeline.
+The secret key is `PUBLISH_INFO_JSON`, and the value is the `publishInfo.json` described above, substituting the values of `publishUrl` and `downloadUrl`
+to match the url of your github fork and the credentials matching your username and github auth token.
