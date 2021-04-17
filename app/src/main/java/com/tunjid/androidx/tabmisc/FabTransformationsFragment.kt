@@ -12,6 +12,7 @@ import com.google.android.material.chip.ChipGroup
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.core.graphics.drawable.withTint
 import com.tunjid.androidx.core.text.color
 import com.tunjid.androidx.isDarkTheme
@@ -25,9 +26,10 @@ import com.tunjid.androidx.tabnav.routing.routeName
 
 class FabTransformationsFragment : Fragment(R.layout.fragment_fab_transformations) {
 
+    private var isTopLevel by fragmentArgs<Boolean>()
+
     private val color
         get() = if (requireContext().isDarkTheme) Color.BLACK else Color.WHITE
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -40,7 +42,7 @@ class FabTransformationsFragment : Fragment(R.layout.fragment_fab_transformation
             speedDialItems[1].run { updateGlyphs(first, second) }
         }
 
-        uiState = UiState(
+        if (isTopLevel) uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
                 toolbarOverlaps = false,
                 toolbarShows = true,
@@ -129,6 +131,6 @@ class FabTransformationsFragment : Fragment(R.layout.fragment_fab_transformation
     }
 
     companion object {
-        fun newInstance(): FabTransformationsFragment = FabTransformationsFragment().apply { arguments = Bundle() }
+        fun newInstance(isTopLevel: Boolean): FabTransformationsFragment = FabTransformationsFragment().apply { this.isTopLevel = isTopLevel }
     }
 }

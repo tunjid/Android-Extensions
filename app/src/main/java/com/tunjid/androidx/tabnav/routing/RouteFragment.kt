@@ -26,11 +26,6 @@ import com.tunjid.androidx.core.graphics.drawable.withTint
 import com.tunjid.androidx.core.graphics.drawable.withTintMode
 import com.tunjid.androidx.databinding.FragmentRouteBinding
 import com.tunjid.androidx.databinding.ViewholderRouteBinding
-import com.tunjid.androidx.tabmisc.CharacterSequenceExtensionsFragment
-import com.tunjid.androidx.tabmisc.FabTransformationsFragment
-import com.tunjid.androidx.tabmisc.HardServiceConnectionFragment
-import com.tunjid.androidx.tabmisc.SpringAnimationFragment
-import com.tunjid.androidx.tabmisc.UiStatePlaygroundFragment
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.activityNavigatorController
@@ -39,19 +34,6 @@ import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
-import com.tunjid.androidx.tabcomms.ble.BleScanFragment
-import com.tunjid.androidx.tabcomms.nsd.NsdScanFragment
-import com.tunjid.androidx.tablists.doggo.DoggoListFragment
-import com.tunjid.androidx.tablists.doggo.DoggoRankFragment
-import com.tunjid.androidx.tablists.doggo.RankArgs
-import com.tunjid.androidx.tablists.tables.SpreadSheetParentFragment
-import com.tunjid.androidx.tablists.tables.StandingsFragment
-import com.tunjid.androidx.tablists.tables.ViewPagerListAdapterFragment
-import com.tunjid.androidx.tablists.tiles.EndlessTilesFragment
-import com.tunjid.androidx.tablists.tiles.ShiftingTilesFragment
-import com.tunjid.androidx.tabnav.RouteItem
-import com.tunjid.androidx.tabnav.navigator.IndependentStacksFragment
-import com.tunjid.androidx.tabnav.navigator.MultipleStacksFragment
 import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
@@ -119,13 +101,13 @@ class RouteFragment : Fragment(R.layout.fragment_route) {
     }
 
     private fun onRouteClicked(destination: RouteItem.Destination) {
-        navigator.push(destination.fragment)
+        navigator.push(destination.fragment(isTopLevel = true))
     }
 
     private fun goSomewhereRandom() = navigator.performConsecutively(lifecycleScope) {
         val (tabIndex, route) = viewModel.randomRoute()
         show(tabIndex)
-        push(route.fragment)
+        push(route.fragment(isTopLevel = true))
     }
 
     private fun stressTest() = navigator.performConsecutively(requireActivity().lifecycleScope) {
@@ -137,7 +119,7 @@ class RouteFragment : Fragment(R.layout.fragment_route) {
                 val (tabIndex, route) = pair
 
                 show(tabIndex)
-                push(route.fragment)
+                push(route.fragment(isTopLevel = true))
             }
 
         clearAll()
@@ -148,32 +130,11 @@ class RouteFragment : Fragment(R.layout.fragment_route) {
                 val (tabIndex, route) = pair
                 show(tabIndex)
                 clear()
-                push(route.fragment)
+                push(route.fragment(isTopLevel = true))
             }
 
         while (nav.previous != null) pop()
     }
-
-    private val RouteItem.Destination.fragment: Fragment
-        get() = when (destination) {
-            DoggoListFragment::class.java.routeName -> DoggoListFragment.newInstance(isTopLevel = true)
-            BleScanFragment::class.java.routeName -> BleScanFragment.newInstance()
-            NsdScanFragment::class.java.routeName -> NsdScanFragment.newInstance()
-            SpringAnimationFragment::class.java.routeName -> SpringAnimationFragment.newInstance()
-            CharacterSequenceExtensionsFragment::class.java.routeName -> CharacterSequenceExtensionsFragment.newInstance()
-            ShiftingTilesFragment::class.java.routeName -> ShiftingTilesFragment.newInstance(isTopLevel = true)
-            EndlessTilesFragment::class.java.routeName -> EndlessTilesFragment.newInstance(isTopLevel = true)
-            DoggoRankFragment::class.java.routeName -> DoggoRankFragment.newInstance(RankArgs(isRanking = true, isTopLevel = true))
-            IndependentStacksFragment::class.java.routeName -> IndependentStacksFragment.newInstance()
-            MultipleStacksFragment::class.java.routeName -> MultipleStacksFragment.newInstance()
-            HardServiceConnectionFragment::class.java.routeName -> HardServiceConnectionFragment.newInstance()
-            FabTransformationsFragment::class.java.routeName -> FabTransformationsFragment.newInstance()
-            StandingsFragment::class.java.routeName -> StandingsFragment.newInstance()
-            SpreadSheetParentFragment::class.java.routeName -> SpreadSheetParentFragment.newInstance()
-            UiStatePlaygroundFragment::class.java.routeName -> UiStatePlaygroundFragment.newInstance()
-            ViewPagerListAdapterFragment::class.java.routeName -> ViewPagerListAdapterFragment.newInstance()
-            else -> newInstance(tabIndex) // No-op, all RouteFragment instances have the same tag
-        }
 
     companion object {
         fun newInstance(tabIndex: Int): RouteFragment = RouteFragment().apply { this.tabIndex = tabIndex }

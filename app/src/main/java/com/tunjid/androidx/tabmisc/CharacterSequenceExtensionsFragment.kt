@@ -14,6 +14,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.core.text.*
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.tabnav.routing.routeName
@@ -28,10 +29,12 @@ import com.tunjid.androidx.uidrivers.InsetFlags
 
 class CharacterSequenceExtensionsFragment : Fragment(R.layout.fragment_spanbuilder) {
 
+    private var isTopLevel by fragmentArgs<Boolean>()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = uiState.copy(
+        if (isTopLevel) uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
                 toolbarOverlaps = false,
                 toolbarShows = true,
@@ -147,6 +150,6 @@ class CharacterSequenceExtensionsFragment : Fragment(R.layout.fragment_spanbuild
     }
 
     companion object {
-        fun newInstance(): CharacterSequenceExtensionsFragment = CharacterSequenceExtensionsFragment().apply { arguments = Bundle() }
+        fun newInstance(isTopLevel: Boolean): CharacterSequenceExtensionsFragment = CharacterSequenceExtensionsFragment().apply { this.isTopLevel = isTopLevel }
     }
 }

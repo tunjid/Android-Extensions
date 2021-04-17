@@ -23,10 +23,12 @@ import com.tunjid.viewpager2.FragmentTab
 
 class SpreadSheetParentFragment : Fragment(R.layout.fragment_spreadsheet_parent) {
 
+    private var isTopLevel by fragmentArgs<Boolean>()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = UiState(
+        if (isTopLevel) uiState = uiState.copy(
             toolbarTitle = this::class.java.routeName,
             toolbarShows = true,
             fabShows = false,
@@ -52,7 +54,7 @@ class SpreadSheetParentFragment : Fragment(R.layout.fragment_spreadsheet_parent)
     }
 
     companion object {
-        fun newInstance(): SpreadSheetParentFragment = SpreadSheetParentFragment().apply { arguments = Bundle() }
+        fun newInstance(isTopLevel: Boolean): SpreadSheetParentFragment = SpreadSheetParentFragment().apply { this.isTopLevel = isTopLevel }
     }
 }
 

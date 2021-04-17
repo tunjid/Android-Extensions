@@ -12,6 +12,7 @@ import com.tunjid.androidx.CounterService
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.components.services.HardServiceConnection
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
@@ -21,13 +22,14 @@ import com.tunjid.androidx.tabnav.routing.routeName
 
 class HardServiceConnectionFragment : Fragment(R.layout.fragment_hard_service_connection) {
 
+    private var isTopLevel by fragmentArgs<Boolean>()
     private val connection by lazy { HardServiceConnection(requireContext(), CounterService::class.java, this::onServiceBound) }
 
     private var statusText: TextView? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        uiState = UiState(
+        if (isTopLevel) uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
                 toolbarOverlaps = false,
                 toolbarShows = true,
@@ -76,7 +78,7 @@ class HardServiceConnectionFragment : Fragment(R.layout.fragment_hard_service_co
     }
 
     companion object {
-        fun newInstance(): HardServiceConnectionFragment = HardServiceConnectionFragment().apply { arguments = Bundle() }
+        fun newInstance(isTopLevel: Boolean): HardServiceConnectionFragment = HardServiceConnectionFragment().apply { this.isTopLevel = isTopLevel }
     }
 
 }

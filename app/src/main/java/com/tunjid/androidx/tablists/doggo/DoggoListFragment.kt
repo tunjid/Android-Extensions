@@ -85,7 +85,7 @@ class DoggoListFragment : Fragment(R.layout.fragment_doggo_list),
                             onThumbnailLoaded = { if (it == Doggo.transitionDoggo) view.doOnLayout { startPostponedEnterTransition() } },
                             onDoggoClicked = {
                                 Doggo.transitionDoggo = it
-                                navigator.push(DoggoPagerFragment.newInstance())
+                                navigator.push(DoggoPagerFragment.newInstance(isTopLevel = true))
                             }
                         )
                     }

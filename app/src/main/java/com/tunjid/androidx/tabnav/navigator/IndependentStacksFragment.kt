@@ -38,6 +38,7 @@ import java.util.*
 
 class IndependentStacksFragment : Fragment(R.layout.fragment_independent_stack) {
 
+    private var isTopLevel by fragmentArgs<Boolean>()
     private val navigator by activityNavigatorController<MultiStackNavigator>()
     private val navigators = mutableMapOf<Int, StackNavigator>()
     private val visitOrder = ArrayDeque<Int>()
@@ -65,7 +66,7 @@ class IndependentStacksFragment : Fragment(R.layout.fragment_independent_stack) 
             if (current == null) push(IndependentStackChildFragment.newInstance(name(containerId), 1))
         }
 
-        uiState = UiState(
+        if (isTopLevel) uiState = uiState.copy(
             toolbarTitle = this::class.java.routeName.color(Color.WHITE),
             toolbarMenuRes = 0,
             toolbarShows = true,
@@ -108,7 +109,7 @@ class IndependentStacksFragment : Fragment(R.layout.fragment_independent_stack) 
         resources.getResourceEntryName(containerId).replace("_", " ")
 
     companion object {
-        fun newInstance(): IndependentStacksFragment = IndependentStacksFragment().apply { arguments = Bundle() }
+        fun newInstance(isTopLevel: Boolean): IndependentStacksFragment = IndependentStacksFragment().apply { this.isTopLevel = isTopLevel }
     }
 
 }

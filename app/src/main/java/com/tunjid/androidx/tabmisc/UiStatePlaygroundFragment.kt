@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.core.text.color
 import com.tunjid.androidx.core.text.plus
 import com.tunjid.androidx.databinding.FragmentSimpleListBinding
@@ -27,10 +28,12 @@ import com.tunjid.androidx.uidrivers.InsetFlags
 
 class UiStatePlaygroundFragment : Fragment(R.layout.fragment_simple_list) {
 
+    private var isTopLevel by fragmentArgs<Boolean>()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = UiState(
+        if (isTopLevel) uiState = uiState.copy(
                 toolbarMenuRes = R.menu.menu_ui_state_playground,
                 toolbarMenuClickListener = ::onMenuItemClicked,
                 toolbarTitle = getString(R.string.ui_state_playground),
@@ -85,7 +88,7 @@ class UiStatePlaygroundFragment : Fragment(R.layout.fragment_simple_list) {
     }
 
     companion object {
-        fun newInstance(): UiStatePlaygroundFragment = UiStatePlaygroundFragment().apply { arguments = Bundle() }
+        fun newInstance(isTopLevel: Boolean): UiStatePlaygroundFragment = UiStatePlaygroundFragment().apply { this.isTopLevel = isTopLevel }
     }
 }
 

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentNsdScanBinding
 import com.tunjid.androidx.databinding.ViewholderNsdListBinding
 import com.tunjid.androidx.isDarkTheme
@@ -36,12 +37,13 @@ import com.tunjid.androidx.tabnav.routing.routeName
  */
 class NsdScanFragment : Fragment(R.layout.fragment_nsd_scan) {
 
+    private var isTopLevel by fragmentArgs<Boolean>()
     private val viewModel by viewModels<NsdViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = UiState(
+        if (isTopLevel) uiState = uiState.copy(
             toolbarTitle = this::class.java.routeName,
             toolbarMenuRefresher = ::updateToolbarMenu,
             toolbarMenuClickListener = ::onMenuItemSelected,
@@ -104,7 +106,7 @@ class NsdScanFragment : Fragment(R.layout.fragment_nsd_scan) {
         else viewModel.accept(Input.StopScanning)
 
     companion object {
-        fun newInstance(): NsdScanFragment = NsdScanFragment().apply { arguments = Bundle() }
+        fun newInstance(isTopLevel: Boolean): NsdScanFragment = NsdScanFragment().apply { this.isTopLevel = isTopLevel }
     }
 }
 

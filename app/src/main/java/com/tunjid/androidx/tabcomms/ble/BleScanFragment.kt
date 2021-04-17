@@ -21,6 +21,7 @@ import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
 import com.tunjid.androidx.communications.bluetooth.ScanResultCompat
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentBleScanBinding
 import com.tunjid.androidx.databinding.ViewholderScanBinding
 import com.tunjid.androidx.isDarkTheme
@@ -34,24 +35,19 @@ import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
+import com.tunjid.androidx.tabnav.routing.routeName
 import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.tabcomms.ble.BleInput
-import com.tunjid.androidx.tabcomms.ble.BleState
-import com.tunjid.androidx.tabcomms.ble.BleViewModel
-import com.tunjid.androidx.tabnav.routing.routeName
 
 class BleScanFragment : Fragment(R.layout.fragment_ble_scan) {
 
+    private var isTopLevel by fragmentArgs<Boolean>()
     private val viewModel by viewModels<BleViewModel>()
-    private val navigator by activityNavigatorController<MultiStackNavigator>()
-
-    private var recyclerView: RecyclerView? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = uiState.copy(
+        if (isTopLevel) uiState = uiState.copy(
             toolbarTitle = this::class.java.routeName,
             toolbarMenuRefresher = ::updateToolbarMenu,
             toolbarMenuClickListener = ::onMenuItemSelected,
@@ -67,7 +63,7 @@ class BleScanFragment : Fragment(R.layout.fragment_ble_scan) {
         val placeHolder = PlaceHolder(view.findViewById(R.id.placeholder_container))
         placeHolder.bind(PlaceHolder.State(R.string.no_ble_devices, R.drawable.ic_bluetooth_24dp))
 
-        recyclerView = FragmentBleScanBinding.bind(view).list.apply {
+        FragmentBleScanBinding.bind(view).list.apply {
             val listAdapter = listAdapterOf(
                 initialItems = viewModel.state.value?.items ?: listOf(),
                 viewHolderCreator = { parent, _ ->
@@ -135,11 +131,6 @@ class BleScanFragment : Fragment(R.layout.fragment_ble_scan) {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        recyclerView = null
-    }
-
     private fun onMenuItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.menu_scan -> viewModel.accept(BleInput.StartScanning)
         R.id.menu_stop -> viewModel.accept(BleInput.StopScanning)
@@ -153,7 +144,7 @@ class BleScanFragment : Fragment(R.layout.fragment_ble_scan) {
     companion object {
         private const val REQUEST_ENABLE_BT = 1
 
-        fun newInstance(): BleScanFragment = BleScanFragment().apply { arguments = Bundle() }
+        fun newInstance(isTopLevel: Boolean): BleScanFragment = BleScanFragment().apply { this.isTopLevel = isTopLevel }
     }
 
 }

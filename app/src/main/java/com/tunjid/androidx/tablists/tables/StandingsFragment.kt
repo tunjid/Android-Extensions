@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentStandingsBinding
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.recyclerview.multiscroll.DynamicCellSizer
@@ -15,12 +16,13 @@ import com.tunjid.androidx.tabnav.routing.routeName
 
 class StandingsFragment : Fragment(R.layout.fragment_standings) {
 
+    private var isTopLevel by fragmentArgs<Boolean>()
     private val viewModel by viewModels<StandingsViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = UiState(
+        if (isTopLevel) uiState = uiState.copy(
             toolbarTitle = this::class.java.routeName,
             toolbarShows = true,
             toolbarOverlaps = false,
@@ -59,7 +61,7 @@ class StandingsFragment : Fragment(R.layout.fragment_standings) {
     }
 
     companion object {
-        fun newInstance(): StandingsFragment = StandingsFragment()
+        fun newInstance(isTopLevel: Boolean): StandingsFragment = StandingsFragment().apply { this.isTopLevel = isTopLevel }
     }
 }
 //endregion

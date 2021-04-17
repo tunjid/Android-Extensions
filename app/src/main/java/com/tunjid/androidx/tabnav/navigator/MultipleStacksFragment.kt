@@ -46,6 +46,7 @@ import com.tunjid.androidx.uidrivers.InsetFlags
 
 class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
 
+    private var isTopLevel by fragmentArgs<Boolean>()
     private var transitionOption: Int = R.id.slide
 
     private val navigator by activityNavigatorController<MultiStackNavigator>()
@@ -91,7 +92,7 @@ class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
             transitionOption = checkedId
         }
 
-        uiState = UiState(
+        if (isTopLevel) uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName.color(Color.WHITE),
                 toolbarMenuRes = R.menu.menu_default,
                 toolbarShows = true,
@@ -150,7 +151,7 @@ class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
 
         private val DESTINATIONS = intArrayOf(R.id.first, R.id.second, R.id.third)
 
-        fun newInstance(): MultipleStacksFragment = MultipleStacksFragment().apply { arguments = Bundle() }
+        fun newInstance(isTopLevel: Boolean): MultipleStacksFragment = MultipleStacksFragment().apply { this.isTopLevel = isTopLevel }
     }
 
 }

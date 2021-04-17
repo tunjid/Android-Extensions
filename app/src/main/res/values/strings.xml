@@ -133,6 +133,9 @@
     <string name="shrink_padding">Shrink padding</string>
     <string name="party_hard">Party Hard</string>
 
+    <!-- Fragment List Adapter -->
+    <string name="edit_tabs">Edit Tabs</string>
+
     <!-- UiState -->
     <string name="ui_state_playground">UI State Playground</string>
     <string name="show_keyboard">Show keyboard</string>

@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.drawableAt
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.activityNavigatorController
@@ -45,7 +46,7 @@ import kotlin.math.sin
 class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
         Navigator.TransactionModifier {
 
-
+    private var isTopLevel by fragmentArgs<Boolean>()
     private val viewModel by viewModels<DoggoViewModel>()
     private val navigator by activityNavigatorController<MultiStackNavigator>()
 
@@ -149,7 +150,7 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
     }
 
     companion object {
-        fun newInstance(): DoggoPagerFragment = DoggoPagerFragment().apply { arguments = Bundle() }
+        fun newInstance(isTopLevel: Boolean): DoggoPagerFragment = DoggoPagerFragment().apply { this.isTopLevel = isTopLevel }
     }
 
 }

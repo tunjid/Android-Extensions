@@ -15,6 +15,7 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentSpringAnimationBinding
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.uidrivers.InsetFlags
@@ -39,6 +40,8 @@ private typealias SpringModifierConsumer = (SpringForce.() -> Unit) -> Unit
 
 class SpringAnimationFragment : Fragment(R.layout.fragment_spring_animation) {
 
+    private var isTopLevel by fragmentArgs<Boolean>()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -62,7 +65,7 @@ class SpringAnimationFragment : Fragment(R.layout.fragment_spring_animation) {
             }
         }
 
-        uiState = UiState(
+        if (isTopLevel) uiState = uiState.copy(
             toolbarTitle = this::class.java.routeName,
             toolbarMenuRes = R.menu.menu_spring_animations,
             fabShows = true,
@@ -121,7 +124,7 @@ class SpringAnimationFragment : Fragment(R.layout.fragment_spring_animation) {
             .show()
 
     companion object {
-        fun newInstance(): SpringAnimationFragment = SpringAnimationFragment().apply { arguments = Bundle() }
+        fun newInstance(isTopLevel: Boolean): SpringAnimationFragment = SpringAnimationFragment().apply { this.isTopLevel = isTopLevel }
     }
 }
 

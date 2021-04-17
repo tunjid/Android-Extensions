@@ -1,32 +1,32 @@
 package com.tunjid.androidx.tablists.tables
 
-import android.content.res.Resources
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.viewModels
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.tabs.TabLayout
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.core.delegates.viewLifecycle
 import com.tunjid.androidx.databinding.FragmentSpreadsheetParentBinding
 import com.tunjid.androidx.isDarkTheme
+import com.tunjid.androidx.mapDistinct
 import com.tunjid.androidx.material.viewpager.configureWith
 import com.tunjid.androidx.navigation.Navigator
-import com.tunjid.androidx.tablists.doggo.DoggoListFragment
-import com.tunjid.androidx.tablists.doggo.DoggoRankFragment
-import com.tunjid.androidx.tablists.doggo.RankArgs
-import com.tunjid.androidx.tablists.tiles.EndlessTilesFragment
-import com.tunjid.androidx.tablists.tiles.ShiftingTilesFragment
 import com.tunjid.androidx.tabnav.routing.routeName
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.viewpager2.FragmentListAdapter
-import com.tunjid.viewpager2.FragmentTab
 
 class ViewPagerListAdapterFragment : Fragment(R.layout.fragment_spreadsheet_parent),
     Navigator.TransactionModifier {
 
+    private var isTopLevel by fragmentArgs<Boolean>()
     private val binding by viewLifecycle(FragmentSpreadsheetParentBinding::bind)
+    private val viewModel by viewModels<ViewPagerListAdapterViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -35,26 +35,44 @@ class ViewPagerListAdapterFragment : Fragment(R.layout.fragment_spreadsheet_pare
             toolbarTitle = this::class.java.routeName,
             toolbarShows = true,
             fabShows = true,
-            fabText = "TODO()",
+            fabText = view.context.getString(R.string.edit_tabs),
+            fabIcon = R.drawable.ic_round_edit_24,
             showsBottomNav = false,
             lightStatusBar = !requireContext().isDarkTheme,
-            navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
+            navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
+            fabClickListener = { fab ->
+                val state = viewModel.state.value
+                val allItems = state?.allItems ?: listOf()
+                val (items, checkedItems) = state.items(fab.context.resources)
+                MaterialAlertDialogBuilder(fab.context)
+                    .setMultiChoiceItems(items, checkedItems) { _, index, isChecked ->
+                        viewModel.accept(when (isChecked) {
+                            true -> Input.Add(allItems[index])
+                            false -> Input.Remove(allItems[index])
+                        })
+                    }
+                    .show()
+            }
         )
 
         val viewPager = binding.viewPager
         val pagerAdapter = FragmentListAdapter<RouteTab>(fragment = this)
 
-        pagerAdapter.submitList(listOf(
-            RouteTab.DoggoList,
-            RouteTab.DoggoRank,
-            RouteTab.ShiftingTiles,
-            RouteTab.EndlessTiles,
-        ))
 
         viewPager.adapter = pagerAdapter
 
         binding.tabs.configureWith(binding.viewPager) { tab, position ->
             tab.text = pagerAdapter.getPageTitle(position)
+        }
+
+        viewModel.state.apply {
+            mapDistinct(State::visibleItems).observe(viewLifecycleOwner, pagerAdapter::submitList)
+            mapDistinct(State::visibleItems).mapDistinct { it.size }.observe(viewLifecycleOwner) { size ->
+                binding.tabs.tabMode = when (size) {
+                    in 0..3 -> TabLayout.MODE_FIXED
+                    else -> TabLayout.MODE_SCROLLABLE
+                }
+            }
         }
     }
 
@@ -64,27 +82,6 @@ class ViewPagerListAdapterFragment : Fragment(R.layout.fragment_spreadsheet_pare
     }
 
     companion object {
-        fun newInstance(): ViewPagerListAdapterFragment = ViewPagerListAdapterFragment().apply { arguments = Bundle() }
-    }
-}
-
-private sealed class RouteTab : FragmentTab {
-    object DoggoList : RouteTab()
-    object DoggoRank : RouteTab()
-    object ShiftingTiles : RouteTab()
-    object EndlessTiles : RouteTab()
-
-    override fun title(res: Resources): CharSequence = when (this) {
-        DoggoList -> DoggoListFragment::class.java.routeName
-        DoggoRank -> DoggoRankFragment::class.java.routeName
-        ShiftingTiles -> ShiftingTilesFragment::class.java.routeName
-        EndlessTiles -> EndlessTilesFragment::class.java.routeName
-    }
-
-    override fun createFragment(): Fragment = when (this) {
-        DoggoList -> DoggoListFragment.newInstance(isTopLevel = false)
-        DoggoRank -> DoggoRankFragment.newInstance(RankArgs(isTopLevel = false, isRanking = true))
-        ShiftingTiles -> ShiftingTilesFragment.newInstance(isTopLevel = false)
-        EndlessTiles -> EndlessTilesFragment.newInstance(isTopLevel = false)
+        fun newInstance(isTopLevel: Boolean): ViewPagerListAdapterFragment = ViewPagerListAdapterFragment().apply { this.isTopLevel = isTopLevel }
     }
 }
