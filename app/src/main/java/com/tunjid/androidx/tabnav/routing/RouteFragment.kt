@@ -43,8 +43,10 @@ import com.tunjid.androidx.tabcomms.ble.BleScanFragment
 import com.tunjid.androidx.tabcomms.nsd.NsdScanFragment
 import com.tunjid.androidx.tablists.doggo.DoggoListFragment
 import com.tunjid.androidx.tablists.doggo.DoggoRankFragment
+import com.tunjid.androidx.tablists.doggo.RankArgs
 import com.tunjid.androidx.tablists.tables.SpreadSheetParentFragment
 import com.tunjid.androidx.tablists.tables.StandingsFragment
+import com.tunjid.androidx.tablists.tables.ViewPagerListAdapterFragment
 import com.tunjid.androidx.tablists.tiles.EndlessTilesFragment
 import com.tunjid.androidx.tablists.tiles.ShiftingTilesFragment
 import com.tunjid.androidx.tabnav.RouteItem
@@ -154,14 +156,14 @@ class RouteFragment : Fragment(R.layout.fragment_route) {
 
     private val RouteItem.Destination.fragment: Fragment
         get() = when (destination) {
-            DoggoListFragment::class.java.routeName -> DoggoListFragment.newInstance()
+            DoggoListFragment::class.java.routeName -> DoggoListFragment.newInstance(isTopLevel = true)
             BleScanFragment::class.java.routeName -> BleScanFragment.newInstance()
             NsdScanFragment::class.java.routeName -> NsdScanFragment.newInstance()
             SpringAnimationFragment::class.java.routeName -> SpringAnimationFragment.newInstance()
             CharacterSequenceExtensionsFragment::class.java.routeName -> CharacterSequenceExtensionsFragment.newInstance()
-            ShiftingTilesFragment::class.java.routeName -> ShiftingTilesFragment.newInstance()
-            EndlessTilesFragment::class.java.routeName -> EndlessTilesFragment.newInstance()
-            DoggoRankFragment::class.java.routeName -> DoggoRankFragment.newInstance()
+            ShiftingTilesFragment::class.java.routeName -> ShiftingTilesFragment.newInstance(isTopLevel = true)
+            EndlessTilesFragment::class.java.routeName -> EndlessTilesFragment.newInstance(isTopLevel = true)
+            DoggoRankFragment::class.java.routeName -> DoggoRankFragment.newInstance(RankArgs(isRanking = true, isTopLevel = true))
             IndependentStacksFragment::class.java.routeName -> IndependentStacksFragment.newInstance()
             MultipleStacksFragment::class.java.routeName -> MultipleStacksFragment.newInstance()
             HardServiceConnectionFragment::class.java.routeName -> HardServiceConnectionFragment.newInstance()
@@ -169,6 +171,7 @@ class RouteFragment : Fragment(R.layout.fragment_route) {
             StandingsFragment::class.java.routeName -> StandingsFragment.newInstance()
             SpreadSheetParentFragment::class.java.routeName -> SpreadSheetParentFragment.newInstance()
             UiStatePlaygroundFragment::class.java.routeName -> UiStatePlaygroundFragment.newInstance()
+            ViewPagerListAdapterFragment::class.java.routeName -> ViewPagerListAdapterFragment.newInstance()
             else -> newInstance(tabIndex) // No-op, all RouteFragment instances have the same tag
         }
 

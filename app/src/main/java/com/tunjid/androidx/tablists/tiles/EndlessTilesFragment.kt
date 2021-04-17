@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentRouteBinding
 import com.tunjid.androidx.databinding.ViewholderTileBinding
 import com.tunjid.androidx.isDarkTheme
@@ -27,12 +28,13 @@ import kotlin.math.abs
 
 class EndlessTilesFragment : Fragment(R.layout.fragment_route) {
 
+    private var isTopLevel by fragmentArgs<Boolean>()
     private val viewModel by viewModels<EndlessTileViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = UiState(
+        if (isTopLevel) uiState = UiState(
             toolbarTitle = this::class.java.routeName,
             toolbarShows = true,
             toolbarMenuRes = 0,
@@ -72,6 +74,6 @@ class EndlessTilesFragment : Fragment(R.layout.fragment_route) {
     }
 
     companion object {
-        fun newInstance(): EndlessTilesFragment = EndlessTilesFragment().apply { arguments = Bundle() }
+        fun newInstance(isTopLevel: Boolean): EndlessTilesFragment = EndlessTilesFragment().apply { this.isTopLevel = isTopLevel }
     }
 }

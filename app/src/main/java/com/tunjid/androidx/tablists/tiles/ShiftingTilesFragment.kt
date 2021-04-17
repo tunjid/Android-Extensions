@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentRouteBinding
 import com.tunjid.androidx.databinding.ViewholderTileBinding
 import com.tunjid.androidx.isDarkTheme
@@ -23,12 +24,13 @@ import com.tunjid.androidx.uidrivers.updatePartial
 
 class ShiftingTilesFragment : Fragment(R.layout.fragment_route) {
 
+    private var isTopLevel by fragmentArgs<Boolean>()
     private val viewModel by viewModels<ShiftingTileViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = UiState(
+        if (isTopLevel) uiState = UiState(
             toolbarTitle = this::class.java.routeName,
             toolbarShows = true,
             toolbarMenuRes = 0,
@@ -67,6 +69,6 @@ class ShiftingTilesFragment : Fragment(R.layout.fragment_route) {
     }
 
     companion object {
-        fun newInstance(): ShiftingTilesFragment = ShiftingTilesFragment().apply { arguments = Bundle() }
+        fun newInstance(isTopLevel: Boolean): ShiftingTilesFragment = ShiftingTilesFragment().apply { this.isTopLevel = isTopLevel }
     }
 }

@@ -1,6 +1,7 @@
 package com.tunjid.androidx.tablists.doggo
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -40,11 +41,24 @@ import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.updatePartial
 import com.tunjid.androidx.view.util.hashTransitionName
 import kotlin.math.abs
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+data class RankArgs(
+    val isRanking: Boolean,
+    val isTopLevel: Boolean,
+) : Parcelable
 
 class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
     Navigator.TransactionModifier {
 
-    private var isRanking by fragmentArgs<Boolean>()
+    private var args by fragmentArgs<RankArgs>()
+    private var isRanking
+        get() = args.isRanking
+        set(value) {
+            args = args.copy(isRanking = value)
+        }
+
     private val viewModel by viewModels<DoggoRankViewModel>()
     private val navigator by activityNavigatorController<MultiStackNavigator>()
 
@@ -53,7 +67,7 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = UiState(
+        if (args.isTopLevel) uiState = UiState(
             toolbarTitle = this::class.java.routeName,
             toolbarMenuRes = R.menu.menu_doggo,
             toolbarShows = true,
@@ -96,7 +110,7 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
             addItemDecoration(context.divider(DividerItemDecoration.HORIZONTAL))
             addItemDecoration(context.divider(DividerItemDecoration.VERTICAL))
             setSwipeDragOptions(
-                itemViewSwipeSupplier = { isRanking },
+                itemViewSwipeSupplier = { isRanking && args.isTopLevel },
                 longPressDragSupplier = { isRanking },
                 swipeConsumer = { holder, _ -> removeDoggo(holder) },
                 dragConsumer = ::moveDoggo,
@@ -185,7 +199,7 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
     }
 
     companion object {
-        fun newInstance(): DoggoRankFragment = DoggoRankFragment().apply { this.isRanking = true }
+        fun newInstance(args: RankArgs): DoggoRankFragment = DoggoRankFragment().apply { this.args = args }
     }
 }
 

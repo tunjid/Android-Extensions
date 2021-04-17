@@ -15,6 +15,7 @@ import com.tunjid.androidx.tablists.doggo.DoggoListFragment
 import com.tunjid.androidx.tablists.doggo.DoggoRankFragment
 import com.tunjid.androidx.tablists.tables.SpreadSheetParentFragment
 import com.tunjid.androidx.tablists.tables.StandingsFragment
+import com.tunjid.androidx.tablists.tables.ViewPagerListAdapterFragment
 import com.tunjid.androidx.tablists.tiles.EndlessTilesFragment
 import com.tunjid.androidx.tablists.tiles.ShiftingTilesFragment
 import com.tunjid.androidx.tabnav.navigator.IndependentStacksFragment
@@ -37,6 +38,7 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
             RouteItem.Destination(EndlessTilesFragment::class.java.routeName, formatRoute(R.string.route_endless_tile)),
             RouteItem.Destination(StandingsFragment::class.java.routeName, formatRoute(R.string.route_standings)),
             RouteItem.Destination(SpreadSheetParentFragment::class.java.routeName, formatRoute(R.string.route_spreadsheet)),
+            RouteItem.Destination(ViewPagerListAdapterFragment::class.java.routeName, formatRoute(R.string.route_viewpager)),
             RouteItem.Spacer
         ),
         listOf(
