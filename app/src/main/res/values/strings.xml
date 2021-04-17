@@ -135,6 +135,7 @@
 
     <!-- Fragment List Adapter -->
     <string name="edit_tabs">Edit Tabs</string>
+    <string name="shuffle_tabs">Shuffle Tabs</string>
 
     <!-- UiState -->
     <string name="ui_state_playground">UI State Playground</string>

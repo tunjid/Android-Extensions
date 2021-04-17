@@ -25,6 +25,7 @@ class ViewPagerListAdapterViewModel(application: Application) : AndroidViewModel
         when (input) {
             is Input.Add -> state.copy(visibleItems = state.visibleItems + input.tab)
             is Input.Remove -> state.copy(visibleItems = state.visibleItems - input.tab)
+            Input.Shuffle -> state.copy(visibleItems = state.allItems.shuffled().take(4))
         }
     }.toLiveData()
 
@@ -33,7 +34,7 @@ class ViewPagerListAdapterViewModel(application: Application) : AndroidViewModel
 
 data class State(
     val allItems: List<RouteTab>,
-    val visibleItems: List<RouteTab> = allItems.shuffled().take(5),
+    val visibleItems: List<RouteTab> = allItems.shuffled().take(4),
 )
 
 fun State?.items(res: Resources): Pair<Array<CharSequence>, BooleanArray> = when (this) {
@@ -46,6 +47,7 @@ fun State?.items(res: Resources): Pair<Array<CharSequence>, BooleanArray> = when
 sealed class Input {
     data class Add(val tab: RouteTab) : Input()
     data class Remove(val tab: RouteTab) : Input()
+    object Shuffle : Input()
 }
 
 data class RouteTab(val route: RouteItem.Destination) : FragmentTab {

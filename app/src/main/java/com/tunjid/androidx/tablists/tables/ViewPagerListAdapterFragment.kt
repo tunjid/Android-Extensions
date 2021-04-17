@@ -34,6 +34,8 @@ class ViewPagerListAdapterFragment : Fragment(R.layout.fragment_spreadsheet_pare
         uiState = UiState(
             toolbarTitle = this::class.java.routeName,
             toolbarShows = true,
+            toolbarMenuRes = R.menu.menu_viewpager,
+            toolbarMenuClickListener = { viewModel.accept(Input.Shuffle) },
             fabShows = true,
             fabText = view.context.getString(R.string.edit_tabs),
             fabIcon = R.drawable.ic_round_edit_24,
