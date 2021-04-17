@@ -44,7 +44,6 @@ class SpreadSheetParentFragment : Fragment(R.layout.fragment_spreadsheet_parent)
             SpreadsheetTab(isDynamic = true),
         ))
 
-        viewPager.isUserInputEnabled = false
         viewPager.adapter = pagerAdapter
 
         binding.tabs.configureWith(binding.viewPager) { tab, position ->

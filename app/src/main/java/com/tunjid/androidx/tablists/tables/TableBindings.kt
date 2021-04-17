@@ -36,6 +36,7 @@ import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.typed
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
+import com.tunjid.viewpager2.allowSameDirectionScrollingInViewPager2
 
 fun ViewgroupTableBinding.bind(
     table: LiveData<out Table>,
@@ -145,6 +146,7 @@ private fun ViewGroup.rowViewHolder(
     binding.recyclerView.apply {
         itemAnimator = null
         layoutManager = horizontalLayoutManager()
+        allowSameDirectionScrollingInViewPager2()
         setRecycledViewPool(recycledViewPool)
     }
 }
