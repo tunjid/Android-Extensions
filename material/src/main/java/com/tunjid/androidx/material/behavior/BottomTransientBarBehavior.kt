@@ -29,12 +29,12 @@ import kotlin.math.min
 class BottomTransientBarBehavior(context: Context, attrs: AttributeSet) : CoordinatorLayout.Behavior<View>(context, attrs) {
 
     override fun layoutDependsOn(parent: CoordinatorLayout, child: View, dependency: View): Boolean =
-            dependency is Snackbar.SnackbarLayout
+        dependency is Snackbar.SnackbarLayout
 
     override fun onDependentViewChanged(parent: CoordinatorLayout, child: View, dependency: View): Boolean {
         if (child.visibility == View.VISIBLE)
             child.spring(SpringAnimation.TRANSLATION_Y)
-                    .animateToFinalPosition(getViewTranslationYForSnackbar(parent, child))
+                .animateToFinalPosition(getViewTranslationYForSnackbar(parent, child))
         return true
     }
 

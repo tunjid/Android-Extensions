@@ -4,19 +4,19 @@ import android.graphics.Color
 
 object MutedColors {
     private val mutedColors = intArrayOf(
-            Color.parseColor("#2980b9"), // Belize Hole
-            Color.parseColor("#2c3e50"), // Midnight Blue
-            Color.parseColor("#c0392b"), // Pomegranate
-            Color.parseColor("#16a085"), // Green Sea
-            Color.parseColor("#7f8c8d") // Concrete
+        Color.parseColor("#2980b9"), // Belize Hole
+        Color.parseColor("#2c3e50"), // Midnight Blue
+        Color.parseColor("#c0392b"), // Pomegranate
+        Color.parseColor("#16a085"), // Green Sea
+        Color.parseColor("#7f8c8d") // Concrete
     )
 
     private val darkerMutedColors = intArrayOf(
-            Color.parseColor("#304233"),
-            Color.parseColor("#353b45"),
-            Color.parseColor("#392e3a"),
-            Color.parseColor("#3e2a2a"),
-            Color.parseColor("#474747")
+        Color.parseColor("#304233"),
+        Color.parseColor("#353b45"),
+        Color.parseColor("#392e3a"),
+        Color.parseColor("#3e2a2a"),
+        Color.parseColor("#474747")
     )
 
     fun colorAt(isDark: Boolean, index: Int) = palette(isDark).circular(index)

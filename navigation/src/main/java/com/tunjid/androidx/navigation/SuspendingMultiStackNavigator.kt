@@ -6,7 +6,7 @@ import androidx.lifecycle.whenResumed
 
 class SuspendingMultiStackNavigator internal constructor(
     private val navigator: MultiStackNavigator,
-    private val common : SuspendingNavigator = CommonSuspendingNavigator(navigator)
+    private val common: SuspendingNavigator = CommonSuspendingNavigator(navigator)
 ) : SuspendingNavigator by common {
 
     suspend fun show(index: Int): Fragment {

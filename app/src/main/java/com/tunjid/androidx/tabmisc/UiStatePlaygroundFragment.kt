@@ -24,10 +24,10 @@ import com.tunjid.androidx.recyclerview.listAdapterOf
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
-import com.tunjid.androidx.uidrivers.UiState
-import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.InsetFlags
+import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.callback
+import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.updatePartial
 
 class UiStatePlaygroundFragment : Fragment(R.layout.fragment_simple_list) {
@@ -38,15 +38,15 @@ class UiStatePlaygroundFragment : Fragment(R.layout.fragment_simple_list) {
         super.onViewCreated(view, savedInstanceState)
 
         if (isTopLevel) uiState = uiState.copy(
-                toolbarMenuRes = R.menu.menu_ui_state_playground,
-                toolbarMenuClickListener = viewLifecycleOwner.callback(::onMenuItemClicked),
-                toolbarTitle = getString(R.string.ui_state_playground),
-                toolbarOverlaps = false,
-                toolbarShows = true,
-                showsBottomNav = true,
-                fabIcon = R.drawable.ic_add_24dp,
-                fabText = getString(R.string.hi),
-                fabShows = true
+            toolbarMenuRes = R.menu.menu_ui_state_playground,
+            toolbarMenuClickListener = viewLifecycleOwner.callback(::onMenuItemClicked),
+            toolbarTitle = getString(R.string.ui_state_playground),
+            toolbarOverlaps = false,
+            toolbarShows = true,
+            showsBottomNav = true,
+            fabIcon = R.drawable.ic_add_24dp,
+            fabText = getString(R.string.hi),
+            fabShows = true
         )
         else viewLifecycleOwner.lifecycle.doOnEveryEvent(Lifecycle.Event.ON_RESUME) {
             ::uiState.updatePartial {
@@ -64,31 +64,31 @@ class UiStatePlaygroundFragment : Fragment(R.layout.fragment_simple_list) {
         fragmentBinding.recyclerView.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         fragmentBinding.recyclerView.layoutManager = LinearLayoutManager(context)
         fragmentBinding.recyclerView.adapter = listAdapterOf(
-                initialItems = context.slices,
-                viewHolderCreator = { parent: ViewGroup, _ ->
-                    parent.viewHolderFrom(ViewholderUiStateSliceBinding::inflate).apply {
-                        this.binding.root.setOnClickListener {
-                            MaterialAlertDialogBuilder(context)
-                                    .setTitle(R.string.choose_an_option)
-                                    .setItems(slice.optionNames()) { _, index ->
-                                        slice.choose(index)
-                                        fragmentBinding.recyclerView.adapter!!.notifyItemChanged(adapterPosition)
-                                    }
-                                    .show()
-                        }
+            initialItems = context.slices,
+            viewHolderCreator = { parent: ViewGroup, _ ->
+                parent.viewHolderFrom(ViewholderUiStateSliceBinding::inflate).apply {
+                    this.binding.root.setOnClickListener {
+                        MaterialAlertDialogBuilder(context)
+                            .setTitle(R.string.choose_an_option)
+                            .setItems(slice.optionNames()) { _, index ->
+                                slice.choose(index)
+                                fragmentBinding.recyclerView.adapter!!.notifyItemChanged(adapterPosition)
+                            }
+                            .show()
                     }
-                },
-                viewHolderBinder = { holder, item, _/*index*/ ->
-                    holder.slice = item
-                    holder.binding.sliceName.text = item.name
-                    holder.binding.sliceDescription.text = item.currentSelection()
                 }
+            },
+            viewHolderBinder = { holder, item, _/*index*/ ->
+                holder.slice = item
+                holder.binding.sliceName.text = item.name
+                holder.binding.sliceDescription.text = item.currentSelection()
+            }
         )
     }
 
     private fun onMenuItemClicked(item: MenuItem) = when (item.itemId) {
         R.id.select_all -> requireContext().getSystemService<InputMethodManager>()
-                ?.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+            ?.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
         else -> Unit
     }
 
@@ -111,101 +111,101 @@ private var BindingViewHolder<ViewholderUiStateSliceBinding>.slice by viewHolder
 
 private val Context.slices
     get() = listOf<Slice<*>>(
-            Slice(
-                    name = "Has light status bar icons",
-                    options = listOf(true, false),
-                    getter = UiState::lightStatusBar
-            ) {
-                copy(lightStatusBar = it)
-            },
-            Slice(
-                    name = "Toolbar title",
-                    options = listOf(
-                            R.string.ui_state_playground,
-                            R.string.reality_can_be,
-                            R.string.inevitable,
-                            R.string.survivor
-                    ).map(resources::getString),
-                    getter = UiState::toolbarTitle
-            ) {
-                copy(toolbarTitle = it)
-            },
-            Slice(
-                    name = "Tool bar shows",
-                    options = listOf(true, false),
-                    getter = UiState::toolbarShows
-            ) {
-                copy(toolbarShows = it)
-            },
-            Slice(
-                    name = "Tool bar overlaps",
-                    options = listOf(true, false),
-                    getter = UiState::toolbarOverlaps
-            ) {
-                copy(toolbarOverlaps = it)
-            },
-            Slice(
-                    name = "FAB shows",
-                    options = listOf(true, false),
-                    getter = UiState::fabShows
-            ) {
-                copy(fabShows = it)
-            },
-            Slice(
-                    name = "FAB icon",
-                    nameTransformer = resources::getResourceName,
-                    options = listOf(
-                            R.drawable.ic_add_24dp,
-                            R.drawable.ic_android_24dp,
-                            R.drawable.ic_bullseye_24dp,
-                            R.drawable.ic_compass_24dp
-                    ),
-                    getter = { it.fabIcon }
-            ) {
-                copy(fabIcon = it)
-            },
-            Slice(
-                    name = "FAB text",
-                    options = listOf("Hello", "Hi", "How do you do"),
-                    getter = UiState::fabText
-            ) {
-                copy(fabText = it)
-            },
-            Slice(
-                    name = "FAB extended",
-                    options = listOf(true, false),
-                    getter = UiState::fabExtended
-            ) {
-                copy(fabExtended = it)
-            },
-            Slice(
-                    name = "Bottom nav shows",
-                    options = listOf(true, false),
-                    getter = UiState::showsBottomNav
-            ) {
-                copy(showsBottomNav = it)
-            },
-            Slice(
-                    name = "Nav bar color",
-                    nameTransformer = Int::stringHex,
-                    options = listOf(Color.TRANSPARENT, Color.parseColor("#80000000"), Color.BLACK, Color.WHITE, Color.RED, Color.GREEN, Color.BLUE),
-                    getter = UiState::navBarColor
-            ) {
-                copy(navBarColor = it)
-            },
-            Slice(
-                    name = "Inset Flags",
-                    options = listOf(InsetFlags.ALL, InsetFlags.NO_TOP, InsetFlags.NO_BOTTOM, InsetFlags.NONE),
-                    getter = UiState::insetFlags
-            ) {
-                copy(insetFlags = it)
-            }
+        Slice(
+            name = "Has light status bar icons",
+            options = listOf(true, false),
+            getter = UiState::lightStatusBar
+        ) {
+            copy(lightStatusBar = it)
+        },
+        Slice(
+            name = "Toolbar title",
+            options = listOf(
+                R.string.ui_state_playground,
+                R.string.reality_can_be,
+                R.string.inevitable,
+                R.string.survivor
+            ).map(resources::getString),
+            getter = UiState::toolbarTitle
+        ) {
+            copy(toolbarTitle = it)
+        },
+        Slice(
+            name = "Tool bar shows",
+            options = listOf(true, false),
+            getter = UiState::toolbarShows
+        ) {
+            copy(toolbarShows = it)
+        },
+        Slice(
+            name = "Tool bar overlaps",
+            options = listOf(true, false),
+            getter = UiState::toolbarOverlaps
+        ) {
+            copy(toolbarOverlaps = it)
+        },
+        Slice(
+            name = "FAB shows",
+            options = listOf(true, false),
+            getter = UiState::fabShows
+        ) {
+            copy(fabShows = it)
+        },
+        Slice(
+            name = "FAB icon",
+            nameTransformer = resources::getResourceName,
+            options = listOf(
+                R.drawable.ic_add_24dp,
+                R.drawable.ic_android_24dp,
+                R.drawable.ic_bullseye_24dp,
+                R.drawable.ic_compass_24dp
+            ),
+            getter = { it.fabIcon }
+        ) {
+            copy(fabIcon = it)
+        },
+        Slice(
+            name = "FAB text",
+            options = listOf("Hello", "Hi", "How do you do"),
+            getter = UiState::fabText
+        ) {
+            copy(fabText = it)
+        },
+        Slice(
+            name = "FAB extended",
+            options = listOf(true, false),
+            getter = UiState::fabExtended
+        ) {
+            copy(fabExtended = it)
+        },
+        Slice(
+            name = "Bottom nav shows",
+            options = listOf(true, false),
+            getter = UiState::showsBottomNav
+        ) {
+            copy(showsBottomNav = it)
+        },
+        Slice(
+            name = "Nav bar color",
+            nameTransformer = Int::stringHex,
+            options = listOf(Color.TRANSPARENT, Color.parseColor("#80000000"), Color.BLACK, Color.WHITE, Color.RED, Color.GREEN, Color.BLUE),
+            getter = UiState::navBarColor
+        ) {
+            copy(navBarColor = it)
+        },
+        Slice(
+            name = "Inset Flags",
+            options = listOf(InsetFlags.ALL, InsetFlags.NO_TOP, InsetFlags.NO_BOTTOM, InsetFlags.NONE),
+            getter = UiState::insetFlags
+        ) {
+            copy(insetFlags = it)
+        }
     )
 
 data class Slice<T>(
-        val name: String,
-        val options: List<T>,
-        val nameTransformer: (T) -> CharSequence = Any?::toString,
-        val getter: (UiState) -> T,
-        val setter: UiState.(T) -> UiState
+    val name: String,
+    val options: List<T>,
+    val nameTransformer: (T) -> CharSequence = Any?::toString,
+    val getter: (UiState) -> T,
+    val setter: UiState.(T) -> UiState
 )

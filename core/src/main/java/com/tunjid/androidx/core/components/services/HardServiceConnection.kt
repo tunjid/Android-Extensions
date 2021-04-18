@@ -19,9 +19,9 @@ import android.util.Log
  */
 
 class HardServiceConnection<T> @JvmOverloads constructor(
-        private val context: Context,
-        private val serviceClass: Class<T>,
-        private val bindCallback: ((T) -> Unit)? = null
+    private val context: Context,
+    private val serviceClass: Class<T>,
+    private val bindCallback: ((T) -> Unit)? = null
 ) : ServiceConnection where T : Service, T : SelfBindingService<T> {
 
     var boundService: T? = null
@@ -45,13 +45,13 @@ class HardServiceConnection<T> @JvmOverloads constructor(
      * Binds the typed [Service] to the supplied context
      */
     fun bind(flags: Int = Context.BIND_AUTO_CREATE, intentModifier: Intent.() -> Unit = {}) =
-            context.bindService(Intent(context, serviceClass).apply(intentModifier), this, flags)
+        context.bindService(Intent(context, serviceClass).apply(intentModifier), this, flags)
 
     /**
      * Convenience method for starting the typed [Service]
      */
     fun start(intentModifier: Intent.() -> Unit = {}) =
-            context.startService(Intent(context, serviceClass).apply(intentModifier))
+        context.startService(Intent(context, serviceClass).apply(intentModifier))
 
     /**
      * Unbinds the service from the last [Context] instance it was bound to. Returns true if
@@ -80,6 +80,6 @@ class HardServiceConnection<T> @JvmOverloads constructor(
         }
 
         private fun isEqual(serviceClass: Class<out Service>, runningServiceInfo: RunningServiceInfo): Boolean =
-                runningServiceInfo.service.className == serviceClass.name
+            runningServiceInfo.service.className == serviceClass.name
     }
 }

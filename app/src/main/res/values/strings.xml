@@ -30,9 +30,9 @@
     <string name="route_hard_service_connection">A fragment demonstrating the HardServiceConnection</string>
     <string name="route_viewpager">A fragment demonstrating the FragmentListAdapter</string>
 
-    <string name="stress_test_prompt" >Stress test navigation?</string>
-    <string name="yes" >Yes</string>
-    <string name="no" >No</string>
+    <string name="stress_test_prompt">Stress test navigation?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <!-- Menu items -->
     <string name="menu_reset_navigation">Reset Navigation</string>

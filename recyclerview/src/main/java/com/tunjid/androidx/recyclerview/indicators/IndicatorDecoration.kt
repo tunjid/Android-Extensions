@@ -9,20 +9,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 fun RecyclerView.indicatorDecoration(
-        horizontalOffset: Float = 0f,
-        verticalOffset: Float = 0f,
-        indicatorWidth: Float,
-        indicatorHeight: Float,
-        indicatorPadding: Float,
-        indicator: PageIndicator,
-        onIndicatorClicked: ((Int) -> Unit)? = null
+    horizontalOffset: Float = 0f,
+    verticalOffset: Float = 0f,
+    indicatorWidth: Float,
+    indicatorHeight: Float,
+    indicatorPadding: Float,
+    indicator: PageIndicator,
+    onIndicatorClicked: ((Int) -> Unit)? = null
 ): () -> Unit {
     val params = Params(
-            horizontalOffset = horizontalOffset,
-            verticalOffset = verticalOffset,
-            indicatorWidth = indicatorWidth,
-            indicatorHeight = indicatorHeight,
-            indicatorPadding = indicatorPadding
+        horizontalOffset = horizontalOffset,
+        verticalOffset = verticalOffset,
+        indicatorWidth = indicatorWidth,
+        indicatorHeight = indicatorHeight,
+        indicatorPadding = indicatorPadding
     )
 
     val decoration = IndicatorDecoration(indicator, params)
@@ -38,8 +38,8 @@ fun RecyclerView.indicatorDecoration(
 }
 
 private class IndicatorDecoration(
-        private val indicator: PageIndicator,
-        private val params: Params
+    private val indicator: PageIndicator,
+    private val params: Params
 ) : RecyclerView.ItemDecoration() {
     override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         super.onDrawOver(canvas, parent, state)
@@ -72,9 +72,9 @@ private class IndicatorDecoration(
 }
 
 private class IndicatorClickListener(
-        recyclerView: RecyclerView,
-        private val params: Params,
-        private val onIndicatorClicked: ((Int) -> Unit)?
+    recyclerView: RecyclerView,
+    private val params: Params,
+    private val onIndicatorClicked: ((Int) -> Unit)?
 ) : RecyclerView.SimpleOnItemTouchListener() {
 
     private val gestureDetector: GestureDetector = GestureDetector(recyclerView.context, object : GestureDetector.SimpleOnGestureListener() {

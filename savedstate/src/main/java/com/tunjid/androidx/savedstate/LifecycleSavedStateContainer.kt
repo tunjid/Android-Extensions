@@ -8,15 +8,15 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryOwner
 
 fun <T> savedStateFor(
-        owner: T,
-        key: String
+    owner: T,
+    key: String
 ): LifecycleSavedStateContainer where T : LifecycleOwner, T : SavedStateRegistryOwner =
-        LifecycleSavedStateContainer(key, owner, owner)
+    LifecycleSavedStateContainer(key, owner, owner)
 
 class LifecycleSavedStateContainer(
-        private val key: String,
-        lifecycleOwner: LifecycleOwner,
-        private val savedStateRegistryOwner: SavedStateRegistryOwner
+    private val key: String,
+    lifecycleOwner: LifecycleOwner,
+    private val savedStateRegistryOwner: SavedStateRegistryOwner
 ) : LifecycleEventObserver, SavedStateRegistry.SavedStateProvider {
 
     val isFreshState: Boolean

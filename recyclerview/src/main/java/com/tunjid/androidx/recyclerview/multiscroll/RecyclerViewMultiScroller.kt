@@ -58,7 +58,7 @@ class RecyclerViewMultiScroller(
         override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
             // If the user flung the list, then touches any other synced list, stop scrolling
             if (e.actionMasked == MotionEvent.ACTION_DOWN && active != null) active?.stopScroll()
-            return when(active) {
+            return when (active) {
                 null -> false // return false if active is null, we aren't trying to override default scrolling
                 else -> rv != active // Ignore touches on other RVs while scrolling is occurring
             }

@@ -70,7 +70,7 @@ fun CharSequence.click(paintConsumer: (TextPaint) -> Unit = {}, clickAction: () 
  * @return the formatted string (with spans).
  */
 fun CharSequence.formatSpanned(vararg args: Any): SpannableStringBuilder =
-        formatActual(Locale.getDefault(), this, *args)
+    formatActual(Locale.getDefault(), this, *args)
 
 /**
  * Applies a list of zero or more tags to the entire range in the CharSequence.

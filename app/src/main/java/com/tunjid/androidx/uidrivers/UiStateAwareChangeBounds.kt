@@ -6,7 +6,7 @@ import androidx.transition.TransitionValues
 import com.tunjid.androidx.R
 
 class UiStateAwareChangeBounds(
-        private val initial: UiState?
+    private val initial: UiState?
 ) : ChangeBounds() {
 
     override fun captureEndValues(transitionValues: TransitionValues) {
@@ -26,10 +26,10 @@ class UiStateAwareChangeBounds(
         val navBar = if (noInsets && navBarChanged && !toolBarChanged) current.systemUI.static.navBarSize else 0
 
         val altered = Rect(
-                rect.left,
-                rect.top + statusBar + toolbar + navBar,
-                rect.right,
-                rect.bottom + statusBar + toolbar + navBar
+            rect.left,
+            rect.top + statusBar + toolbar + navBar,
+            rect.right,
+            rect.bottom + statusBar + toolbar + navBar
         )
         transitionValues.values[BOUNDS_PROPERTY] = altered
     }
@@ -38,9 +38,9 @@ class UiStateAwareChangeBounds(
 private const val BOUNDS_PROPERTY = "android:changeBounds:bounds"
 
 private fun <T> changed(
-        before: UiState?,
-        after: UiState?,
-        property: (UiState) -> T
+    before: UiState?,
+    after: UiState?,
+    property: (UiState) -> T
 ) = before != null
-        && after != null
-        && property(before) != property(after)
+    && after != null
+    && property(before) != property(after)

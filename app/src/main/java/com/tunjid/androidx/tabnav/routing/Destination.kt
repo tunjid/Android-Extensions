@@ -25,7 +25,6 @@ import com.tunjid.androidx.tabmisc.SpringAnimationFragment
 import com.tunjid.androidx.tabmisc.UiStatePlaygroundFragment
 import com.tunjid.androidx.tabnav.navigator.IndependentStacksFragment
 import com.tunjid.androidx.tabnav.navigator.MultipleStacksFragment
-import java.lang.IllegalArgumentException
 
 /**
  * Routes in the sample app
@@ -37,12 +36,12 @@ import java.lang.IllegalArgumentException
 sealed class RouteItem {
     object Spacer : RouteItem()
     data class Destination(
-            val destination: CharSequence,
-            val description: CharSequence
+        val destination: CharSequence,
+        val description: CharSequence
     ) : RouteItem(), Parcelable {
         constructor(parcel: Parcel) : this(
-                TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(parcel),
-                TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(parcel))
+            TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(parcel),
+            TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(parcel))
 
         override fun writeToParcel(parcel: Parcel, flags: Int) {
             TextUtils.writeToParcel(destination, parcel, 0)
@@ -63,36 +62,37 @@ private fun Context.formatRoute(@StringRes stringRes: Int): CharSequence = getSt
 
 val Context.routeDestinations get() = routeItems.flatten().filterIsInstance<RouteItem.Destination>()
 
-val Context.routeItems get() = listOf(
-    listOf(
-        RouteItem.Destination(UiStatePlaygroundFragment::class.java.routeName, formatRoute(R.string.route_ui_state)),
-        RouteItem.Destination(IndependentStacksFragment::class.java.routeName, formatRoute(R.string.route_independent_stack)),
-        RouteItem.Destination(MultipleStacksFragment::class.java.routeName, formatRoute(R.string.route_multiple_inner_stack)),
-        RouteItem.Spacer
-    ),
-    listOf(
-        RouteItem.Destination(DoggoListFragment::class.java.routeName, formatRoute(R.string.route_doggo_list)),
-        RouteItem.Destination(DoggoRankFragment::class.java.routeName, formatRoute(R.string.route_doggo_rank)),
-        RouteItem.Destination(ShiftingTilesFragment::class.java.routeName, formatRoute(R.string.route_shifting_tile)),
-        RouteItem.Destination(EndlessTilesFragment::class.java.routeName, formatRoute(R.string.route_endless_tile)),
-        RouteItem.Destination(StandingsFragment::class.java.routeName, formatRoute(R.string.route_standings)),
-        RouteItem.Destination(SpreadSheetParentFragment::class.java.routeName, formatRoute(R.string.route_spreadsheet)),
-        RouteItem.Destination(ViewPagerListAdapterFragment::class.java.routeName, formatRoute(R.string.route_viewpager)),
-        RouteItem.Spacer
-    ),
-    listOf(
-        RouteItem.Destination(BleScanFragment::class.java.routeName, formatRoute(R.string.route_ble_scan)),
-        RouteItem.Destination(NsdScanFragment::class.java.routeName, formatRoute(R.string.route_nsd_scan)),
-        RouteItem.Spacer
-    ),
-    listOf(
-        RouteItem.Destination(SpringAnimationFragment::class.java.routeName, formatRoute(R.string.route_spring_animation)),
-        RouteItem.Destination(FabTransformationsFragment::class.java.routeName, formatRoute(R.string.route_fab_transformations)),
-        RouteItem.Destination(CharacterSequenceExtensionsFragment::class.java.routeName, formatRoute(R.string.route_span_builder)),
-        RouteItem.Destination(HardServiceConnectionFragment::class.java.routeName, formatRoute(R.string.route_hard_service_connection)),
-        RouteItem.Spacer
+val Context.routeItems
+    get() = listOf(
+        listOf(
+            RouteItem.Destination(UiStatePlaygroundFragment::class.java.routeName, formatRoute(R.string.route_ui_state)),
+            RouteItem.Destination(IndependentStacksFragment::class.java.routeName, formatRoute(R.string.route_independent_stack)),
+            RouteItem.Destination(MultipleStacksFragment::class.java.routeName, formatRoute(R.string.route_multiple_inner_stack)),
+            RouteItem.Spacer
+        ),
+        listOf(
+            RouteItem.Destination(DoggoListFragment::class.java.routeName, formatRoute(R.string.route_doggo_list)),
+            RouteItem.Destination(DoggoRankFragment::class.java.routeName, formatRoute(R.string.route_doggo_rank)),
+            RouteItem.Destination(ShiftingTilesFragment::class.java.routeName, formatRoute(R.string.route_shifting_tile)),
+            RouteItem.Destination(EndlessTilesFragment::class.java.routeName, formatRoute(R.string.route_endless_tile)),
+            RouteItem.Destination(StandingsFragment::class.java.routeName, formatRoute(R.string.route_standings)),
+            RouteItem.Destination(SpreadSheetParentFragment::class.java.routeName, formatRoute(R.string.route_spreadsheet)),
+            RouteItem.Destination(ViewPagerListAdapterFragment::class.java.routeName, formatRoute(R.string.route_viewpager)),
+            RouteItem.Spacer
+        ),
+        listOf(
+            RouteItem.Destination(BleScanFragment::class.java.routeName, formatRoute(R.string.route_ble_scan)),
+            RouteItem.Destination(NsdScanFragment::class.java.routeName, formatRoute(R.string.route_nsd_scan)),
+            RouteItem.Spacer
+        ),
+        listOf(
+            RouteItem.Destination(SpringAnimationFragment::class.java.routeName, formatRoute(R.string.route_spring_animation)),
+            RouteItem.Destination(FabTransformationsFragment::class.java.routeName, formatRoute(R.string.route_fab_transformations)),
+            RouteItem.Destination(CharacterSequenceExtensionsFragment::class.java.routeName, formatRoute(R.string.route_span_builder)),
+            RouteItem.Destination(HardServiceConnectionFragment::class.java.routeName, formatRoute(R.string.route_hard_service_connection)),
+            RouteItem.Spacer
+        )
     )
-)
 
 fun RouteItem.Destination.fragment(isTopLevel: Boolean): Fragment = when (destination) {
     DoggoListFragment::class.java.routeName -> DoggoListFragment.newInstance(isTopLevel = isTopLevel)

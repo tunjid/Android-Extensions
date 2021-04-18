@@ -10,9 +10,8 @@ import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentStandingsBinding
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.recyclerview.multiscroll.DynamicCellSizer
-import com.tunjid.androidx.uidrivers.UiState
-import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.tabnav.routing.routeName
+import com.tunjid.androidx.uidrivers.uiState
 
 class StandingsFragment : Fragment(R.layout.fragment_standings) {
 

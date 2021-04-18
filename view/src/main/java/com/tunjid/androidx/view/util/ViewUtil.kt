@@ -10,7 +10,7 @@ val View.marginLayoutParams: ViewGroup.MarginLayoutParams
     get() = layoutParams as ViewGroup.MarginLayoutParams
 
 fun ViewGroup.inflate(@LayoutRes res: Int): View =
-        LayoutInflater.from(context).inflate(res, this, false)
+    LayoutInflater.from(context).inflate(res, this, false)
 
 fun View.hashTransitionName(`object`: Any): String =
-        `object`.hashCode().toString() + "-" + id
+    `object`.hashCode().toString() + "-" + id

@@ -9,8 +9,8 @@ import androidx.test.espresso.IdlingResource
  * Created by tj.dahunsi on 4/29/17.
  */
 abstract class BaseFragmentIdlingResource(
-        fragmentManager: FragmentManager,
-        private var fragmentTag: String) : FragmentManager.FragmentLifecycleCallbacks(), IdlingResource {
+    fragmentManager: FragmentManager,
+    private var fragmentTag: String) : FragmentManager.FragmentLifecycleCallbacks(), IdlingResource {
 
     protected var idle = false
         set(value) {

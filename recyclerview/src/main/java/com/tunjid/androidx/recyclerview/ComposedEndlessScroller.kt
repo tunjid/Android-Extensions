@@ -8,12 +8,12 @@ import java.util.*
 import kotlin.math.abs
 
 internal class ComposedEndlessScroller(
-        private val visibleThreshold: Int, // The minimum amount of items to have below your current scroll position before loading more.
-        @RecyclerView.Orientation
-        private val orientation: Int,
-        private val isLayoutManagerReverse: (RecyclerView.LayoutManager) -> Boolean,
-        private val firstVisibleItemFunction: (RecyclerView.LayoutManager) -> Int,
-        private val loadMore: (Int) -> Unit
+    private val visibleThreshold: Int, // The minimum amount of items to have below your current scroll position before loading more.
+    @RecyclerView.Orientation
+    private val orientation: Int,
+    private val isLayoutManagerReverse: (RecyclerView.LayoutManager) -> Boolean,
+    private val firstVisibleItemFunction: (RecyclerView.LayoutManager) -> Int,
+    private val loadMore: (Int) -> Unit
 ) : RecyclerView.OnScrollListener() {
 
     private var previousTotal = 0 // The total number of items in the dataset after the last load

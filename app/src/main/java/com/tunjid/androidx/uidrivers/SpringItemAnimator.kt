@@ -19,9 +19,9 @@ import com.tunjid.androidx.view.util.spring
  * direction.
  */
 open class SpringItemAnimator @JvmOverloads constructor(
-        slideFromEdge: Int = Gravity.BOTTOM, // Default to sliding in upward
-        layoutDirection: Int = -1,
-        private val stiffness: Float = SpringForce.STIFFNESS_MEDIUM
+    slideFromEdge: Int = Gravity.BOTTOM, // Default to sliding in upward
+    layoutDirection: Int = -1,
+    private val stiffness: Float = SpringForce.STIFFNESS_MEDIUM
 ) : DefaultItemAnimator() {
 
     private val slideFromEdge: Int = Gravity.getAbsoluteGravity(slideFromEdge, layoutDirection)
@@ -45,11 +45,11 @@ open class SpringItemAnimator @JvmOverloads constructor(
     }
 
     override fun animateMove(
-            holder: RecyclerView.ViewHolder?,
-            fromViewX: Int,
-            fromViewY: Int,
-            toViewX: Int,
-            toViewY: Int
+        holder: RecyclerView.ViewHolder?,
+        fromViewX: Int,
+        fromViewY: Int,
+        toViewX: Int,
+        toViewY: Int
     ): Boolean {
         holder ?: return false
         val view = holder.itemView
@@ -104,11 +104,11 @@ open class SpringItemAnimator @JvmOverloads constructor(
     }
 
     override fun isRunning() =
-            pendingAdds.isNotEmpty() ||
-                    runningAdds.isNotEmpty() ||
-                    pendingMoves.isNotEmpty() ||
-                    runningMoves.isNotEmpty() ||
-                    super.isRunning()
+        pendingAdds.isNotEmpty() ||
+            runningAdds.isNotEmpty() ||
+            pendingMoves.isNotEmpty() ||
+            runningMoves.isNotEmpty() ||
+            super.isRunning()
 
     private fun addItem(holder: RecyclerView.ViewHolder) {
         val springAlpha = holder.itemView.customSpring(ALPHA)
@@ -180,8 +180,8 @@ open class SpringItemAnimator @JvmOverloads constructor(
     }
 
     private fun View.customSpring(property: FloatPropertyCompat<View>) = spring(
-            property = property,
-            stiffness = stiffness
+        property = property,
+        stiffness = stiffness
     )
 }
 
@@ -190,8 +190,8 @@ open class SpringItemAnimator @JvmOverloads constructor(
  * `onEnd` when all have finished.
  */
 class MultiSpringEndListener(
-        onEnd: (Boolean) -> Unit,
-        vararg springs: SpringAnimation
+    onEnd: (Boolean) -> Unit,
+    vararg springs: SpringAnimation
 ) {
     private val listeners = ArrayList<DynamicAnimation.OnAnimationEndListener>(springs.size)
 
@@ -201,10 +201,10 @@ class MultiSpringEndListener(
         springs.forEach {
             val listener = object : DynamicAnimation.OnAnimationEndListener {
                 override fun onAnimationEnd(
-                        animation: DynamicAnimation<out DynamicAnimation<*>>?,
-                        canceled: Boolean,
-                        value: Float,
-                        velocity: Float
+                    animation: DynamicAnimation<out DynamicAnimation<*>>?,
+                    canceled: Boolean,
+                    value: Float,
+                    velocity: Float
                 ) {
                     animation?.removeEndListener(this)
                     wasCancelled = wasCancelled or canceled
@@ -221,8 +221,8 @@ class MultiSpringEndListener(
 }
 
 fun listenForAllSpringsEnd(
-        onEnd: (Boolean) -> Unit,
-        vararg springs: SpringAnimation
+    onEnd: (Boolean) -> Unit,
+    vararg springs: SpringAnimation
 ) = MultiSpringEndListener(onEnd, *springs)
 
 private fun <T> MutableIterator<T>.dropAfter(action: (T) -> Unit) {
@@ -236,7 +236,7 @@ private fun <T> MutableIterator<T>.dropAfter(action: (T) -> Unit) {
 
 private fun <T> MutableList<T>.singletonIterator(item: T): MutableIterator<T> {
     val index = indexOf(item)
-    return when(index) {
+    return when (index) {
         -1 -> mutableListOf()
         else -> subList(index, index + 1)
     }.iterator()

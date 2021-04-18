@@ -14,8 +14,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.transition.Fade
 import com.tunjid.androidx.R
-import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentSimpleListBinding
 import com.tunjid.androidx.databinding.ViewholderDoggoAdoptBinding
 import com.tunjid.androidx.databinding.ViewholderSimpleInputBinding
@@ -67,24 +67,24 @@ class AdoptDoggoFragment : Fragment(R.layout.fragment_simple_list) {
         FragmentSimpleListBinding.bind(view).recyclerView.apply {
             layoutManager = verticalLayoutManager()
             adapter = adapterOf(
-                    itemsSource = {
-                        listOf(AdoptItem.Header) + listOf(*resources.getStringArray(R.array.adoption_items)).map(AdoptItem::Input)
-                    },
-                    viewHolderCreator = { parent, viewType ->
-                        when (viewType) {
-                            AdoptItem.Input::class.java.hashCode() -> parent.inputViewHolder()
-                            AdoptItem.Header::class.java.hashCode() -> parent.headerHolder()
-                            else -> throw IllegalArgumentException("Unknown view type")
-                        }
-                    },
-                    viewHolderBinder = { viewHolder, item, _ ->
-                        when (item) {
-                            is AdoptItem.Input -> viewHolder.typed<ViewholderSimpleInputBinding>().bind(item.hint)
-                            is AdoptItem.Header -> viewHolder.typed<ViewholderDoggoAdoptBinding>().doggoBinder.bind(doggo)
-                        }
-                    },
-                    viewTypeFunction = { it.javaClass.hashCode() },
-                    itemIdFunction = { it.hashCode().toLong() }
+                itemsSource = {
+                    listOf(AdoptItem.Header) + listOf(*resources.getStringArray(R.array.adoption_items)).map(AdoptItem::Input)
+                },
+                viewHolderCreator = { parent, viewType ->
+                    when (viewType) {
+                        AdoptItem.Input::class.java.hashCode() -> parent.inputViewHolder()
+                        AdoptItem.Header::class.java.hashCode() -> parent.headerHolder()
+                        else -> throw IllegalArgumentException("Unknown view type")
+                    }
+                },
+                viewHolderBinder = { viewHolder, item, _ ->
+                    when (item) {
+                        is AdoptItem.Input -> viewHolder.typed<ViewholderSimpleInputBinding>().bind(item.hint)
+                        is AdoptItem.Header -> viewHolder.typed<ViewholderDoggoAdoptBinding>().doggoBinder.bind(doggo)
+                    }
+                },
+                viewTypeFunction = { it.javaClass.hashCode() },
+                itemIdFunction = { it.hashCode().toLong() }
             )
             addItemDecoration(context.divider(DividerItemDecoration.HORIZONTAL))
         }

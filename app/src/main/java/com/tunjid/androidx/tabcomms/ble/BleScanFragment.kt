@@ -15,11 +15,12 @@ import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.RecyclerView
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
 import com.tunjid.androidx.communications.bluetooth.ScanResultCompat
+import com.tunjid.androidx.core.components.doOnEveryEvent
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentBleScanBinding
@@ -27,8 +28,6 @@ import com.tunjid.androidx.databinding.ViewholderScanBinding
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.map
 import com.tunjid.androidx.mapDistinct
-import com.tunjid.androidx.navigation.MultiStackNavigator
-import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.recyclerview.listAdapterOf
 import com.tunjid.androidx.recyclerview.verticalLayoutManager
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
@@ -39,6 +38,7 @@ import com.tunjid.androidx.tabnav.routing.routeName
 import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.callback
 import com.tunjid.androidx.uidrivers.uiState
+import com.tunjid.androidx.uidrivers.updatePartial
 
 class BleScanFragment : Fragment(R.layout.fragment_ble_scan) {
 
@@ -60,6 +60,9 @@ class BleScanFragment : Fragment(R.layout.fragment_ble_scan) {
             lightStatusBar = !requireContext().isDarkTheme,
             navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )
+        else viewLifecycleOwner.lifecycle.doOnEveryEvent(Lifecycle.Event.ON_RESUME) {
+            ::uiState.updatePartial { copy(fabShows = false) }
+        }
 
         val placeHolder = PlaceHolder(view.findViewById(R.id.placeholder_container))
         placeHolder.bind(PlaceHolder.State(R.string.no_ble_devices, R.drawable.ic_bluetooth_24dp))

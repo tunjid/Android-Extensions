@@ -63,15 +63,15 @@ private fun Toolbar.updateIcons() {
 
     overflowIcon = overflowIcon?.withTint(tint)
     navigationIcon =
-            if (navigator?.previous == null) null
-            else context.drawableAt(R.drawable.ic_arrow_back_24dp)?.withTint(tint)
+        if (navigator?.previous == null) null
+        else context.drawableAt(R.drawable.ic_arrow_back_24dp)?.withTint(tint)
 }
 
 private val Toolbar.titleTint: Int
     get() = (title as? Spanned)?.run {
         getSpans(0, title.length, ForegroundColorSpan::class.java)
-                .firstOrNull()
-                ?.foregroundColor
+            .firstOrNull()
+            ?.foregroundColor
     } ?: context.themeColorAt(R.attr.prominent_text_color)
 
 private val Toolbar.navigator: Navigator?

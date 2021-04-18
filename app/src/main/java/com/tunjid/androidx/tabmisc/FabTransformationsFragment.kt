@@ -19,13 +19,13 @@ import com.tunjid.androidx.core.graphics.drawable.withTint
 import com.tunjid.androidx.core.text.color
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.material.animator.FabExtensionAnimator
-import com.tunjid.androidx.uidrivers.SpeedDialClickListener
-import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.uidrivers.InsetFlags
-import com.tunjid.androidx.view.util.withOneShotEndListener
 import com.tunjid.androidx.tabnav.routing.routeName
+import com.tunjid.androidx.uidrivers.InsetFlags
+import com.tunjid.androidx.uidrivers.SpeedDialClickListener
 import com.tunjid.androidx.uidrivers.callback
+import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.updatePartial
+import com.tunjid.androidx.view.util.withOneShotEndListener
 
 class FabTransformationsFragment : Fragment(R.layout.fragment_fab_transformations) {
 
@@ -61,19 +61,19 @@ class FabTransformationsFragment : Fragment(R.layout.fragment_fab_transformation
         )
 
         if (isTopLevel) uiState = uiState.copy(
-                toolbarTitle = this::class.java.routeName,
-                toolbarOverlaps = false,
-                toolbarShows = true,
-                toolbarMenuRes = 0,
-                fabShows = true,
-                fabExtended = true,
-                fabText = getString(R.string.speed_dial),
-                fabIcon = R.drawable.ic_unfold_more_24dp,
-                showsBottomNav = false,
-                insetFlags = InsetFlags.ALL,
-                lightStatusBar = !context.isDarkTheme,
-                navBarColor = context.themeColorAt(R.attr.nav_bar_color),
-                fabClickListener = viewLifecycleOwner.callback(speedDialClickListener)
+            toolbarTitle = this::class.java.routeName,
+            toolbarOverlaps = false,
+            toolbarShows = true,
+            toolbarMenuRes = 0,
+            fabShows = true,
+            fabExtended = true,
+            fabText = getString(R.string.speed_dial),
+            fabIcon = R.drawable.ic_unfold_more_24dp,
+            showsBottomNav = false,
+            insetFlags = InsetFlags.ALL,
+            lightStatusBar = !context.isDarkTheme,
+            navBarColor = context.themeColorAt(R.attr.nav_bar_color),
+            fabClickListener = viewLifecycleOwner.callback(speedDialClickListener)
         )
         else viewLifecycleOwner.lifecycle.doOnEveryEvent(Lifecycle.Event.ON_RESUME) {
             ::uiState.updatePartial {
@@ -128,16 +128,16 @@ class FabTransformationsFragment : Fragment(R.layout.fragment_fab_transformation
 
     private fun createSpeedDialItems() = requireActivity().run {
         listOf(
-                getString(R.string.expand_fab).color(color) to drawableAt(R.drawable.ic_expand_24dp)
-                        ?.withTint(color)!!,
-                getString(R.string.option_1).color(color) to drawableAt(R.drawable.ic_numeric_1_outline_24dp)
-                        ?.withTint(color)!!,
-                getString(R.string.option_2).color(color) to drawableAt(R.drawable.ic_numeric_2_outline_24dp)
-                        ?.withTint(color)!!,
-                getString(R.string.option_3).color(color) to drawableAt(R.drawable.ic_numeric_3_outline_24dp)
-                        ?.withTint(color)!!,
-                getString(R.string.option_4).color(color) to drawableAt(R.drawable.ic_numeric_4_outline_24dp)
-                        ?.withTint(color)!!
+            getString(R.string.expand_fab).color(color) to drawableAt(R.drawable.ic_expand_24dp)
+                ?.withTint(color)!!,
+            getString(R.string.option_1).color(color) to drawableAt(R.drawable.ic_numeric_1_outline_24dp)
+                ?.withTint(color)!!,
+            getString(R.string.option_2).color(color) to drawableAt(R.drawable.ic_numeric_2_outline_24dp)
+                ?.withTint(color)!!,
+            getString(R.string.option_3).color(color) to drawableAt(R.drawable.ic_numeric_3_outline_24dp)
+                ?.withTint(color)!!,
+            getString(R.string.option_4).color(color) to drawableAt(R.drawable.ic_numeric_4_outline_24dp)
+                ?.withTint(color)!!
         )
     }
 

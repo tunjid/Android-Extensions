@@ -23,10 +23,10 @@ import com.tunjid.androidx.view.util.withOneShotEndListener
 import com.tunjid.androidx.view.util.withOneShotUpdateListener
 
 class SpeedDialClickListener(
-        @ColorInt private val tint: Int = Color.BLUE,
-        private val items: List<Pair<CharSequence?, Drawable>>,
-        private val runGuard: (View) -> Boolean,
-        private val dismissListener: (Int?) -> Unit
+    @ColorInt private val tint: Int = Color.BLUE,
+    private val items: List<Pair<CharSequence?, Drawable>>,
+    private val runGuard: (View) -> Boolean,
+    private val dismissListener: (Int?) -> Unit
 ) : (View) -> Unit {
 
     override fun invoke(button: View) {
@@ -68,16 +68,16 @@ class SpeedDialClickListener(
     }
 
     private fun MaterialButton.haloEffects(colorFrom: Int, colorTo: Int, context: Context) = listOf(
-            roundAbout(colorFrom, colorTo, ArgbEvaluator(), { backgroundTintList!!.defaultColor }) { backgroundTintList = ColorStateList.valueOf(it as Int) },
-            roundAbout(0, context.resources.getDimensionPixelSize(R.dimen.quarter_margin), IntEvaluator(), this::getStrokeWidth, this::setStrokeWidth)
+        roundAbout(colorFrom, colorTo, ArgbEvaluator(), { backgroundTintList!!.defaultColor }) { backgroundTintList = ColorStateList.valueOf(it as Int) },
+        roundAbout(0, context.resources.getDimensionPixelSize(R.dimen.quarter_margin), IntEvaluator(), this::getStrokeWidth, this::setStrokeWidth)
     )
 
     private inline fun <reified T> roundAbout(
-            originalPosition: T,
-            nextPosition: T,
-            evaluator: TypeEvaluator<T>,
-            crossinline getter: () -> T,
-            crossinline setter: (T) -> Unit
+        originalPosition: T,
+        nextPosition: T,
+        evaluator: TypeEvaluator<T>,
+        crossinline getter: () -> T,
+        crossinline setter: (T) -> Unit
     ) = ValueAnimator.ofObject(evaluator, getter(), nextPosition).apply {
         duration = 200L
         addUpdateListener { setter(it.animatedValue as T) }

@@ -33,10 +33,10 @@ import com.tunjid.androidx.view.R
  * [Medium](https://medium.com/androiddevelopers/motional-intelligence-build-smarter-animations-821af4d5f8c0)
  */
 fun View.spring(
-        property: FloatPropertyCompat<View>,
-        stiffness: Float? = null,
-        damping: Float? = null,
-        startVelocity: Float? = null
+    property: FloatPropertyCompat<View>,
+    stiffness: Float? = null,
+    damping: Float? = null,
+    startVelocity: Float? = null
 ): SpringAnimation {
     val propertyMap = getOrPutTag<MutableMap<String, SpringAnimation>>(R.id.spring_animation_property_map, ::mutableMapOf)
     val springAnim = propertyMap.getOrPut(property.name) {
@@ -59,7 +59,7 @@ fun View.spring(
 }
 
 inline fun <reified T> View.getOrPutTag(@IdRes id: Int, initializer: () -> T) =
-        getTag(id) as? T ?: initializer().also { setTag(id, it) }
+    getTag(id) as? T ?: initializer().also { setTag(id, it) }
 
 /**
  * An end listener that removes itself when the animation ends
@@ -75,7 +75,7 @@ fun SpringAnimation.withOneShotEndListener(onEnd: () -> Unit): SpringAnimation =
  * An update listener that removes itself when the animation ends
  */
 fun SpringAnimation.withOneShotUpdateListener(
-        onUpdate: (value: Float, velocity: Float) -> Unit
+    onUpdate: (value: Float, velocity: Float) -> Unit
 ): SpringAnimation = apply {
     val listener = DynamicAnimation.OnAnimationUpdateListener { _, value, velocity -> onUpdate(value, velocity) }
     addUpdateListener(listener).withOneShotEndListener { removeUpdateListener(listener) }
@@ -95,10 +95,10 @@ val View.innermostFocusedChild: View?
  * Pops an orphaned [View] over the specified [anchor] using a [PopupWindow]
  */
 fun View.popOver(
-        @ColorInt backgroundColor: Int = Color.argb(60, 0, 0, 0),
-        anchor: View,
-        adjuster: () -> Point = { Point(0, 0) },
-        options: PopupWindow.() -> Unit = {}
+    @ColorInt backgroundColor: Int = Color.argb(60, 0, 0, 0),
+    anchor: View,
+    adjuster: () -> Point = { Point(0, 0) },
+    options: PopupWindow.() -> Unit = {}
 ) {
     require(!this.isAttachedToWindow) { "The View being attached must be an orphan" }
     PopupWindow(this.wrapAtAnchor(backgroundColor, anchor, adjuster), MATCH_PARENT, MATCH_PARENT, true).run {

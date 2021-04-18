@@ -19,11 +19,11 @@ import com.tunjid.androidx.view.util.withOneShotEndListener
  * Created by tj.dahunsi on 2/19/16.
  */
 class ViewHider<T : View> private constructor(
-        val view: T,
-        private val listener: Listener,
-        @param:HideDirection @field:HideDirection
-        private val direction: Int,
-        private val options: SpringAnimation.() -> Unit) {
+    val view: T,
+    private val listener: Listener,
+    @param:HideDirection @field:HideDirection
+    private val direction: Int,
+    private val options: SpringAnimation.() -> Unit) {
 
     private var isVisible = true
 
@@ -32,8 +32,8 @@ class ViewHider<T : View> private constructor(
 
     private val spring: SpringAnimation
         get() = view.spring(
-                if (direction == LEFT || direction == RIGHT) SpringAnimation.TRANSLATION_X
-                else SpringAnimation.TRANSLATION_Y
+            if (direction == LEFT || direction == RIGHT) SpringAnimation.TRANSLATION_X
+            else SpringAnimation.TRANSLATION_Y
         )
 
     // These calculations don't take the status bar into account, unlikely to matter however
@@ -44,9 +44,9 @@ class ViewHider<T : View> private constructor(
             val location = IntArray(2).apply { view.getLocationInWindow(this) }
             val displaySize = Point().apply {
                 (view.context.getSystemService(WINDOW_SERVICE) as? WindowManager)
-                        ?.defaultDisplay
-                        ?.getSize(this)
-                        ?: return 0F
+                    ?.defaultDisplay
+                    ?.getSize(this)
+                    ?: return 0F
             }
 
             return when (direction) {
@@ -77,12 +77,12 @@ class ViewHider<T : View> private constructor(
         this.isVisible = visible
 
         spring
-                .apply {
-                    options.invoke(this)
-                    for (runnable in listener.startActions) runnable.invoke()
-                }
-                .withOneShotEndListener { for (runnable in listener.endActions) runnable.invoke() }
-                .animateToFinalPosition(displacement)
+            .apply {
+                options.invoke(this)
+                for (runnable in listener.startActions) runnable.invoke()
+            }
+            .withOneShotEndListener { for (runnable in listener.endActions) runnable.invoke() }
+            .animateToFinalPosition(displacement)
     }
 
     class Builder<T : View> internal constructor(private val view: T) {

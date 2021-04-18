@@ -31,10 +31,10 @@ class Diff<T> private constructor(val result: DiffUtil.DiffResult, val items: Li
          * function
         </T> */
         fun <T> calculate(
-                src: List<T>,
-                additions: List<T>,
-                combiner: (List<T>, List<T>) -> List<T>,
-                diffingFunction: (T) -> Diffable): Diff<T> {
+            src: List<T>,
+            additions: List<T>,
+            combiner: (List<T>, List<T>) -> List<T>,
+            diffingFunction: (T) -> Diffable): Diff<T> {
 
             val updated = combiner(ArrayList(src), ArrayList(additions))
             val result = calculateDiff(DiffCallback(ArrayList(src), updated, diffingFunction))
@@ -49,9 +49,9 @@ class Diff<T> private constructor(val result: DiffUtil.DiffResult, val items: Li
          * @see .calculate
         </T> */
         fun <T : Diffable> calculate(
-                src: List<T>,
-                additions: List<T>,
-                combiner: (List<T>, List<T>) -> List<T>): Diff<T> {
+            src: List<T>,
+            additions: List<T>,
+            combiner: (List<T>, List<T>) -> List<T>): Diff<T> {
             return calculate(src, additions, combiner, { identity -> identity })
         }
     }

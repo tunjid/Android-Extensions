@@ -36,7 +36,7 @@ private sealed class BleUpdate {
 }
 
 private data class AggregatedInput(
-    val hasPermission: Boolean= false,
+    val hasPermission: Boolean = false,
     val scan: Boolean = false
 )
 
@@ -62,7 +62,7 @@ class BleViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
         .distinctUntilChanged()
-        .switchMap { aggregated->
+        .switchMap { aggregated ->
             when {
                 aggregated.scan && aggregated.hasPermission -> context.bluetoothUpdates()
                 !aggregated.scan -> Flowable.just(BleUpdate.Scanning(isScanning = false))
