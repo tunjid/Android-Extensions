@@ -73,11 +73,11 @@ val Context.routeItems
         listOf(
             RouteItem.Destination(DoggoListFragment::class.java.routeName, formatRoute(R.string.route_doggo_list)),
             RouteItem.Destination(DoggoRankFragment::class.java.routeName, formatRoute(R.string.route_doggo_rank)),
+            RouteItem.Destination(ViewPagerListAdapterFragment::class.java.routeName, formatRoute(R.string.route_viewpager)),
             RouteItem.Destination(ShiftingTilesFragment::class.java.routeName, formatRoute(R.string.route_shifting_tile)),
             RouteItem.Destination(EndlessTilesFragment::class.java.routeName, formatRoute(R.string.route_endless_tile)),
             RouteItem.Destination(StandingsFragment::class.java.routeName, formatRoute(R.string.route_standings)),
             RouteItem.Destination(SpreadSheetParentFragment::class.java.routeName, formatRoute(R.string.route_spreadsheet)),
-            RouteItem.Destination(ViewPagerListAdapterFragment::class.java.routeName, formatRoute(R.string.route_viewpager)),
             RouteItem.Spacer
         ),
         listOf(

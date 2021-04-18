@@ -5,6 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import com.tunjid.androidx.R
@@ -50,6 +51,7 @@ class ViewPagerListAdapterFragment : Fragment(R.layout.fragment_spreadsheet_pare
                                     false -> Input.Remove(allItems[index])
                                 })
                             }
+                            .setPositiveButton(android.R.string.ok) { _, _ -> }
                             .show()
                     }
                 }
@@ -60,8 +62,9 @@ class ViewPagerListAdapterFragment : Fragment(R.layout.fragment_spreadsheet_pare
         )
 
         val viewPager = binding.viewPager
-        val pagerAdapter = FragmentListAdapter<RouteTab>(fragment = this)
-
+        val pagerAdapter = FragmentListAdapter<RouteTab>(fragment = this).apply {
+            stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+        }
 
         viewPager.adapter = pagerAdapter
 

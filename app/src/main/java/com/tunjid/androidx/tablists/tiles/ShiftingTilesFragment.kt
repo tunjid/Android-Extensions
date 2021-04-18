@@ -46,8 +46,11 @@ class ShiftingTilesFragment : Fragment(R.layout.fragment_route) {
         )
         else viewLifecycleOwner.lifecycle.doOnEveryEvent(Lifecycle.Event.ON_RESUME) {
             ::uiState.updatePartial {
+                val state = viewModel.state.value ?: ShiftingState()
                 copy(
                     fabShows = true,
+                    fabIcon = state.fabIconRes,
+                    fabText = getString(state.fabText),
                     fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
                     fabClickListener = viewLifecycleOwner.callback { viewModel.toggleChanges() }
                 )
