@@ -36,26 +36,27 @@ class ViewPagerListAdapterFragment : Fragment(R.layout.fragment_spreadsheet_pare
             toolbarTitle = this::class.java.routeName,
             toolbarShows = true,
             toolbarMenuRes = R.menu.menu_viewpager,
-            toolbarMenuClickListener = viewLifecycleOwner.callback { viewModel.accept(Input.Shuffle) },
-            fabShows = true,
-            fabText = view.context.getString(R.string.edit_tabs),
-            fabIcon = R.drawable.ic_round_edit_24,
+            toolbarMenuClickListener = viewLifecycleOwner.callback {
+                when (it.itemId) {
+                    R.id.menu_shuffle -> viewModel.accept(Input.Shuffle)
+                    R.id.menu_edit -> {
+                        val state = viewModel.state.value
+                        val allItems = state?.allItems ?: listOf()
+                        val (items, checkedItems) = state.items(view.context.resources)
+                        MaterialAlertDialogBuilder(view.context)
+                            .setMultiChoiceItems(items, checkedItems) { _, index, isChecked ->
+                                viewModel.accept(when (isChecked) {
+                                    true -> Input.Add(allItems[index])
+                                    false -> Input.Remove(allItems[index])
+                                })
+                            }
+                            .show()
+                    }
+                }
+            },
             showsBottomNav = false,
             lightStatusBar = !requireContext().isDarkTheme,
             navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
-            fabClickListener = viewLifecycleOwner.callback { fab ->
-                val state = viewModel.state.value
-                val allItems = state?.allItems ?: listOf()
-                val (items, checkedItems) = state.items(fab.context.resources)
-                MaterialAlertDialogBuilder(fab.context)
-                    .setMultiChoiceItems(items, checkedItems) { _, index, isChecked ->
-                        viewModel.accept(when (isChecked) {
-                            true -> Input.Add(allItems[index])
-                            false -> Input.Remove(allItems[index])
-                        })
-                    }
-                    .show()
-            }
         )
 
         val viewPager = binding.viewPager

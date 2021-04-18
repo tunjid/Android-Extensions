@@ -11,10 +11,12 @@ import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.transition.Fade
 import androidx.transition.TransitionSet
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.components.doOnEveryEvent
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.core.delegates.viewLifecycle
@@ -76,7 +78,18 @@ class DoggoListFragment : Fragment(R.layout.fragment_doggo_list),
             fabClickListener = viewLifecycleOwner.callback {
                 ::uiState.updatePartial { copy(fabExtended = !uiState.fabExtended) }
             }
-        )
+        ) else viewLifecycleOwner.lifecycle.doOnEveryEvent(Lifecycle.Event.ON_RESUME) {
+            ::uiState.updatePartial {
+                copy(
+                    fabIcon = R.drawable.ic_paw_24dp,
+                    fabText = getString(R.string.collapse_prompt),
+                    fabShows = true,
+                    fabClickListener = viewLifecycleOwner.callback {
+                        ::uiState.updatePartial { copy(fabExtended = !uiState.fabExtended) }
+                    }
+                )
+            }
+        }
 
         binding.recyclerView.apply {
             layoutManager = gridLayoutManager(2)

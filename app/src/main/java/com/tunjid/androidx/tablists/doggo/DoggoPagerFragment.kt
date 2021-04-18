@@ -17,9 +17,11 @@ import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.components.doOnEveryEvent
 import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.navigation.MultiStackNavigator
@@ -35,6 +37,7 @@ import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.baseSharedTransition
 import com.tunjid.androidx.uidrivers.callback
 import com.tunjid.androidx.uidrivers.uiState
+import com.tunjid.androidx.uidrivers.updatePartial
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.viewpager2.FragmentListAdapter
 import com.tunjid.viewpager2.FragmentTab
@@ -45,7 +48,7 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 
 class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
-        Navigator.TransactionModifier {
+    Navigator.TransactionModifier {
 
     private var isTopLevel by fragmentArgs<Boolean>()
     private val viewModel by viewModels<DoggoViewModel>()
@@ -55,7 +58,7 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
         super.onViewCreated(view, savedInstanceState)
 
         val initialUiState = uiState
-        uiState = UiState(
+        if (isTopLevel) uiState = UiState(
             toolbarOverlaps = true,
             toolbarShows = false,
             toolbarMenuRes = 0,
@@ -70,6 +73,18 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
                 Doggo.transitionDoggo?.let { navigator.push(AdoptDoggoFragment.newInstance(it)) }
             }
         )
+        else viewLifecycleOwner.lifecycle.doOnEveryEvent(Lifecycle.Event.ON_RESUME) {
+            ::uiState.updatePartial {
+                copy(
+                    fabIcon = R.drawable.ic_hug_24dp,
+                    fabShows = true,
+                    fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
+                    fabClickListener = viewLifecycleOwner.callback {
+                        Doggo.transitionDoggo?.let { navigator.push(AdoptDoggoFragment.newInstance(it)) }
+                    }
+                )
+            }
+        }
 
         sharedElementEnterTransition = baseSharedTransition(initialUiState)
         sharedElementReturnTransition = baseSharedTransition(uiState)
@@ -133,8 +148,8 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
         val imageView = childRoot.findViewById<ImageView>(R.id.doggo_image) ?: return
 
         transaction
-                .setReorderingAllowed(true)
-                .addSharedElement(imageView, imageView.hashTransitionName(doggo))
+            .setReorderingAllowed(true)
+            .addSharedElement(imageView, imageView.hashTransitionName(doggo))
     }
 
     private fun createSharedEnterCallback() = object : SharedElementCallback() {
@@ -143,8 +158,8 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
             if (names == null || sharedElements == null || recyclerView !is RecyclerView) return
 
             val viewHolder = Doggo.transitionDoggo
-                    ?.let { recyclerView.findViewHolderForItemId(it.hashCode().toLong()) }
-                    ?: return
+                ?.let { recyclerView.findViewHolderForItemId(it.hashCode().toLong()) }
+                ?: return
 
             val view: View = viewHolder.itemView.findViewById(R.id.doggo_image) ?: return
 
@@ -159,19 +174,19 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
 }
 
 private class DrawablePageIndicator(
-        activeDrawable: Drawable,
-        inActiveDrawable: Drawable
+    activeDrawable: Drawable,
+    inActiveDrawable: Drawable
 ) : PageIndicator {
 
     private val active = activeDrawable.toBitmap()
     private val inActive = inActiveDrawable.toBitmap()
 
     override fun drawInActive(
-            canvas: Canvas,
-            params: Params,
-            index: Int,
-            count: Int,
-            progress: Float
+        canvas: Canvas,
+        params: Params,
+        index: Int,
+        count: Int,
+        progress: Float
     ) {
         val start = params.start(count)
         for (i in 0 until count) {
@@ -180,16 +195,16 @@ private class DrawablePageIndicator(
     }
 
     override fun drawActive(
-            canvas: Canvas,
-            params: Params,
-            index: Int,
-            count: Int,
-            progress: Float
+        canvas: Canvas,
+        params: Params,
+        index: Int,
+        count: Int,
+        progress: Float
     ) = canvas.drawBitmap(
-            active.scale(params.indicatorWidth, progress),
-            params.start(count) + (params.width * index) + (params.width * progress),
-            params.verticalOffset.bounce(params.indicatorHeight, progress),
-            null
+        active.scale(params.indicatorWidth, progress),
+        params.start(count) + (params.width * index) + (params.width * progress),
+        params.verticalOffset.bounce(params.indicatorHeight, progress),
+        null
     )
 
     private fun Float.bounce(height: Float, progress: Float): Float {

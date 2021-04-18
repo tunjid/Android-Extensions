@@ -7,9 +7,11 @@ import androidx.core.view.postDelayed
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.components.doOnEveryEvent
 import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.delegates.fragmentArgs
@@ -23,6 +25,7 @@ import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.view.util.withOneShotEndListener
 import com.tunjid.androidx.tabnav.routing.routeName
 import com.tunjid.androidx.uidrivers.callback
+import com.tunjid.androidx.uidrivers.updatePartial
 
 class FabTransformationsFragment : Fragment(R.layout.fragment_fab_transformations) {
 
@@ -42,6 +45,21 @@ class FabTransformationsFragment : Fragment(R.layout.fragment_fab_transformation
             speedDialItems[1].run { updateGlyphs(first, second) }
         }
 
+        val speedDialClickListener = SpeedDialClickListener(
+            tint = context.themeColorAt(R.attr.colorAccent),
+            items = speedDialItems,
+            runGuard = this@FabTransformationsFragment::fabExtensionGuard,
+            dismissListener = {
+                when (it) {
+                    null -> Unit
+                    0 -> uiState = uiState.copy(fabExtended = true)
+                    else -> speedDialItems[it].run {
+                        extender.updateGlyphs(first, second)
+                    }
+                }
+            }
+        )
+
         if (isTopLevel) uiState = uiState.copy(
                 toolbarTitle = this::class.java.routeName,
                 toolbarOverlaps = false,
@@ -55,21 +73,19 @@ class FabTransformationsFragment : Fragment(R.layout.fragment_fab_transformation
                 insetFlags = InsetFlags.ALL,
                 lightStatusBar = !context.isDarkTheme,
                 navBarColor = context.themeColorAt(R.attr.nav_bar_color),
-                fabClickListener = viewLifecycleOwner.callback(SpeedDialClickListener(
-                        tint = context.themeColorAt(R.attr.colorAccent),
-                        items = speedDialItems,
-                        runGuard = this@FabTransformationsFragment::fabExtensionGuard,
-                        dismissListener = {
-                            when (it) {
-                                null -> Unit
-                                0 -> uiState = uiState.copy(fabExtended = true)
-                                else -> speedDialItems[it].run {
-                                    extender.updateGlyphs(first, second)
-                                }
-                            }
-                        }
-                ))
+                fabClickListener = viewLifecycleOwner.callback(speedDialClickListener)
         )
+        else viewLifecycleOwner.lifecycle.doOnEveryEvent(Lifecycle.Event.ON_RESUME) {
+            ::uiState.updatePartial {
+                copy(
+                    fabShows = true,
+                    fabText = getString(R.string.speed_dial),
+                    fabIcon = R.drawable.ic_unfold_more_24dp,
+                    fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
+                    fabClickListener = viewLifecycleOwner.callback(speedDialClickListener)
+                )
+            }
+        }
 
         demoFab.setOnClickListener { extender.isExtended = !extender.isExtended }
 

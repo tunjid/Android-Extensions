@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.components.doOnEveryEvent
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentSpreadsheetChildBinding
@@ -16,8 +18,8 @@ import com.tunjid.androidx.recyclerview.multiscroll.CellSizer
 import com.tunjid.androidx.recyclerview.multiscroll.DynamicCellSizer
 import com.tunjid.androidx.recyclerview.multiscroll.StaticCellSizer
 import com.tunjid.androidx.tabnav.routing.routeName
-import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
+import com.tunjid.androidx.uidrivers.updatePartial
 import com.tunjid.viewpager2.FragmentListAdapter
 import com.tunjid.viewpager2.FragmentTab
 
@@ -36,6 +38,9 @@ class SpreadSheetParentFragment : Fragment(R.layout.fragment_spreadsheet_parent)
             lightStatusBar = !requireContext().isDarkTheme,
             navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )
+        else viewLifecycleOwner.lifecycle.doOnEveryEvent(Lifecycle.Event.ON_RESUME) {
+            ::uiState.updatePartial { copy(fabShows = false) }
+        }
 
         val binding = FragmentSpreadsheetParentBinding.bind(view)
         val viewPager = binding.viewPager

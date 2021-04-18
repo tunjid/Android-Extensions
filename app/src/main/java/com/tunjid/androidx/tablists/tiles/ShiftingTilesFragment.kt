@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.components.doOnEveryEvent
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentRouteBinding
@@ -42,6 +44,15 @@ class ShiftingTilesFragment : Fragment(R.layout.fragment_route) {
             navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
             fabClickListener = viewLifecycleOwner.callback { viewModel.toggleChanges() }
         )
+        else viewLifecycleOwner.lifecycle.doOnEveryEvent(Lifecycle.Event.ON_RESUME) {
+            ::uiState.updatePartial {
+                copy(
+                    fabShows = true,
+                    fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
+                    fabClickListener = viewLifecycleOwner.callback { viewModel.toggleChanges() }
+                )
+            }
+        }
 
         val tileAdapter = listAdapterOf(
             initialItems = viewModel.state.value?.tiles ?: listOf(),

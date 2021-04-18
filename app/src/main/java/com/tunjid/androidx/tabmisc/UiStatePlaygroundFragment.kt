@@ -9,10 +9,12 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.components.doOnEveryEvent
 import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.core.text.color
 import com.tunjid.androidx.core.text.plus
@@ -26,6 +28,7 @@ import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.callback
+import com.tunjid.androidx.uidrivers.updatePartial
 
 class UiStatePlaygroundFragment : Fragment(R.layout.fragment_simple_list) {
 
@@ -45,6 +48,15 @@ class UiStatePlaygroundFragment : Fragment(R.layout.fragment_simple_list) {
                 fabText = getString(R.string.hi),
                 fabShows = true
         )
+        else viewLifecycleOwner.lifecycle.doOnEveryEvent(Lifecycle.Event.ON_RESUME) {
+            ::uiState.updatePartial {
+                copy(
+                    fabShows = true,
+                    fabIcon = R.drawable.ic_add_24dp,
+                    fabText = getString(R.string.hi),
+                )
+            }
+        }
 
         val context = requireContext()
         val fragmentBinding = FragmentSimpleListBinding.bind(view)

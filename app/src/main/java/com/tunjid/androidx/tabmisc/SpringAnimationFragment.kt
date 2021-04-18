@@ -9,24 +9,26 @@ import androidx.dynamicanimation.animation.FloatPropertyCompat
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.components.doOnEveryEvent
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentSpringAnimationBinding
 import com.tunjid.androidx.isDarkTheme
+import com.tunjid.androidx.tabnav.routing.routeName
 import com.tunjid.androidx.uidrivers.InsetFlags
-import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.callback
 import com.tunjid.androidx.uidrivers.uiState
+import com.tunjid.androidx.uidrivers.updatePartial
 import com.tunjid.androidx.view.animator.ViewHider
 import com.tunjid.androidx.view.util.MarginProperty
 import com.tunjid.androidx.view.util.PaddingProperty
 import com.tunjid.androidx.view.util.spring
-import com.tunjid.androidx.tabnav.routing.routeName
-import com.tunjid.androidx.uidrivers.callback
 
 /**
  * Fragment demonstrating hiding views
@@ -87,6 +89,21 @@ class SpringAnimationFragment : Fragment(R.layout.fragment_spring_animation) {
             lightStatusBar = !requireContext().isDarkTheme,
             navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )
+        else viewLifecycleOwner.lifecycle.doOnEveryEvent(Lifecycle.Event.ON_RESUME) {
+            ::uiState.updatePartial {
+                copy(
+                    fabShows = true,
+                    fabIcon = R.drawable.ic_dance_24dp,
+                    fabText = getString(R.string.party_hard),
+                    fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
+                    fabClickListener = viewLifecycleOwner.callback {
+                        marginProperties.partyHard(view)
+                        paddingProperties.partyHard(binding.cage)
+                        viewHiders.map(ViewHider<FloatingActionButton>::view).forEach(scaleProperties::partyHard)
+                    },
+                )
+            }
+        }
 
         val context = view.context
         val elevation = context.resources.getDimensionPixelSize(R.dimen.sixteenth_margin).toFloat()

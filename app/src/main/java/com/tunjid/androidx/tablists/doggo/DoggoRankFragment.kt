@@ -12,6 +12,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.transition.ChangeBounds
 import androidx.transition.ChangeImageTransform
@@ -19,6 +20,7 @@ import androidx.transition.ChangeTransform
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.components.doOnEveryEvent
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.core.delegates.viewLifecycle
@@ -95,6 +97,17 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
             navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
             fabClickListener = viewLifecycleOwner.callback { viewModel.accept(RankAction.Reset) }
         )
+        else viewLifecycleOwner.lifecycle.doOnEveryEvent(Lifecycle.Event.ON_RESUME) {
+            ::uiState.updatePartial {
+                copy(
+                    fabText = getString(R.string.reset_doggos),
+                    fabIcon = R.drawable.ic_restore_24dp,
+                    fabShows = true,
+                    fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
+                    fabClickListener = viewLifecycleOwner.callback { viewModel.accept(RankAction.Reset) }
+                )
+            }
+        }
 
         val listAdapter = listAdapterOf(
             initialItems = viewModel.state.value?.doggos ?: listOf(),

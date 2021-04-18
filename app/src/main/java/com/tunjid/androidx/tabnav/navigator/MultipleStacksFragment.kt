@@ -14,6 +14,7 @@ import androidx.core.view.children
 import androidx.core.view.doOnDetach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.Lifecycle
 import androidx.transition.Transition
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
@@ -22,8 +23,9 @@ import com.google.android.material.transition.MaterialSharedAxis
 import com.google.android.material.transition.MaterialSharedAxis.X
 import com.tunjid.androidx.MutedColors
 import com.tunjid.androidx.R
-import com.tunjid.androidx.core.delegates.fragmentArgs
+import com.tunjid.androidx.core.components.doOnEveryEvent
 import com.tunjid.androidx.core.content.colorAt
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.core.text.bold
 import com.tunjid.androidx.core.text.click
 import com.tunjid.androidx.core.text.color
@@ -39,11 +41,11 @@ import com.tunjid.androidx.navigation.activityNavigatorController
 import com.tunjid.androidx.navigation.addOnBackPressedCallback
 import com.tunjid.androidx.navigation.childMultiStackNavigationController
 import com.tunjid.androidx.tabnav.routing.routeName
-import com.tunjid.androidx.uidrivers.UiState
-import com.tunjid.androidx.uidrivers.materialDepthAxisTransition
-import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.callback
+import com.tunjid.androidx.uidrivers.materialDepthAxisTransition
+import com.tunjid.androidx.uidrivers.uiState
+import com.tunjid.androidx.uidrivers.updatePartial
 
 class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
 
@@ -52,8 +54,8 @@ class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
 
     private val navigator by activityNavigatorController<MultiStackNavigator>()
     internal val innerNavigator: MultiStackNavigator by childMultiStackNavigationController(
-            DESTINATIONS.size,
-            R.id.inner_container
+        DESTINATIONS.size,
+        R.id.inner_container
     ) { index ->
         MultipleStackChildFragment.newInstance(getChildName(index), 1)
     }
@@ -63,8 +65,8 @@ class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
 
         addOnBackPressedCallback {
             isEnabled =
-                    if (navigator.current !== this@MultipleStacksFragment) false
-                    else innerNavigator.pop()
+                if (navigator.current !== this@MultipleStacksFragment) false
+                else innerNavigator.pop()
 
             if (!isEnabled) activity?.onBackPressed()
         }
@@ -84,8 +86,8 @@ class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
         }
         binding.tabs.children.filterIsInstance<MaterialButton>().forEach {
             it.setTextColor(ColorStateList(
-                    arrayOf(intArrayOf(-android.R.attr.state_checked), intArrayOf(android.R.attr.state_checked)),
-                    intArrayOf(Color.LTGRAY, Color.WHITE)
+                arrayOf(intArrayOf(-android.R.attr.state_checked), intArrayOf(android.R.attr.state_checked)),
+                intArrayOf(Color.LTGRAY, Color.WHITE)
             ))
         }
         binding.tabs.doOnDetach { innerNavigator.stackSelectedListener = null }
@@ -113,6 +115,20 @@ class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
             insetFlags = InsetFlags.VERTICAL,
             navBarColor = requireContext().colorAt(R.color.colorSurface)
         )
+        else viewLifecycleOwner.lifecycle.doOnEveryEvent(Lifecycle.Event.ON_RESUME) {
+            ::uiState.updatePartial {
+                copy(
+                    fabShows = true,
+                    fabText = getString(R.string.go_deeper),
+                    fabIcon = R.drawable.ic_bullseye_24dp,
+                    fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
+                    fabClickListener = viewLifecycleOwner.callback {
+                        val current = innerNavigator.current as? MultipleStackChildFragment
+                        if (current != null) innerNavigator.push(MultipleStackChildFragment.newInstance(current.name, current.depth + 1))
+                    },
+                )
+            }
+        }
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -138,10 +154,10 @@ class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
 
         // Casting is necessary for over enthusiastic Kotlin compiler CHECKCAST generation
         val (enterFrom, exitFrom, enterTo, exitTo) = arrayOf(
-                if (isSliding) MaterialSharedAxis(X, !isForward) else null,
-                if (isSliding) MaterialSharedAxis(X, isForward) else MaterialFadeThrough() as Transition,
-                if (isSliding) MaterialSharedAxis(X, isForward) else MaterialFadeThrough() as Transition,
-                if (isSliding) MaterialSharedAxis(X, !isForward) else null
+            if (isSliding) MaterialSharedAxis(X, !isForward) else null,
+            if (isSliding) MaterialSharedAxis(X, isForward) else MaterialFadeThrough() as Transition,
+            if (isSliding) MaterialSharedAxis(X, isForward) else MaterialFadeThrough() as Transition,
+            if (isSliding) MaterialSharedAxis(X, !isForward) else null
         )
 
         from.apply { enterTransition = enterFrom; exitTransition = exitFrom }
@@ -170,17 +186,17 @@ class MultipleStackChildFragment : Fragment(), Navigator.TagProvider {
         savedInstanceState: Bundle?
     ): View = TextView(inflater.context).apply {
         text = resources.getString(R.string.triple_line_format).formatSpanned(
-                name,
-                resources.getQuantityString(R.plurals.stack_depth, depth, depth).scale(0.6F),
-                resources.getString(R.string.clear).scale(0.6F)
-                        .underline()
-                        .italic()
-                        .bold()
-                        .click {
-                            (parentFragment?.parentFragment as? MultipleStacksFragment)?.apply {
-                                innerNavigator.clear()
-                            }
-                        }
+            name,
+            resources.getQuantityString(R.plurals.stack_depth, depth, depth).scale(0.6F),
+            resources.getString(R.string.clear).scale(0.6F)
+                .underline()
+                .italic()
+                .bold()
+                .click {
+                    (parentFragment?.parentFragment as? MultipleStacksFragment)?.apply {
+                        innerNavigator.clear()
+                    }
+                }
         )
         gravity = Gravity.CENTER
         textSize = resources.getDimensionPixelSize(R.dimen.large_text).toFloat()

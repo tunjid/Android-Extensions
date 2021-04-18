@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.components.doOnEveryEvent
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentRouteBinding
@@ -17,6 +19,7 @@ import com.tunjid.androidx.recyclerview.gridLayoutManager
 import com.tunjid.androidx.recyclerview.setEndlessScrollListener
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.tablists.tiles.EndlessTileViewModel.Companion.NUM_TILES
+import com.tunjid.androidx.tabnav.navigator.MultipleStackChildFragment
 import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.SpringItemAnimator
 import com.tunjid.androidx.uidrivers.UiState
@@ -50,6 +53,19 @@ class EndlessTilesFragment : Fragment(R.layout.fragment_route) {
                 ::uiState.updatePartial { copy(snackbarText = "There are ${viewModel.tiles.size} tiles") }
             }
         )
+        else viewLifecycleOwner.lifecycle.doOnEveryEvent(Lifecycle.Event.ON_RESUME) {
+            ::uiState.updatePartial {
+                copy(
+                    fabShows = true,
+                    fabIcon = R.drawable.ic_info_outline_24dp,
+                    fabText = getString(R.string.tile_info),
+                    fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
+                    fabClickListener = viewLifecycleOwner.callback {
+                        ::uiState.updatePartial { copy(snackbarText = "There are ${viewModel.tiles.size} tiles") }
+                    }
+                )
+            }
+        }
 
         FragmentRouteBinding.bind(view).recyclerView.apply {
             itemAnimator = SpringItemAnimator()

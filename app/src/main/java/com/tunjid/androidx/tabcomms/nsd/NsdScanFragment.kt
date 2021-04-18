@@ -23,15 +23,10 @@ import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
-import com.tunjid.androidx.uidrivers.InsetFlags
-import com.tunjid.androidx.uidrivers.UiState
-import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.tabcomms.nsd.Input
-import com.tunjid.androidx.tabcomms.nsd.NSDState
-import com.tunjid.androidx.tabcomms.nsd.NsdItem
-import com.tunjid.androidx.tabcomms.nsd.NsdViewModel
 import com.tunjid.androidx.tabnav.routing.routeName
+import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.callback
+import com.tunjid.androidx.uidrivers.uiState
 
 /**
  * A [Fragment] listing supported NSD servers

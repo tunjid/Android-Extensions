@@ -27,6 +27,15 @@ fun Lifecycle.doOnEvent(
     })
 }
 
+fun Lifecycle.doOnEveryEvent(
+    targetEvent: Lifecycle.Event,
+    action: () -> Unit
+) {
+    addObserver(LifecycleEventObserver { _, event ->
+        if (event == targetEvent) action()
+    })
+}
+
 private val Lifecycle.State.lastReceivedEvent
     get() = when (this) {
         Lifecycle.State.DESTROYED -> Lifecycle.Event.ON_DESTROY
