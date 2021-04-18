@@ -7,13 +7,12 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.app.SharedElementCallback
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.scale
+import androidx.core.view.children
 import androidx.core.view.doOnLayout
-import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
@@ -24,6 +23,7 @@ import com.tunjid.androidx.R
 import com.tunjid.androidx.core.components.doOnEveryEvent
 import com.tunjid.androidx.core.content.drawableAt
 import com.tunjid.androidx.core.delegates.fragmentArgs
+import com.tunjid.androidx.databinding.FragmentDoggoPagerBinding
 import com.tunjid.androidx.navigation.MultiStackNavigator
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.navigation.activityNavigatorController
@@ -41,6 +41,7 @@ import com.tunjid.androidx.uidrivers.updatePartial
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.viewpager2.FragmentListAdapter
 import com.tunjid.viewpager2.FragmentTab
+import kotlin.collections.set
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.max
@@ -90,7 +91,7 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
         sharedElementReturnTransition = baseSharedTransition(uiState)
         setEnterSharedElementCallback(createSharedEnterCallback())
 
-        val viewPager = view.findViewById<ViewPager2>(R.id.view_pager)
+        val binding = FragmentDoggoPagerBinding.bind(view)
         val resources = resources
         val context = view.context
         val indicatorSize = resources.getDimensionPixelSize(R.dimen.single_and_half_margin)
@@ -98,17 +99,16 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
         val adapter = FragmentListAdapter<DoggoTab>(fragment = this)
         adapter.submitList(Doggo.doggos.map(::DoggoTab))
 
-        viewPager.adapter = adapter
-        viewPager.setCurrentItem(Doggo.transitionIndex, false)
-        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+        binding.viewPager.adapter = adapter
+        binding.viewPager.setCurrentItem(Doggo.transitionIndex, false)
+        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) =
                 viewModel.onSwiped(position, positionOffset)
 
             override fun onPageSelected(position: Int) = onDoggoSwiped(position)
         })
 
-        val recyclerView = viewPager[0] as RecyclerView
-        recyclerView.indicatorDecoration(
+        binding.viewPager.children.filterIsInstance<RecyclerView>().firstOrNull()?.indicatorDecoration(
             horizontalOffset = resources.displayMetrics.widthPixels / 2f,
             verticalOffset = resources.getDimension(R.dimen.octuple_margin),
             indicatorWidth = indicatorSize.toFloat(),
@@ -118,12 +118,12 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
                 activeDrawable = context.drawableAt(R.drawable.ic_doggo_24dp)!!,
                 inActiveDrawable = context.drawableAt(R.drawable.ic_circle_24dp)!!
             ),
-            onIndicatorClicked = viewPager::setCurrentItem
+            onIndicatorClicked = binding.viewPager::setCurrentItem
         )
 
         viewModel.colors.observe(viewLifecycleOwner, view::setBackgroundColor)
 
-        onDoggoSwiped(viewPager.currentItem)
+        onDoggoSwiped(binding.viewPager.currentItem)
         postponeEnterTransition()
     }
 
@@ -141,11 +141,7 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
 
     override fun augmentTransaction(transaction: FragmentTransaction, incomingFragment: Fragment) {
         if (incomingFragment !is AdoptDoggoFragment) return
-
-        val root = view ?: return
-        val doggo = Doggo.transitionDoggo ?: return
-        val childRoot = root.findViewWithTag<View>(doggo) ?: return
-        val imageView = childRoot.findViewById<ImageView>(R.id.doggo_image) ?: return
+        val (doggo, imageView) = transitionDoggoAndImageView() ?: return
 
         transaction
             .setReorderingAllowed(true)
@@ -154,17 +150,18 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
 
     private fun createSharedEnterCallback() = object : SharedElementCallback() {
         override fun onMapSharedElements(names: List<String>?, sharedElements: MutableMap<String, View>?) {
-            val recyclerView = view?.findViewById<ViewGroup>(R.id.view_pager)?.get(0) ?: return
-            if (names == null || sharedElements == null || recyclerView !is RecyclerView) return
+            if (names == null || sharedElements == null) return
+            val (_, imageView) = transitionDoggoAndImageView() ?: return
 
-            val viewHolder = Doggo.transitionDoggo
-                ?.let { recyclerView.findViewHolderForItemId(it.hashCode().toLong()) }
-                ?: return
-
-            val view: View = viewHolder.itemView.findViewById(R.id.doggo_image) ?: return
-
-            sharedElements[names[0]] = view
+            sharedElements[names[0]] = imageView
         }
+    }
+
+    private fun transitionDoggoAndImageView(): Pair<Doggo, ImageView>? {
+        val root = view ?: return null
+        val doggo = Doggo.transitionDoggo ?: return null
+        val childRoot = root.findViewWithTag<View>(doggo) ?: return null
+        return childRoot.findViewById<ImageView>(R.id.doggo_image)?.let { doggo to it }
     }
 
     companion object {
