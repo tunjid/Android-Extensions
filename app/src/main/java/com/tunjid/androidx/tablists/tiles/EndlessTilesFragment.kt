@@ -23,6 +23,7 @@ import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.updatePartial
 import com.tunjid.androidx.tabnav.routing.routeName
+import com.tunjid.androidx.uidrivers.callback
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import kotlin.math.abs
 
@@ -45,7 +46,9 @@ class EndlessTilesFragment : Fragment(R.layout.fragment_route) {
             insetFlags = InsetFlags.NO_BOTTOM,
             lightStatusBar = !requireContext().isDarkTheme,
             navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
-            fabClickListener = { ::uiState.updatePartial { copy(snackbarText = "There are ${viewModel.tiles.size} tiles") } }
+            fabClickListener = viewLifecycleOwner.callback {
+                ::uiState.updatePartial { copy(snackbarText = "There are ${viewModel.tiles.size} tiles") }
+            }
         )
 
         FragmentRouteBinding.bind(view).recyclerView.apply {

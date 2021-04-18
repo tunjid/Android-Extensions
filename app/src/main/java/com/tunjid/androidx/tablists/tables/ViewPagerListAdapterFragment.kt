@@ -18,6 +18,7 @@ import com.tunjid.androidx.material.viewpager.configureWith
 import com.tunjid.androidx.navigation.Navigator
 import com.tunjid.androidx.tabnav.routing.routeName
 import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.callback
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.viewpager2.FragmentListAdapter
 
@@ -35,14 +36,14 @@ class ViewPagerListAdapterFragment : Fragment(R.layout.fragment_spreadsheet_pare
             toolbarTitle = this::class.java.routeName,
             toolbarShows = true,
             toolbarMenuRes = R.menu.menu_viewpager,
-            toolbarMenuClickListener = { viewModel.accept(Input.Shuffle) },
+            toolbarMenuClickListener = viewLifecycleOwner.callback { viewModel.accept(Input.Shuffle) },
             fabShows = true,
             fabText = view.context.getString(R.string.edit_tabs),
             fabIcon = R.drawable.ic_round_edit_24,
             showsBottomNav = false,
             lightStatusBar = !requireContext().isDarkTheme,
             navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
-            fabClickListener = { fab ->
+            fabClickListener = viewLifecycleOwner.callback { fab ->
                 val state = viewModel.state.value
                 val allItems = state?.allItems ?: listOf()
                 val (items, checkedItems) = state.items(fab.context.resources)

@@ -19,6 +19,7 @@ import com.tunjid.androidx.tabnav.routing.routeName
 import com.tunjid.androidx.uidrivers.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidx.uidrivers.SpringItemAnimator
 import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.callback
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.updatePartial
 
@@ -39,7 +40,7 @@ class ShiftingTilesFragment : Fragment(R.layout.fragment_route) {
             insetFlags = NO_BOTTOM,
             lightStatusBar = !requireContext().isDarkTheme,
             navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
-            fabClickListener = { viewModel.toggleChanges() }
+            fabClickListener = viewLifecycleOwner.callback { viewModel.toggleChanges() }
         )
 
         val tileAdapter = listAdapterOf(

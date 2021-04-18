@@ -43,6 +43,7 @@ import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.materialDepthAxisTransition
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.InsetFlags
+import com.tunjid.androidx.uidrivers.callback
 
 class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
 
@@ -93,24 +94,24 @@ class MultipleStacksFragment : Fragment(R.layout.fragment_multiple_stack) {
         }
 
         if (isTopLevel) uiState = uiState.copy(
-                toolbarTitle = this::class.java.routeName.color(Color.WHITE),
-                toolbarMenuRes = R.menu.menu_default,
-                toolbarShows = true,
-                toolbarOverlaps = false,
-                toolbarMenuClickListener = {
-                    requireActivity().onOptionsItemSelected(it)
-                },
-                fabText = getString(R.string.go_deeper),
-                fabIcon = R.drawable.ic_bullseye_24dp,
-                fabShows = true,
-                fabClickListener = {
-                    val current = innerNavigator.current as? MultipleStackChildFragment
-                    if (current != null) innerNavigator.push(MultipleStackChildFragment.newInstance(current.name, current.depth + 1))
-                },
-                showsBottomNav = true,
-                lightStatusBar = false,
-                insetFlags = InsetFlags.VERTICAL,
-                navBarColor = requireContext().colorAt(R.color.colorSurface)
+            toolbarTitle = this::class.java.routeName.color(Color.WHITE),
+            toolbarMenuRes = R.menu.menu_default,
+            toolbarShows = true,
+            toolbarOverlaps = false,
+            toolbarMenuClickListener = viewLifecycleOwner.callback {
+                requireActivity().onOptionsItemSelected(it)
+            },
+            fabText = getString(R.string.go_deeper),
+            fabIcon = R.drawable.ic_bullseye_24dp,
+            fabShows = true,
+            fabClickListener = viewLifecycleOwner.callback {
+                val current = innerNavigator.current as? MultipleStackChildFragment
+                if (current != null) innerNavigator.push(MultipleStackChildFragment.newInstance(current.name, current.depth + 1))
+            },
+            showsBottomNav = true,
+            lightStatusBar = false,
+            insetFlags = InsetFlags.VERTICAL,
+            navBarColor = requireContext().colorAt(R.color.colorSurface)
         )
     }
 

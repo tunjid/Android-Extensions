@@ -26,6 +26,7 @@ import com.tunjid.androidx.view.util.MarginProperty
 import com.tunjid.androidx.view.util.PaddingProperty
 import com.tunjid.androidx.view.util.spring
 import com.tunjid.androidx.tabnav.routing.routeName
+import com.tunjid.androidx.uidrivers.callback
 
 /**
  * Fragment demonstrating hiding views
@@ -71,12 +72,12 @@ class SpringAnimationFragment : Fragment(R.layout.fragment_spring_animation) {
             fabShows = true,
             toolbarOverlaps = false,
             toolbarShows = true,
-            toolbarMenuClickListener = {
+            toolbarMenuClickListener = viewLifecycleOwner.callback {
                 springModifiers.springOptions()
             },
             fabIcon = R.drawable.ic_dance_24dp,
             fabText = getString(R.string.party_hard),
-            fabClickListener = {
+            fabClickListener = viewLifecycleOwner.callback {
                 marginProperties.partyHard(view)
                 paddingProperties.partyHard(binding.cage)
                 viewHiders.map(ViewHider<FloatingActionButton>::view).forEach(scaleProperties::partyHard)

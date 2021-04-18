@@ -36,6 +36,7 @@ import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.callback
 import com.tunjid.androidx.uidrivers.uiState
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 
@@ -57,13 +58,13 @@ class RouteFragment : Fragment(R.layout.fragment_route) {
             fabShows = true,
             fabIcon = R.drawable.ic_dice_24dp,
             fabText = getString(R.string.route_feeling_lucky),
-            fabClickListener = { goSomewhereRandom() },
+            fabClickListener = viewLifecycleOwner.callback { goSomewhereRandom() },
             insetFlags = InsetFlags.ALL,
             showsBottomNav = true,
             backgroundColor = Color.TRANSPARENT,
             lightStatusBar = !requireContext().isDarkTheme,
             navBarColor = requireContext().colorAt(R.color.colorSurface),
-            toolbarMenuClickListener = ::onMenuItemSelected
+            toolbarMenuClickListener = viewLifecycleOwner.callback(::onMenuItemSelected)
         )
 
         FragmentRouteBinding.bind(view).recyclerView.apply {

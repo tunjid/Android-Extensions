@@ -29,6 +29,7 @@ import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.BACKGROUND_TINT_DURATION
 import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.baseSharedTransition
+import com.tunjid.androidx.uidrivers.callback
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.updatePartial
 
@@ -42,21 +43,21 @@ class AdoptDoggoFragment : Fragment(R.layout.fragment_simple_list) {
 
         val initialUiState = uiState
         uiState = uiState.copy(
-                toolbarMenuRes = 0,
-                toolbarShows = true,
-                toolbarOverlaps = true,
-                toolbarTitle = doggo.name,
-                fabText = getString(R.string.adopt),
-                fabIcon = R.drawable.ic_hug_24dp,
-                fabShows = true,
-                lightStatusBar = false,
-                showsBottomNav = true,
-                insetFlags = InsetFlags.NO_TOP,
-                fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
-                navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
-                fabClickListener = {
-                    ::uiState.updatePartial { copy(snackbarText = getString(R.string.adopted_doggo, doggo.name)) }
-                }
+            toolbarMenuRes = 0,
+            toolbarShows = true,
+            toolbarOverlaps = true,
+            toolbarTitle = doggo.name,
+            fabText = getString(R.string.adopt),
+            fabIcon = R.drawable.ic_hug_24dp,
+            fabShows = true,
+            lightStatusBar = false,
+            showsBottomNav = true,
+            insetFlags = InsetFlags.NO_TOP,
+            fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
+            navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
+            fabClickListener = viewLifecycleOwner.callback {
+                ::uiState.updatePartial { copy(snackbarText = getString(R.string.adopted_doggo, doggo.name)) }
+            }
         )
 
         enterTransition = Fade()

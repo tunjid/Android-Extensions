@@ -18,6 +18,7 @@ import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.tabnav.routing.routeName
+import com.tunjid.androidx.uidrivers.callback
 
 
 class HardServiceConnectionFragment : Fragment(R.layout.fragment_hard_service_connection) {
@@ -30,18 +31,18 @@ class HardServiceConnectionFragment : Fragment(R.layout.fragment_hard_service_co
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (isTopLevel) uiState = uiState.copy(
-                toolbarTitle = this::class.java.routeName,
-                toolbarOverlaps = false,
-                toolbarShows = true,
-                toolbarMenuRes = 0,
-                fabShows = true,
-                fabIcon = R.drawable.ic_connect_24dp,
-                fabText = getText(R.string.bind_service),
-                fabClickListener = { toggleService() },
-                insetFlags = InsetFlags.ALL,
-                showsBottomNav = true,
-                lightStatusBar = !requireContext().isDarkTheme,
-                navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
+            toolbarTitle = this::class.java.routeName,
+            toolbarOverlaps = false,
+            toolbarShows = true,
+            toolbarMenuRes = 0,
+            fabShows = true,
+            fabIcon = R.drawable.ic_connect_24dp,
+            fabText = getText(R.string.bind_service),
+            fabClickListener = viewLifecycleOwner.callback { toggleService() },
+            insetFlags = InsetFlags.ALL,
+            showsBottomNav = true,
+            lightStatusBar = !requireContext().isDarkTheme,
+            navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )
 
         statusText = view.findViewById(R.id.text)

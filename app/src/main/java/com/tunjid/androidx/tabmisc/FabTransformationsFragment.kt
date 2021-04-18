@@ -18,11 +18,11 @@ import com.tunjid.androidx.core.text.color
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.material.animator.FabExtensionAnimator
 import com.tunjid.androidx.uidrivers.SpeedDialClickListener
-import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.view.util.withOneShotEndListener
 import com.tunjid.androidx.tabnav.routing.routeName
+import com.tunjid.androidx.uidrivers.callback
 
 class FabTransformationsFragment : Fragment(R.layout.fragment_fab_transformations) {
 
@@ -55,7 +55,7 @@ class FabTransformationsFragment : Fragment(R.layout.fragment_fab_transformation
                 insetFlags = InsetFlags.ALL,
                 lightStatusBar = !context.isDarkTheme,
                 navBarColor = context.themeColorAt(R.attr.nav_bar_color),
-                fabClickListener = SpeedDialClickListener(
+                fabClickListener = viewLifecycleOwner.callback(SpeedDialClickListener(
                         tint = context.themeColorAt(R.attr.colorAccent),
                         items = speedDialItems,
                         runGuard = this@FabTransformationsFragment::fabExtensionGuard,
@@ -68,7 +68,7 @@ class FabTransformationsFragment : Fragment(R.layout.fragment_fab_transformation
                                 }
                             }
                         }
-                )
+                ))
         )
 
         demoFab.setOnClickListener { extender.isExtended = !extender.isExtended }
@@ -99,8 +99,8 @@ class FabTransformationsFragment : Fragment(R.layout.fragment_fab_transformation
     private fun fabExtensionGuard(view: View): Boolean {
         if (!uiState.fabExtended) return true
         uiState = uiState.copy(
-                fabExtended = false,
-                fabTransitionOptions = { speedDialRecall(view) }
+            fabExtended = false,
+            fabTransitionOptions = viewLifecycleOwner.callback { it.speedDialRecall(view) }
         )
         return false
     }

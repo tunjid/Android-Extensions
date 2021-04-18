@@ -31,6 +31,7 @@ import com.tunjid.androidx.tabcomms.nsd.NSDState
 import com.tunjid.androidx.tabcomms.nsd.NsdItem
 import com.tunjid.androidx.tabcomms.nsd.NsdViewModel
 import com.tunjid.androidx.tabnav.routing.routeName
+import com.tunjid.androidx.uidrivers.callback
 
 /**
  * A [Fragment] listing supported NSD servers
@@ -45,8 +46,8 @@ class NsdScanFragment : Fragment(R.layout.fragment_nsd_scan) {
 
         if (isTopLevel) uiState = uiState.copy(
             toolbarTitle = this::class.java.routeName,
-            toolbarMenuRefresher = ::updateToolbarMenu,
-            toolbarMenuClickListener = ::onMenuItemSelected,
+            toolbarMenuRefresher = viewLifecycleOwner.callback(::updateToolbarMenu),
+            toolbarMenuClickListener = viewLifecycleOwner.callback(::onMenuItemSelected),
             toolbarMenuRes = R.menu.menu_nsd_scan,
             toolbarShows = true,
             fabShows = false,

@@ -33,6 +33,7 @@ import com.tunjid.androidx.recyclerview.indicators.width
 import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.baseSharedTransition
+import com.tunjid.androidx.uidrivers.callback
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.view.util.hashTransitionName
 import com.tunjid.viewpager2.FragmentListAdapter
@@ -65,7 +66,9 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
             lightStatusBar = false,
             insetFlags = InsetFlags.NONE,
             navBarColor = Color.TRANSPARENT,
-            fabClickListener = { Doggo.transitionDoggo?.let { navigator.push(AdoptDoggoFragment.newInstance(it)) } }
+            fabClickListener = viewLifecycleOwner.callback {
+                Doggo.transitionDoggo?.let { navigator.push(AdoptDoggoFragment.newInstance(it)) }
+            }
         )
 
         sharedElementEnterTransition = baseSharedTransition(initialUiState)

@@ -37,6 +37,7 @@ import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
 import com.tunjid.androidx.tabnav.routing.routeName
 import com.tunjid.androidx.uidrivers.InsetFlags
+import com.tunjid.androidx.uidrivers.callback
 import com.tunjid.androidx.uidrivers.uiState
 
 class BleScanFragment : Fragment(R.layout.fragment_ble_scan) {
@@ -49,8 +50,8 @@ class BleScanFragment : Fragment(R.layout.fragment_ble_scan) {
 
         if (isTopLevel) uiState = uiState.copy(
             toolbarTitle = this::class.java.routeName,
-            toolbarMenuRefresher = ::updateToolbarMenu,
-            toolbarMenuClickListener = ::onMenuItemSelected,
+            toolbarMenuRefresher = viewLifecycleOwner.callback(::updateToolbarMenu),
+            toolbarMenuClickListener = viewLifecycleOwner.callback(::onMenuItemSelected),
             toolbarMenuRes = R.menu.menu_ble_scan,
             toolbarShows = true,
             fabShows = false,

@@ -37,6 +37,7 @@ import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.tabnav.routing.routeName
 import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.callback
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.updatePartial
 import com.tunjid.androidx.view.util.hashTransitionName
@@ -72,11 +73,11 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
             toolbarMenuRes = R.menu.menu_doggo,
             toolbarShows = true,
             toolbarOverlaps = false,
-            toolbarMenuRefresher = {
+            toolbarMenuRefresher = viewLifecycleOwner.callback {
                 it.findItem(R.id.menu_sort)?.isVisible = !isRanking
                 it.findItem(R.id.menu_browse)?.isVisible = isRanking
             },
-            toolbarMenuClickListener = {
+            toolbarMenuClickListener = viewLifecycleOwner.callback {
                 when (it.itemId) {
                     R.id.menu_browse -> isRanking = false
                     R.id.menu_sort -> isRanking = true
@@ -92,7 +93,7 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
             lightStatusBar = !requireContext().isDarkTheme,
             fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
             navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
-            fabClickListener = { viewModel.accept(RankAction.Reset) }
+            fabClickListener = viewLifecycleOwner.callback { viewModel.accept(RankAction.Reset) }
         )
 
         val listAdapter = listAdapterOf(

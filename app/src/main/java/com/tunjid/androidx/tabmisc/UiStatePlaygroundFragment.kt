@@ -25,6 +25,7 @@ import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.InsetFlags
+import com.tunjid.androidx.uidrivers.callback
 
 class UiStatePlaygroundFragment : Fragment(R.layout.fragment_simple_list) {
 
@@ -35,7 +36,7 @@ class UiStatePlaygroundFragment : Fragment(R.layout.fragment_simple_list) {
 
         if (isTopLevel) uiState = uiState.copy(
                 toolbarMenuRes = R.menu.menu_ui_state_playground,
-                toolbarMenuClickListener = ::onMenuItemClicked,
+                toolbarMenuClickListener = viewLifecycleOwner.callback(::onMenuItemClicked),
                 toolbarTitle = getString(R.string.ui_state_playground),
                 toolbarOverlaps = false,
                 toolbarShows = true,
