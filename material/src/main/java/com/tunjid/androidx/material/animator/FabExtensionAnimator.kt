@@ -18,9 +18,9 @@ import com.tunjid.androidx.view.util.withOneShotEndListener
 import java.util.*
 
 open class FabExtensionAnimator(
-        private val button: MaterialButton,
-        collapsedFabSize: Int = button.resources.getDimensionPixelSize(R.dimen.collapsed_fab_size),
-        expandedFabHeight: Int = button.resources.getDimensionPixelSize(R.dimen.extended_fab_height)
+    private val button: MaterialButton,
+    collapsedFabSize: Int = button.resources.getDimensionPixelSize(R.dimen.collapsed_fab_size),
+    expandedFabHeight: Int = button.resources.getDimensionPixelSize(R.dimen.extended_fab_height)
 ) {
 
     private val strokeWidth = button.context.resources.getDimensionPixelSize(R.dimen.fab_halo_width) * 100F
@@ -86,8 +86,8 @@ open class FabExtensionAnimator(
         sizeInterpolator.run(isExtended)
 
         if (!isExtended) runCollapsedAnimations(
-                newGlyphState.icon sameAs oldGlyphState.icon,
-                newGlyphState.text == oldGlyphState.text
+            newGlyphState.icon sameAs oldGlyphState.icon,
+            newGlyphState.text == oldGlyphState.text
         )
     }
 
@@ -113,8 +113,8 @@ open class FabExtensionAnimator(
     }
 
     class SimpleGlyphState constructor(
-            override val text: CharSequence,
-            override val icon: Drawable?
+        override val text: CharSequence,
+        override val icon: Drawable?
     ) : GlyphState() {
 
         override fun equals(other: Any?): Boolean {
@@ -131,9 +131,9 @@ open class FabExtensionAnimator(
 }
 
 private class SpringSizeInterpolator(
-        val button: MaterialButton,
-        val collapsedFabSize: Int,
-        val expandedFabHeight: Int
+    val button: MaterialButton,
+    val collapsedFabSize: Int,
+    val expandedFabHeight: Int
 ) : FloatPropertyCompat<View>("FabExtensionSpring") {
 
     val isRunning get() = spring.isRunning
@@ -151,12 +151,12 @@ private class SpringSizeInterpolator(
 
     fun run(extended: Boolean) = button.doOnLayout {
         val widthMeasureSpec =
-                if (extended) View.MeasureSpec.makeMeasureSpec(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-                else View.MeasureSpec.makeMeasureSpec(collapsedFabSize, View.MeasureSpec.EXACTLY)
+            if (extended) View.MeasureSpec.makeMeasureSpec(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+            else View.MeasureSpec.makeMeasureSpec(collapsedFabSize, View.MeasureSpec.EXACTLY)
 
         val heightMeasureSpec =
-                if (extended) View.MeasureSpec.makeMeasureSpec(expandedFabHeight, View.MeasureSpec.EXACTLY)
-                else View.MeasureSpec.makeMeasureSpec(collapsedFabSize, View.MeasureSpec.EXACTLY)
+            if (extended) View.MeasureSpec.makeMeasureSpec(expandedFabHeight, View.MeasureSpec.EXACTLY)
+            else View.MeasureSpec.makeMeasureSpec(collapsedFabSize, View.MeasureSpec.EXACTLY)
 
         button.measure(widthMeasureSpec, heightMeasureSpec)
 

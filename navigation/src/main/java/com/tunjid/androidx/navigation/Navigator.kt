@@ -14,8 +14,8 @@ import kotlin.reflect.KProperty
  */
 inline fun <reified T : Navigator> Fragment.activityNavigatorController() = object : ReadOnlyProperty<Fragment, T> {
     override operator fun getValue(thisRef: Fragment, property: KProperty<*>): T =
-            (activity as? Navigator.Controller)?.navigator as? T
-                    ?: throw IllegalStateException("The hosting Activity is not a Navigator Controller")
+        (activity as? Navigator.Controller)?.navigator as? T
+            ?: throw IllegalStateException("The hosting Activity is not a Navigator Controller")
 }
 
 /**

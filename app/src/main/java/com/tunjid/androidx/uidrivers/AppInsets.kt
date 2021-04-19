@@ -10,18 +10,18 @@ interface InsetDescriptor {
 }
 
 private data class DelegateInsetDescriptor(
-        override val hasTopInset: Boolean,
-        override val hasBottomInset: Boolean,
-        val name: String
+    override val hasTopInset: Boolean,
+    override val hasBottomInset: Boolean,
+    val name: String
 ) : InsetDescriptor {
     override fun toString(): String = name
 }
 
 data class InsetFlags(
-        val hasLeftInset: Boolean,
-        override val hasTopInset: Boolean,
-        val hasRightInset: Boolean,
-        override val hasBottomInset: Boolean
+    val hasLeftInset: Boolean,
+    override val hasTopInset: Boolean,
+    val hasRightInset: Boolean,
+    override val hasBottomInset: Boolean
 ) : InsetDescriptor {
     companion object {
 

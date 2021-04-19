@@ -28,21 +28,21 @@ interface DynamicSystemUI {
 }
 
 data class DelegateSystemUI(
-        override val static: DelegateStaticSystemUI,
-        override val dynamic: DelegateDynamicSystemUI
+    override val static: DelegateStaticSystemUI,
+    override val dynamic: DelegateDynamicSystemUI
 ) : SystemUI
 
 data class DelegateStaticSystemUI(
-        override val statusBarSize: Int,
-        override val navBarSize: Int
+    override val statusBarSize: Int,
+    override val navBarSize: Int
 ) : StaticSystemUI
 
 data class DelegateDynamicSystemUI internal constructor(
-        override val leftInset: Int,
-        override val topInset: Int,
-        override val rightInset: Int,
-        override val bottomInset: Int,
-        override val snackbarHeight: Int
+    override val leftInset: Int,
+    override val topInset: Int,
+    override val rightInset: Int,
+    override val bottomInset: Int,
+    override val snackbarHeight: Int
 ) : DynamicSystemUI
 
 fun SystemUI.filterNoOp(existing: SystemUI): SystemUI = when {
@@ -51,7 +51,7 @@ fun SystemUI.filterNoOp(existing: SystemUI): SystemUI = when {
     else -> this
 }
 
-fun SystemUI.updateSnackbarHeight(snackbarHeight: Int) = when(this) {
+fun SystemUI.updateSnackbarHeight(snackbarHeight: Int) = when (this) {
     is DelegateSystemUI -> copy(dynamic = dynamic.copy(snackbarHeight = snackbarHeight))
     else -> this
 }
@@ -63,27 +63,27 @@ fun UiState.reduceSystemInsets(windowInsets: WindowInsets, navBarHeightThreshold
 
     val updatedStaticUI = when {
         currentStaticSystemUI !is DelegateStaticSystemUI -> DelegateStaticSystemUI(
-                statusBarSize = windowInsets.systemWindowInsetTop,
-                navBarSize = windowInsets.systemWindowInsetBottom
+            statusBarSize = windowInsets.systemWindowInsetTop,
+            navBarSize = windowInsets.systemWindowInsetBottom
         )
         windowInsets.systemWindowInsetBottom < navBarHeightThreshold -> DelegateStaticSystemUI(
-                statusBarSize = currentStaticSystemUI.statusBarSize,
-                navBarSize = windowInsets.systemWindowInsetBottom
+            statusBarSize = currentStaticSystemUI.statusBarSize,
+            navBarSize = windowInsets.systemWindowInsetBottom
         )
         else -> currentStaticSystemUI
     }
 
     val updatedDynamicUI = DelegateDynamicSystemUI(
-            leftInset = windowInsets.systemWindowInsetLeft,
-            topInset = windowInsets.systemWindowInsetTop,
-            rightInset = windowInsets.systemWindowInsetRight,
-            bottomInset = windowInsets.systemWindowInsetBottom,
-            snackbarHeight = currentSystemUI.dynamic.snackbarHeight
+        leftInset = windowInsets.systemWindowInsetLeft,
+        topInset = windowInsets.systemWindowInsetTop,
+        rightInset = windowInsets.systemWindowInsetRight,
+        bottomInset = windowInsets.systemWindowInsetBottom,
+        snackbarHeight = currentSystemUI.dynamic.snackbarHeight
     )
 
     return copy(systemUI = DelegateSystemUI(
-            static = updatedStaticUI,
-            dynamic = updatedDynamicUI
+        static = updatedStaticUI,
+        dynamic = updatedDynamicUI
     ))
 }
 

@@ -1,6 +1,7 @@
 package com.tunjid.androidx.tablists.doggo
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -11,6 +12,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.transition.ChangeBounds
 import androidx.transition.ChangeImageTransform
@@ -18,6 +20,7 @@ import androidx.transition.ChangeTransform
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.components.doOnEveryEvent
 import com.tunjid.androidx.core.content.themeColorAt
 import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.core.delegates.viewLifecycle
@@ -36,15 +39,29 @@ import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.tabnav.routing.routeName
 import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.callback
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.updatePartial
 import com.tunjid.androidx.view.util.hashTransitionName
+import kotlinx.parcelize.Parcelize
 import kotlin.math.abs
+
+@Parcelize
+data class RankArgs(
+    val isRanking: Boolean,
+    val isTopLevel: Boolean,
+) : Parcelable
 
 class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
     Navigator.TransactionModifier {
 
-    private var isRanking by fragmentArgs<Boolean>()
+    private var args by fragmentArgs<RankArgs>()
+    private var isRanking
+        get() = args.isRanking
+        set(value) {
+            args = args.copy(isRanking = value)
+        }
+
     private val viewModel by viewModels<DoggoRankViewModel>()
     private val navigator by activityNavigatorController<MultiStackNavigator>()
 
@@ -53,16 +70,16 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = UiState(
+        if (args.isTopLevel) uiState = UiState(
             toolbarTitle = this::class.java.routeName,
             toolbarMenuRes = R.menu.menu_doggo,
             toolbarShows = true,
             toolbarOverlaps = false,
-            toolbarMenuRefresher = {
+            toolbarMenuRefresher = viewLifecycleOwner.callback {
                 it.findItem(R.id.menu_sort)?.isVisible = !isRanking
                 it.findItem(R.id.menu_browse)?.isVisible = isRanking
             },
-            toolbarMenuClickListener = {
+            toolbarMenuClickListener = viewLifecycleOwner.callback {
                 when (it.itemId) {
                     R.id.menu_browse -> isRanking = false
                     R.id.menu_sort -> isRanking = true
@@ -78,8 +95,19 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
             lightStatusBar = !requireContext().isDarkTheme,
             fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
             navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
-            fabClickListener = { viewModel.accept(RankAction.Reset) }
+            fabClickListener = viewLifecycleOwner.callback { viewModel.accept(RankAction.Reset) }
         )
+        else viewLifecycleOwner.lifecycle.doOnEveryEvent(Lifecycle.Event.ON_RESUME) {
+            ::uiState.updatePartial {
+                copy(
+                    fabText = getString(R.string.reset_doggos),
+                    fabIcon = R.drawable.ic_restore_24dp,
+                    fabShows = true,
+                    fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
+                    fabClickListener = viewLifecycleOwner.callback { viewModel.accept(RankAction.Reset) }
+                )
+            }
+        }
 
         val listAdapter = listAdapterOf(
             initialItems = viewModel.state.value?.doggos ?: listOf(),
@@ -96,7 +124,7 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
             addItemDecoration(context.divider(DividerItemDecoration.HORIZONTAL))
             addItemDecoration(context.divider(DividerItemDecoration.VERTICAL))
             setSwipeDragOptions(
-                itemViewSwipeSupplier = { isRanking },
+                itemViewSwipeSupplier = { isRanking && args.isTopLevel },
                 longPressDragSupplier = { isRanking },
                 swipeConsumer = { holder, _ -> removeDoggo(holder) },
                 dragConsumer = ::moveDoggo,
@@ -185,7 +213,7 @@ class DoggoRankFragment : Fragment(R.layout.fragment_doggo_list),
     }
 
     companion object {
-        fun newInstance(): DoggoRankFragment = DoggoRankFragment().apply { this.isRanking = true }
+        fun newInstance(args: RankArgs): DoggoRankFragment = DoggoRankFragment().apply { this.args = args }
     }
 }
 

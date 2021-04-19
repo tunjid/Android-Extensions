@@ -8,15 +8,16 @@ There are 10 modules:
 |   | Name  | Description  |   |   |
 | ------------| ------------ | ------------ | ------------ | ------------ |
 | 1  | App | A sample app demoing the modules in the repository.  |   |   |
-| 2  | [Core (1.3.0)](https://github.com/tunjid/Android-Extensions/blob/develop/core/README.md)  | A few added utilities to the core Android KTX libraries.  Includes extension methods on objects to side step ContextCompat, DrawableCompat, and a fluent SpannableString API | ![](https://i.imgur.com/AFZpZ1K.png)  | ![](https://miro.medium.com/max/4904/1*o4p71Uid8vzAHvHH7W_LjQ.png)  |
-| 3  | [Navigation (1.2.1)](https://github.com/tunjid/Android-Extensions/blob/develop/navigation/README.md)  | Interfaces and implementations of Fragment based Navigators, including single and multiple stacks. The APIs allow for hooking into the raw `FragmentTransactions` that run allow you to customize it to your heart's content. Suspending APIs are also available to preform navigation actions sequentially without having to deal with the asynchrosity of the `FragmentManager`.| ![](https://i.imgur.com/2Ai74xI.png)  | ![](https://cdn-images-1.medium.com/max/1600/1*q1WqvY91CWlmAjdEiwbA_g.gif)  |
-| 4  | [View (1.2.0)](https://github.com/tunjid/Android-Extensions/blob/develop/view/README.md)  | A module containing UI building blocks, like animators and helper methods for views.  Built mostly around the `SpringAnimation` from the Jetpack `DynamicAnimation` library. In the example to the right, it is responsible for animating the margin, and padding of the container views, and the hiding and showing of bouncing FABs.| ![](https://i.imgur.com/K3qGDKb.gif)  |   |
-| 5  | [RecyclerView (1.2.0)](https://github.com/tunjid/Android-Extensions/blob/develop/recyclerview/README.md)  | Utility classes for the ```RecyclerView``` ```ViewGroup``` like drag and drop, swipe gestures, endless scrolling, a composable adapter, diffing, tables and much more.  | ![](https://miro.medium.com/max/580/1*SjjLx1ghigvJP7kax-K6gA.gif)  | ![](https://i.imgur.com/hpb3YFu.gif)  |
-| 6  | [Material (1.0.4)](https://github.com/tunjid/Android-Extensions/blob/develop/material/README.md)  | Utility classes around Google's Material Design components including an expandable floating action button.  | ![](https://miro.medium.com/max/648/1*NHgDmR6QVqQwj7VJToQE5w.gif)  |   |
-| 7  | [Communications (1.0.0)](https://github.com/tunjid/Android-Extensions/blob/develop/communications/README.md)  | Utility classes for Near Service Discovery (NSD) and Bluetooth Low Energy (BLE) communication.  |   |   |
-| 8  | [Saved State (1.0.1)](https://github.com/tunjid/Android-Extensions/blob/develop/savedstate/README.md)  | Delegated implementation of Android Jetpack's Saved State Registry for Components that also have a lifecycle.  |   |   |
-| 9  | [ConstraintLayout (Unmaintained, MotionLayout is here)](https://github.com/tunjid/Android-Extensions/blob/develop/constraintlayout/README.md)  | Utility classes for the ```ConstraintLayout``` ```ViewGroup```.  |   |   |
-| 10  | [Test (Unmaintained)](https://github.com/tunjid/Android-Extensions/blob/develop/test/README.md)  | Testing utilities built mostly around Espresso.  |   |   |
+| 2  | [![Core](https://img.shields.io/maven-central/v/com.tunjid.androidx/core/1?label=core)](https://github.com/tunjid/Android-Extensions/blob/develop/core/README.md)  | A few added utilities to the core Android KTX libraries.  Includes extension methods on objects to side step ContextCompat, DrawableCompat, and a fluent SpannableString API | ![](https://i.imgur.com/AFZpZ1K.png)  | ![](https://miro.medium.com/max/4904/1*o4p71Uid8vzAHvHH7W_LjQ.png)  |
+| 3  | [![Navigation](https://img.shields.io/maven-central/v/com.tunjid.androidx/navigation/1?label=navigation)](https://github.com/tunjid/Android-Extensions/blob/develop/navigation/README.md)  | Interfaces and implementations of Fragment based Navigators, including single and multiple stacks. The APIs allow for hooking into the raw `FragmentTransactions` that run allow you to customize it to your heart's content. Suspending APIs are also available to preform navigation actions sequentially without having to deal with the asynchrosity of the `FragmentManager`.| ![](https://i.imgur.com/2Ai74xI.png)  | ![](https://cdn-images-1.medium.com/max/1600/1*q1WqvY91CWlmAjdEiwbA_g.gif)  |
+| 4  | [![View](https://img.shields.io/maven-central/v/com.tunjid.androidx/view/1?label=view)](https://github.com/tunjid/Android-Extensions/blob/develop/view/README.md)  | A module containing UI building blocks, like animators and helper methods for views.  Built mostly around the `SpringAnimation` from the Jetpack `DynamicAnimation` library. In the example to the right, it is responsible for animating the margin, and padding of the container views, and the hiding and showing of bouncing FABs.| ![](https://i.imgur.com/K3qGDKb.gif)  |   |
+| 5  | [![RecyclerView](https://img.shields.io/maven-central/v/com.tunjid.androidx/recyclerview/1?label=recyclerview)](https://github.com/tunjid/Android-Extensions/blob/develop/recyclerview/README.md)  | Utility classes for the ```RecyclerView``` ```ViewGroup``` like drag and drop, swipe gestures, endless scrolling, a composable adapter, diffing, tables and much more.  | ![](https://miro.medium.com/max/580/1*SjjLx1ghigvJP7kax-K6gA.gif)  | ![](https://i.imgur.com/hpb3YFu.gif)  |
+| 6  | [![ViewPager2](https://img.shields.io/maven-central/v/com.tunjid.androidx/viewpager2/1?label=viewpager2)](https://github.com/tunjid/Android-Extensions/blob/develop/viewpager2/README.md)  | Utility classes for the ```ViewPager2``` ```ViewGroup``` particularly diff util for dispatching updates  | ![](https://i.imgur.com/G1KxP4m.gif)  |   |
+| 7  | [![Material](https://img.shields.io/maven-central/v/com.tunjid.androidx/material/1?label=material)](https://github.com/tunjid/Android-Extensions/blob/develop/material/README.md)  | Utility classes around Google's Material Design components including an expandable floating action button.  | ![](https://miro.medium.com/max/648/1*NHgDmR6QVqQwj7VJToQE5w.gif)  |   |
+| 8  | [![Communications](https://img.shields.io/maven-central/v/com.tunjid.androidx/communications/1?label=communications)](https://github.com/tunjid/Android-Extensions/blob/develop/communications/README.md)  | Utility classes for Near Service Discovery (NSD) and Bluetooth Low Energy (BLE) communication.  |   |   |
+| 9  | [![Saved State](https://img.shields.io/maven-central/v/com.tunjid.androidx/savedstate/1?label=savedstate)](https://github.com/tunjid/Android-Extensions/blob/develop/savedstate/README.md)  | Delegated implementation of Android Jetpack's Saved State Registry for Components that also have a lifecycle.  |   |   |
+| 10  | [ConstraintLayout (Unmaintained, MotionLayout is here)](https://github.com/tunjid/Android-Extensions/blob/develop/constraintlayout/README.md)  | Utility classes for the ```ConstraintLayout``` ```ViewGroup```.  |   |   |
+| 11  | [Test (Unmaintained)](https://github.com/tunjid/Android-Extensions/blob/develop/test/README.md)  | Testing utilities built mostly around Espresso.  |   |   |
 
 build.gradle lines
 
@@ -32,17 +33,13 @@ The built artifacts are hosted on Jcenter (pending the looming shutdown) and Mav
         }
     }
 
-    implementation 'com.tunjid.androidx:constraintlayout:1.0.0-rc01'
-    implementation 'com.tunjid.androidx:communications:1.0.0'
-    implementation 'com.tunjid.androidx:recyclerview:1.2.0'
-    implementation 'com.tunjid.androidx:navigation:1.2.1'
-    implementation 'com.tunjid.androidx:savedstate:1.0.1'
-    implementation 'com.tunjid.androidx:functions:1.0.0'
-    implementation 'com.tunjid.androidx:material:1.0.4'
-    implementation 'com.tunjid.androidx:core:1.3.0'
-    implementation 'com.tunjid.androidx:view:1.2.0'
-    implementation 'com.tunjid.androidx:test:1.0.0-rc02'
+    implementation 'com.tunjid.androidx:module:x.x.x'
 ```
+
+Refer to the table above for the latest version information.
+
+If you so desire, you can fork the repo and host the artifacts your self using github packages.
+Refer to publishing information below for more details.
 
 Projects that use This library include:
 
@@ -132,3 +129,7 @@ in fact, I personally only need to sign my artifacts when uploading to maven cen
 Note that the repository name *NEEDS* to be camel cased as it's used when finding the gradle task to publish the artifact.
 
 You do however need to specify at least 1 maven repository to publish to if you intend to publish artifacts.
+
+If you intend to host your own version of the artifacts on github packages after forking the repository, you will need to add a secret to your github action pipeline.
+The secret key is `PUBLISH_INFO_JSON`, and the value is the `publishInfo.json` described above, substituting the values of `publishUrl` and `downloadUrl`
+to match the url of your github fork and the credentials matching your username and github auth token.

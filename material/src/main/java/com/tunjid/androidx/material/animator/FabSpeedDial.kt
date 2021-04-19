@@ -36,13 +36,13 @@ import com.tunjid.androidx.material.R
 import com.tunjid.androidx.view.util.popOver
 
 fun speedDial(
-        anchor: View,
-        @ColorInt buttonTint: Int = anchor.context.themeColorAt(R.attr.colorPrimary),
-        @ColorInt backgroundColor: Int = Color.argb(40, 0, 0, 0),
-        @StyleRes animationStyle: Int = R.style.PopUpFade,
-        layoutAnimationController: LayoutAnimationController = LayoutAnimationController(speedDialAnimation, INITIAL_DELAY).apply { order = ORDER_NORMAL },
-        items: List<Pair<CharSequence?, Drawable>>,
-        dismissListener: (Int?) -> Unit
+    anchor: View,
+    @ColorInt buttonTint: Int = anchor.context.themeColorAt(R.attr.colorPrimary),
+    @ColorInt backgroundColor: Int = Color.argb(40, 0, 0, 0),
+    @StyleRes animationStyle: Int = R.style.PopUpFade,
+    layoutAnimationController: LayoutAnimationController = LayoutAnimationController(speedDialAnimation, INITIAL_DELAY).apply { order = ORDER_NORMAL },
+    items: List<Pair<CharSequence?, Drawable>>,
+    dismissListener: (Int?) -> Unit
 ) = LinearLayout(anchor.context).run root@{
     rotationY = MIRROR
     rotationX = MIRROR
@@ -59,7 +59,7 @@ fun speedDial(
         setOnDismissListener { dismissListener(dismissReason) }
 
         items.mapIndexed { index, pair -> speedDialLayout(pair, buttonTint, View.OnClickListener { dismissReason = index; dismiss() }) }
-                .forEach(this@root::addView)
+            .forEach(this@root::addView)
     }
 }
 
@@ -121,16 +121,16 @@ private fun View.getOffset(anchor: View): () -> Point = {
 }
 
 private fun Context.ripple(tint: Int, shapeModifier: ShapeAppearanceModel.Builder.() -> Unit): RippleDrawable = RippleDrawable(
-        ColorStateList.valueOf(translucentBlack),
-        MaterialShapeDrawable(ShapeAppearanceModel.builder().run {
-            shapeModifier(this)
-            build()
-        }).apply {
-            tintList = ColorStateList.valueOf(tint)
-            setShadowColor(Color.DKGRAY)
-            initializeElevationOverlay(this@ripple)
-        },
-        null
+    ColorStateList.valueOf(translucentBlack),
+    MaterialShapeDrawable(ShapeAppearanceModel.builder().run {
+        shapeModifier(this)
+        build()
+    }).apply {
+        tintList = ColorStateList.valueOf(tint)
+        setShadowColor(Color.DKGRAY)
+        initializeElevationOverlay(this@ripple)
+    },
+    null
 )
 
 private val speedDialAnimation: Animation
@@ -144,25 +144,25 @@ private val speedDialAnimation: Animation
 private fun alpha() = AlphaAnimation(0F, 1F).accelerateDecelerate()
 
 private fun translate(): Animation = TranslateAnimation(
-        RELATIVE_TO_PARENT,
-        0F,
-        RELATIVE_TO_PARENT,
-        0F,
-        RELATIVE_TO_PARENT,
-        SPEED_DIAL_TRANSLATION_Y,
-        RELATIVE_TO_PARENT,
-        0F
+    RELATIVE_TO_PARENT,
+    0F,
+    RELATIVE_TO_PARENT,
+    0F,
+    RELATIVE_TO_PARENT,
+    SPEED_DIAL_TRANSLATION_Y,
+    RELATIVE_TO_PARENT,
+    0F
 ).accelerateDecelerate()
 
 private fun scale(): Animation = ScaleAnimation(
-        SPEED_DIAL_SCALE,
-        1F,
-        SPEED_DIAL_SCALE,
-        1F,
-        RELATIVE_TO_SELF,
-        SPEED_DIAL_SCALE_PIVOT,
-        RELATIVE_TO_SELF,
-        SPEED_DIAL_SCALE_PIVOT
+    SPEED_DIAL_SCALE,
+    1F,
+    SPEED_DIAL_SCALE,
+    1F,
+    RELATIVE_TO_SELF,
+    SPEED_DIAL_SCALE_PIVOT,
+    RELATIVE_TO_SELF,
+    SPEED_DIAL_SCALE_PIVOT
 ).accelerateDecelerate()
 
 private const val SPEED_DIAL_TRANSLATION_Y = -0.2F

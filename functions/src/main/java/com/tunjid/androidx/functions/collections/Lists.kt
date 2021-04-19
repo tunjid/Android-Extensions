@@ -10,7 +10,7 @@ fun <T> MutableCollection<T>.replace(src: Collection<T>) {
  * changes in the source are immediately visible.
  */
 fun <F, T> MutableList<F>.transform(fromFunction: (F) -> T): List<T> =
-        TransformingSequentialList(this, fromFunction, null)
+    TransformingSequentialList(this, fromFunction, null)
 
 /**
  * Returns a list that reflects the source list, i.e
@@ -19,4 +19,4 @@ fun <F, T> MutableList<F>.transform(fromFunction: (F) -> T): List<T> =
  * consistency.
  */
 fun <F, T> MutableList<F>.transform(fromFunction: (F) -> T, toFunction: ((T) -> F)?): MutableList<T> =
-        TransformingSequentialList(this, fromFunction, toFunction)
+    TransformingSequentialList(this, fromFunction, toFunction)

@@ -22,18 +22,18 @@ internal class TransformingSequentialList<F, T>(private val fromList: MutableLis
             override fun transform(from: F): T = fromFunction(from)
 
             override fun set(element: T) =
-                    if (toFunction == null) throw UnsupportedOperationException()
-                    else fromListIterator.set(toFunction.invoke(element))
+                if (toFunction == null) throw UnsupportedOperationException()
+                else fromListIterator.set(toFunction.invoke(element))
 
             override fun add(element: T) =
-                    if (toFunction == null) throw UnsupportedOperationException()
-                    else fromListIterator.add(toFunction.invoke(element))
+                if (toFunction == null) throw UnsupportedOperationException()
+                else fromListIterator.add(toFunction.invoke(element))
         }
     }
 
     internal abstract class TransformedListIterator<F, T>(
-            private val backingIterator: MutableListIterator<F>,
-            private val toFunction: ((T) -> F)?
+        private val backingIterator: MutableListIterator<F>,
+        private val toFunction: ((T) -> F)?
     ) : TransformedIterator<F, T>(backingIterator), MutableListIterator<T> {
 
         override fun hasPrevious(): Boolean = backingIterator.hasPrevious()
@@ -45,12 +45,12 @@ internal class TransformingSequentialList<F, T>(private val fromList: MutableLis
         override fun previousIndex(): Int = backingIterator.previousIndex()
 
         override fun set(element: T) =
-                if (toFunction != null) backingIterator.set(toFunction.invoke(element))
-                else throw UnsupportedOperationException()
+            if (toFunction != null) backingIterator.set(toFunction.invoke(element))
+            else throw UnsupportedOperationException()
 
         override fun add(element: T) =
-                if (toFunction != null) backingIterator.set(toFunction.invoke(element))
-                else throw UnsupportedOperationException()
+            if (toFunction != null) backingIterator.set(toFunction.invoke(element))
+            else throw UnsupportedOperationException()
     }
 
     internal abstract class TransformedIterator<F, T>(private val backingIterator: MutableIterator<F>) : MutableIterator<T> {

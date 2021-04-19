@@ -16,7 +16,7 @@ sealed class RankAction {
 
     data class SwipeDragStarted(val doggo: Doggo, val actionState: Int) : RankAction()
     data class SwipeDragEnded(val doggo: Doggo, val actionState: Int) : RankAction()
-    data class ViewHash(val hashCode: Int): RankAction()
+    data class ViewHash(val hashCode: Int) : RankAction()
     object Reset : RankAction()
 }
 

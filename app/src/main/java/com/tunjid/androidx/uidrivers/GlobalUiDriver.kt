@@ -22,8 +22,6 @@ import androidx.dynamicanimation.animation.FloatPropertyCompat
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -91,12 +89,6 @@ class GlobalUiDriver(
         })
     }
 
-    private val shortestAvailableLifecycle
-        get() = when (val current = navigator.current) {
-            null -> host.lifecycle
-            else -> if (current.view == null) current.lifecycle else current.viewLifecycleOwner.lifecycle
-        }
-
     private val uiSizes = UISizes(host)
     private val fabExtensionAnimator = FabExtensionAnimator(binding.fab)
     private val toolbarHider = ViewHider.of(binding.toolbar).setDirection(ViewHider.TOP).build()
@@ -113,10 +105,10 @@ class GlobalUiDriver(
         set(value) {
             val updated = value.copy(
                 systemUI = value.systemUI.filterNoOp(uiState.systemUI),
-                fabClickListener = value.fabClickListener.lifecycleAware(),
-                fabTransitionOptions = value.fabTransitionOptions.lifecycleAware(),
-                toolbarMenuRefresher = value.toolbarMenuRefresher.lifecycleAware(),
-                toolbarMenuClickListener = value.toolbarMenuClickListener.lifecycleAware()
+                fabClickListener = value.fabClickListener,
+                fabTransitionOptions = value.fabTransitionOptions,
+                toolbarMenuRefresher = value.toolbarMenuRefresher,
+                toolbarMenuClickListener = value.toolbarMenuClickListener
             )
             liveUiState.value = updated
             liveUiState.value = updated.copy(toolbarInvalidated = false) // Reset after firing once
@@ -291,13 +283,6 @@ class GlobalUiDriver(
     }
 
     private val <T : Any?> ((UiState) -> T).distinct get() = liveUiState.map(this).distinctUntilChanged()
-
-    /**
-     * Wraps an action with the shortest available lifecycle to make sure nothing leaks.
-     * If [this] is already a [LifeCycleAwareCallback], it was previously wrapped and will NO-OP.
-     */
-    private fun <T> ((T) -> Unit).lifecycleAware(): (T) -> Unit =
-        if (this is LifeCycleAwareCallback) this else LifeCycleAwareCallback(shortestAvailableLifecycle, this)
 }
 
 private fun View.animateBackground(@ColorInt to: Int) {
@@ -322,18 +307,6 @@ private val Int.isBrightColor get() = ColorUtils.calculateLuminance(this) > 0.5
 private fun ViewHider<*>.set(show: Boolean) =
     if (show) show()
     else hide()
-
-private class LifeCycleAwareCallback<T>(lifecycle: Lifecycle, implementation: (T) -> Unit) : (T) -> Unit {
-    private var callback: (T) -> Unit = implementation
-
-    init {
-        lifecycle.addObserver(LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_DESTROY) callback = {}
-        })
-    }
-
-    override fun invoke(type: T) = callback.invoke(type)
-}
 
 private class UISizes(host: FragmentActivity) {
     val toolbarSize: Int = host.resources.getDimensionPixelSize(R.dimen.triple_and_half_margin)

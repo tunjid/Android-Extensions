@@ -27,8 +27,8 @@ internal val Fragment.navigatorTag
  * then removes the [LifecycleEventObserver].
  */
 fun Fragment.doOnLifecycleEvent(
-        targetEvent: Lifecycle.Event,
-        action: () -> Unit
+    targetEvent: Lifecycle.Event,
+    action: () -> Unit
 ) = lifecycle.doOnEvent(targetEvent, action)
 
 /**
@@ -67,10 +67,10 @@ fun Fragment.addOnBackPressedCallback(action: OnBackPressedCallback.() -> Unit):
 
 // TODO: Create a lifecycle module and make this public there
 private fun Lifecycle.addObserver(callback: (observer: LifecycleEventObserver, source: LifecycleOwner, event: Lifecycle.Event) -> Unit) =
-        addObserver(ReferenceHoldingLifecycleObserver(callback))
+    addObserver(ReferenceHoldingLifecycleObserver(callback))
 
 private class ReferenceHoldingLifecycleObserver(
-        private val callBack: (observer: LifecycleEventObserver, source: LifecycleOwner, event: Lifecycle.Event) -> Unit
+    private val callBack: (observer: LifecycleEventObserver, source: LifecycleOwner, event: Lifecycle.Event) -> Unit
 ) : LifecycleEventObserver {
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) = callBack(this, source, event)
 }

@@ -21,7 +21,7 @@ fun <T> viewDelegate(default: T? = null): ReadWriteProperty<View, T> =
 fun <T> viewBindingDelegate(default: T? = null): ReadWriteProperty<ViewBinding, T> =
     viewDelegate(default).map(mapper = ViewBinding::getRoot)
 
-private class ViewDelegate< T>(
+private class ViewDelegate<T>(
     private val default: T? = null,
 ) : ReadWriteProperty<View, T> {
     @Suppress("UNCHECKED_CAST")

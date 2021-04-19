@@ -12,20 +12,20 @@ import com.tunjid.androidx.view.util.viewDelegate
  * Returns a [LinearLayoutManager] in the [RecyclerView.VERTICAL] orientation
  */
 fun RecyclerView.verticalLayoutManager(reverseLayout: Boolean = false) =
-        LinearLayoutManager(context, RecyclerView.VERTICAL, reverseLayout)
+    LinearLayoutManager(context, RecyclerView.VERTICAL, reverseLayout)
 
 /**
  * Returns a [LinearLayoutManager] in the [RecyclerView.HORIZONTAL] orientation
  */
 fun RecyclerView.horizontalLayoutManager(reverseLayout: Boolean = false) =
-        LinearLayoutManager(context, RecyclerView.HORIZONTAL, reverseLayout)
+    LinearLayoutManager(context, RecyclerView.HORIZONTAL, reverseLayout)
 
 /**
  * Returns a [GridLayoutManager] with a span count of [spanCount], and an optional span size lookup
  */
 fun RecyclerView.gridLayoutManager(
-        spanCount: Int = 1,
-        spanSizeLookup: ((position: Int) -> Int)? = null
+    spanCount: Int = 1,
+    spanSizeLookup: ((position: Int) -> Int)? = null
 ): GridLayoutManager = GridLayoutManager(context, spanCount).apply {
     if (spanSizeLookup != null) setSpanSizeLookup(object : GridLayoutManager.SpanSizeLookup() {
         override fun getSpanSize(position: Int): Int = spanSizeLookup.invoke(position)
@@ -61,7 +61,7 @@ fun RecyclerView.notifyItemMoved(from: Int, to: Int) = adapter?.notifyItemMoved(
  * @see RecyclerView.Adapter.notifyItemRangeChanged
  */
 fun RecyclerView.notifyItemRangeChanged(start: Int, count: Int) = adapter?.notifyItemRangeChanged(start, count)
-        ?: Unit
+    ?: Unit
 
 /**
  * Convenience method for adding an [RecyclerView.OnScrollListener]
@@ -75,46 +75,46 @@ fun RecyclerView.addScrollListener(scrollListener: (Int, Int) -> Unit): Unit = a
  * @see RecyclerView.findViewHolderForItemId
  */
 inline fun <reified VH : RecyclerView.ViewHolder> RecyclerView.viewHolderForItemId(id: Long) =
-        findViewHolderForItemId(id) as? VH
+    findViewHolderForItemId(id) as? VH
 
 /**
  * Typed convenience method
  * @see RecyclerView.findViewHolderForAdapterPosition
  */
 inline fun <reified VH : RecyclerView.ViewHolder> RecyclerView.viewHolderForAdapterPosition(position: Int) =
-        findViewHolderForAdapterPosition(position) as? VH
+    findViewHolderForAdapterPosition(position) as? VH
 
 /**
  * Typed convenience method
  * @see RecyclerView.findViewHolderForLayoutPosition
  */
 inline fun <reified VH : RecyclerView.ViewHolder> RecyclerView.viewHolderForLayoutPosition(position: Int) =
-        findViewHolderForLayoutPosition(position) as? VH
+    findViewHolderForLayoutPosition(position) as? VH
 
 /**
  * Typed convenience method
  * @see RecyclerView.findContainingViewHolder
  */
 inline fun <reified VH : RecyclerView.ViewHolder> RecyclerView.containingViewHolder(view: View) =
-        findContainingViewHolder(view) as? VH
+    findContainingViewHolder(view) as? VH
 
 /**
  * Resets the endless scroll. This is useful if an endless scroll was called, and nothing new
  * was fetched, or the call failed
  */
 fun RecyclerView.resetEndlessScrollListener() =
-        composedEndlessScroller?.reset() ?: Unit
+    composedEndlessScroller?.reset() ?: Unit
 
 /**
  * Adds an endless scroll listener to the [RecyclerView]
  */
 fun RecyclerView.setEndlessScrollListener(
-        visibleThreshold: Int, // The minimum amount of items to have below your current scroll position before loading more.
-        @RecyclerView.Orientation
-        orientation: Int = RecyclerView.VERTICAL,
-        isLayoutManagerReverse: (RecyclerView.LayoutManager) -> Boolean = ::isReverse,
-        firstVisibleItemFunction: (RecyclerView.LayoutManager) -> Int = ::firstVisiblePosition,
-        loadMore: (Int) -> Unit
+    visibleThreshold: Int, // The minimum amount of items to have below your current scroll position before loading more.
+    @RecyclerView.Orientation
+    orientation: Int = RecyclerView.VERTICAL,
+    isLayoutManagerReverse: (RecyclerView.LayoutManager) -> Boolean = ::isReverse,
+    firstVisibleItemFunction: (RecyclerView.LayoutManager) -> Int = ::firstVisiblePosition,
+    loadMore: (Int) -> Unit
 ) {
     val previous = composedEndlessScroller
     if (previous != null) removeOnScrollListener(previous)
@@ -127,7 +127,7 @@ fun RecyclerView.setEndlessScrollListener(
 fun RecyclerView.Adapter<*>.acceptDiff(diffResult: DiffUtil.DiffResult) = diffResult.dispatchUpdatesTo(this)
 
 fun RecyclerView.acceptDiff(diffResult: DiffUtil.DiffResult) = adapter?.acceptDiff(diffResult)
-        ?: Unit
+    ?: Unit
 
 /**
  * Configurable options for swiping and dragging the [RecyclerView] [RecyclerView.ViewHolder]
@@ -162,26 +162,26 @@ fun RecyclerView.acceptDiff(diffResult: DiffUtil.DiffResult) = adapter?.acceptDi
  * @see [ItemTouchHelper.Callback] for more reference
  */
 fun <VH : RecyclerView.ViewHolder> RecyclerView.setSwipeDragOptions(
-        itemViewSwipeSupplier: () -> Boolean = { false },
-        longPressDragSupplier: () -> Boolean = { false },
-        dragConsumer: (VH, VH) -> Unit = { _, _ -> },
-        swipeConsumer: (VH, Int) -> Unit = { _, _ -> },
-        swipeDragStartConsumer: (VH, Int) -> Unit = { _, _ -> },
-        swipeDragEndConsumer: (VH, Int) -> Unit = { _, _ -> },
-        movementFlagFunction: (VH) -> Int = { _ -> SWIPE_DRAG_ALL_DIRECTIONS },
-        dragHandleFunction: (VH) -> View = { viewHolder -> viewHolder.itemView }
+    itemViewSwipeSupplier: () -> Boolean = { false },
+    longPressDragSupplier: () -> Boolean = { false },
+    dragConsumer: (VH, VH) -> Unit = { _, _ -> },
+    swipeConsumer: (VH, Int) -> Unit = { _, _ -> },
+    swipeDragStartConsumer: (VH, Int) -> Unit = { _, _ -> },
+    swipeDragEndConsumer: (VH, Int) -> Unit = { _, _ -> },
+    movementFlagFunction: (VH) -> Int = { _ -> SWIPE_DRAG_ALL_DIRECTIONS },
+    dragHandleFunction: (VH) -> View = { viewHolder -> viewHolder.itemView }
 ) {
     val previous = swipeDragTouchHelper
     previous?.destroy()
     swipeDragTouchHelper = SwipeDragTouchHelper(this, SwipeDragOptions(
-            itemViewSwipeSupplier = itemViewSwipeSupplier,
-            longPressDragSupplier = longPressDragSupplier,
-            dragConsumer = dragConsumer,
-            swipeConsumer = swipeConsumer,
-            swipeDragStartConsumer = swipeDragStartConsumer,
-            swipeDragEndConsumer = swipeDragEndConsumer,
-            movementFlagFunction = movementFlagFunction,
-            dragHandleFunction = dragHandleFunction
+        itemViewSwipeSupplier = itemViewSwipeSupplier,
+        longPressDragSupplier = longPressDragSupplier,
+        dragConsumer = dragConsumer,
+        swipeConsumer = swipeConsumer,
+        swipeDragStartConsumer = swipeDragStartConsumer,
+        swipeDragEndConsumer = swipeDragEndConsumer,
+        movementFlagFunction = movementFlagFunction,
+        dragHandleFunction = dragHandleFunction
     ))
 }
 

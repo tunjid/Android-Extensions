@@ -8,8 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 @Suppress("UNCHECKED_CAST")
 internal class SwipeDragTouchHelper<VH : RecyclerView.ViewHolder>(
-        private val recyclerView: RecyclerView,
-        private val options: SwipeDragOptions<VH>
+    private val recyclerView: RecyclerView,
+    private val options: SwipeDragOptions<VH>
 ) : ItemTouchHelper.Callback(), RecyclerView.OnChildAttachStateChangeListener {
 
     private var actionState: Int = 0
@@ -26,7 +26,7 @@ internal class SwipeDragTouchHelper<VH : RecyclerView.ViewHolder>(
     override fun isLongPressDragEnabled(): Boolean = options.longPressDragSupplier()
 
     override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int =
-            options.movementFlagFunction(viewHolder as VH)
+        options.movementFlagFunction(viewHolder as VH)
 
     override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
         options.dragConsumer(viewHolder as VH, target as VH)
@@ -34,7 +34,7 @@ internal class SwipeDragTouchHelper<VH : RecyclerView.ViewHolder>(
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) =
-            options.swipeConsumer(viewHolder as VH, direction)
+        options.swipeConsumer(viewHolder as VH, direction)
 
     override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
         super.onSelectedChanged(viewHolder, actionState)
@@ -51,7 +51,7 @@ internal class SwipeDragTouchHelper<VH : RecyclerView.ViewHolder>(
     @SuppressLint("ClickableViewAccessibility")
     override fun onChildViewAttachedToWindow(view: View) {
         val holder = recyclerView.findContainingViewHolder(view) as? VH
-                ?: return
+            ?: return
 
         options.dragHandleFunction(holder).apply {
             dragHandles.add(this)

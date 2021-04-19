@@ -4,23 +4,28 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.components.doOnEveryEvent
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentStandingsBinding
 import com.tunjid.androidx.isDarkTheme
 import com.tunjid.androidx.recyclerview.multiscroll.DynamicCellSizer
-import com.tunjid.androidx.uidrivers.UiState
-import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.tabnav.routing.routeName
+import com.tunjid.androidx.uidrivers.callback
+import com.tunjid.androidx.uidrivers.uiState
+import com.tunjid.androidx.uidrivers.updatePartial
 
 class StandingsFragment : Fragment(R.layout.fragment_standings) {
 
+    private var isTopLevel by fragmentArgs<Boolean>()
     private val viewModel by viewModels<StandingsViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = UiState(
+        if (isTopLevel) uiState = uiState.copy(
             toolbarTitle = this::class.java.routeName,
             toolbarShows = true,
             toolbarOverlaps = false,
@@ -30,6 +35,9 @@ class StandingsFragment : Fragment(R.layout.fragment_standings) {
             lightStatusBar = !requireContext().isDarkTheme,
             navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )
+        else viewLifecycleOwner.lifecycle.doOnEveryEvent(Lifecycle.Event.ON_RESUME) {
+            ::uiState.updatePartial { copy(fabShows = false) }
+        }
 
         val binding = FragmentStandingsBinding.bind(view)
 
@@ -59,7 +67,7 @@ class StandingsFragment : Fragment(R.layout.fragment_standings) {
     }
 
     companion object {
-        fun newInstance(): StandingsFragment = StandingsFragment()
+        fun newInstance(isTopLevel: Boolean): StandingsFragment = StandingsFragment().apply { this.isTopLevel = isTopLevel }
     }
 }
 //endregion

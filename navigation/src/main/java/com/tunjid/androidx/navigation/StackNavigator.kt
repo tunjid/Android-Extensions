@@ -116,7 +116,7 @@ class StackNavigator constructor(
         // Empty string will be treated as a no-op internally
         val tag = upToTag?.toEntry ?: baskStackEntries.firstOrNull()?.name ?: ""
         val flags = if (includeMatch) FragmentManager.POP_BACK_STACK_INCLUSIVE else 0
-        if (fragmentManager.isStateSaved) when(current?.lifecycle?.currentState) {
+        if (fragmentManager.isStateSaved) when (current?.lifecycle?.currentState) {
             // Reattaching, defer call to clear
             Lifecycle.State.CREATED -> current?.lifecycleScope?.launchWhenResumed { clear(upToTag, includeMatch) }
             else -> Log.d("StackNavigator", "Ignoring out of scope clear call")

@@ -1,7 +1,6 @@
 package com.tunjid.androidx.navigation
 
 import androidx.fragment.app.FragmentManager
-import androidx.test.annotation.UiThreadTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule

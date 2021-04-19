@@ -28,10 +28,11 @@
     <string name="route_span_builder">A fragment demonstrating the charSequence extensions for building spans</string>
     <string name="route_fab_transformations">A fragment showing material transformations on a FloatingActionButton</string>
     <string name="route_hard_service_connection">A fragment demonstrating the HardServiceConnection</string>
+    <string name="route_viewpager">A fragment demonstrating the FragmentListAdapter</string>
 
-    <string name="stress_test_prompt" >Stress test navigation?</string>
-    <string name="yes" >Yes</string>
-    <string name="no" >No</string>
+    <string name="stress_test_prompt">Stress test navigation?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <!-- Menu items -->
     <string name="menu_reset_navigation">Reset Navigation</string>
@@ -131,6 +132,10 @@
     <string name="shrink_margins">Shrink margins</string>
     <string name="shrink_padding">Shrink padding</string>
     <string name="party_hard">Party Hard</string>
+
+    <!-- Fragment List Adapter -->
+    <string name="edit_tabs">Edit Tabs</string>
+    <string name="shuffle_tabs">Shuffle Tabs</string>
 
     <!-- UiState -->
     <string name="ui_state_playground">UI State Playground</string>

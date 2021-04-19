@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.components.doOnEveryEvent
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentRouteBinding
 import com.tunjid.androidx.databinding.ViewholderTileBinding
 import com.tunjid.androidx.isDarkTheme
@@ -18,17 +21,19 @@ import com.tunjid.androidx.tabnav.routing.routeName
 import com.tunjid.androidx.uidrivers.InsetFlags.Companion.NO_BOTTOM
 import com.tunjid.androidx.uidrivers.SpringItemAnimator
 import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.callback
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.updatePartial
 
 class ShiftingTilesFragment : Fragment(R.layout.fragment_route) {
 
+    private var isTopLevel by fragmentArgs<Boolean>()
     private val viewModel by viewModels<ShiftingTileViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = UiState(
+        if (isTopLevel) uiState = UiState(
             toolbarTitle = this::class.java.routeName,
             toolbarShows = true,
             toolbarMenuRes = 0,
@@ -37,8 +42,20 @@ class ShiftingTilesFragment : Fragment(R.layout.fragment_route) {
             insetFlags = NO_BOTTOM,
             lightStatusBar = !requireContext().isDarkTheme,
             navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
-            fabClickListener = { viewModel.toggleChanges() }
+            fabClickListener = viewLifecycleOwner.callback { viewModel.toggleChanges() }
         )
+        else viewLifecycleOwner.lifecycle.doOnEveryEvent(Lifecycle.Event.ON_RESUME) {
+            ::uiState.updatePartial {
+                val state = viewModel.state.value ?: ShiftingState()
+                copy(
+                    fabShows = true,
+                    fabIcon = state.fabIconRes,
+                    fabText = getString(state.fabText),
+                    fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
+                    fabClickListener = viewLifecycleOwner.callback { viewModel.toggleChanges() }
+                )
+            }
+        }
 
         val tileAdapter = listAdapterOf(
             initialItems = viewModel.state.value?.tiles ?: listOf(),
@@ -67,6 +84,6 @@ class ShiftingTilesFragment : Fragment(R.layout.fragment_route) {
     }
 
     companion object {
-        fun newInstance(): ShiftingTilesFragment = ShiftingTilesFragment().apply { arguments = Bundle() }
+        fun newInstance(isTopLevel: Boolean): ShiftingTilesFragment = ShiftingTilesFragment().apply { this.isTopLevel = isTopLevel }
     }
 }

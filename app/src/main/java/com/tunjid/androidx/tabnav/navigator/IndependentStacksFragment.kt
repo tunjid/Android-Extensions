@@ -13,9 +13,11 @@ import androidx.annotation.IdRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import com.google.android.material.button.MaterialButton
 import com.tunjid.androidx.MutedColors
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.components.doOnEveryEvent
 import com.tunjid.androidx.core.content.colorAt
 import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.core.text.color
@@ -30,14 +32,15 @@ import com.tunjid.androidx.navigation.addOnBackPressedCallback
 import com.tunjid.androidx.navigation.childStackNavigationController
 import com.tunjid.androidx.tabnav.routing.routeName
 import com.tunjid.androidx.uidrivers.InsetFlags
-import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.crossFade
 import com.tunjid.androidx.uidrivers.uiState
+import com.tunjid.androidx.uidrivers.updatePartial
 import java.util.*
 
 
 class IndependentStacksFragment : Fragment(R.layout.fragment_independent_stack) {
 
+    private var isTopLevel by fragmentArgs<Boolean>()
     private val navigator by activityNavigatorController<MultiStackNavigator>()
     private val navigators = mutableMapOf<Int, StackNavigator>()
     private val visitOrder = ArrayDeque<Int>()
@@ -65,7 +68,7 @@ class IndependentStacksFragment : Fragment(R.layout.fragment_independent_stack) 
             if (current == null) push(IndependentStackChildFragment.newInstance(name(containerId), 1))
         }
 
-        uiState = UiState(
+        if (isTopLevel) uiState = uiState.copy(
             toolbarTitle = this::class.java.routeName.color(Color.WHITE),
             toolbarMenuRes = 0,
             toolbarShows = true,
@@ -76,6 +79,9 @@ class IndependentStacksFragment : Fragment(R.layout.fragment_independent_stack) 
             insetFlags = InsetFlags.NO_TOP,
             navBarColor = requireContext().colorAt(R.color.colorSurface)
         )
+        else viewLifecycleOwner.lifecycle.doOnEveryEvent(Lifecycle.Event.ON_RESUME) {
+            ::uiState.updatePartial { copy(fabShows = false) }
+        }
     }
 
     override fun onResume() {
@@ -108,7 +114,7 @@ class IndependentStacksFragment : Fragment(R.layout.fragment_independent_stack) 
         resources.getResourceEntryName(containerId).replace("_", " ")
 
     companion object {
-        fun newInstance(): IndependentStacksFragment = IndependentStacksFragment().apply { arguments = Bundle() }
+        fun newInstance(isTopLevel: Boolean): IndependentStacksFragment = IndependentStacksFragment().apply { this.isTopLevel = isTopLevel }
     }
 
 }

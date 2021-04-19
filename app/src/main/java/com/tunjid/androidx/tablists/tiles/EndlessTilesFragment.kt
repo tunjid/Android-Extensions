@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.components.doOnEveryEvent
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentRouteBinding
 import com.tunjid.androidx.databinding.ViewholderTileBinding
 import com.tunjid.androidx.isDarkTheme
@@ -16,23 +19,25 @@ import com.tunjid.androidx.recyclerview.gridLayoutManager
 import com.tunjid.androidx.recyclerview.setEndlessScrollListener
 import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.tablists.tiles.EndlessTileViewModel.Companion.NUM_TILES
+import com.tunjid.androidx.tabnav.routing.routeName
 import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.uidrivers.SpringItemAnimator
 import com.tunjid.androidx.uidrivers.UiState
+import com.tunjid.androidx.uidrivers.callback
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.updatePartial
-import com.tunjid.androidx.tabnav.routing.routeName
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import kotlin.math.abs
 
 class EndlessTilesFragment : Fragment(R.layout.fragment_route) {
 
+    private var isTopLevel by fragmentArgs<Boolean>()
     private val viewModel by viewModels<EndlessTileViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = UiState(
+        if (isTopLevel) uiState = UiState(
             toolbarTitle = this::class.java.routeName,
             toolbarShows = true,
             toolbarMenuRes = 0,
@@ -43,8 +48,23 @@ class EndlessTilesFragment : Fragment(R.layout.fragment_route) {
             insetFlags = InsetFlags.NO_BOTTOM,
             lightStatusBar = !requireContext().isDarkTheme,
             navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color),
-            fabClickListener = { ::uiState.updatePartial { copy(snackbarText = "There are ${viewModel.tiles.size} tiles") } }
+            fabClickListener = viewLifecycleOwner.callback {
+                ::uiState.updatePartial { copy(snackbarText = "There are ${viewModel.tiles.size} tiles") }
+            }
         )
+        else viewLifecycleOwner.lifecycle.doOnEveryEvent(Lifecycle.Event.ON_RESUME) {
+            ::uiState.updatePartial {
+                copy(
+                    fabShows = true,
+                    fabIcon = R.drawable.ic_info_outline_24dp,
+                    fabText = getString(R.string.tile_info),
+                    fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
+                    fabClickListener = viewLifecycleOwner.callback {
+                        ::uiState.updatePartial { copy(snackbarText = "There are ${viewModel.tiles.size} tiles") }
+                    }
+                )
+            }
+        }
 
         FragmentRouteBinding.bind(view).recyclerView.apply {
             itemAnimator = SpringItemAnimator()
@@ -72,6 +92,6 @@ class EndlessTilesFragment : Fragment(R.layout.fragment_route) {
     }
 
     companion object {
-        fun newInstance(): EndlessTilesFragment = EndlessTilesFragment().apply { arguments = Bundle() }
+        fun newInstance(isTopLevel: Boolean): EndlessTilesFragment = EndlessTilesFragment().apply { this.isTopLevel = isTopLevel }
     }
 }

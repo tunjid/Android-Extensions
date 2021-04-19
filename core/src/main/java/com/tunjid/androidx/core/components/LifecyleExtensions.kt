@@ -11,8 +11,8 @@ import androidx.lifecycle.LifecycleOwner
  * then removes the [LifecycleEventObserver].
  */
 fun Lifecycle.doOnEvent(
-        targetEvent: Lifecycle.Event,
-        action: () -> Unit
+    targetEvent: Lifecycle.Event,
+    action: () -> Unit
 ) {
     val lastReceivedEvent = currentState.lastReceivedEvent
     if (lastReceivedEvent != null && lastReceivedEvent >= targetEvent) return action()
@@ -24,6 +24,15 @@ fun Lifecycle.doOnEvent(
                 source.lifecycle.removeObserver(this)
             }
         }
+    })
+}
+
+fun Lifecycle.doOnEveryEvent(
+    targetEvent: Lifecycle.Event,
+    action: () -> Unit
+) {
+    addObserver(LifecycleEventObserver { _, event ->
+        if (event == targetEvent) action()
     })
 }
 

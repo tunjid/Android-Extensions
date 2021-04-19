@@ -31,11 +31,11 @@ class DoggoViewModel(application: Application) : AndroidViewModel(application) {
     fun onSwiped(current: Int, fraction: Float) {
         val next = min(current + 1, doggos.lastIndex)
         disposables.add(Maybes.zip(
-                colorFor(doggos[current]),
-                colorFor(doggos[next])
+            colorFor(doggos[current]),
+            colorFor(doggos[next])
         ) { a, b -> colorEvaluator.evaluate(fraction, a, b) as Int }
-                .subscribeOn(io())
-                .subscribe(processor::onNext, Throwable::printStackTrace)
+            .subscribeOn(io())
+            .subscribe(processor::onNext, Throwable::printStackTrace)
         )
     }
 
@@ -45,18 +45,18 @@ class DoggoViewModel(application: Application) : AndroidViewModel(application) {
         val app = getApplication<App>()
         val metrics = app.resources.displayMetrics
         val bitmap = app.drawableAt(doggo.imageRes)?.toBitmap(
-                width = metrics.widthPixels / 4,
-                height = metrics.heightPixels / 4,
-                config = Bitmap.Config.ARGB_8888
+            width = metrics.widthPixels / 4,
+            height = metrics.heightPixels / 4,
+            config = Bitmap.Config.ARGB_8888
         ) ?: return@fromCallable Color.BLACK
 
         Palette.from(bitmap)
-                .generate()
-                .getDominantColor(Color.BLACK)
+            .generate()
+            .getDominantColor(Color.BLACK)
     }
-            .subscribeOn(io())
-            .observeOn(mainThread())
-            .cache()
+        .subscribeOn(io())
+        .observeOn(mainThread())
+        .cache()
 
     override fun onCleared() {
         super.onCleared()

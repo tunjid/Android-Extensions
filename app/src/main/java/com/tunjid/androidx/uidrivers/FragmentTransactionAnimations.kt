@@ -1,6 +1,5 @@
 package com.tunjid.androidx.uidrivers
 
-import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.transition.ChangeImageTransform

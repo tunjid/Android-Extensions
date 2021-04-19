@@ -10,8 +10,8 @@ import androidx.fragment.app.FragmentManager
  * Created by tj.dahunsi on 4/29/17.
  */
 class FragmentVisibleIdlingResource(
-        fragmentManager: FragmentManager,
-        private val fragmentTag: String
+    fragmentManager: FragmentManager,
+    private val fragmentTag: String
 ) : BaseFragmentIdlingResource(fragmentManager, fragmentTag) {
 
     override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {

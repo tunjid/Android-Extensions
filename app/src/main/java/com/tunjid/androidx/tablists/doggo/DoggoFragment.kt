@@ -30,7 +30,7 @@ class DoggoFragment : Fragment(R.layout.fragment_image_detail) {
             override val thumbnail: ImageView get() = binding.doggoImage
             override val fullResolution: ImageView get() = binding.fullSize
             override fun onDoggoThumbnailLoaded(doggo: Doggo) = parentFragment?.startPostponedEnterTransition()
-                    ?: Unit
+                ?: Unit
         }.bind(doggo)
     }
 

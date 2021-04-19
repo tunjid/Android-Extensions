@@ -4,26 +4,26 @@ import android.graphics.Canvas
 import android.graphics.Paint
 
 class LinePageIndicator(
-        private val activePaint: Paint,
-        private val inActivePaint: Paint
+    private val activePaint: Paint,
+    private val inActivePaint: Paint
 ) : PageIndicator {
     override fun drawInActive(
-            canvas: Canvas,
-            params: Params,
-            index: Int,
-            count: Int,
-            progress: Float
+        canvas: Canvas,
+        params: Params,
+        index: Int,
+        count: Int,
+        progress: Float
     ) {
         val start = params.start(count)
         for (i in 0 until count) drawLineAtIndex(start, params, i, canvas, inActivePaint)
     }
 
     override fun drawActive(
-            canvas: Canvas,
-            params: Params,
-            index: Int,
-            count: Int,
-            progress: Float
+        canvas: Canvas,
+        params: Params,
+        index: Int,
+        count: Int,
+        progress: Float
     ) {
         val start = params.start(count)
 

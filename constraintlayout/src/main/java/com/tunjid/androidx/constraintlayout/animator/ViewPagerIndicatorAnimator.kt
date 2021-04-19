@@ -20,16 +20,16 @@ import java.util.Objects.requireNonNull
 typealias IndicatorWatcher = (indicator: ImageView, position: Int, fraction: Float, totalTranslation: Float) -> Unit
 
 open class ViewPagerIndicatorAnimator constructor(
-        private val indicatorWidth: Int = 0,
-        private val indicatorHeight: Int = 0,
-        private val indicatorPadding: Int = 0,
-        @DrawableRes activeDrawable: Int,
-        @param:DrawableRes @field:DrawableRes
-        private val inActiveDrawable: Int,
-        @DrawableRes backgroundDrawable: Int = 0,
-        private val container: ConstraintLayout,
-        private val viewPager: ViewPager,
-        private val guide: View
+    private val indicatorWidth: Int = 0,
+    private val indicatorHeight: Int = 0,
+    private val indicatorPadding: Int = 0,
+    @DrawableRes activeDrawable: Int,
+    @param:DrawableRes @field:DrawableRes
+    private val inActiveDrawable: Int,
+    @DrawableRes backgroundDrawable: Int = 0,
+    private val container: ConstraintLayout,
+    private val viewPager: ViewPager,
+    private val guide: View
 ) {
 
     private var chainIds: IntArray? = null
@@ -58,8 +58,8 @@ open class ViewPagerIndicatorAnimator constructor(
     }
 
     fun getIndicatorAt(index: Int): ImageView =
-            if (index < 0 || chainIds == null || index > chainIds!!.size - 1) indicator
-            else container.findViewById(chainIds!![index])
+        if (index < 0 || chainIds == null || index > chainIds!!.size - 1) indicator
+        else container.findViewById(chainIds!![index])
 
     fun addIndicatorWatcher(watcher: IndicatorWatcher) {
         if (!watchers.contains(watcher)) watchers.add(watcher)
@@ -129,10 +129,10 @@ open class ViewPagerIndicatorAnimator constructor(
     }
 
     private inner class Animator :
-            DataSetObserver(),
-            OnPageChangeListener,
-            OnAdapterChangeListener,
-            OnGlobalLayoutListener {
+        DataSetObserver(),
+        OnPageChangeListener,
+        OnAdapterChangeListener,
+        OnGlobalLayoutListener {
 
         private var lastPositionOffset: Float = 0.toFloat()
 

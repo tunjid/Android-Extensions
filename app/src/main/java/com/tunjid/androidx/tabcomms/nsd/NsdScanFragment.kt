@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import com.tunjid.androidx.PlaceHolder
 import com.tunjid.androidx.R
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.databinding.FragmentNsdScanBinding
 import com.tunjid.androidx.databinding.ViewholderNsdListBinding
 import com.tunjid.androidx.isDarkTheme
@@ -22,29 +23,26 @@ import com.tunjid.androidx.recyclerview.viewbinding.BindingViewHolder
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderDelegate
 import com.tunjid.androidx.recyclerview.viewbinding.viewHolderFrom
 import com.tunjid.androidx.setLoading
-import com.tunjid.androidx.uidrivers.InsetFlags
-import com.tunjid.androidx.uidrivers.UiState
-import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.tabcomms.nsd.Input
-import com.tunjid.androidx.tabcomms.nsd.NSDState
-import com.tunjid.androidx.tabcomms.nsd.NsdItem
-import com.tunjid.androidx.tabcomms.nsd.NsdViewModel
 import com.tunjid.androidx.tabnav.routing.routeName
+import com.tunjid.androidx.uidrivers.InsetFlags
+import com.tunjid.androidx.uidrivers.callback
+import com.tunjid.androidx.uidrivers.uiState
 
 /**
  * A [Fragment] listing supported NSD servers
  */
 class NsdScanFragment : Fragment(R.layout.fragment_nsd_scan) {
 
+    private var isTopLevel by fragmentArgs<Boolean>()
     private val viewModel by viewModels<NsdViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        uiState = UiState(
+        if (isTopLevel) uiState = uiState.copy(
             toolbarTitle = this::class.java.routeName,
-            toolbarMenuRefresher = ::updateToolbarMenu,
-            toolbarMenuClickListener = ::onMenuItemSelected,
+            toolbarMenuRefresher = viewLifecycleOwner.callback(::updateToolbarMenu),
+            toolbarMenuClickListener = viewLifecycleOwner.callback(::onMenuItemSelected),
             toolbarMenuRes = R.menu.menu_nsd_scan,
             toolbarShows = true,
             fabShows = false,
@@ -104,7 +102,7 @@ class NsdScanFragment : Fragment(R.layout.fragment_nsd_scan) {
         else viewModel.accept(Input.StopScanning)
 
     companion object {
-        fun newInstance(): NsdScanFragment = NsdScanFragment().apply { arguments = Bundle() }
+        fun newInstance(isTopLevel: Boolean): NsdScanFragment = NsdScanFragment().apply { this.isTopLevel = isTopLevel }
     }
 }
 

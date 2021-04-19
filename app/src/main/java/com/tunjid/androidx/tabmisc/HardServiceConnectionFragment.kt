@@ -5,49 +5,65 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.transition.TransitionManager
 import com.transitionseverywhere.ChangeText
 import com.transitionseverywhere.ChangeText.CHANGE_BEHAVIOR_OUT_IN
 import com.tunjid.androidx.CounterService
 import com.tunjid.androidx.R
+import com.tunjid.androidx.core.components.doOnEveryEvent
 import com.tunjid.androidx.core.components.services.HardServiceConnection
 import com.tunjid.androidx.core.content.themeColorAt
+import com.tunjid.androidx.core.delegates.fragmentArgs
 import com.tunjid.androidx.isDarkTheme
-import com.tunjid.androidx.uidrivers.UiState
-import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.androidx.uidrivers.InsetFlags
 import com.tunjid.androidx.tabnav.routing.routeName
+import com.tunjid.androidx.uidrivers.InsetFlags
+import com.tunjid.androidx.uidrivers.callback
+import com.tunjid.androidx.uidrivers.uiState
+import com.tunjid.androidx.uidrivers.updatePartial
 
 
 class HardServiceConnectionFragment : Fragment(R.layout.fragment_hard_service_connection) {
 
+    private var isTopLevel by fragmentArgs<Boolean>()
     private val connection by lazy { HardServiceConnection(requireContext(), CounterService::class.java, this::onServiceBound) }
 
     private var statusText: TextView? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        uiState = UiState(
-                toolbarTitle = this::class.java.routeName,
-                toolbarOverlaps = false,
-                toolbarShows = true,
-                toolbarMenuRes = 0,
-                fabShows = true,
-                fabIcon = R.drawable.ic_connect_24dp,
-                fabText = getText(R.string.bind_service),
-                fabClickListener = { toggleService() },
-                insetFlags = InsetFlags.ALL,
-                showsBottomNav = true,
-                lightStatusBar = !requireContext().isDarkTheme,
-                navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
+        if (isTopLevel) uiState = uiState.copy(
+            toolbarTitle = this::class.java.routeName,
+            toolbarOverlaps = false,
+            toolbarShows = true,
+            toolbarMenuRes = 0,
+            fabShows = true,
+            fabIcon = R.drawable.ic_connect_24dp,
+            fabText = getText(R.string.bind_service),
+            fabClickListener = viewLifecycleOwner.callback { toggleService() },
+            insetFlags = InsetFlags.ALL,
+            showsBottomNav = true,
+            lightStatusBar = !requireContext().isDarkTheme,
+            navBarColor = requireContext().themeColorAt(R.attr.nav_bar_color)
         )
+        else viewLifecycleOwner.lifecycle.doOnEveryEvent(Lifecycle.Event.ON_RESUME) {
+            ::uiState.updatePartial {
+                copy(
+                    fabShows = true,
+                    fabIcon = R.drawable.ic_connect_24dp,
+                    fabText = getText(R.string.bind_service),
+                    fabExtended = if (savedInstanceState == null) true else uiState.fabExtended,
+                    fabClickListener = viewLifecycleOwner.callback { toggleService() },
+                )
+            }
+        }
 
         statusText = view.findViewById(R.id.text)
         updateText(getString(R.string.service_disconnected))
     }
 
     private fun toggleService() = when (connection.boundService) {
-        null -> connection.bind().let { Unit }
+        null -> connection.bind().let { }
         else -> {
             connection.unbindService()
             updateText(getString(R.string.service_disconnected))
@@ -76,7 +92,7 @@ class HardServiceConnectionFragment : Fragment(R.layout.fragment_hard_service_co
     }
 
     companion object {
-        fun newInstance(): HardServiceConnectionFragment = HardServiceConnectionFragment().apply { arguments = Bundle() }
+        fun newInstance(isTopLevel: Boolean): HardServiceConnectionFragment = HardServiceConnectionFragment().apply { this.isTopLevel = isTopLevel }
     }
 
 }

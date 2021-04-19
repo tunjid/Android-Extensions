@@ -10,8 +10,8 @@ import androidx.fragment.app.FragmentManager
  * Created by tj.dahunsi on 4/29/17.
  */
 class FragmentGoneIdlingResource(
-        fragmentManager: FragmentManager,
-        private val fragmentTag: String
+    fragmentManager: FragmentManager,
+    private val fragmentTag: String
 ) : BaseFragmentIdlingResource(fragmentManager, fragmentTag) {
 
     override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) {

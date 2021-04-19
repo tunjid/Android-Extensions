@@ -31,12 +31,12 @@ class EndlessTileViewModel(application: Application) : AndroidViewModel(applicat
         disposables.add(Single.fromCallable {
             Diff.calculate(tiles, generateTiles()) { oldTiles, addedTiles -> oldTiles + addedTiles }
         }
-                .subscribeOn(io())
-                .observeOn(mainThread())
-                .map { diff ->
-                    tiles.replace(diff.items)
-                    diff.result
-                }.subscribe(moreTiles::setValue))
+            .subscribeOn(io())
+            .observeOn(mainThread())
+            .map { diff ->
+                tiles.replace(diff.items)
+                diff.result
+            }.subscribe(moreTiles::setValue))
     }
 
     private fun generateTiles(): List<Tile> {

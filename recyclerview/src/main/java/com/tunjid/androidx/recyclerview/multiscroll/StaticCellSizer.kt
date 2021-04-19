@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
  * function at each index.
  */
 class StaticCellSizer(
-        @RecyclerView.Orientation override val orientation: Int = RecyclerView.HORIZONTAL,
-        private val sizeLookup: (Int) -> Int
+    @RecyclerView.Orientation override val orientation: Int = RecyclerView.HORIZONTAL,
+    private val sizeLookup: (Int) -> Int
 ) : CellSizer, ViewModifier {
 
     private var appContext: Context? = null
