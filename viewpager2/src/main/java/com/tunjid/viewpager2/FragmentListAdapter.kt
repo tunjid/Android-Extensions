@@ -11,15 +11,17 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.tunjid.androidx.recyclerview.diff.DiffAdapterCallback
 
+/**
+ * Represents a type that maps to a `Fragment`. You want to use a data class for this, or at the
+ * very least a class that has stable implementations of [Any.equals] and [Any.hashCode].
+ */
 interface FragmentTab {
     fun title(res: Resources): CharSequence
     fun createFragment(): Fragment
 }
 
-// We use toString to avoid hash code collisions for data classes, which are calculated purely based
-// on constructor arguments, not on class name. This means that different data classes with the same
-// argument have colliding hash codes
-val FragmentTab.itemId: Long get() = toString().hashCode().toLong()
+// Uniquely identify tabs by hashing fully qualified name along with their contents
+private val FragmentTab.itemId: Long get() = "${this.javaClass.name}-${hashCode()}".hashCode().toLong()
 
 fun <T : FragmentTab> Fragment.fragmentListAdapterOf(
     initialTabs: List<T>? = null,
@@ -31,6 +33,7 @@ fun <T : FragmentTab> Fragment.fragmentListAdapterOf(
     resources = this.resources
 )
 
+@Suppress("unused")
 fun <T : FragmentTab> FragmentActivity.fragmentListAdapterOf(
     initialTabs: List<T>? = null,
     lifecycle: Lifecycle = this.lifecycle
