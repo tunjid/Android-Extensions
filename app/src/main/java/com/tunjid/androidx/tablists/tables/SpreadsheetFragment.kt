@@ -20,8 +20,8 @@ import com.tunjid.androidx.recyclerview.multiscroll.StaticCellSizer
 import com.tunjid.androidx.tabnav.routing.routeName
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.updatePartial
-import com.tunjid.viewpager2.FragmentListAdapter
 import com.tunjid.viewpager2.FragmentTab
+import com.tunjid.viewpager2.fragmentListAdapterOf
 
 class SpreadSheetParentFragment : Fragment(R.layout.fragment_spreadsheet_parent) {
 
@@ -44,9 +44,7 @@ class SpreadSheetParentFragment : Fragment(R.layout.fragment_spreadsheet_parent)
 
         val binding = FragmentSpreadsheetParentBinding.bind(view)
         val viewPager = binding.viewPager
-        val pagerAdapter = FragmentListAdapter<SpreadsheetTab>(fragment = this)
-
-        pagerAdapter.submitList(listOf(
+        val pagerAdapter = fragmentListAdapterOf(listOf(
             SpreadsheetTab(isDynamic = false),
             SpreadsheetTab(isDynamic = true),
         ))

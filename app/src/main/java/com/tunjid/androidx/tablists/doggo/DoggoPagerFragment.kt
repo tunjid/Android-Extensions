@@ -39,8 +39,8 @@ import com.tunjid.androidx.uidrivers.callback
 import com.tunjid.androidx.uidrivers.uiState
 import com.tunjid.androidx.uidrivers.updatePartial
 import com.tunjid.androidx.view.util.hashTransitionName
-import com.tunjid.viewpager2.FragmentListAdapter
 import com.tunjid.viewpager2.FragmentTab
+import com.tunjid.viewpager2.fragmentListAdapterOf
 import kotlin.collections.set
 import kotlin.math.abs
 import kotlin.math.cos
@@ -96,8 +96,7 @@ class DoggoPagerFragment : Fragment(R.layout.fragment_doggo_pager),
         val context = view.context
         val indicatorSize = resources.getDimensionPixelSize(R.dimen.single_and_half_margin)
 
-        val adapter = FragmentListAdapter<DoggoTab>(fragment = this)
-        adapter.submitList(Doggo.doggos.map(::DoggoTab))
+        val adapter = fragmentListAdapterOf(Doggo.doggos.map(::DoggoTab))
 
         binding.viewPager.adapter = adapter
         binding.viewPager.setCurrentItem(Doggo.transitionIndex, false)

@@ -21,7 +21,7 @@ import com.tunjid.androidx.tabnav.routing.routeName
 import com.tunjid.androidx.uidrivers.UiState
 import com.tunjid.androidx.uidrivers.callback
 import com.tunjid.androidx.uidrivers.uiState
-import com.tunjid.viewpager2.FragmentListAdapter
+import com.tunjid.viewpager2.fragmentListAdapterOf
 
 class ViewPagerListAdapterFragment : Fragment(R.layout.fragment_spreadsheet_parent),
     Navigator.TransactionModifier {
@@ -62,7 +62,7 @@ class ViewPagerListAdapterFragment : Fragment(R.layout.fragment_spreadsheet_pare
         )
 
         val viewPager = binding.viewPager
-        val pagerAdapter = FragmentListAdapter<RouteTab>(fragment = this).apply {
+        val pagerAdapter = fragmentListAdapterOf(viewModel.state.value?.visibleItems).apply {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         }
 

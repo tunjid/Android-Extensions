@@ -3,6 +3,8 @@ package com.tunjid.viewpager2
 import android.content.res.Resources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.AdapterListUpdateCallback
 import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -19,21 +21,44 @@ interface FragmentTab {
 // argument have colliding hash codes
 val FragmentTab.itemId: Long get() = toString().hashCode().toLong()
 
-class FragmentListAdapter<T : FragmentTab> : FragmentStateAdapter {
+fun <T : FragmentTab> Fragment.fragmentListAdapterOf(
+    initialTabs: List<T>? = null,
+    lifecycle: Lifecycle = viewLifecycleOwner.lifecycle
+) = FragmentListAdapter(
+    fragmentManager = childFragmentManager,
+    lifecycle = lifecycle,
+    initialTabs = initialTabs,
+    resources = this.resources
+)
 
-    private val resources: Resources
+fun <T : FragmentTab> FragmentActivity.fragmentListAdapterOf(
+    initialTabs: List<T>? = null,
+    lifecycle: Lifecycle = this.lifecycle
+) = FragmentListAdapter(
+    fragmentManager = supportFragmentManager,
+    lifecycle = lifecycle,
+    initialTabs = initialTabs,
+    resources = this.resources
+)
+
+/**
+ * A [FragmentStateAdapter] that uses diff util to efficiently dispatch changes to the underlying
+ * adapter
+ */
+class FragmentListAdapter<T : FragmentTab> internal constructor(
+    initialTabs: List<T>? = null,
+    fragmentManager: FragmentManager,
+    lifecycle: Lifecycle,
+    val resources: Resources
+) : FragmentStateAdapter(fragmentManager, lifecycle) {
 
     private val differ = AsyncListDiffer(
         AdapterListUpdateCallback(this),
         AsyncDifferConfig.Builder(DiffAdapterCallback<T>()).build()
     )
 
-    constructor(activity: FragmentActivity) : super(activity.supportFragmentManager, activity.lifecycle) {
-        resources = activity.resources
-    }
-
-    constructor(fragment: Fragment) : super(fragment.childFragmentManager, fragment.viewLifecycleOwner.lifecycle) {
-        resources = fragment.resources
+    init {
+        initialTabs?.let(this::submitList)
     }
 
     private val tabs: List<T> get() = differ.currentList
