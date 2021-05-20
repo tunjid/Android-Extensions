@@ -21,7 +21,7 @@ buildscript {
         targetSdkVersion = 29
         minSdkVersion = 21
 
-        appCompat = 'androidx.appcompat:appcompat:1.2.0'
+        appCompat = 'androidx.appcompat:appcompat:1.3.0'
         cardView = 'androidx.cardview:cardview:1.0.0'
         constraintLayout = 'androidx.constraintlayout:constraintlayout:2.0.4'
         dynamicAnimations = 'androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03'
