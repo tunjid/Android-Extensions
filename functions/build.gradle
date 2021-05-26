@@ -1,7 +1,7 @@
 apply from: "${project.rootDir}/kotlinLib.gradle"
 
 dependencies {
-    implementation 'org.jetbrains:annotations:21.0.0'
+    implementation 'org.jetbrains:annotations:21.0.1'
     implementation parent.ext.kotlin
 }
 
