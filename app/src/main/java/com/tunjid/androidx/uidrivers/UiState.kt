@@ -7,6 +7,7 @@ import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
+import androidx.core.graphics.Insets
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -16,6 +17,7 @@ import kotlin.reflect.KMutableProperty0
 fun KMutableProperty0<UiState>.updatePartial(updater: UiState.() -> UiState) = set(updater.invoke(get()))
 
 data class UiState(
+    val statusBarColor: Int = Color.TRANSPARENT,
     @param:MenuRes
     @field:MenuRes
     @get:MenuRes
@@ -69,7 +71,7 @@ internal data class ToolbarState(
 
 internal data class SnackbarPositionalState(
     val bottomNavVisible: Boolean,
-    override val bottomInset: Int,
+    override val ime: Insets,
     override val navBarSize: Int,
     override val insetDescriptor: InsetDescriptor
 ) : KeyboardAware
@@ -78,7 +80,7 @@ internal data class FabPositionalState(
     val fabVisible: Boolean,
     val bottomNavVisible: Boolean,
     val snackbarHeight: Int,
-    override val bottomInset: Int,
+    override val ime: Insets,
     override val navBarSize: Int,
     override val insetDescriptor: InsetDescriptor
 ) : KeyboardAware
@@ -87,7 +89,7 @@ internal data class FragmentContainerPositionalState(
     val statusBarSize: Int,
     val toolbarOverlaps: Boolean,
     val bottomNavVisible: Boolean,
-    override val bottomInset: Int,
+    override val ime: Insets,
     override val navBarSize: Int,
     override val insetDescriptor: InsetDescriptor
 ) : KeyboardAware
@@ -109,7 +111,7 @@ internal val UiState.fabState
         fabVisible = fabShows,
         snackbarHeight = systemUI.dynamic.snackbarHeight,
         bottomNavVisible = showsBottomNav == true,
-        bottomInset = systemUI.dynamic.bottomInset,
+        ime = systemUI.dynamic.ime,
         navBarSize = systemUI.static.navBarSize,
         insetDescriptor = insetFlags
     )
@@ -117,7 +119,7 @@ internal val UiState.fabState
 internal val UiState.snackbarPositionalState
     get() = SnackbarPositionalState(
         bottomNavVisible = showsBottomNav == true,
-        bottomInset = systemUI.dynamic.bottomInset,
+        ime = systemUI.dynamic.ime,
         navBarSize = systemUI.static.navBarSize,
         insetDescriptor = insetFlags
     )
@@ -137,11 +139,11 @@ internal val UiState.bottomNavPositionalState
 
 internal val UiState.fragmentContainerState
     get() = FragmentContainerPositionalState(
-        statusBarSize = systemUI.dynamic.topInset,
+        statusBarSize = systemUI.static.statusBarSize,
         insetDescriptor = insetFlags,
         toolbarOverlaps = toolbarOverlaps,
         bottomNavVisible = showsBottomNav == true,
-        bottomInset = systemUI.dynamic.bottomInset,
+        ime = systemUI.dynamic.ime,
         navBarSize = systemUI.static.navBarSize
     )
 
@@ -150,9 +152,9 @@ internal val UiState.fragmentContainerState
  * keyboard visibility changes for bottom aligned views like Floating Action Buttons and Snack Bars
  */
 interface KeyboardAware {
-    val bottomInset: Int
+    val ime: Insets
     val navBarSize: Int
     val insetDescriptor: InsetDescriptor
 }
 
-internal val KeyboardAware.keyboardSize get() = bottomInset - navBarSize
+internal val KeyboardAware.keyboardSize get() = ime.bottom - navBarSize
