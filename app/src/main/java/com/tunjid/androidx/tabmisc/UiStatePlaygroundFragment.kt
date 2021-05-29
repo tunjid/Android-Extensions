@@ -120,6 +120,13 @@ private val Context.slices
             copy(statusBarColor = it)
         },
         Slice(
+            name = "Is immersive",
+            options = listOf(true, false),
+            getter = UiState::isImmersive
+        ) {
+            copy(isImmersive = it)
+        },
+        Slice(
             name = "Has light status bar icons",
             options = listOf(true, false),
             getter = UiState::lightStatusBar

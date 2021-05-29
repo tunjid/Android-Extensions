@@ -21,7 +21,6 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
 import androidx.dynamicanimation.animation.FloatPropertyCompat
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
@@ -194,7 +193,8 @@ class GlobalUiDriver(
     }
 
     private fun updateBottomNav(state: BottomNavPositionalState) {
-        binding.bottomNavigation.updatePadding(bottom = state.navBarSize)
+        binding.bottomNavigation.softSpring(PaddingProperty.BOTTOM)
+            .animateToFinalPosition(state.navBarSize.toFloat())
         binding.bottomNavigation.softSpring(SpringAnimation.TRANSLATION_Y)
             .animateToFinalPosition(if (state.bottomNavVisible) 0F else uiSizes.bottomNavSize.plus(state.navBarSize).toFloat())
     }
