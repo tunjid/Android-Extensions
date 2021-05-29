@@ -2,6 +2,7 @@ package com.tunjid.androidx.uidrivers
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
@@ -14,6 +15,9 @@ import android.widget.EditText
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.core.graphics.ColorUtils
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
@@ -38,6 +42,7 @@ import com.tunjid.androidx.view.animator.ViewHider
 import com.tunjid.androidx.view.util.PaddingProperty
 import com.tunjid.androidx.view.util.innermostFocusedChild
 import com.tunjid.androidx.view.util.spring
+import com.tunjid.androidx.view.util.viewDelegate
 import com.tunjid.androidx.view.util.withOneShotEndListener
 import kotlin.math.max
 
@@ -92,9 +97,10 @@ class GlobalUiDriver(
     private val uiSizes = UISizes(host)
     private val fabExtensionAnimator = FabExtensionAnimator(binding.fab)
     private val toolbarHider = ViewHider.of(binding.toolbar).setDirection(ViewHider.TOP).build()
+    private val insetsController = WindowInsetsControllerCompat(host.window, binding.root)
     private val noOpInsetsListener = View.OnApplyWindowInsetsListener { _, insets -> insets }
     private val rootInsetsListener = View.OnApplyWindowInsetsListener { _, insets ->
-        liveUiState.value = uiState.reduceSystemInsets(insets, uiSizes.navBarHeightThreshold)
+        liveUiState.value = uiState.reduceSystemInsets(WindowInsetsCompat.toWindowInsetsCompat(insets), uiSizes.navBarHeightThreshold)
         // Consume insets so other views will not see them.
         insets.consumeSystemWindowInsets()
     }
@@ -144,6 +150,7 @@ class GlobalUiDriver(
 
         UiState::snackbarText.distinct onChanged this::showSnackBar
         UiState::navBarColor.distinct onChanged this::setNavBarColor
+        UiState::statusBarColor.distinct onChanged host.window::setStatusBarColor
         UiState::lightStatusBar.distinct onChanged this::setLightStatusBar
         UiState::fragmentContainerState.distinct onChanged this::updateFragmentContainer
         UiState::backgroundColor.distinct onChanged binding.contentRoot::animateBackground
@@ -221,37 +228,18 @@ class GlobalUiDriver(
             GradientDrawable.Orientation.BOTTOM_TOP,
             intArrayOf(color, Color.TRANSPARENT))
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) uiFlagTweak {
-            if (color.isBrightColor) it or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-            else it and View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR.inv()
-        }
+        insetsController.isAppearanceLightNavigationBars = color.isBrightColor
     }
 
-    private fun updateImmersivity(isImmersive: Boolean) = uiFlagTweak { systemUiFlags ->
-        when (isImmersive) {
-            true -> (systemUiFlags
-                or View.SYSTEM_UI_FLAG_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                )
-            false -> (systemUiFlags
-                and View.SYSTEM_UI_FLAG_FULLSCREEN.inv()
-                and View.SYSTEM_UI_FLAG_HIDE_NAVIGATION.inv()
-                and View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY.inv()
-                )
-        }
+    private fun updateImmersivity(isImmersive: Boolean) {
+        val systemBarsSetter = if (isImmersive) insetsController::hide else insetsController::show
+        systemBarsSetter.invoke(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+        insetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
     }
 
     private fun setLightStatusBar(lightStatusBar: Boolean) = when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> uiFlagTweak { flags ->
-            if (lightStatusBar) flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            else flags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-        }
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> insetsController.isAppearanceLightStatusBars = lightStatusBar
         else -> host.window.statusBarColor = host.colorAt(if (lightStatusBar) R.color.transparent else R.color.black_50)
-    }
-
-    private fun uiFlagTweak(tweaker: (Int) -> Int) = host.window.decorView.run {
-        systemUiVisibility = tweaker(systemUiVisibility)
     }
 
     private fun setFabGlyphs(fabGlyphState: Pair<Int, CharSequence>) = host.runOnUiThread {
@@ -285,14 +273,17 @@ class GlobalUiDriver(
     private val <T : Any?> ((UiState) -> T).distinct get() = liveUiState.map(this).distinctUntilChanged()
 }
 
+private var View.backgroundAnimator by viewDelegate<ValueAnimator?>()
+
+@SuppressLint("Recycle")
 private fun View.animateBackground(@ColorInt to: Int) {
-    val animator = getTag(R.id.doggo_image) as? ValueAnimator
-        ?: ValueAnimator().apply {
-            setTag(R.id.doggo_image, this)
-            setIntValues(Color.TRANSPARENT)
-            setEvaluator(ArgbEvaluator())
-            addUpdateListener { setBackgroundColor(it.animatedValue as Int) }
-        }
+    val animator = backgroundAnimator ?: ValueAnimator().apply {
+        setTag(R.id.doggo_image, this)
+        setIntValues(Color.TRANSPARENT)
+        setEvaluator(ArgbEvaluator())
+        addUpdateListener { setBackgroundColor(it.animatedValue as Int) }
+        backgroundAnimator = this
+    }
 
     if (animator.isRunning) animator.cancel()
     animator.setIntValues(animator.animatedValue as Int, to)
@@ -324,12 +315,7 @@ private fun Window.assumeControl() {
         windowAttributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
         attributes = windowAttributes
     }
-    decorView.systemUiVisibility = FULL_CONTROL_SYSTEM_UI_FLAGS
+    WindowCompat.setDecorFitsSystemWindows(this, false)
     navigationBarColor = context.colorAt(R.color.transparent)
     statusBarColor = context.colorAt(R.color.transparent)
 }
-
-private const val FULL_CONTROL_SYSTEM_UI_FLAGS =
-    View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN

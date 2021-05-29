@@ -112,6 +112,14 @@ private var BindingViewHolder<ViewholderUiStateSliceBinding>.slice by viewHolder
 private val Context.slices
     get() = listOf<Slice<*>>(
         Slice(
+            name = "Status bar color",
+            nameTransformer = Int::stringHex,
+            options = listOf(Color.TRANSPARENT, Color.parseColor("#80000000"), Color.BLACK, Color.WHITE, Color.RED, Color.GREEN, Color.BLUE),
+            getter = UiState::statusBarColor
+        ) {
+            copy(statusBarColor = it)
+        },
+        Slice(
             name = "Has light status bar icons",
             options = listOf(true, false),
             getter = UiState::lightStatusBar
