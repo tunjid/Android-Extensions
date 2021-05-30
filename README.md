@@ -2,6 +2,10 @@
 
 ![Navigation Tests](https://github.com/tunjid/Android-Extensions/workflows/Navigation%20Tests/badge.svg)
 
+Please note, this is not an official Google or Android repository and has no affiliation with the aforementioned parties.
+
+It is merely a fairly long lived, albeit well maintained side project. Caveat emptor.
+
 This repository is a collection of modules to help bootstrap an Android Application.
 There are 10 modules:
 
